@@ -1,10 +1,7 @@
 import glob
 import os
-import requests
 import shutil
 import subprocess
-import zipfile
-from io import BytesIO
 
 DECOMP_ROOT = os.path.join(os.getcwd(), 'pikmin2/src')
 P2GZ_ROOT = os.path.join(os.getcwd(), 'src')
@@ -38,10 +35,10 @@ for decomp_root, _, files in os.walk(DECOMP_ROOT):
             shutil.copy2(p2gz_file, decomp_file)
             print(f'Replaced {decomp_file} with {p2gz_file}')
 
-subprocess.run('python configure.py --no-check', cwd='pikmin2')
-subprocess.run('ninja', cwd='pikmin2')
+subprocess.run('python3 configure.py --no-check', cwd='pikmin2', shell=True)
+subprocess.run('ninja', cwd='pikmin2', shell=True)
 
 if not os.path.exists(os.path.join(os.getcwd(), 'root')):
-    subprocess.run(f'nodtool extract "{iso}" root')
+    subprocess.run(f'nodtool extract "{iso}" root', shell=True)
 
 shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
