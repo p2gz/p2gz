@@ -10,6 +10,7 @@ Prerequisites:
 1. ninja
 1. nodtool
 1. python3
+1. wine (if not on Windows)
 
 Steps:
 1. Clone this repository and run `git submodule update --init --recursive` to clone the decomp submodule
