@@ -1,9 +1,19 @@
+import glob
 import os
+import requests
 import shutil
 import subprocess
+import zipfile
+from io import BytesIO
 
 DECOMP_ROOT = os.path.join(os.getcwd(), 'pikmin2/src')
 P2GZ_ROOT = os.path.join(os.getcwd(), 'src')
+
+try:
+    iso = glob.glob(os.path.join(os.getcwd(), '*.iso'))[0]
+except IndexError:
+    print('No .iso file found in the current directory')
+    exit()
 
 for p2gz_root, _, _ in os.walk(P2GZ_ROOT):
     decomp_root = p2gz_root.replace(P2GZ_ROOT, DECOMP_ROOT)
@@ -28,5 +38,10 @@ for decomp_root, _, files in os.walk(DECOMP_ROOT):
             shutil.copy2(p2gz_file, decomp_file)
             print(f'Replaced {decomp_file} with {p2gz_file}')
 
-subprocess.run('python configure.py', cwd='pikmin2')
+subprocess.run('python configure.py --no-check', cwd='pikmin2')
 subprocess.run('ninja', cwd='pikmin2')
+
+if not os.path.exists(os.path.join(os.getcwd(), 'root')):
+    subprocess.run(f'nodtool extract "{iso}" root')
+
+shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
