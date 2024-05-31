@@ -4,53 +4,65 @@ import re
 import shutil
 import subprocess
 
-DECOMP_ROOT = os.path.join(os.getcwd(), 'pikmin2/src')
-P2GZ_ROOT = os.path.join(os.getcwd(), 'src')
 
-try:
-    iso = glob.glob(os.path.join(os.getcwd(), '*.iso'))[0]
-except IndexError:
-    print('No .iso file found in the current directory')
-    exit()
+DIRECTORY_PAIRS = [(os.path.join(os.getcwd(), 'pikmin2', 'include'), os.path.join(os.getcwd(), 'include')),
+                   (os.path.join(os.getcwd(), 'pikmin2', 'src'), os.path.join(os.getcwd(), 'src')),
+                   (os.path.join(os.getcwd(), 'root', 'files'), os.path.join(os.getcwd(), 'files'))]
 
-for p2gz_root, _, _ in os.walk(P2GZ_ROOT):
-    decomp_root = p2gz_root.replace(P2GZ_ROOT, DECOMP_ROOT)
-    if not os.path.exists(decomp_root):
-        print(f'Extraneous directory in p2gz: {decomp_root} does not exist in decomp')
+
+def patch_directory(source_dir, patch_dir):
+    patched_files = []
+
+    for patch_root, _, files in os.walk(patch_dir):
+        source_root = patch_root.replace(patch_dir, source_dir)
+
+        for file in files:
+            source_file = os.path.join(source_root, file)
+            patch_file = os.path.join(patch_root, file)
+
+            if os.path.exists(source_file):
+                print(f'Replaced {source_file} with {patch_file}')
+            else:
+                print(f'Added {patch_file} to {source_root}')
+            patched_files.append(shutil.copy2(patch_file, source_file)) 
+
+    return patched_files
+
+
+def main():
+    try:
+        iso = glob.glob(os.path.join(os.getcwd(), '*.iso'))[0]
+    except IndexError:
+        print('No .iso file found in the current directory')
         exit()
 
-for decomp_root, _, _ in os.walk(DECOMP_ROOT):
-    p2gz_root = decomp_root.replace(DECOMP_ROOT, P2GZ_ROOT)
-    if not os.path.exists(p2gz_root):
-        print(f'Directory missing in p2gz: {p2gz_root} does not exist in p2gz')
-        exit()
+    if not os.path.exists(os.path.join(os.getcwd(), 'root')):
+        subprocess.run(f'nodtool extract "{iso}" root', shell=True)
 
-for decomp_root, _, files in os.walk(DECOMP_ROOT):
-    p2gz_root = decomp_root.replace(DECOMP_ROOT, P2GZ_ROOT)
+        for file in glob.glob(os.path.join('root', 'files', 'thp', '*.thp')):
+            os.remove(file)
     
-    makefile = os.path.join(decomp_root, 'Makefile')
-    if len(files) and os.path.exists(makefile):
-        unlinked_files = [os.path.join(decomp_root, f'{match.group(1)}.cpp')
-                          for line in open(makefile).readlines()
-                          if (match := re.search(r'asm/[^/]+/([^/]+)\.o', line))]
+    patched_files = []
+    for source_dir, patch_dir in DIRECTORY_PAIRS:
+        patched_files.extend(patch_directory(source_dir, patch_dir))
     
-    for file in files:
-        decomp_file = os.path.join(decomp_root, file)
-        p2gz_file = os.path.join(p2gz_root, file)
-        
-        if os.path.exists(p2gz_file):
-            if unlinked_files and decomp_file in unlinked_files:
-                print(f'WARNING: {decomp_file} is not linked')
-            shutil.copy2(p2gz_file, decomp_file)
-            print(f'Replaced {decomp_file} with {p2gz_file}')
+    unlinked_src_files = []
+    for decomp_src, _, files in os.walk(os.path.join(os.getcwd(), 'pikmin2', 'src')):
+        makefile = os.path.join(decomp_src, 'Makefile')
+        if len(files) and os.path.exists(makefile):
+            unlinked_src_files.extend([os.path.join(decomp_src, f'{match.group(1)}.cpp')
+                                       for line in open(makefile).readlines()
+                                       if (match := re.search(r'asm/[^/]+/([^/]+)\.o', line))])
+            
+    for file in patched_files:
+        if file in unlinked_src_files:
+            print(f'WARNING: {file} is not linked')
 
-subprocess.run('python3 configure.py --no-check', cwd='pikmin2', shell=True)
-subprocess.run('ninja', cwd='pikmin2', shell=True)
+    subprocess.run('python3 configure.py --no-check', cwd='pikmin2', shell=True)
+    subprocess.run('ninja', cwd='pikmin2', shell=True)
+    
+    shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
 
-if not os.path.exists(os.path.join(os.getcwd(), 'root')):
-    subprocess.run(f'nodtool extract "{iso}" root', shell=True)
 
-    for file in glob.glob(os.path.join('root/files/thp', '*.thp')):
-        os.remove(file)
-
-shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
+if __name__ == '__main__':
+    main()
