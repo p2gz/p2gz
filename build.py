@@ -50,4 +50,7 @@ subprocess.run('ninja', cwd='pikmin2', shell=True)
 if not os.path.exists(os.path.join(os.getcwd(), 'root')):
     subprocess.run(f'nodtool extract "{iso}" root', shell=True)
 
+    for file in glob.glob(os.path.join('root/files/thp', '*.thp')):
+        os.remove(file)
+
 shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
