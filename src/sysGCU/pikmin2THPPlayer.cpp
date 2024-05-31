@@ -10,42 +10,6 @@
 
 namespace Game {
 
-namespace {
-#if VERNUM == 1 // demo
-static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
-	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
-	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
-	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
-	{ "/thp/ending2.thp", "", 0, THPPlayer::ENDING_AllTreasures },
-	{ "/thp/staffroll.thp", "", 0, THPPlayer::STAFF_ROLL },
-	{ "/thp/play1.thp", "/thp/play1.ini", 0, THPPlayer::PLAY_1 },
-	{ "/thp/play2.thp", "/thp/play2.ini", 0, THPPlayer::PLAY_2 },
-	{ "/thp/play3.thp", "/thp/play3.ini", 0, THPPlayer::PLAY_3 },
-	{ "/thp/play4.thp", "/thp/play4.ini", 0, THPPlayer::PLAY_4 },
-	{ "/thp/play5.thp", "/thp/play5.ini", 0, THPPlayer::PLAY_5 },
-	{ "/thp/play6.thp", "/thp/play6.ini", 0, THPPlayer::PLAY_6 },
-	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
-
-};
-#else // usa
-static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
-	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
-	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
-	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
-	{ "/thp/ending2.thp", "", 0, THPPlayer::ENDING_AllTreasures },
-	{ "/thp/staffroll.thp", "", 0, THPPlayer::STAFF_ROLL },
-	{ "/thp/play1.thp", "", 0, THPPlayer::PLAY_1 },
-	{ "/thp/play2.thp", "", 0, THPPlayer::PLAY_2 },
-	{ "/thp/play3.thp", "", 0, THPPlayer::PLAY_3 },
-	{ "/thp/play4.thp", "", 0, THPPlayer::PLAY_4 },
-	{ "/thp/play5.thp", "", 0, THPPlayer::PLAY_5 },
-	{ "/thp/play6.thp", "", 0, THPPlayer::PLAY_6 },
-	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
-
-};
-#endif
-} // namespace
-
 /**
  * @note Address: 0x8044FDF0
  * @note Size: 0x118
