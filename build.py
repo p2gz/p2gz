@@ -1,5 +1,6 @@
 import glob
 import os
+import re
 import shutil
 import subprocess
 
@@ -27,11 +28,19 @@ for decomp_root, _, _ in os.walk(DECOMP_ROOT):
 for decomp_root, _, files in os.walk(DECOMP_ROOT):
     p2gz_root = decomp_root.replace(DECOMP_ROOT, P2GZ_ROOT)
     
+    makefile = os.path.join(decomp_root, 'Makefile')
+    if len(files) and os.path.exists(makefile):
+        unlinked_files = [os.path.join(decomp_root, f'{match.group(1)}.cpp')
+                          for line in open(makefile).readlines()
+                          if (match := re.search(r'asm/[^/]+/([^/]+)\.o', line))]
+    
     for file in files:
         decomp_file = os.path.join(decomp_root, file)
         p2gz_file = os.path.join(p2gz_root, file)
         
         if os.path.exists(p2gz_file):
+            if unlinked_files and decomp_file in unlinked_files:
+                print(f'WARNING: {decomp_file} is not linked')
             shutil.copy2(p2gz_file, decomp_file)
             print(f'Replaced {decomp_file} with {p2gz_file}')
 
