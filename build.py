@@ -4,8 +4,8 @@ import re
 import shutil
 import subprocess
 
-DECOMP_ROOT = os.path.normpath(os.path.join(os.getcwd(), 'pikmin2/src'))
-P2GZ_ROOT = os.path.normpath(os.path.join(os.getcwd(), 'src'))
+DECOMP_ROOT = os.path.join(os.getcwd(), 'pikmin2/src')
+P2GZ_ROOT = os.path.join(os.getcwd(), 'src')
 
 try:
     iso = glob.glob(os.path.join(os.getcwd(), '*.iso'))[0]
