@@ -7,8 +7,10 @@
 ### Building
 
 Prerequisites:
+1. [Lunaboy's RARC Tools](https://www.romhacking.net/utilities/1024/)
 1. ninja
-1. nodtool
+1. [nodtool](https://github.com/AxioDL/nod)
+1. [pikminBMG](https://github.com/RenolY2/pikminBMG)
 1. python3
 1. wine (if not on Windows)
 
