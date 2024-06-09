@@ -497,8 +497,7 @@ struct PlayData : public CNode {
 	PelletCropMemory* mMainCropMemory;      // _B4
 	PelletCropMemory* mCaveCropMemory;      // _B8
 	int mTreasureCount;                     // _BC
-	// @P2GZ: int --> u32
-	u32 mSprayCount[2];                     // _C0
+	u32 mSprayCount[2];                     // _C0, @P2GZ: int --> u32
 	int mBerryCount[2];                     // _C8
 	u64 mOsTime;                            // _D0
 	u8* mBitfieldPerCourse;                 // _D8
@@ -511,8 +510,7 @@ struct PlayData : public CNode {
 	LimitGen* mLimitGen; // _E4
 
 	// Current Poko count.
-	// @P2GZ: int --> u32
-	u32 mPokoCount; // _E8
+	u32 mPokoCount; // _E8, @P2GZ: int --> u32
 
 	int mCavePokoCount; // _EC
 
