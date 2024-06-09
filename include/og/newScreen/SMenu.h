@@ -322,12 +322,9 @@ struct MenuOption {
 			return;
 		}
 
-		if (*mValue - pow(10, mCurrentDigit) < pow(10, mCurrentDigit) && mCurrentDigit > 0) {
-			// update value after most significant digit is disabled to prevent leading zero from briefly displaying
+		*mValue -= pow(10, mCurrentDigit);
+		if (*mValue < pow(10, mCurrentDigit) && mCurrentDigit > 0) {
 			right();
-			*mValue -= pow(10, mCurrentDigit + 1);
-		} else {
-			*mValue -= pow(10, mCurrentDigit);
 		}
 		mCounter->update();
 		ogSound->setPlusMinus(false);
