@@ -49,6 +49,7 @@ CallBack_CounterRV::CallBack_CounterRV(char** characterTexturePaths, u16 maxDigi
 	mIsInitialized    = 1;
 	mPaneOffsetX      = 0.0f;
 	mPaneOffsetY      = 0.0f;
+	mIsP2GZCounter    = false; // @P2GZ: don't set digit alpha to parent pane alpha
 }
 
 /**
@@ -310,9 +311,13 @@ void CallBack_CounterRV::setKetaSub(int displayDigitNum, bool isUp, bool isDown)
 
 		if (i < displayDigitNum) {
 			mCounterDigits[i]->mPicture->show();
-			// @P2GZ start
+			u8 alpha = mPaneAlpha;
 			if (i + 1 > mCurrentDigitNum && !mIsBlind) {
-				mCounterDigits[i]->mPicture->setAlpha(mZeroAlpha);
+				alpha = mZeroAlpha;
+			}
+			// @P2GZ start
+			if (!mIsP2GZCounter || alpha == mZeroAlpha) {
+				mCounterDigits[i]->mPicture->setAlpha(alpha);
 			}
 			// @P2GZ end
 			if (i + 1 <= mCurrentDigitNum) {

@@ -50,6 +50,7 @@ void ObjSMenuCont::doCreate(JKRArchive* arc)
 	// @P2GZ start
 	J2DTextBoxEx* bitterText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tbitter'));
 	og::Screen::CallBack_CounterRV* bitterCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Pbitter1', &(Game::playData->mSprayCount[1]), 2, false, true, arc);
+	bitterCounter->mIsP2GZCounter = true;
 	for (int i = 0; i < 2; i++) {
 		bitterCounter->getKetaPicture(i)->setAlpha(128);
 	}
@@ -58,6 +59,7 @@ void ObjSMenuCont::doCreate(JKRArchive* arc)
 	J2DTextBoxEx* spicyText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tspicy'));
 	spicyText->setAlpha(128);
 	og::Screen::CallBack_CounterRV* spicyCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Pspicy01', &(Game::playData->mSprayCount[0]), 2, false, true, arc);
+	spicyCounter->mIsP2GZCounter = true;
 	for (int i = 0; i < 2; i++) {
 		spicyCounter->getKetaPicture(i)->setAlpha(128);
 	}
@@ -66,6 +68,7 @@ void ObjSMenuCont::doCreate(JKRArchive* arc)
 	J2DTextBoxEx* pokoText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tpokos'));
 	pokoText->setAlpha(128);
 	og::Screen::CallBack_CounterRV* pokoCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Ppokos01', &(Game::playData->mPokoCount), 5, false, true, arc);
+	pokoCounter->mIsP2GZCounter = true;
 	for (int i = 0; i < 5; i++) {
 		pokoCounter->getKetaPicture(i)->setAlpha(128);
 	}
