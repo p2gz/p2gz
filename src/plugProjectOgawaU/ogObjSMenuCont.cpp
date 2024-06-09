@@ -50,25 +50,30 @@ void ObjSMenuCont::doCreate(JKRArchive* arc)
 	// @P2GZ start
 	J2DTextBoxEx* bitterText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tbitter'));
 	og::Screen::CallBack_CounterRV* bitterCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Pbitter1', &(Game::playData->mSprayCount[1]), 2, false, true, arc);
-	mOptions[0] = new BitterSprayMenuOption(bitterText, bitterCounter);
+	for (int i = 0; i < 2; i++) {
+		bitterCounter->getKetaPicture(i)->setAlpha(128);
+	}
+	mOptions[0] = new BitterSprayMenuOption(bitterText, bitterCounter, &(Game::playData->mSprayCount[1]), 2, 0, 99);
 
 	J2DTextBoxEx* spicyText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tspicy'));
+	spicyText->setAlpha(128);
 	og::Screen::CallBack_CounterRV* spicyCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Pspicy01', &(Game::playData->mSprayCount[0]), 2, false, true, arc);
-	mOptions[1] = new SpicySprayMenuOption(spicyText, spicyCounter);
+	for (int i = 0; i < 2; i++) {
+		spicyCounter->getKetaPicture(i)->setAlpha(128);
+	}
+	mOptions[1] = new SpicySprayMenuOption(spicyText, spicyCounter, &(Game::playData->mSprayCount[0]), 2, 0, 99);
 
 	J2DTextBoxEx* pokoText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tpokos'));
+	pokoText->setAlpha(128);
 	og::Screen::CallBack_CounterRV* pokoCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Ppokos01', &(Game::playData->mPokoCount), 5, false, true, arc);
-	mOptions[2] = new PokoCountMenuOption(pokoText, pokoCounter);
+	for (int i = 0; i < 5; i++) {
+		pokoCounter->getKetaPicture(i)->setAlpha(128);
+	}
+	mOptions[2] = new PokoCountMenuOption(pokoText, pokoCounter, &(Game::playData->mPokoCount), 5, 0, 99999);
 
 	mSelectedOption = 0;
 	mNumOptions = 3;
 	mIsEditingOption = false;
-
-	mOptions[0]->mCounter->getMotherPane()->setAlpha(128);
-	for (int i = 1; i < mNumOptions; i++) {
-		mOptions[i]->mText->setAlpha(128);
-		mOptions[i]->mCounter->getMotherPane()->setAlpha(128);
-	}
 	// @P2GZ end
 
 	doCreateAfter(arc, mScreenCont);
@@ -149,13 +154,17 @@ bool ObjSMenuCont::doUpdate()
 			mOptions[mSelectedOption]->right();
 	} else if (input & Controller::PRESS_A) {
 		if (!mIsEditingOption) {
-			mOptions[mSelectedOption]->enableCounter();
+			mOptions[mSelectedOption]->enableCurrentDigit();
 			ogSound->setOpen();
 			mIsEditingOption = true;
+		} else {
+			mOptions[mSelectedOption]->disableCurrentDigit();
+			ogSound->setDecide();
+			mIsEditingOption = false;
 		}
 	} else if (input & Controller::PRESS_B) {
 		if (mIsEditingOption) {
-			mOptions[mSelectedOption]->disableCounter();
+			mOptions[mSelectedOption]->disableCurrentDigit();
 			ogSound->setDecide();
 			mIsEditingOption = false;
 

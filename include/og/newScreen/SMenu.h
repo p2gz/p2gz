@@ -8,6 +8,8 @@
 
 // @P2GZ
 #include "Game/gamePlayData.h"
+#include "Game/SingleGame.h"
+#include "Game/SingleGameSection.h"
 #include "og/Screen/callbackNodes.h"
 #include "og/Sound.h"
 
@@ -288,12 +290,78 @@ struct ObjSMenuBase : public ::Screen::ObjBase {
 
 // @P2GZ
 struct MenuOption {
-	MenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter) : mText(text), mCounter(counter) { }
+	MenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter, u32* value, int maxDigits, int minValue, int maxValue)
+		: mText(text)
+		, mCounter(counter)
+		, mValue(value)
+		, mMaxDigits(maxDigits)
+		, mMinValue(minValue)
+		, mMaxValue(maxValue)
+	{
+		mCurrentDigit = 0;
+	}
 
-	virtual void up() { };
-	virtual void down() { };
-	virtual void left() { };
-	virtual void right() { };
+	virtual void up() {
+		if (*mValue + pow(10, mCurrentDigit) > mMaxValue) {
+			ogSound->setError();
+			return;
+		}
+
+		*mValue += pow(10, mCurrentDigit);
+		mCounter->update();
+		ogSound->setPlusMinus(false);
+		
+		if (*mValue == pow(10, mCurrentDigit + 1)) {
+			left();
+		}
+	};
+
+	virtual void down() {
+		if (*mValue - pow(10, mCurrentDigit) < mMinValue) {
+			ogSound->setError();
+			return;
+		}
+
+		if (*mValue - pow(10, mCurrentDigit) < pow(10, mCurrentDigit) && *mValue > mMinValue) {
+			// update value after most significant digit is disabled to prevent leading zero from briefly displaying
+			right();
+			*mValue -= pow(10, mCurrentDigit + 1);
+		} else {
+			*mValue -= pow(10, mCurrentDigit);
+		}
+		mCounter->update();
+		ogSound->setPlusMinus(false);
+	};
+
+	virtual void left() {
+		if (mCurrentDigit == mMaxDigits - 1) {
+			ogSound->setError();
+			return;
+		}
+
+		disableCurrentDigit();
+		mCurrentDigit++;
+		if (*mValue < pow(10, mCurrentDigit)) {
+			*mValue += pow(10, mCurrentDigit);
+			mCounter->update();
+		}
+		enableCurrentDigit();
+
+		ogSound->setPlusMinus(false);
+	};
+	
+	virtual void right() {
+		if (mCurrentDigit == 0) {
+			ogSound->setError();
+			return;
+		}
+
+		disableCurrentDigit();
+		mCurrentDigit--;
+		enableCurrentDigit();
+
+		ogSound->setPlusMinus(false);
+	};
 
 	void enableText() {
 		mText->setAlpha(255);
@@ -305,137 +373,112 @@ struct MenuOption {
 		mText->update();
 	}
 
-	void enableCounter() {
-		mCounter->getMotherPane()->setAlpha(255);
-		mCounter->update();
+	void enableCurrentDigit() {
+		mCounter->getKetaPicture(mCurrentDigit)->setAlpha(255);
+		mCounter->getKetaPicture(mCurrentDigit)->update();
 	}
 
-	void disableCounter() {
-		mCounter->getMotherPane()->setAlpha(128);
-		mCounter->update();
+	void disableCurrentDigit() {
+		mCounter->getKetaPicture(mCurrentDigit)->setAlpha(128);
+		mCounter->getKetaPicture(mCurrentDigit)->update();
 	}
 
 	J2DTextBoxEx* mText;
 	og::Screen::CallBack_CounterRV* mCounter;
-	bool mTextActive;
-	bool mCounterActive;
+	u32* mValue;
+	int mMaxDigits;
+	int mMinValue;
+	int mMaxValue;
+
+	int mCurrentDigit;
 };
 
 // @P2GZ
 struct BitterSprayMenuOption : public MenuOption {
-	BitterSprayMenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter) : MenuOption(text, counter) { }
+	BitterSprayMenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter, u32* value, int maxDigits, int minValue, int maxValue)
+		: MenuOption(text, counter, value, maxDigits, minValue, maxValue)
+	{
+	}
 
 	void up() {
-		int currentBitterCount = Game::playData->getDopeCount(1);
-		if (currentBitterCount == 0) {
+		if (*mValue == 0) {
 			Game::playData->setDemoFlag(Game::DEMO_First_Bitter_Spray_Made);
 			Game::playData->setDemoFlag(Game::DEMO_BITTER_ENABLED);
 		}
-		if (currentBitterCount < 99) {
-			Game::playData->incDopeCount(1);
-			ogSound->setPlusMinus(false);
-		} else {
-			ogSound->setError();
-		}
+		MenuOption::up();
 	}
 
 	void down() {
-		int currentBitterCount = Game::playData->getDopeCount(1);
-		if (currentBitterCount == 0) {
+		MenuOption::down();
+		if (*mValue == 0) {
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Bitter_Spray_Made);
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_BITTER_ENABLED);
 		}
-		if (currentBitterCount > 0) {
-			Game::playData->setDopeCount(1, currentBitterCount - 1);
-			ogSound->setPlusMinus(false);
-		} else {
-			ogSound->setError();
+	}
+
+	void left() {
+		if (*mValue == 0) {
+			Game::playData->setDemoFlag(Game::DEMO_First_Bitter_Spray_Made);
+			Game::playData->setDemoFlag(Game::DEMO_BITTER_ENABLED);
+		}
+		MenuOption::left();
+	}
+
+	void right() {
+		MenuOption::right();
+		if (*mValue == 0) {
+			Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Bitter_Spray_Made);
+			Game::playData->mDemoFlags.resetFlag(Game::DEMO_BITTER_ENABLED);
 		}
 	}
 };
 
 // @P2GZ
 struct SpicySprayMenuOption : public MenuOption {
-	SpicySprayMenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter) : MenuOption(text, counter) { }
+	SpicySprayMenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter, u32* value, int maxDigits, int minValue, int maxValue)
+		: MenuOption(text, counter, value, maxDigits, minValue, maxValue)
+	{
+	}
 
 	void up() {
-		int currentSpicyCount = Game::playData->getDopeCount(0);
-		if (currentSpicyCount == 0) {
+		if (*mValue == 0) {
 			Game::playData->setDemoFlag(Game::DEMO_First_Spicy_Spray_Made);
 			Game::playData->setDemoFlag(Game::DEMO_SPICY_ENABLED);
 		}
-		if (currentSpicyCount < 99) {
-			Game::playData->incDopeCount(0);
-			ogSound->setPlusMinus(false);
-		} else {
-			ogSound->setError();
-		}
+		MenuOption::up();
 	}
 
 	void down() {
-		int currentSpicyCount = Game::playData->getDopeCount(0);
-		if (currentSpicyCount == 1) {
+		MenuOption::down();
+		if (*mValue == 0) {
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Spicy_Spray_Made);
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_SPICY_ENABLED);
 		}
-		if (currentSpicyCount > 0) {
-			Game::playData->setDopeCount(0, currentSpicyCount - 1);
-			ogSound->setPlusMinus(false);
-		} else {
-			ogSound->setError();
+	}
+
+	void left() {
+		if (*mValue == 0) {
+			Game::playData->setDemoFlag(Game::DEMO_First_Spicy_Spray_Made);
+			Game::playData->setDemoFlag(Game::DEMO_SPICY_ENABLED);
+		}
+		MenuOption::left();
+	}
+
+	void right() {
+		MenuOption::right();
+		if (*mValue == 0) {
+			Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Spicy_Spray_Made);
+			Game::playData->mDemoFlags.resetFlag(Game::DEMO_SPICY_ENABLED);
 		}
 	}
 };
 
 // @P2GZ
 struct PokoCountMenuOption : public MenuOption {
-	PokoCountMenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter) : MenuOption(text, counter) {
-		mCurrentDigit = 0;
+	PokoCountMenuOption(J2DTextBoxEx* text, og::Screen::CallBack_CounterRV* counter, u32* value, int maxDigits, int minValue, int maxValue)
+		: MenuOption(text, counter, value, maxDigits, minValue, maxValue)
+	{
 	}
-
-	void up() {
-		if (Game::playData->mPokoCount + pow(10, mCurrentDigit) > 99999) {
-			ogSound->setError();
-			return;
-		}
-		Game::playData->mPokoCount += pow(10, mCurrentDigit);
-		mCounter->update();
-		ogSound->setPlusMinus(false);
-	}
-
-	void down() {
-		if (Game::playData->mPokoCount - pow(10, mCurrentDigit) < 0) {
-			ogSound->setError();
-			return;
-		}
-		Game::playData->mPokoCount -= pow(10, mCurrentDigit);
-		mCounter->update();
-		ogSound->setPlusMinus(false);
-	}
-
-	void left() {
-		if (mCurrentDigit == 4) {
-			ogSound->setError();
-			return;
-		}
-		mCurrentDigit++;
-		if (Game::playData->mPokoCount < pow(10, mCurrentDigit)) {
-			Game::playData->mPokoCount += pow(10, mCurrentDigit);
-			mCounter->update();
-		}
-		ogSound->setPlusMinus(false);
-	}
- 
-	void right() {
-		if (mCurrentDigit == 0) {
-			ogSound->setError();
-			return;
-		}
-		mCurrentDigit--;
-		ogSound->setPlusMinus(false);
-	}
-
-	int mCurrentDigit;
 };
 
 // size: 0xBC
