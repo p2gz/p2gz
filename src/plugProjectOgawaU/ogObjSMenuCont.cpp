@@ -149,9 +149,13 @@ bool ObjSMenuCont::doUpdate()
 			mOptions[mSelectedOption]->down();
 		}
 	} else if (input & Controller::PRESS_LEFT) {
+		if (mIsEditingOption) {
 			mOptions[mSelectedOption]->left();
+		}
 	} else if (input & Controller::PRESS_RIGHT) {
+		if (mIsEditingOption) {
 			mOptions[mSelectedOption]->right();
+		}
 	} else if (input & Controller::PRESS_A) {
 		if (!mIsEditingOption) {
 			mOptions[mSelectedOption]->enableCurrentDigit();

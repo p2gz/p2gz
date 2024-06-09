@@ -322,7 +322,7 @@ struct MenuOption {
 			return;
 		}
 
-		if (*mValue - pow(10, mCurrentDigit) < pow(10, mCurrentDigit) && *mValue > mMinValue) {
+		if (*mValue - pow(10, mCurrentDigit) < pow(10, mCurrentDigit) && mCurrentDigit > 0) {
 			// update value after most significant digit is disabled to prevent leading zero from briefly displaying
 			right();
 			*mValue -= pow(10, mCurrentDigit + 1);

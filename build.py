@@ -1,3 +1,4 @@
+import argparse
 import glob
 import json
 import os
@@ -13,6 +14,14 @@ DECOMP_SRC = os.path.join(os.getcwd(), 'pikmin2', 'src')
 P2GZ_SRC = os.path.join(os.getcwd(), 'src')
 ISO_ASSETS = os.path.join(os.getcwd(), 'root', 'files')
 P2GZ_ASSETS = os.path.join(os.getcwd(), 'files')
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--clean', '-c', action='store_true', help='Build from a clean working directory')
+args = parser.parse_args()
+
+if args.clean:
+    shutil.rmtree(os.path.join(os.getcwd(), 'root'))
+    subprocess.run('git clean -fdx && git reset --hard', cwd=DECOMP_ROOT, shell=True)
 
 start_time = time.time()
 
