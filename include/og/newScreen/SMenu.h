@@ -299,6 +299,12 @@ struct MenuOption {
 		, mMaxValue(maxValue)
 	{
 		mCurrentDigit = 0;
+		mText->setAlpha(128);
+		mCounter->mIsP2GZCounter = true;
+		
+		for (int i = 0; i < mMaxDigits; i++) {
+			mCounter->getKetaPicture(i)->setAlpha(128);
+		}
 	}
 
 	virtual void up() {
@@ -308,12 +314,11 @@ struct MenuOption {
 		}
 
 		*mValue += pow(10, mCurrentDigit);
-		mCounter->update();
-		ogSound->setPlusMinus(false);
-		
 		if (*mValue == pow(10, mCurrentDigit + 1)) {
 			left();
 		}
+		mCounter->update();
+		ogSound->setPlusMinus(false);
 	};
 
 	virtual void down() {
