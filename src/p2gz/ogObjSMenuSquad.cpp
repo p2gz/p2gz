@@ -62,13 +62,13 @@ void ObjSMenuSquad::doCreate(JKRArchive* arc)
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenSquad, "s_menu_controller.btk", msBaseVal.mAnimSpeed);
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenSquad, "s_menu_controller_02.btk", msBaseVal.mAnimSpeed);
 
-	for (int row = 0; row < mNumRows; row++) {
-		for (int col = 0; col < mNumCols; col++) {
-			mIcons[row][col] = static_cast<J2DPictureEx*>(og::Screen::TagSearch(mScreenSquad, iconTags[row * mNumCols + col]));
-			mCounters[row][col] = og::Screen::setCallBack_CounterRV(mScreenSquad, counterTags[row * mNumCols + col], &mPikminCounts[row][col], 3, false, true, arc);
-			mPikminCounts[row][col] = 0;
-		}
-	}
+	// for (int row = 0; row < mNumRows; row++) {
+	// 	for (int col = 0; col < mNumCols; col++) {
+	// 		mIcons[row][col] = static_cast<J2DPictureEx*>(og::Screen::TagSearch(mScreenSquad, iconTags[row * mNumCols + col]));
+	// 		mCounters[row][col] = og::Screen::setCallBack_CounterRV(mScreenSquad, counterTags[row * mNumCols + col], &mPikminCounts[row][col], 3, false, true, arc);
+	// 		mPikminCounts[row][col] = 0;
+	// 	}
+	// }
 
 	for (int i = 0; i < Game::pikiMgr->mMax; i++) {
 		Game::Piki* piki = &Game::pikiMgr->mArray[i];
@@ -292,7 +292,7 @@ bool ObjSMenuSquad::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('6052_00', '3050_00', '3003_00'); // @P2GZ: change to "Menu" "Counters" "Squad"
+	setYajiName('6052_00', '3500_00', '3003_00'); // @P2GZ: change to "Menu" "Counters" "Squad"
 	stopYaji();
 	return start_LR(arg);
 }
