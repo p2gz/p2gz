@@ -83,6 +83,7 @@ void ObjSMenuSquad::doCreate(JKRArchive* arc)
 
 void ObjSMenuSquad::doUpdateLAction()
 {
+	// LEFT = PAUSE MENU
 	og::Screen::DispMemberSMenuAll* disp = static_cast<og::Screen::DispMemberSMenuAll*>(getDispMember());
 	if (disp->mSMenuMap.mInCave) {
 		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_DOUKUTU, getDispMember());
@@ -95,7 +96,8 @@ void ObjSMenuSquad::doUpdateLAction()
 
 void ObjSMenuSquad::doUpdateRAction()
 {
-	::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_ITEMS, getDispMember());
+	// RIGHT = COUNTERS
+	::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_CONTROLS, getDispMember());
 	jump_R(arg);
 }
 
@@ -290,7 +292,7 @@ bool ObjSMenuSquad::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('6052_00', '6051_00', '3004_00'); // @P2GZ: change to "Menu" "Items" "Counters"
+	setYajiName('6052_00', '3050_00', '3003_00'); // @P2GZ: change to "Menu" "Counters" "Squad"
 	stopYaji();
 	return start_LR(arg);
 }

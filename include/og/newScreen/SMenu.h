@@ -85,7 +85,7 @@ struct SMenuSquad : public SceneSMenuBase {
 	SMenuSquad();
 
 	virtual const char* getResName() const { return "res_s_menu_squad.szs"; } // _1C (weak)
-	virtual SceneType getSceneType() { return SCENE_PAUSE_MENU_CONTROLS; }    // _08 (weak)
+	virtual SceneType getSceneType() { return SCENE_P2GZ_SQUAD; }    // _08 (weak)
 	virtual ScreenOwnerID getOwnerID() { return OWNER_OGA; }                  // _0C (weak)
 	virtual ScreenMemberID getMemberID() { return MEMBER_P2GZ_SQUAD; }        // _10 (weak)
 	virtual bool isUseBackupSceneInfo() { return true; }                      // _14 (weak)
@@ -535,8 +535,6 @@ struct ObjSMenuSquad : public ObjSMenuBase {
 	og::Screen::DispMemberSMenuSquad* mDisp; // _A8
 	P2DScreen::Mgr_tuning* mScreenSquad;     // _AC
 	og::Screen::AnimGroup* mAnimGroup;       // _B0
-	u8 _B4[0x8];                             // _B4, unknown
-
 	J2DPictureEx* mIcons[3][5];
 	og::Screen::CallBack_CounterRV* mCounters[3][5];
 	u32 mPikminCounts[3][5];
