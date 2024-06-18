@@ -145,9 +145,11 @@ namespace newScreen {
 		base = new og::newScreen::SMenuCont;
 		break;
 
+	// @P2GZ start
 	case SCENE_P2GZ_SQUAD:
 		base = new og::newScreen::SMenuSquad;
 		break;
+	// @P2GZ end
 	}
 	return base;
 }

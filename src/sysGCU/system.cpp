@@ -290,6 +290,7 @@ void preUserCallback(u16, OSContext*, u32, u32)
 
 	int i = 0;
 	// wait until all required inputs are in before passing, disable this if you want instant crash log
+	// @P2GZ start
 	// while (inputs[i]) {
 	// 	u32 input;
 	// 	JUTException::waitTime(100);
@@ -299,13 +300,14 @@ void preUserCallback(u16, OSContext*, u32, u32)
 	// 		i = ((inputs[i] == input) ? i + 1 : 0);
 	// 	}
 	// }
+	// @P2GZ end
 
 	sUseABXCommand = true;
 	if (JUTException::sConsole) {
 		JUTException::sConsole->startPrint(3, "--- Game debug information ---\n");
 		JUTConsoleManager::sManager->drawDirect(true);
 	} else {
-		OSReport("ƒRƒ“ƒ\\[ƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ\n"); // 'no console'
+		OSReport("ï¿½Rï¿½ï¿½ï¿½\\ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n"); // 'no console'
 	}
 }
 

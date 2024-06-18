@@ -83,7 +83,7 @@ void ObjSMenuCont::doUpdateLAction()
 		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_DOUKUTU, getDispMember());
 		jump_L(arg);
 	} else {
-		::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember());
+		::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember()); // @P2GZ
 		jump_L(arg);
 	}
 }
