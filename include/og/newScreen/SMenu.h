@@ -7,11 +7,16 @@
 #include "P2DScreen.h"
 
 // @P2GZ
+#include "Game/Entities/ItemPikihead.h"
 #include "Game/gamePlayData.h"
+#include "Game/gameStat.h"
+#include "Game/Navi.h"
+#include "Game/PikiMgr.h"
 #include "Game/SingleGame.h"
 #include "Game/SingleGameSection.h"
 #include "og/Screen/callbackNodes.h"
 #include "og/Sound.h"
+#include "PikiAI.h"
 
 #define MAX_CAVEDISP_NAME 5
 #define MAX_RADAR_COUNT   200
@@ -73,6 +78,25 @@ struct SceneSMenuBase : public ::Screen::SceneBase {
 	// _00      = VTBL
 	// _00-_220 = Screen::SceneBase
 	int mFinishState; // _220
+};
+
+// @P2GZ
+struct SMenuSquad : public SceneSMenuBase {
+	SMenuSquad();
+
+	virtual const char* getResName() const { return "res_s_menu_squad.szs"; } // _1C (weak)
+	virtual SceneType getSceneType() { return SCENE_P2GZ_SQUAD; }    // _08 (weak)
+	virtual ScreenOwnerID getOwnerID() { return OWNER_OGA; }                  // _0C (weak)
+	virtual ScreenMemberID getMemberID() { return MEMBER_P2GZ_SQUAD; }        // _10 (weak)
+	virtual bool isUseBackupSceneInfo() { return true; }                      // _14 (weak)
+	virtual void doCreateObj(JKRArchive*);                                    // _20
+	virtual void doUserCallBackFunc(Resource::MgrCommand*);                   // _24
+	virtual void doUpdateActive();                                            // _2C
+	virtual bool doConfirmSetScene(::Screen::SetSceneArg&);                   // _30
+	virtual void doSetBackupScene(::Screen::SetSceneArg&);                    // _48
+
+	// _00      = VTBL
+	// _00-_224 = SceneSMenuBase
 };
 
 struct SMenuCont : public SceneSMenuBase {
@@ -481,6 +505,58 @@ struct PokoCountMenuOption : public MenuOption {
 		: MenuOption(text, counter, value, maxDigits, minValue, maxValue)
 	{
 	}
+};
+
+// @P2GZ
+struct ObjSMenuSquad : public ObjSMenuBase {
+	ObjSMenuSquad(const char*);
+
+	virtual ~ObjSMenuSquad();                             // _08 (weak)
+	virtual bool doStart(const ::Screen::StartSceneArg*); // _44
+	virtual bool doEnd(const ::Screen::EndSceneArg*);     // _48
+	virtual void doCreate(JKRArchive*);                   // _4C
+	virtual bool doUpdate();                              // _58
+	virtual void doUpdateFinish();                        // _5C
+	virtual bool doUpdateFadeout();                       // _60
+	virtual void doDraw(Graphics& gfx);                   // _68
+	virtual void in_L();                                  // _78
+	virtual void in_R();                                  // _7C
+	virtual void wait();                                  // _80
+	virtual void out_L();                                 // _84
+	virtual void out_R();                                 // _88
+	virtual void doUpdateCancelAction();                  // _90 (weak)
+	virtual void doUpdateRAction();                       // _94
+	virtual void doUpdateLAction();                       // _98
+	virtual void commonUpdate();                          // _A4
+
+	// _00     = VTBL1
+	// _18     = VTBL2
+	// _00-_A8 = ObjSMenuBase
+	og::Screen::DispMemberSMenuSquad* mDisp; // _A8
+	P2DScreen::Mgr_tuning* mScreenSquad;     // _AC
+	og::Screen::AnimGroup* mAnimGroup;       // _B0
+	
+	J2DPictureEx* mIcons[5][3];
+	og::Screen::CallBack_CounterRV* mCounters[5][3];
+	u32 mPikminCounts[5][3];
+
+	int mRow;
+	int mCol;
+	int mNumRows;
+	int mNumCols;
+	int mSelectedDigit;
+	bool mIsEditingPikminCount;
+
+	static struct StaticValues {
+		inline StaticValues()
+		{
+			mScaleX = 1.0f;
+			mScaleY = 1.0f;
+		}
+
+		f32 mScaleX; // _00
+		f32 mScaleY; // _04
+	} msVal;
 };
 
 // size: 0xBC

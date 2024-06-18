@@ -17266,6 +17266,22 @@
         "index": "0x569",
         "attributes": "00000000",
         "text": [
+            "Squad"
+        ]
+    },
+    {
+        "ID": "3004, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
+            "onion"
+        ]
+    },
+    {
+        "ID": "3005, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
             "Counters"
         ]
     },

@@ -346,14 +346,9 @@ void ObjSMenuPause::doUpdateLAction()
  */
 void ObjSMenuPause::doUpdateRAction()
 {
-	// R = CONTROLLER OR ITEMS
-	if (msBaseVal.mUseControlMenu) {
-		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_CONTROLS, getDispMember());
-		jump_R(arg);
-	} else {
-		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_ITEMS, getDispMember());
-		jump_R(arg);
-	}
+	// RIGHT = P2GZ SQUAD
+	::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember()); // @P2GZ
+	jump_R(arg);
 }
 
 /**

@@ -348,7 +348,7 @@ bool ObjSMenuItem::doStart(::Screen::StartSceneArg const* arg)
 	mSprayAnims->setSpeed(1.0f);
 	mSprayAnims->start();
 
-	setYajiName('3003_00', '6050_00', '6051_00'); // @P2GZ: change to "Counters" "Radar" "Items"
+	setYajiName('3005_00', '6050_00', '6051_00'); // @P2GZ: change to "Counters" "Radar" "Items"
 	stopYaji();
 	return start_LR(arg);
 }

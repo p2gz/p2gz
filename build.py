@@ -2,6 +2,7 @@ import argparse
 import glob
 import json
 import os
+import platform
 import shutil
 import subprocess
 import time
@@ -14,10 +15,22 @@ DECOMP_SRC = os.path.join(os.getcwd(), 'pikmin2', 'src')
 P2GZ_SRC = os.path.join(os.getcwd(), 'src')
 ISO_ASSETS = os.path.join(os.getcwd(), 'root', 'files')
 P2GZ_ASSETS = os.path.join(os.getcwd(), 'files')
+DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
+
+P2GZ_CUSTOM_ASSETS = [
+    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_squad')
+]
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--clean', '-c', action='store_true', help='Build from a clean working directory')
+parser.add_argument('--restart-dolphin', '-rd', action='store_true', help='Restart Dolphin with root/sys/main.dol after build')
 args = parser.parse_args()
+
+if args.restart_dolphin:
+    if platform.system() == 'Windows':
+        subprocess.run('taskkill /IM dolphin.exe /F', shell=True)
+    else:
+        subprocess.run('pkill -f dolphin-emu', shell=True)
 
 if args.clean:
     shutil.rmtree(os.path.join(os.getcwd(), 'root'))
@@ -63,8 +76,6 @@ for p2gz_path, _, files in os.walk(P2GZ_SRC):
         decomp_cpp = os.path.join(decomp_path, file)
         p2gz_cpp = os.path.join(p2gz_path, file)
         filename = os.path.splitext(file)[0]
-
-        print(os.path.dirname(decomp_path), decomp_path)
         
         if os.path.exists(decomp_cpp) and not decomp_path.endswith('p2gz'):
             print(f'Replaced {decomp_cpp} with {p2gz_cpp}')
@@ -105,8 +116,9 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
     for dir in dirs:
         patch_dir = os.path.join(p2gz_path, dir)
         iso_dir = os.path.join(iso_path, dir)
-        
         archive = iso_dir + '.szs'
+
+        # patching existing asset
         if os.path.exists(archive):
             existing_directories = set(next(os.walk(iso_path))[1])
             subprocess.run(f'ArcExtract {archive}', shell=True, stdout=open(os.devnull, 'w'))
@@ -126,6 +138,25 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
             os.remove(archive)
             os.rename(f'{extracted_archive}.arc', archive)
             shutil.rmtree(extracted_archive)
+        
+        # adding custom asset
+        elif patch_dir in P2GZ_CUSTOM_ASSETS:
+            print(f'Copying {patch_dir} to {iso_dir}')
+            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True,
+                            ignore=lambda _, contents: [file for file in contents if file.endswith('json')])
+            
+            for root, _, files in os.walk(patch_dir):
+                for file in files:
+                    if file.endswith('json'):
+                        subprocess.run(f'python3 pikminBMGtool.py PACK {os.path.join(patch_dir, file)} \
+                                       {os.path.join(extracted_archive, file.replace("json", "bmg"))}', shell=True, stdout=open(os.devnull, 'w'))
+            
+            subprocess.run(f'ArcPack {iso_dir}', shell=True, stdout=open(os.devnull, 'w'))
+            shutil.rmtree(iso_dir)
+            if os.path.exists(f'{iso_dir}.szs'):
+                os.remove(f'{iso_dir}.szs')
+            os.rename(f'{iso_dir}.arc', f'{iso_dir}.szs')
+            
 
 # patch dol
 subprocess.run('python3 configure.py --no-check', cwd=DECOMP_ROOT, shell=True)
@@ -133,3 +164,6 @@ subprocess.run('ninja', cwd=DECOMP_ROOT, shell=True)
 shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
 
 print(f'Done! Build took {round(time.time() - start_time, 2)}s')
+
+if args.restart_dolphin:
+    subprocess.Popen(f'Dolphin.exe.lnk --exec {DOL_PATH}', shell=True)
