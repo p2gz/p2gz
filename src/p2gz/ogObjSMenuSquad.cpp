@@ -375,7 +375,7 @@ bool ObjSMenuSquad::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('6052_00', '3500_00', '3003_00'); // @P2GZ: change to "Menu" "Counters" "Squad"
+	setYajiName('6052_00', '3005_00', '3003_00'); // @P2GZ: change to "Menu" "Counters" "Squad"
 	stopYaji();
 	return start_LR(arg);
 }
