@@ -83,7 +83,7 @@ void ObjSMenuCont::doUpdateLAction()
 		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_DOUKUTU, getDispMember());
 		jump_L(arg);
 	} else {
-		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU, getDispMember());
+		::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember());
 		jump_L(arg);
 	}
 }
@@ -247,7 +247,7 @@ bool ObjSMenuCont::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('6052_00', '6051_00', '3003_00'); // @P2GZ: change to "Menu" "Items" "Counters"
+	setYajiName('3003_00', '6051_00', '3005_00'); // @P2GZ: change to "Squad" "Items" "Counters"
 	stopYaji();
 	return start_LR(arg);
 }
