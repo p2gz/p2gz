@@ -13,20 +13,20 @@ static const Game::EPikiKind kindOrder[] = { Game::Red, Game::Yellow, Game::Blue
 
 static const Game::EPikiHappa happaOrder[] = { Game::Flower, Game::Bud, Game::Leaf };
 
-static u64 iconTags[] = { 
-	'red_f', 'red_b', 'red_l',
-	'yel_f', 'yel_b', 'yel_l',
-	'blu_f', 'blu_b', 'blu_l',
-	'pur_f', 'pur_b', 'pur_l',
-	'whi_f', 'whi_b', 'whi_l'
+static u64 iconTags[5][3] = {
+	{ 'red_f', 'red_b', 'red_l' },
+	{ 'yel_f', 'yel_b', 'yel_l' },
+	{ 'blu_f', 'blu_b', 'blu_l' },
+	{ 'pur_f', 'pur_b', 'pur_l' },
+	{ 'whi_f', 'whi_b', 'whi_l' }
 };
 
-static u64 counterTags[] = { 
-	'red_f1', 'red_b1', 'red_l1',
-	'yel_f1', 'yel_b1', 'yel_l1',
-	'blu_f1', 'blu_b1', 'blu_l1',
-	'pur_f1', 'pur_b1', 'pur_l1',
-	'whi_f1', 'whi_b1', 'whi_l1'
+static u64 counterTags[5][3] = { 
+	{ 'red_f1', 'red_b1', 'red_l1' },
+	{ 'yel_f1', 'yel_b1', 'yel_l1' },
+	{ 'blu_f1', 'blu_b1', 'blu_l1' },
+	{ 'pur_f1', 'pur_b1', 'pur_l1' },
+	{ 'whi_f1', 'whi_b1', 'whi_l1' }
 };
 
 ObjSMenuSquad::ObjSMenuSquad(char const* name)
@@ -62,20 +62,49 @@ void ObjSMenuSquad::doCreate(JKRArchive* arc)
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenSquad, "s_menu_controller.btk", msBaseVal.mAnimSpeed);
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenSquad, "s_menu_controller_02.btk", msBaseVal.mAnimSpeed);
 
-	// for (int row = 0; row < mNumRows; row++) {
-	// 	for (int col = 0; col < mNumCols; col++) {
-	// 		mIcons[row][col] = static_cast<J2DPictureEx*>(og::Screen::TagSearch(mScreenSquad, iconTags[row * mNumCols + col]));
-	// 		mCounters[row][col] = og::Screen::setCallBack_CounterRV(mScreenSquad, counterTags[row * mNumCols + col], &mPikminCounts[row][col], 3, false, true, arc);
-	// 		mPikminCounts[row][col] = 0;
-	// 	}
-	// }
+	for (int row = 0; row < mNumRows; row++) {
+		for (int col = 0; col < mNumCols; col++) {
+			mIcons[row][col] = static_cast<J2DPictureEx*>(og::Screen::TagSearch(mScreenSquad, iconTags[row][col]));
+			mIcons[row][col]->setAlpha(128);
+			mCounters[row][col] = og::Screen::setCallBack_CounterRV(mScreenSquad, counterTags[row][col], &mPikminCounts[row][col], 3, false, true, arc);
+			mCounters[row][col]->mIsP2GZCounter = true;
+			for (int i = 0; i < 3; i++) {
+				mCounters[row][col]->getKetaPicture(i)->setAlpha(128);
+			}
+			mCounters[row][col]->update();
+			mPikminCounts[row][col] = 0;
+		}
+	}
+
+	mIcons[0][0]->setAlpha(255);
 
 	for (int i = 0; i < Game::pikiMgr->mMax; i++) {
+		if (Game::pikiMgr->mOpenIds[i]) {
+			continue;
+		}
+
 		Game::Piki* piki = &Game::pikiMgr->mArray[i];
 		if (piki->mNavi == nullptr || piki->mPikiKind == Game::Bulbmin) {
 			continue;
 		}
-		mPikminCounts[piki->mHappaKind][piki->mPikiKind]++;
+
+		int row = 0;
+		for (int i = 0; i < mNumRows; i++) {
+			if (kindOrder[i] == piki->mPikiKind) {
+				row = i;
+				break;
+			}
+		}
+
+		int col = 0;
+		for (int i = 0; i < mNumCols; i++) {
+			if (happaOrder[i] == piki->mHappaKind) {
+				col = i;
+				break;
+			}
+		}
+
+		mPikminCounts[row][col]++;
 	}
 
 	doCreateAfter(arc, mScreenSquad);
@@ -121,31 +150,24 @@ bool ObjSMenuSquad::doUpdate()
 		if (!mIsEditingPikminCount) {
 			if (mRow == 0) {
 				ogSound->setError();
+				mScreenSquad->animation();
+				return false;
 			} else {
 				mIcons[mRow][mCol]->setAlpha(128);
+				mCounters[mRow][mCol]->update();
 				mRow--;
 				mIcons[mRow][mCol]->setAlpha(255);
+				mCounters[mRow][mCol]->update();
+				ogSound->setPlusMinus(false);
 			}
 		} else {
-			int currentPikminCount = 0;
-			for (int row = 0; row < mNumRows; row++) {
-				for (int col = 0; col < mNumCols; col++) {
-					currentPikminCount++;
-				}
-			}
-
-			if (currentPikminCount + pow(10, mSelectedDigit) > MAX_PIKI_COUNT) {
+			if (Game::pikiMgr->mActiveCount + Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount + pow(10, mSelectedDigit) > MAX_PIKI_COUNT) {
 				ogSound->setError();
 			} else {
 				int previousCount = mPikminCounts[mRow][mCol];
-				mPikminCounts[mRow][mCol] += pow(10, mSelectedDigit);
 
 				for (int i = 0; i < pow(10, mSelectedDigit); i++) {
 					Game::Piki* piki = Game::pikiMgr->birth();
-					if (piki == nullptr) {
-						ogSound->setError();
-						return;
-					}
 
 					Game::PikiInitArg arg(-1);
 					piki->init(&arg);
@@ -157,19 +179,34 @@ bool ObjSMenuSquad::doUpdate()
 
 					piki->mNavi = Game::naviMgr->getActiveNavi();
 				}
+
+				mPikminCounts[mRow][mCol] += pow(10, mSelectedDigit);
+				if (mPikminCounts[mRow][mCol] == pow(10, mSelectedDigit + 1)) {
+					mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
+					mSelectedDigit++;
+					mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(255);
+				}
+				mCounters[mRow][mCol]->update();
+
+				ogSound->setPlusMinus(false);
 			}
 		}
 	} else if (input & Controller::PRESS_DOWN) {
 		if (!mIsEditingPikminCount) {
 			if (mRow == mNumRows - 1) {
 				ogSound->setError();
+				mScreenSquad->animation();
+				return false;
 			} else {
 				mIcons[mRow][mCol]->setAlpha(128);
+				mCounters[mRow][mCol]->update();
 				mRow++;
 				mIcons[mRow][mCol]->setAlpha(255);
+				mCounters[mRow][mCol]->update();
+				ogSound->setPlusMinus(false);
 			}
 		} else {
-			if (mPikminCounts[mRow][mCol] - pow(10, mSelectedDigit) <= 0) {
+			if (mPikminCounts[mRow][mCol] - pow(10, mSelectedDigit) < 0) {
 				ogSound->setError();
 			} else {
 				int pikminKilled = 0;
@@ -184,6 +221,16 @@ bool ObjSMenuSquad::doUpdate()
 						}
 					}
 				}
+				
+				mPikminCounts[mRow][mCol] -= pow(10, mSelectedDigit);
+				if (mPikminCounts[mRow][mCol] < pow(10, mSelectedDigit) && mSelectedDigit > 0) {
+					mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
+					mSelectedDigit--;
+					mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(255);
+				}
+				mCounters[mRow][mCol]->update();
+
+				ogSound->setPlusMinus(false);
 			}
 		}
 	} else if (input & Controller::PRESS_LEFT) {
@@ -194,24 +241,55 @@ bool ObjSMenuSquad::doUpdate()
 				mIcons[mRow][mCol]->setAlpha(128);
 				mCol--;
 				mIcons[mRow][mCol]->setAlpha(255);
+				ogSound->setPlusMinus(false);
 			}
 		} else {
 			if (mSelectedDigit == 2) {
 				ogSound->setError();
+				mScreenSquad->animation();
+				return false;
 			} else {
+				if (mPikminCounts[mRow][mCol] < pow(10, mSelectedDigit + 1)) {
+					if (Game::pikiMgr->mActiveCount + Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount + pow(10, mSelectedDigit + 1) > MAX_PIKI_COUNT) {
+						ogSound->setError();
+						mScreenSquad->animation();
+						return false;
+					}
+					mPikminCounts[mRow][mCol] += pow(10, mSelectedDigit + 1);
+
+					for (int i = 0; i < pow(10, mSelectedDigit + 1); i++) {
+						Game::Piki* piki = Game::pikiMgr->birth();
+
+						Game::PikiInitArg arg(-1);
+						piki->init(&arg);
+						piki->changeShape(kindOrder[mRow]);
+						piki->changeHappa(happaOrder[mCol]);
+
+						Vector3f pos = Game::naviMgr->getActiveNavi()->getPosition();
+						piki->setPosition(pos, false);
+
+						piki->mNavi = Game::naviMgr->getActiveNavi();
+					}
+				}
+
 				mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
 				mSelectedDigit++;
 				mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(255);
+				mCounters[mRow][mCol]->update();
+				ogSound->setPlusMinus(false);
 			}
 		}
 	} else if (input & Controller::PRESS_RIGHT) {
 		if (!mIsEditingPikminCount) {
 			if (mCol == mNumCols - 1) {
 				ogSound->setError();
+				mScreenSquad->animation();
+				return false;
 			} else {
 				mIcons[mRow][mCol]->setAlpha(128);
 				mCol++;
 				mIcons[mRow][mCol]->setAlpha(255);
+				ogSound->setPlusMinus(false);
 			}
 		} else {
 			if (mSelectedDigit == 0) {
@@ -220,6 +298,8 @@ bool ObjSMenuSquad::doUpdate()
 				mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
 				mSelectedDigit--;
 				mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(255);
+				mCounters[mRow][mCol]->update();
+				ogSound->setPlusMinus(false);
 			}
 		}
 	} else if (input & Controller::PRESS_A) {
@@ -228,16 +308,19 @@ bool ObjSMenuSquad::doUpdate()
 			ogSound->setOpen();
 			mSelectedDigit = 0;
 			mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(255);
+			mCounters[mRow][mCol]->update();
 		} else {
 			mIsEditingPikminCount = false;
 			ogSound->setDecide();
 			mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
+			mCounters[mRow][mCol]->update();
 		}
 	} else if (input & Controller::PRESS_B) {
 		if (mIsEditingPikminCount) {
 			mIsEditingPikminCount = false;
 			ogSound->setDecide();
 			mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
+			mCounters[mRow][mCol]->update();
 			
 			// return early as ObjSMenuBase::doUpdate() will close the menu if B is pressed
 			mScreenSquad->animation();

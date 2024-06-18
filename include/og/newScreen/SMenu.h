@@ -535,9 +535,10 @@ struct ObjSMenuSquad : public ObjSMenuBase {
 	og::Screen::DispMemberSMenuSquad* mDisp; // _A8
 	P2DScreen::Mgr_tuning* mScreenSquad;     // _AC
 	og::Screen::AnimGroup* mAnimGroup;       // _B0
-	J2DPictureEx* mIcons[3][5];
-	og::Screen::CallBack_CounterRV* mCounters[3][5];
-	u32 mPikminCounts[3][5];
+	
+	J2DPictureEx* mIcons[5][3];
+	og::Screen::CallBack_CounterRV* mCounters[5][3];
+	u32 mPikminCounts[5][3];
 
 	int mRow;
 	int mCol;
