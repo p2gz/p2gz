@@ -28,6 +28,10 @@
 #include "utilityU.h"
 #include "Game/NaviState.h"
 
+// @P2GZ
+#include "JSystem/J2D/J2DPrint.h"
+#include "PikiAI.h"
+
 #define LOUIE_START_X   (-1260.0f)
 #define LOUIE_START_Y   (-80.0f)
 #define LOUIE_START_Z   (4350.0f)
@@ -560,6 +564,136 @@ void GameState::exec(SingleGameSection* game)
 			director->directOff();
 		}
 	}
+
+	// @P2GZ start
+	Graphics* gfx = sys->mGfx;
+	gfx->initPrimDraw(nullptr);
+	
+	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
+
+	bool visited[256];
+	for (int i = 0; i < 256; i++) {
+		visited[i] = false;
+	}
+	Color4 visitedColor = Color4(0, 255, 0, 255);
+
+	bool approaching[256];
+	for (int i = 0; i < 256; i++) {
+		approaching[i] = false;
+	}
+	Color4 approachingColor = Color4(255, 255, 0, 255);
+
+	bool upcoming[256];
+	for (int i = 0; i < 256; i++) {
+		upcoming[i] = false;
+	}
+	Color4 upcomingColor = Color4(255, 255, 255, 255);
+
+	s16 edges[2][256];
+	for (int i = 0; i < 256; i++) {
+		edges[0][i] = -1;
+		edges[1][i] = -1;
+	}
+
+	int nextEdge = 0;
+
+	// get all waypoints along an active path
+	Iterator<Piki> pikiIter(pikiMgr);
+	CI_LOOP(pikiIter)
+	{
+		Piki* piki = *pikiIter;
+		if (piki->getCurrActionID() == PikiAI::ACT_Transport) {
+			PikiAI::ActTransport* action = static_cast<PikiAI::ActTransport*>(piki->getCurrAction());
+			if (action->mIsMoving) {
+				int i = 0;
+				for (PathNode* node = action->mPathMove->mRootNode; node; node = node->mNext) {
+					if (i <= action->mPathMove->mCurrGraphIdx) {
+						visited[node->mWpIndex] = true;
+					} else if (i == action->mPathMove->mCurrGraphIdx + 1) {
+						approaching[node->mWpIndex] = true;
+					} else {
+						upcoming[node->mWpIndex] = true;
+					}
+					i++;
+				}
+			}
+		}
+	}
+
+	Iterator<WayPoint> iter(mapMgr->mRouteMgr);
+	CI_LOOP(iter)
+	{
+		WayPoint* wp = *iter;
+
+		if (naviMgr->getActiveNavi() != nullptr) {
+			Vector3f naviPos = naviMgr->getActiveNavi()->getPosition();
+			Vector3f wpPos = wp->getPosition();
+
+			if (sqrDistanceXZ(naviPos, wpPos) <= SQUARE(512)) {
+				Vector3f apex = wp->mPosition + Vector3f(0, 16, 0);
+
+				if (visited[wp->mIndex]) {
+					gfx->mDrawColor = visitedColor;
+				} else if (approaching[wp->mIndex]) {
+					gfx->mDrawColor = approachingColor;
+				} else if (upcoming[wp->mIndex]) {
+					gfx->mDrawColor = upcomingColor;
+				}
+
+				gfx->drawCone(wp->mPosition, apex, 16, 8);
+				gfx->mDrawColor = Color4(0, 0, 0, 255);
+
+				for (int i = 0; i < wp->mNumToLinks; i++) {
+					if (wp->mToLinks[i] != -1) {
+						edges[0][nextEdge] = wp->mIndex;
+						edges[1][nextEdge] = wp->mToLinks[i];
+						nextEdge++;
+					}
+				}
+
+				for (int i = 0; i < wp->mNumFromLinks; i++) {
+					if (wp->mFromLinks[i] != -1) {
+						edges[0][nextEdge] = wp->mIndex;
+						edges[1][nextEdge] = wp->mFromLinks[i];
+						nextEdge++;
+					}
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < 256; i++) {
+		s16 wp1 = edges[0][i];
+		s16 wp2 = edges[1][i];
+
+		if (wp1 == -1 && wp2 == -1) {
+			break;
+		}
+
+		WayPoint* vertex1 = mapMgr->mRouteMgr->getWayPoint(wp1);
+		Vector3f apex1 = vertex1->mPosition + Vector3f(0, 16, 0);
+		WayPoint* vertex2 = mapMgr->mRouteMgr->getWayPoint(wp2);
+		Vector3f apex2 = vertex2->mPosition + Vector3f(0, 16, 0);
+			
+		GXSetLineWidth(10, GX_TO_ZERO);
+		gfx->initPerspPrintf(gfx->mCurrentViewport);
+
+		if (visited[wp1] && visited[wp2]) {
+			gfx->mDrawColor = Color4(0, 255, 0, 255);
+		} else if ((visited[wp1] && approaching[wp2]) || (visited[wp2] && approaching[wp1])) {
+			gfx->mDrawColor = Color4(255, 255, 0, 255);
+		} else if ((approaching[wp1] && upcoming[wp2]) || (approaching[wp2] && upcoming[wp1])) {
+			gfx->mDrawColor = Color4(255, 255, 255, 255);
+		} else if (upcoming[wp1] && upcoming[wp2]) {
+			gfx->mDrawColor = Color4(255, 255, 255, 255);
+		} else {
+			gfx->mDrawColor = Color4(0, 0, 0, 255);
+		}
+
+		gfx->drawLine(apex1, apex2);
+		gfx->mDrawColor = Color4(0, 0, 0, 255);
+	}
+	// @P2GZ end
 }
 
 /**
@@ -887,7 +1021,7 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
  */
 bool GameState::needRepayDemo()
 {
-	if (mCheckRepay || gameSystem->paused()) { // @P2GZ: return false if game is paused
+	if (mCheckRepay) {
 		return false;
 	}
 
