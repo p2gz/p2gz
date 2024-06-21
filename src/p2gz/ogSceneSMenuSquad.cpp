@@ -28,6 +28,7 @@ bool SMenuSquad::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
 	case SCENE_CHALLENGE_2P:
 	case SCENE_CHALLENGE_1P:
     case SCENE_PAUSE_MENU_CONTROLS:
+	case SCENE_P2GZ_WARP:
 		result = true;
 	}
 

@@ -7,13 +7,13 @@ namespace newScreen {
  * @note Address: 0x803304F0
  * @note Size: 0x50
  */
-SMenuCont::SMenuCont() { }
+SMenuWarp::SMenuWarp() { }
 
 /**
  * @note Address: 0x80330540
  * @note Size: 0x68
  */
-bool SMenuCont::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
+bool SMenuWarp::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
 {
 	bool result = false;
 
@@ -27,8 +27,8 @@ bool SMenuCont::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
 	case SCENE_PAUSE_MENU_MAP:
 	case SCENE_CHALLENGE_2P:
 	case SCENE_CHALLENGE_1P:
-	case SCENE_P2GZ_SQUAD: // @P2GZ
-	case SCENE_P2GZ_WARP: // @P2GZ
+    case SCENE_PAUSE_MENU_CONTROLS:
+    case SCENE_P2GZ_SQUAD:
 		result = true;
 	}
 
@@ -39,25 +39,25 @@ bool SMenuCont::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
  * @note Address: 0x803305A8
  * @note Size: 0xC
  */
-void SMenuCont::doSetBackupScene(::Screen::SetSceneArg& sceneArg) { sceneArg.mDoCreateBackup = false; }
+void SMenuWarp::doSetBackupScene(::Screen::SetSceneArg& sceneArg) { sceneArg.mDoCreateBackup = false; }
 
 /**
  * @note Address: 0x803305B4
  * @note Size: 0x4
  */
-void SMenuCont::doUserCallBackFunc(Resource::MgrCommand*) { }
+void SMenuWarp::doUserCallBackFunc(Resource::MgrCommand*) { }
 
 /**
  * @note Address: 0x803305B8
  * @note Size: 0x60
  */
-void SMenuCont::doCreateObj(JKRArchive* archive) { registObj(new ObjSMenuCont("SMenuCont screen"), archive); }
+void SMenuWarp::doCreateObj(JKRArchive* archive) { registObj(new ObjSMenuWarp("SMenuWarp screen"), archive); }
 
 /**
  * @note Address: 0x80330618
  * @note Size: 0x4
  */
-void SMenuCont::doUpdateActive() { }
+void SMenuWarp::doUpdateActive() { }
 
 } // namespace newScreen
 } // namespace og

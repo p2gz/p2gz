@@ -467,6 +467,18 @@ struct DispMemberSMenuSquad : public DispMemberBase {
 
 };
 
+// @P2GZ
+struct DispMemberSMenuWarp : public DispMemberBase {
+
+	virtual u32 getSize() { return sizeof(DispMemberSMenuWarp); }    // _08 (weak)
+	virtual u32 getOwnerID() { return OWNER_OGA; }                   // _0C (weak)
+	virtual u64 getMemberID() { return MEMBER_P2GZ_WARP; } // _10 (weak)
+
+	// _00     = VTBL
+	// _00-_08 = DispMemberBase
+
+};
+
 // size 0x28
 struct DispMemberSMenuItem : public DispMemberBase {
 	DispMemberSMenuItem()
@@ -623,6 +635,7 @@ struct DispMemberSMenuAll : public DispMemberBase {
 		setSubMember(&mSMenuVS);
 		setSubMember(&mSMenuCont);
 		setSubMember(&mSMenuSquad); // @P2GZ
+		setSubMember(&mSMenuWarp); // @P2GZ
 	} // _14 (weak)
 
 	// _00     = VTBL
@@ -634,6 +647,7 @@ struct DispMemberSMenuAll : public DispMemberBase {
 	DispMemberSMenuPauseVS mSMenuVS;                // _A8
 	DispMemberSMenuCont mSMenuCont;                 // _B4
 	DispMemberSMenuSquad mSMenuSquad;               // @P2GZ
+	DispMemberSMenuWarp mSMenuWarp;                 // @P2GZ
 	int mOpenMode;                                  // _BC
 	bool mIsDay1;                                   // _C0
 };
