@@ -1021,7 +1021,7 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
  */
 bool GameState::needRepayDemo()
 {
-	if (mCheckRepay) {
+	if (mCheckRepay || gameSystem->paused()) { // @P2GZ: return false if game is paused
 		return false;
 	}
 
