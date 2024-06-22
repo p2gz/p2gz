@@ -7,13 +7,13 @@ namespace newScreen {
  * @note Address: 0x803304F0
  * @note Size: 0x50
  */
-SMenuWarp::SMenuWarp() { }
+SMenuCollision::SMenuCollision() { }
 
 /**
  * @note Address: 0x80330540
  * @note Size: 0x68
  */
-bool SMenuWarp::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
+bool SMenuCollision::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
 {
 	bool result = false;
 
@@ -39,25 +39,25 @@ bool SMenuWarp::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
  * @note Address: 0x803305A8
  * @note Size: 0xC
  */
-void SMenuWarp::doSetBackupScene(::Screen::SetSceneArg& sceneArg) { sceneArg.mDoCreateBackup = false; }
+void SMenuCollision::doSetBackupScene(::Screen::SetSceneArg& sceneArg) { sceneArg.mDoCreateBackup = false; }
 
 /**
  * @note Address: 0x803305B4
  * @note Size: 0x4
  */
-void SMenuWarp::doUserCallBackFunc(Resource::MgrCommand*) { }
+void SMenuCollision::doUserCallBackFunc(Resource::MgrCommand*) { }
 
 /**
  * @note Address: 0x803305B8
  * @note Size: 0x60
  */
-void SMenuWarp::doCreateObj(JKRArchive* archive) { registObj(new ObjSMenuWarp("SMenuWarp screen"), archive); }
+void SMenuCollision::doCreateObj(JKRArchive* archive) { registObj(new ObjSMenuCollision("SMenuCollision screen"), archive); }
 
 /**
  * @note Address: 0x80330618
  * @note Size: 0x4
  */
-void SMenuWarp::doUpdateActive() { }
+void SMenuCollision::doUpdateActive() { }
 
 } // namespace newScreen
 } // namespace og

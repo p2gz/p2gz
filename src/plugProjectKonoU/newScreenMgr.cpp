@@ -150,8 +150,8 @@ namespace newScreen {
 		base = new og::newScreen::SMenuSquad;
 		break;
 
-	case SCENE_P2GZ_WARP:
-		base = new og::newScreen::SMenuWarp;
+	case SCENE_P2GZ_COLLISION:
+		base = new og::newScreen::SMenuCollision;
 		break;
 	// @P2GZ end
 	}

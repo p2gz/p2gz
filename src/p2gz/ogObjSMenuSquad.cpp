@@ -113,7 +113,7 @@ void ObjSMenuSquad::doCreate(JKRArchive* arc)
 void ObjSMenuSquad::doUpdateLAction()
 {
 	// LEFT = WARP
-	::Screen::SetSceneArg arg(SCENE_P2GZ_WARP, getDispMember());
+	::Screen::SetSceneArg arg(SCENE_P2GZ_COLLISION, getDispMember());
 	jump_L(arg);
 }
 
@@ -369,7 +369,7 @@ bool ObjSMenuSquad::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('3006_00', '3005_00', '3003_00'); // @P2GZ: change to "Warp" "Counters" "Squad"
+	setYajiName('3006_00', '3005_00', '3003_00'); // @P2GZ: change to "Collision" "Counters" "Squad"
 	stopYaji();
 	return start_LR(arg);
 }

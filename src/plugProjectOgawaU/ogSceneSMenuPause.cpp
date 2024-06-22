@@ -46,7 +46,7 @@ bool SMenuPause::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
 	case SCENE_CHALLENGE_1P:
 	case SCENE_PAUSE_MENU_CONTROLS:
 	case SCENE_P2GZ_SQUAD: // @P2GZ
-	case SCENE_P2GZ_WARP: // @P2GZ
+	case SCENE_P2GZ_COLLISION: // @P2GZ
 		result = true;
 	}
 

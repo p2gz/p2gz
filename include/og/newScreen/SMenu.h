@@ -81,13 +81,13 @@ struct SceneSMenuBase : public ::Screen::SceneBase {
 };
 
 // @P2GZ
-struct SMenuWarp : public SceneSMenuBase {
-	SMenuWarp();
+struct SMenuCollision : public SceneSMenuBase {
+	SMenuCollision();
 
-	virtual const char* getResName() const { return "res_s_menu_warp.szs"; } // _1C (weak)
-	virtual SceneType getSceneType() { return SCENE_P2GZ_WARP; }    // _08 (weak)
+	virtual const char* getResName() const { return "res_s_menu_collision.szs"; } // _1C (weak)
+	virtual SceneType getSceneType() { return SCENE_P2GZ_COLLISION; }    // _08 (weak)
 	virtual ScreenOwnerID getOwnerID() { return OWNER_OGA; }                  // _0C (weak)
-	virtual ScreenMemberID getMemberID() { return MEMBER_P2GZ_WARP; }        // _10 (weak)
+	virtual ScreenMemberID getMemberID() { return MEMBER_P2GZ_COLLISION; }        // _10 (weak)
 	virtual bool isUseBackupSceneInfo() { return true; }                      // _14 (weak)
 	virtual void doCreateObj(JKRArchive*);                                    // _20
 	virtual void doUserCallBackFunc(Resource::MgrCommand*);                   // _24
@@ -527,10 +527,10 @@ struct PokoCountMenuOption : public MenuOption {
 };
 
 // @P2GZ
-struct ObjSMenuWarp : public ObjSMenuBase {
-	ObjSMenuWarp(const char*);
+struct ObjSMenuCollision : public ObjSMenuBase {
+	ObjSMenuCollision(const char*);
 
-	virtual ~ObjSMenuWarp();                             // _08 (weak)
+	virtual ~ObjSMenuCollision();                             // _08 (weak)
 	virtual bool doStart(const ::Screen::StartSceneArg*); // _44
 	virtual bool doEnd(const ::Screen::EndSceneArg*);     // _48
 	virtual void doCreate(JKRArchive*);                   // _4C
@@ -551,8 +551,8 @@ struct ObjSMenuWarp : public ObjSMenuBase {
 	// _00     = VTBL1
 	// _18     = VTBL2
 	// _00-_A8 = ObjSMenuBase
-	og::Screen::DispMemberSMenuWarp* mDisp; // _A8
-	P2DScreen::Mgr_tuning* mScreenWarp;     // _AC
+	og::Screen::DispMemberSMenuCollision* mDisp; // _A8
+	P2DScreen::Mgr_tuning* mScreenCollision;     // _AC
 	og::Screen::AnimGroup* mAnimGroup;      // _B0
 
 	static struct StaticValues {

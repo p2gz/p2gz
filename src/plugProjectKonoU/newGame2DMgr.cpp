@@ -400,7 +400,7 @@ int Game2DMgr::check_SMenu()
 	case SCENE_PAUSE_MENU_ITEMS:
 	case SCENE_PAUSE_MENU_VS:
 	case SCENE_P2GZ_SQUAD: // @P2GZ
-	case SCENE_P2GZ_WARP: { // @P2GZ
+	case SCENE_P2GZ_COLLISION: { // @P2GZ
 		if (mScreenMgr->isSceneFinish()) {
 			int scene = mScreenMgr->getSceneFinishState();
 			switch (scene) {

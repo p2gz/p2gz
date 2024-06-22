@@ -346,8 +346,8 @@ void ObjSMenuPause::doUpdateLAction()
  */
 void ObjSMenuPause::doUpdateRAction()
 {
-	// RIGHT = P2GZ WARP
-	::Screen::SetSceneArg arg(SCENE_P2GZ_WARP, getDispMember()); // @P2GZ
+	// RIGHT = P2GZ COLLISION
+	::Screen::SetSceneArg arg(SCENE_P2GZ_COLLISION, getDispMember()); // @P2GZ
 	jump_R(arg);
 }
 
@@ -418,7 +418,7 @@ bool ObjSMenuPause::doStart(::Screen::StartSceneArg const* arg)
 	mAnims->setSpeed(1.0f);
 	mAnims->start();
 
-	setYajiName('6050_00', '3006_00', '6052_00'); // @P2GZ: change to "Radar" "Warp" "Menu"
+	setYajiName('6050_00', '3006_00', '6052_00'); // @P2GZ: change to "Radar" "Collision" "Menu"
 	stopYaji();
 	start_LR(arg);
 }
