@@ -176,7 +176,7 @@ void ObjSMenuBase::startBackupScene()
 {
 	SceneSMenuBase* scene = static_cast<SceneSMenuBase*>(getOwner());
 	if (scene->setBackupScene() && !scene->startScene(nullptr)) {
-		JUT_PANICLINE(366, "ï¿½ï¿½ï¿½ß‚Å‚ï¿½\n");
+		JUT_PANICLINE(366, "?¿½?¿½?¿½ß‚Å‚ï¿½\n");
 	}
 }
 
@@ -194,7 +194,7 @@ void ObjSMenuBase::jump_LR(::Screen::SetSceneArg& arg, bool flag)
 		sarg.mSceneType = arg.getSceneType();
 		sarg.mFlag      = flag;
 		if (!scene->startScene(&sarg)) {
-			JUT_PANICLINE(394, "ï¿½ï¿½ï¿½ß‚Å‚ï¿½\n");
+			JUT_PANICLINE(394, "?¿½?¿½?¿½ß‚Å‚ï¿½\n");
 		}
 	}
 }
@@ -232,7 +232,7 @@ bool ObjSMenuBase::start_LR(::Screen::StartSceneArg const* arg)
 		if (arg->getSceneType() == SCENE_PAUSE_MENU_MAP || arg->getSceneType() == SCENE_PAUSE_MENU_ITEMS
 		    || arg->getSceneType() == SCENE_PAUSE_MENU_CONTROLS || arg->getSceneType() == SCENE_PAUSE_MENU
 		    || arg->getSceneType() == SCENE_PAUSE_MENU_DOUKUTU || arg->getSceneType() == SCENE_PAUSE_MENU_VS
-            || arg->getSceneType() == SCENE_P2GZ_SQUAD) { // @P2GZ
+            || arg->getSceneType() == SCENE_P2GZ_SQUAD || arg->getSceneType() == SCENE_P2GZ_COLLISION) { // @P2GZ
 
 			StartSceneArgSMenu* menuArg = static_cast<StartSceneArgSMenu*>((::Screen::StartSceneArg*)(arg));
 			if (menuArg->mFlag) {
