@@ -600,13 +600,22 @@ void GameState::exec(SingleGameSection* game)
 	}
 
 	// @P2GZ start
+	Graphics* gfx = sys->mGfx;
+
 	if (!gameSystem->paused() && mapMgr != nullptr && naviMgr->getActiveNavi() != nullptr) {
 		Vector3f naviPos = naviMgr->getActiveNavi()->getPosition();
 		f32 drawRadius = 0.0f;
-		Sys::Sphere drawSphere (naviPos, drawRadius);
-
-		// draw collision hopefully?
+		Sys::Sphere drawSphere(naviPos, drawRadius);
 		static_cast<ShapeMapMgr*>(mapMgr)->drawCollision(*sys->getGfx(), drawSphere);
+		static_cast<ShapeMapMgr*>(mapMgr)->mMapModel->hide();
+
+		for (int i = -8; i <= 8; i++) {
+			for (int j = -8; j <= 8; j++) {
+				Vector3f scoutPos = naviPos + Vector3f(32 * i, 0, 32 * j);
+				Sys::Sphere scout(scoutPos, drawRadius);
+				static_cast<ShapeMapMgr*>(mapMgr)->drawCollision(*gfx, scout);
+			}
+		}
 	}
 
 	if (!gameSystem->mIsWaypointsEnabled || gameSystem->paused()) {
@@ -614,7 +623,6 @@ void GameState::exec(SingleGameSection* game)
 	}
 
 
-	Graphics* gfx = sys->mGfx;
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	
 	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
@@ -662,6 +670,7 @@ void GameState::exec(SingleGameSection* game)
 				gfx->perspPrintf(info, pos2, "speed: %.1f", action->mPathMove->getCarrySpeed());
 
 				if (!gameSystem->paused()) {
+					// TODO: This includes frames spent pathfinding in the total carrying time
 					action->mPathMove->mPathFindCounter++;
 				}
 
@@ -692,6 +701,7 @@ void GameState::exec(SingleGameSection* game)
 			if (sqrDistanceXZ(naviPos, wpPos) <= SQUARE(512.0f)) {
 				Vector3f apex = wp->mPosition + Vector3f(0, 16, 0);
 
+				gfx->mDrawColor = Color4(0, 0, 0, 255);
 				if (visited[wp->mIndex]) {
 					gfx->mDrawColor = visitedColor;
 				} else if (approaching[wp->mIndex]) {

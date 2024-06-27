@@ -2,6 +2,7 @@
 #include "Sys/Triangle.h"
 #include "Sys/TriangleTable.h"
 #include "Graphics.h"
+#include "stl/math.h"
 
 namespace Sys {
     
@@ -13,26 +14,28 @@ void TriIndexList::drawTriangles(Graphics& gfx, VertexTable& vertTable, Triangle
         int idx = getIndex(i);
         Triangle* tri = triTable.getTriangle(idx);
         if (tri) {
-            // grab the vertices and draw lines connecting each one
-            Vector3f vertA = *vertTable.getVertex(tri->mVertices[0]);
-            Vector3f vertB = *vertTable.getVertex(tri->mVertices[1]);
-            Vector3f vertC = *vertTable.getVertex(tri->mVertices[2]);
+            GXBegin(GX_TRIANGLES, GX_VTXFMT0, 3);
 
-            // triangles are currently clipping into the ground - maybe we raise them slightly?
-            vertA.y += 0.02f;
-            vertB.y += 0.02f;
-            vertC.y += 0.02f;
-
-            if (!lineInfoAlreadySet) {
-                GXSetLineWidth(32, GX_TO_ZERO);
-                gfx.initPerspPrintf(gfx.mCurrentViewport);
-                gfx.mDrawColor = Color4(50, 255, 10, 255);
+            Color4 color;
+            switch (tri->mCode.getSlipCode()) {
+                case MapCode::Code::SlipCode_NoSlip:
+                    color = Color4(0, 255 * fabs(tri->mTrianglePlane.mNormal.y), 0, 255);
+                    break;
+                case MapCode::Code::SlipCode_Gradual:
+                    color = Color4(0, 0, 255 * fabs(tri->mTrianglePlane.mNormal.y), 255);
+                    break;
+                case MapCode::Code::SlipCode_Steep:
+                    color = Color4(255 * fabs(tri->mTrianglePlane.mNormal.y), 0, 0, 255);
+                    break;
             }
+            
+            for (int i = 0; i < 3; i++) {
+                Vector3f vertex = *vertTable.getVertex(tri->mVertices[i]);
 
-            // draw lines
-            gfx.drawLine(vertA, vertB);
-            gfx.drawLine(vertB, vertC);
-            gfx.drawLine(vertC, vertA);
+                GXPosition3f32(vertex.x, vertex.y, vertex.z);
+                GXColor4u8(color.r, color.g, color.b, color.a);
+            }
+            GXEnd();
         }
     }
 }
