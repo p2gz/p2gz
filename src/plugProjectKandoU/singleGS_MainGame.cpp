@@ -599,11 +599,21 @@ void GameState::exec(SingleGameSection* game)
 		}
 	}
 
+	// @P2GZ start
+	if (!gameSystem->paused() && mapMgr != nullptr && naviMgr->getActiveNavi() != nullptr) {
+		Vector3f naviPos = naviMgr->getActiveNavi()->getPosition();
+		f32 drawRadius = 0.0f;
+		Sys::Sphere drawSphere (naviPos, drawRadius);
+
+		// draw collision hopefully?
+		static_cast<ShapeMapMgr*>(mapMgr)->drawCollision(*sys->getGfx(), drawSphere);
+	}
+
 	if (!gameSystem->mIsWaypointsEnabled || gameSystem->paused()) {
 		return;
 	}
 
-	// @P2GZ start
+
 	Graphics* gfx = sys->mGfx;
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	
@@ -679,7 +689,7 @@ void GameState::exec(SingleGameSection* game)
 			Vector3f naviPos = naviMgr->getActiveNavi()->getPosition();
 			Vector3f wpPos = wp->getPosition();
 
-			if (sqrDistanceXZ(naviPos, wpPos) <= SQUARE(512)) {
+			if (sqrDistanceXZ(naviPos, wpPos) <= SQUARE(512.0f)) {
 				Vector3f apex = wp->mPosition + Vector3f(0, 16, 0);
 
 				if (visited[wp->mIndex]) {
