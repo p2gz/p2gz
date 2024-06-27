@@ -555,6 +555,14 @@ struct ObjSMenuCollision : public ObjSMenuBase {
 	P2DScreen::Mgr_tuning* mScreenCollision;     // _AC
 	og::Screen::AnimGroup* mAnimGroup;      // _B0
 
+	J2DTextBoxEx* mLabels[4];
+	J2DTextBoxEx* mOn[4];
+	J2DTextBoxEx* mOff[4];
+	bool mToggles[4];
+	int mCurrentSetting;
+	int mNumSettings;
+	bool mIsToggling;
+
 	static struct StaticValues {
 		inline StaticValues()
 		{

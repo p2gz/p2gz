@@ -17290,7 +17290,55 @@
         "index": "0x569",
         "attributes": "00000000",
         "text": [
+            "Debug View"
+        ]
+    },
+    {
+        "ID": "3007, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
+            "Waypoints"
+        ]
+    },
+    {
+        "ID": "3008, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
+            "Enemy State"
+        ]
+    },
+    {
+        "ID": "3009, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
             "Collision"
+        ]
+    },
+    {
+        "ID": "3010, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
+            "Hitboxes"
+        ]
+    },
+    {
+        "ID": "3011, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
+            "On"
+        ]
+    },
+    {
+        "ID": "3012, 0",
+        "index": "0x569",
+        "attributes": "00000000",
+        "text": [
+            "Off"
         ]
     },
     {

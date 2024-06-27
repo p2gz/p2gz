@@ -35,6 +35,40 @@ void ObjSMenuCollision::doCreate(JKRArchive* arc)
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenCollision, "s_menu_controller.btk", msBaseVal.mAnimSpeed);
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenCollision, "s_menu_controller_02.btk", msBaseVal.mAnimSpeed);
 
+	mCurrentSetting = 0;
+	mNumSettings = 4;
+	mIsToggling = false;
+
+	mLabels[0] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Twp'));
+	mLabels[1] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Tscore'));
+	mLabels[2] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Tcoll'));
+	mLabels[3] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Thb'));
+
+	mOn[0] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Twp_y'));
+	mOn[1] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Tscore_y'));
+	mOn[2] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Tcoll_y'));
+	mOn[3] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Thb_y'));
+
+	mOff[0] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Twp_n'));
+	mOff[1] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Tscore_n'));
+	mOff[2] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Tcoll_n'));
+	mOff[3] = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCollision, 'Thb_n'));
+
+	mToggles[0] = Game::gameSystem->mIsWaypointsEnabled;
+	mToggles[1] = Game::gameSystem->mIsEnemyStateEnabled;
+	mToggles[2] = false;
+	mToggles[3] = false;
+
+	mLabels[0]->setAlpha(255);
+	mOn[0]->setAlpha(mToggles[0] ? 255 : 128);
+	mOff[0]->setAlpha(mToggles[0] ? 128 : 255);
+
+	for (int i = 1; i < mNumSettings; i++) {
+		mLabels[i]->setAlpha(128);
+		mOn[i]->setAlpha(mToggles[i] ? 255 : 128);
+		mOff[i]->setAlpha(mToggles[i] ? 128 : 255);
+	}
+
 	doCreateAfter(arc, mScreenCollision);
 }
 
@@ -70,6 +104,41 @@ void ObjSMenuCollision::commonUpdate()
 bool ObjSMenuCollision::doUpdate()
 {
 	commonUpdate();
+
+	Controller* pad = getGamePad();
+	u32 input = pad->getButtonDown();
+
+	if (input & Controller::PRESS_UP) {
+		if (!mIsToggling) {
+			mLabels[mCurrentSetting]->setAlpha(128);
+			mCurrentSetting = (mCurrentSetting - 1 + mNumSettings) % mNumSettings;
+			mLabels[mCurrentSetting]->setAlpha(255);
+			ogSound->setPlusMinus(false);
+		}
+	} else if (input & Controller::PRESS_DOWN) {
+		if (!mIsToggling) {
+			mLabels[mCurrentSetting]->setAlpha(128);
+			mCurrentSetting = (mCurrentSetting + 1) % mNumSettings;
+			mLabels[mCurrentSetting]->setAlpha(255);
+			ogSound->setPlusMinus(false);
+		}
+	} else if (input & Controller::PRESS_LEFT || input & Controller::PRESS_RIGHT) {
+		mToggles[mCurrentSetting] = !mToggles[mCurrentSetting];
+		mOn[mCurrentSetting]->setAlpha(mToggles[mCurrentSetting] ? 255 : 128);
+		mOff[mCurrentSetting]->setAlpha(mToggles[mCurrentSetting] ? 128 : 255);
+
+		// TODO: Make this pointers to the booleans lol
+		switch (mCurrentSetting) {
+			case 0:
+			Game::gameSystem->mIsWaypointsEnabled = mToggles[mCurrentSetting];
+			break;
+
+			case 1:
+			Game::gameSystem->mIsEnemyStateEnabled = mToggles[mCurrentSetting];
+			break;
+		}
+		ogSound->setPlusMinus(false);
+	}
 
 	bool ret = ObjSMenuBase::doUpdate();
 	mScreenCollision->animation();

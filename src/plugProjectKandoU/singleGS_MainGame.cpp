@@ -40,6 +40,40 @@
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
 
+/**
+ * @note Address: N/A
+ * @note Size: 0x1AC
+ */
+f32 PikiAI::ActPathMove::getCarrySpeed()
+{
+	f32 carryPower;
+	f32 maxFactor = static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mCarryMaxFactor.mValue; // f30
+	f32 minFactor = static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mCarryMinFactor.mValue; // f31
+
+	P2ASSERTLINE(1215, mPellet->mObjectTypeID == OBJTYPE_Pellet);
+
+	Game::Pellet* pellet = mPellet;
+	// if we're carrying a captain, go at FULL SPEED
+	if (pellet->mPelletView && pellet->mPelletView->mCreature->isNavi()) {
+		return static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mRunSpeed();
+
+		// if we're carrying a cherry in VS mode, go at FULL SPEED
+	} else if (Game::gameSystem->isVersusMode() && pellet->mPelletFlag == Game::Pellet::FLAG_VS_CHERRY) {
+		return static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mRunSpeed();
+	}
+
+	f32 maxSpeed = static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mRunSpeed.mValue * maxFactor;
+	f32 minSpeed = static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mRunSpeed.mValue * minFactor;
+
+	int min = pellet->getPelletConfigMin();
+	int max = pellet->getPelletConfigMax();
+
+	carryPower = pellet->mCarryPower;
+	JUT_ASSERTLINE(1248, max, "max is 0 [%s]\n", pellet->mConfig->mParams.mName.mData);
+
+	return minSpeed + (((1.0f + carryPower) - (f32)min) / (f32)max) * (maxSpeed - minSpeed);
+}
+
 namespace Game {
 namespace SingleGame {
 
@@ -565,9 +599,13 @@ void GameState::exec(SingleGameSection* game)
 		}
 	}
 
+	if (!gameSystem->mIsWaypointsEnabled || gameSystem->paused()) {
+		return;
+	}
+
 	// @P2GZ start
 	Graphics* gfx = sys->mGfx;
-	gfx->initPrimDraw(nullptr);
+	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	
 	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
 
@@ -605,6 +643,18 @@ void GameState::exec(SingleGameSection* game)
 		if (piki->getCurrActionID() == PikiAI::ACT_Transport) {
 			PikiAI::ActTransport* action = static_cast<PikiAI::ActTransport*>(piki->getCurrAction());
 			if (action->mIsMoving) {
+				PerspPrintfInfo info;
+				info.mColorA = Color4(255, 255, 255, 255);
+				
+				Vector3f pos1 = action->mPellet->mPelletPosition + Vector3f(0, 64, 0);
+				Vector3f pos2 = pos1 + Vector3f(0, 16, 0);
+				gfx->perspPrintf(info, pos1, "time: %.1fs", action->mPathMove->mPathFindCounter / 30.0f);
+				gfx->perspPrintf(info, pos2, "speed: %.1f", action->mPathMove->getCarrySpeed());
+
+				if (!gameSystem->paused()) {
+					action->mPathMove->mPathFindCounter++;
+				}
+
 				int i = 0;
 				for (PathNode* node = action->mPathMove->mRootNode; node; node = node->mNext) {
 					if (i <= action->mPathMove->mCurrGraphIdx) {
@@ -640,6 +690,7 @@ void GameState::exec(SingleGameSection* game)
 					gfx->mDrawColor = upcomingColor;
 				}
 
+				gfx->initPerspPrintf(gfx->mCurrentViewport);
 				gfx->drawCone(wp->mPosition, apex, 16, 8);
 				gfx->mDrawColor = Color4(0, 0, 0, 255);
 

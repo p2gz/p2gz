@@ -1598,6 +1598,10 @@ void EnemyBase::doUpdateCommon()
 	}
 
 	// @P2GZ start
+	if (!gameSystem->mIsEnemyStateEnabled) {
+		return;
+	}
+
     EnemyMgrBase* mgr = generalEnemyMgr->getEnemyMgr(getEnemyTypeID());
     if (mgr != nullptr) {
         Graphics* gfx = sys->mGfx;
@@ -1608,6 +1612,13 @@ void EnemyBase::doUpdateCommon()
             if (enemy->mCurrentLifecycleState == nullptr) {
                 continue;
             }
+
+			if (strcmp(enemy->mCurrentLifecycleState->mName, "dead") == 0 ||
+			    strcmp(enemy->mCurrentLifecycleState->mName, "appear") == 0 ||
+				strcmp(enemy->mCurrentLifecycleState->mName, "stay") == 0 ||
+				strcmp(enemy->mCurrentLifecycleState->mName, "wait_big") == 0 ) {
+				continue;
+			}
 
 			if (naviMgr->getActiveNavi() == nullptr) {
 				continue;
