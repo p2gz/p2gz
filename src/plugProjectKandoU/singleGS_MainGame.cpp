@@ -602,7 +602,7 @@ void GameState::exec(SingleGameSection* game)
 	// @P2GZ start
 	Graphics* gfx = sys->mGfx;
 
-	if (!gameSystem->paused() && mapMgr != nullptr && naviMgr->getActiveNavi() != nullptr) {
+	if (gameSystem->mIsCollisionEnabled && !gameSystem->paused() && mapMgr != nullptr && naviMgr->getActiveNavi() != nullptr) {
 		Vector3f naviPos = naviMgr->getActiveNavi()->getPosition();
 		f32 drawRadius = 0.0f;
 		Sys::Sphere drawSphere(naviPos, drawRadius);

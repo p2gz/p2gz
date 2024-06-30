@@ -1,4 +1,5 @@
 #include "Game/gamePlayData.h"
+#include "Game/MapMgr.h"
 #include "og/newScreen/SMenu.h"
 #include "og/Screen/anime.h"
 #include "og/Screen/ogScreen.h"
@@ -56,7 +57,7 @@ void ObjSMenuCollision::doCreate(JKRArchive* arc)
 
 	mToggles[0] = Game::gameSystem->mIsWaypointsEnabled;
 	mToggles[1] = Game::gameSystem->mIsEnemyStateEnabled;
-	mToggles[2] = false;
+	mToggles[2] = Game::gameSystem->mIsCollisionEnabled;
 	mToggles[3] = false;
 
 	mLabels[0]->setAlpha(255);
@@ -109,19 +110,15 @@ bool ObjSMenuCollision::doUpdate()
 	u32 input = pad->getButtonDown();
 
 	if (input & Controller::PRESS_UP) {
-		if (!mIsToggling) {
-			mLabels[mCurrentSetting]->setAlpha(128);
-			mCurrentSetting = (mCurrentSetting - 1 + mNumSettings) % mNumSettings;
-			mLabels[mCurrentSetting]->setAlpha(255);
-			ogSound->setPlusMinus(false);
-		}
+		mLabels[mCurrentSetting]->setAlpha(128);
+		mCurrentSetting = (mCurrentSetting - 1 + mNumSettings) % mNumSettings;
+		mLabels[mCurrentSetting]->setAlpha(255);
+		ogSound->setPlusMinus(false);
 	} else if (input & Controller::PRESS_DOWN) {
-		if (!mIsToggling) {
-			mLabels[mCurrentSetting]->setAlpha(128);
-			mCurrentSetting = (mCurrentSetting + 1) % mNumSettings;
-			mLabels[mCurrentSetting]->setAlpha(255);
-			ogSound->setPlusMinus(false);
-		}
+		mLabels[mCurrentSetting]->setAlpha(128);
+		mCurrentSetting = (mCurrentSetting + 1) % mNumSettings;
+		mLabels[mCurrentSetting]->setAlpha(255);
+		ogSound->setPlusMinus(false);
 	} else if (input & Controller::PRESS_LEFT || input & Controller::PRESS_RIGHT) {
 		mToggles[mCurrentSetting] = !mToggles[mCurrentSetting];
 		mOn[mCurrentSetting]->setAlpha(mToggles[mCurrentSetting] ? 255 : 128);
@@ -135,6 +132,15 @@ bool ObjSMenuCollision::doUpdate()
 
 			case 1:
 			Game::gameSystem->mIsEnemyStateEnabled = mToggles[mCurrentSetting];
+			break;
+
+			case 2:
+			Game::gameSystem->mIsCollisionEnabled = mToggles[mCurrentSetting];
+			if (mToggles[mCurrentSetting]) {
+				static_cast<Game::ShapeMapMgr*>(Game::mapMgr)->mMapModel->hide();
+			} else {
+				static_cast<Game::ShapeMapMgr*>(Game::mapMgr)->mMapModel->show();
+			}
 			break;
 		}
 		ogSound->setPlusMinus(false);

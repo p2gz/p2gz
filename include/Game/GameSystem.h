@@ -99,6 +99,7 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 
 	bool mIsWaypointsEnabled;
 	bool mIsEnemyStateEnabled;
+	bool mIsCollisionEnabled;
 };
 
 struct OptimiseController : public JKRDisposer, public Parameters {
