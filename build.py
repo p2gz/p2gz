@@ -18,7 +18,8 @@ P2GZ_ASSETS = os.path.join(os.getcwd(), 'files')
 DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
 
 P2GZ_CUSTOM_ASSETS = [
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_squad')
+    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_squad'),
+    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_warp')
 ]
 
 parser = argparse.ArgumentParser()

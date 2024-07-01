@@ -232,7 +232,7 @@ bool ObjSMenuBase::start_LR(::Screen::StartSceneArg const* arg)
 		if (arg->getSceneType() == SCENE_PAUSE_MENU_MAP || arg->getSceneType() == SCENE_PAUSE_MENU_ITEMS
 		    || arg->getSceneType() == SCENE_PAUSE_MENU_CONTROLS || arg->getSceneType() == SCENE_PAUSE_MENU
 		    || arg->getSceneType() == SCENE_PAUSE_MENU_DOUKUTU || arg->getSceneType() == SCENE_PAUSE_MENU_VS
-            || arg->getSceneType() == SCENE_P2GZ_SQUAD) { // @P2GZ
+            || arg->getSceneType() == SCENE_P2GZ_SQUAD || arg->getSceneType() == SCENE_P2GZ_WARP) { // @P2GZ
 
 			StartSceneArgSMenu* menuArg = static_cast<StartSceneArgSMenu*>((::Screen::StartSceneArg*)(arg));
 			if (menuArg->mFlag) {

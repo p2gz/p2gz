@@ -58,7 +58,8 @@ enum SceneType {
 	SCENE_WIN_LOSE,
 	SCENE_WIN_LOSE_REASON,
 	SCENE_DAY_END_RESULT_TITL,
-	SCENE_P2GZ_SQUAD // @P2GZ
+	SCENE_P2GZ_SQUAD,
+	SCENE_P2GZ_WARP
 };
 
 // Responsible developer.
@@ -75,6 +76,7 @@ enum ScreenMemberID {
 	MEMBER_CAVE                     = 'CAVE',
 	MEMBER_HIGH_SCORE               = 'HISC',
 	MEMBER_SAVE                     = 'SAVE',
+	MEMBER_P2GZ_WARP                = 'WARP', // @P2GZ
 	MEMBER_ZUKAN_ITEM               = 'DITEM',
 	MEMBER_DUMMY                    = 'DUMMY',
 	MEMBER_FLOOR                    = 'FLOOR',

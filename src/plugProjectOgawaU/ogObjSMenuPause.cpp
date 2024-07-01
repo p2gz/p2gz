@@ -346,8 +346,8 @@ void ObjSMenuPause::doUpdateLAction()
  */
 void ObjSMenuPause::doUpdateRAction()
 {
-	// RIGHT = P2GZ SQUAD
-	::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember()); // @P2GZ
+	// RIGHT = P2GZ WARP
+	::Screen::SetSceneArg arg(SCENE_P2GZ_WARP, getDispMember()); // @P2GZ
 	jump_R(arg);
 }
 
