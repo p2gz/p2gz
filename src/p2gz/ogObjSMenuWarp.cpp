@@ -147,8 +147,8 @@ void ObjSMenuWarp::doUpdateLAction()
 
 void ObjSMenuWarp::doUpdateRAction()
 {
-	// RIGHT = COUNTERS
-	::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_CONTROLS, getDispMember());
+	// RIGHT = SQUAD
+	::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember());
 	jump_R(arg);
 }
 
@@ -441,7 +441,7 @@ bool ObjSMenuWarp::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('6052_00', '3005_00', '3003_00'); // @P2GZ: change to "Menu" "Counters" "Squad"
+	setYajiName('6052_00', '3003_00', '3013_00'); // @P2GZ: change to "Menu" "Squad" "Warp"
 	stopYaji();
 	return start_LR(arg);
 }
