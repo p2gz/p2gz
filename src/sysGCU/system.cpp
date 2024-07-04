@@ -307,7 +307,7 @@ void preUserCallback(u16, OSContext*, u32, u32)
 		JUTException::sConsole->startPrint(3, "--- Game debug information ---\n");
 		JUTConsoleManager::sManager->drawDirect(true);
 	} else {
-		OSReport("ï¿½Rï¿½ï¿½ï¿½\\ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½\n"); // 'no console'
+		OSReport("?¿½R?¿½?¿½?¿½\\?¿½[?¿½?¿½?¿½?¿½?¿½?¿½?¿½?¿½Ü‚ï¿½?¿½?¿½\n"); // 'no console'
 	}
 }
 
@@ -688,8 +688,8 @@ void System::loadSoundResource()
  */
 System::GXVerifyArg::GXVerifyArg()
 {
-	_00 = 1;
-	_04 = 0;
+	mUnused00 = 1;
+	mUnused04 = 0;
 }
 
 /**

@@ -437,7 +437,7 @@ struct PlayData : public CNode {
 		for (int i = 0; i < 2; i++) {
 			output.textWriteTab(output.mTabCount);
 			output.writeInt(mBerryCount[i]);
-			sprintf(textBuffer, "\t# dope-ï¿½ï¿½[%d]\r\n", i); // 'dope-berry'
+			sprintf(textBuffer, "\t# dope-?¿½?¿½[%d]\r\n", i); // 'dope-berry'
 			output.textWriteText(textBuffer);
 		}
 	}
@@ -473,6 +473,8 @@ struct PlayData : public CNode {
 	inline void addPokos(int pokos) { mPokoCount += pokos; }
 
 	inline u8& getDebtProgressFlags(int flagID) { return ((u8*)(&mDebtProgressFlags))[flagID]; }
+
+	inline PelletCropMemory* getCaveCropMemory() const { return mCaveCropMemory; }
 
 	// _00     = VTBL
 	// _00-_18 = CNode
