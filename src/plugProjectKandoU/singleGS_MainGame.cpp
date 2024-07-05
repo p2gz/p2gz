@@ -30,6 +30,7 @@
 
 // @P2GZ
 #include "Game/CameraMgr.h"
+#include "og/Sound.h"
 
 #define LOUIE_START_X   (-1260.0f)
 #define LOUIE_START_Y   (-80.0f)
@@ -569,49 +570,72 @@ void GameState::exec(SingleGameSection* game)
 		if (navi != nullptr && cameraMgr->mCameraObjList[i]->mTargetObj == navi) {
 			PlayCamera* camera = cameraMgr->mCameraObjList[i];
 
-			f32 ax = 0.0f;
-			f32 az = ax;
-			if (navi->mController1) {
-				ax = -navi->mController1->getMainStickX();
-				az = navi->mController1->getMainStickY();
+			if (!gameSystem->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_A) {
+				gameSystem->mIsScrollingCamera = true;
+				gameSystem->setPause(true, "cameraScroll", 3);
+				camera->mGoalPosition += Vector3f(0, 256, 0);
+				camera->mCurrVerticalAngle = 85;
+				og::ogSound->setOpen();
 			}
-			Vector3f inputPos(ax, 0.0f, az);
-			navi->reviseController(inputPos);
 
-			f32 x = inputPos.x;
-			f32 z = inputPos.z;
+			if (gameSystem->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_B) {
+				gameSystem->mIsScrollingCamera = false;
+				gameSystem->setPause(false, "cameraScroll", 3);
+				camera->mGoalPosition -= Vector3f(0, 256, 0);
+				camera->mCurrVerticalAngle = 0.381496;
 
-			Vector3f side = camera->getSideVector();
-			Vector3f up   = camera->getUpVector();
-			Vector3f view = camera->getViewVector();
-			side.y        = 0.0f;
+				Vector3f naviPos = camera->mGoalPosition;
+				naviPos.y = mapMgr->getMinY(camera->mGoalPosition);
+				navi->setPosition(naviPos, true);
 
-			side.qNormalise();
+				Iterator<Piki> iterator(pikiMgr);
+				CI_LOOP(iterator)
+				{
+					Piki* piki = *iterator;
+					if (piki->mNavi == navi) {
+						piki->setPosition(naviPos, false);
+					}
+				}
 
-			if (up.y > view.y) {
-				view.x = view.x;
-				view.z = view.z;
-			} else {
-				view.x = up.x;
-				view.z = up.z;
+				og::ogSound->setDecide();
 			}
-			Vector3f view2D(view.x, 0.0f, view.z);
-			view2D.qNormalise();
 
-			Vector3f result(side * x + view2D * z);
+			if (gameSystem->mIsScrollingCamera) {
+				f32 ax = 0.0f;
+				f32 az = ax;
+				if (navi->mController1) {
+					ax = -navi->mController1->getMainStickX();
+					az = navi->mController1->getMainStickY();
+				}
+				Vector3f inputPos(ax, 0.0f, az);
+				navi->reviseController(inputPos);
 
-			f32 dist = result.qLength();
-			f32 mod         = 1.0f;
+				f32 x = inputPos.x;
+				f32 z = inputPos.z;
 
-			Vector3f pos = camera->getPosition() + Vector3f(0, 100, 0);
-			camera->setPosition(pos);
-			camera->setCameraAngle(120);
-			OSReport("%f\n", camera->mCurrVerticalAngle);
-			camera->mGoalVerticalAngle = camera->mCurrVerticalAngle;
-			f32 minY = mapMgr->getMinY(camera->mLookAtPosition);
-			Vector3f naviPos = navi->getPosition();
-			naviPos.y = minY;
-			navi->setPosition(naviPos, true);
+				Vector3f side = camera->getSideVector();
+				Vector3f up   = camera->getUpVector();
+				Vector3f view = camera->getViewVector();
+				side.y        = 0.0f;
+
+				side.qNormalise();
+
+				if (up.y > view.y) {
+					view.x = view.x;
+					view.z = view.z;
+				} else {
+					view.x = up.x;
+					view.z = up.z;
+				}
+				Vector3f view2D(view.x, 0.0f, view.z);
+				view2D.qNormalise();
+
+				Vector3f result(side * x + view2D * z);
+
+				camera->mGoalPosition.x += result.x * 32;
+				camera->mGoalPosition.z += result.z * 32;
+				camera->mCurrVerticalAngle = 85;
+			}
 		}
 	}
 }
