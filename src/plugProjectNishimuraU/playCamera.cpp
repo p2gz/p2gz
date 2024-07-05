@@ -5,6 +5,9 @@
 #include "PSSystem/PSSystemIF.h"
 #include "nans.h"
 
+// @P2GZ:
+#include "GlobalData.h"
+
 namespace Game {
 
 /**
@@ -197,7 +200,7 @@ void PlayCamera::doUpdate()
 		setSmoothThetaSpeed();
 	}
 	changeTargetTheta();
-    if (!gameSystem->mIsScrollingCamera) {
+    if (!p2gz->mIsScrollingCamera) {
         changeTargetAtPosition();
     }
 	setCollisionCameraTargetPhi(flags);

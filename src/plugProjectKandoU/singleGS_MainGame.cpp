@@ -31,6 +31,7 @@
 // @P2GZ
 #include "Game/CameraMgr.h"
 #include "og/Sound.h"
+#include "GlobalData.h"
 
 #define LOUIE_START_X   (-1260.0f)
 #define LOUIE_START_Y   (-80.0f)
@@ -570,16 +571,16 @@ void GameState::exec(SingleGameSection* game)
 		if (navi != nullptr && cameraMgr->mCameraObjList[i]->mTargetObj == navi) {
 			PlayCamera* camera = cameraMgr->mCameraObjList[i];
 
-			if (!gameSystem->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_A) {
-				gameSystem->mIsScrollingCamera = true;
+			if (!p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_A) {
+				p2gz->mIsScrollingCamera = true;
 				gameSystem->setPause(true, "cameraScroll", 3);
 				camera->mGoalPosition += Vector3f(0, 256, 0);
 				camera->mCurrVerticalAngle = 85;
 				og::ogSound->setOpen();
 			}
 
-			if (gameSystem->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_B) {
-				gameSystem->mIsScrollingCamera = false;
+			if (p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_B) {
+				p2gz->mIsScrollingCamera = false;
 				gameSystem->setPause(false, "cameraScroll", 3);
 				camera->mGoalPosition -= Vector3f(0, 256, 0);
 				camera->mCurrVerticalAngle = 0.381496;
@@ -600,7 +601,7 @@ void GameState::exec(SingleGameSection* game)
 				og::ogSound->setDecide();
 			}
 
-			if (gameSystem->mIsScrollingCamera) {
+			if (p2gz->mIsScrollingCamera) {
 				f32 ax = 0.0f;
 				f32 az = ax;
 				if (navi->mController1) {
