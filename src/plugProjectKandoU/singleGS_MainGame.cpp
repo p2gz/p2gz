@@ -30,6 +30,7 @@
 
 // @P2GZ
 #include "Game/CameraMgr.h"
+#include "JSystem/J2D/J2DPrint.h"
 #include "og/Sound.h"
 #include "GlobalData.h"
 
@@ -574,16 +575,17 @@ void GameState::exec(SingleGameSection* game)
 			if (!p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_A) {
 				p2gz->mIsScrollingCamera = true;
 				gameSystem->setPause(true, "cameraScroll", 3);
-				camera->mGoalPosition += Vector3f(0, 256, 0);
-				camera->mCurrVerticalAngle = 85;
+				camera->mGoalPosition += Vector3f(0, 1024, 0);
+				camera->mGoalVerticalAngle = PI / 2;
 				og::ogSound->setOpen();
 			}
 
 			if (p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_B) {
 				p2gz->mIsScrollingCamera = false;
 				gameSystem->setPause(false, "cameraScroll", 3);
-				camera->mGoalPosition -= Vector3f(0, 256, 0);
-				camera->mCurrVerticalAngle = 0.381496;
+				camera->mGoalPosition -= Vector3f(0, 1024, 0);
+				camera->mGoalVerticalAngle = PI / 8;
+				camera->mCameraParms->mSettingChangeSpeed.mValue = 0.1f;
 
 				Vector3f naviPos = camera->mGoalPosition;
 				naviPos.y = mapMgr->getMinY(camera->mGoalPosition);
@@ -602,6 +604,9 @@ void GameState::exec(SingleGameSection* game)
 			}
 
 			if (p2gz->mIsScrollingCamera) {
+				camera->mGoalVerticalAngle = PI / 2;
+				camera->mCameraParms->mSettingChangeSpeed.mValue = 1.0f;
+				
 				f32 ax = 0.0f;
 				f32 az = ax;
 				if (navi->mController1) {
@@ -633,9 +638,97 @@ void GameState::exec(SingleGameSection* game)
 
 				Vector3f result(side * x + view2D * z);
 
-				camera->mGoalPosition.x += result.x * 32;
-				camera->mGoalPosition.z += result.z * 32;
-				camera->mCurrVerticalAngle = 85;
+				f32 cStickX = navi->mController1->getSubStickX();
+				camera->mCameraAngleTarget -= cStickX * 0.05f;
+
+				Graphics* gfx = sys->getGfx();
+				gfx->initPerspPrintf(gfx->mCurrentViewport);
+				gfx->initPrimDraw(nullptr);
+				gfx->mOrthoGraph.setPort();
+
+				J2DPrint inactive(JFWSystem::systemFont, 0.0f);
+				inactive.initiate();
+				inactive.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
+				inactive.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
+				inactive.mGlyphWidth = 16.0f;
+				inactive.mGlyphHeight = 16.0f;
+
+				J2DPrint active(JFWSystem::systemFont, 0.0f);
+				active.initiate();
+				active.mCharColor.set(JUtility::TColor(255, 255, 255, 255));
+				active.mGradientColor.set(JUtility::TColor(255, 255, 255, 255));
+				active.mGlyphWidth = 16.0f;
+				active.mGlyphHeight = 16.0f;
+				
+				if (result != Vector3f::zero) {
+					active.print(82, 92, "Move");
+				} else {
+					inactive.print(82, 92, "Move");
+				}
+
+				if (cStickX != 0) {
+					active.print(82, 116, "Camera");
+				} else {
+					inactive.print(82, 116, "Camera");
+				}
+
+				inactive.print(82, 140, "Warp");
+
+				if (navi->mController1->getButton() & Controller::PRESS_L) {
+					active.print(82, 164, "Move Faster");
+				} else {
+					inactive.print(82, 164, "Move Faster");
+				}
+
+				p2gz->mControlStickPicture->draw(50.0f, 76.0f, 16, 16, false, false, false);
+				p2gz->mCStickPicture->draw(50.0f, 100.0f, 16, 16, false, false, false);
+				p2gz->mBButtonPicture->draw(50.0f, 124.0f, 16, 16, false, false, false);
+				p2gz->mLButtonPicture->draw(50.0f, 148.0f, 16, 16, false, false, false);
+
+				int rgb = p2gz->getAnimationCoefficient() * 255;
+
+				int speed = (navi->mController1->getButton() & Controller::PRESS_L) ? 32 : 16;
+				Vector3f goalPosition(camera->mGoalPosition.x + result.x * speed, camera->mGoalPosition.y, camera->mGoalPosition.z + result.z * speed);
+
+				Color4 color;
+				// don't allow the camera to move to a location with no collision
+				if (mapMgr->getMinY(goalPosition) > -1000) {
+					camera->mGoalPosition = goalPosition;
+					color = Color4(rgb, rgb, rgb, 255);
+				} else {
+					gfx->mOrthoGraph.setPort();
+					J2DPrint print(JFWSystem::systemFont, 0.0f);
+					print.initiate();
+					print.mCharColor.set(JUtility::TColor(rgb, 0, 0, 255));
+					print.mGradientColor.set(JUtility::TColor(rgb, 0, 0, 255));
+					print.mGlyphWidth = 16.0f;
+					print.mGlyphHeight = 16.0f;
+					print.print(100, 200, "Can't move out of bounds!");
+					color = Color4(rgb, 0, 0, 255);
+				}
+
+				Vector3f naviPos = camera->mGoalPosition;
+				naviPos.y = mapMgr->getMinY(camera->mGoalPosition) + 512 + (256 * p2gz->getAnimationCoefficient());
+				Vector3f apexPos = naviPos;	
+				apexPos.y += 4;
+				gfx->initPerspPrintf(gfx->mCurrentViewport);
+				
+				Vector3f vertices[3];
+				vertices[0] = naviPos;
+				for (int i = 0; i < 32; i++) {
+					f32 theta = -HALF_PI - (TAU * i / 32);
+					vertices[1] = Vector3f(8 * sinf(theta), 0.0f, 8 * cosf(theta)) + naviPos;
+					
+					f32 nextTheta = -HALF_PI - (TAU * (i+1) / 32);
+					vertices[2] = Vector3f(8 * sinf(nextTheta), 0.0f, 8 * cosf(nextTheta)) + naviPos;
+
+					GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
+					for (int j = 0; j < 3; j++) {
+						GXPosition3f32(vertices[j].x, vertices[j].y, vertices[j].z);
+						GXColor4u8(color.r, color.g, color.b, 128);
+					}
+					GXEnd();
+				}
 			}
 		}
 	}

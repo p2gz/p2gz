@@ -305,6 +305,8 @@ void SingleGameSection::onInit()
  */
 bool SingleGameSection::doUpdate()
 {
+	p2gz->update();
+	
 	if (!mDoEnd) {
 		mFsm->exec(this);
 
