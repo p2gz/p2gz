@@ -120,15 +120,13 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
 
         # patching existing asset
         if os.path.exists(archive):
-            existing_directories = set(next(os.walk(iso_path))[1])
-            subprocess.run(f'cube extract {archive}', shell=True)
-            extracted_archive = os.path.join(iso_path, (set(next(os.walk(iso_path))[1]) - existing_directories).pop())
+            subprocess.run(f'cube extract {archive} -o {iso_dir}', shell=True)
 
-            print(f'Copying {patch_dir} to {extracted_archive}')
-            shutil.copytree(patch_dir, extracted_archive, dirs_exist_ok=True,
+            print(f'Copying {patch_dir} to {iso_dir}')
+            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True,
                             ignore=lambda _, contents: [file for file in contents if file.endswith('json')])
             
-            subprocess.run(f'cube pack -d {extracted_archive}', shell=True)
+            subprocess.run(f'cube pack -d {iso_dir}', shell=True)
         
         # adding custom asset
         elif patch_dir in P2GZ_CUSTOM_ASSETS:
