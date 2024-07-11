@@ -126,7 +126,7 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
             shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True,
                             ignore=lambda _, contents: [file for file in contents if file.endswith('json')])
             
-            subprocess.run(f'cube pack -d --arc-yaz0-compress false --arc-extension szs {iso_dir}', shell=True)
+            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
         
         # adding custom asset
         elif patch_dir in P2GZ_CUSTOM_ASSETS:
@@ -134,7 +134,7 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
             shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True,
                             ignore=lambda _, contents: [file for file in contents if file.endswith('json')])
             
-            subprocess.run(f'cube pack -d --arc-yaz0-compress false --arc-extension szs {iso_dir}', shell=True)
+            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
             
 
 # patch dol
