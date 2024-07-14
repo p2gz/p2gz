@@ -2,6 +2,9 @@
 #include "Game/GameSystem.h"
 #include "Game/Entities/ItemBigFountain.h"
 #include "Game/Entities/ItemHole.h"
+#include "Game/Entities/PelletCarcass.h"
+#include "Game/Entities/PelletFruit.h"
+#include "Game/NaviState.h"
 #include "Game/MapMgr.h"
 #include "Game/MoviePlayer.h"
 #include "Game/Navi.h"
@@ -44,6 +47,15 @@ void CaveState::init(SingleGameSection* game, StateArg* arg)
 	moviePlayer->reset();
 	mLosePellets = false;
 	mDrawSave    = false;
+
+	// @P2GZ
+	{
+		resettingFloor = false;
+		numItemsCollectedOnCurFloor = 0;
+		numOtakaraCollectedOnCurFloor = 0;
+	}
+	
+
 	game->setupCaveGames();
 	game->mIsExitingMap = false;
 	sys->heapStatusDump(true);
@@ -126,6 +138,30 @@ void CaveState::gameStart(SingleGameSection* game)
  */
 void CaveState::on_section_fadeout(SingleGameSection*) { mFadeout = true; }
 
+// @P2GZ
+void CaveState::resetNavi(Game::Navi* navi) {
+	if (navi->isAlive()) {
+		navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
+		efx::TNaviEffect* effectsObj = navi->mEffectsObj;
+		effectsObj->mFlags.unset(efx::NAVIFX_InWater);
+		effectsObj->killHamonA_();
+		effectsObj->killHamonB_();
+	}
+}
+
+// @P2GZ
+void CaveState::resetEverythingForLevelTransition(SingleGameSection* game) {
+	resettingFloor = true;
+
+	resetNavi(Game::naviMgr->getAt(NAVIID_Olimar));
+	resetNavi(Game::naviMgr->getAt(NAVIID_Louie));
+
+	// reset collected treasures and bugs
+	onMovieCommand(game, 0);
+
+	resettingFloor = false;
+}
+
 /**
  * @note Address: 0x80217A70
  * @note Size: 0x2D4
@@ -139,6 +175,8 @@ void CaveState::exec(SingleGameSection* game)
     if (moviePlayer->isPlaying("s09_holein") && game->mControllerP1->getButtonDown() & Controller::PRESS_Z) {
         playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
         OSReport("Restarting current sublevel (%d) with random seed\n", game->getCurrFloor());
+		resetEverythingForLevelTransition(game);
+
         LoadArg arg(MapEnter_CaveGeyser, true, false, false);
         transit(game, SGS_Load, &arg);
     }
@@ -408,12 +446,14 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 
 		KindCounter& counter = mem->mOtakara;
 		for (int i = 0; i < counter.getNumKinds(); i++) {
+			if (resettingFloor && !hasCollectedOtakaraOnCurrentFloor(i)) continue;  // @P2GZ
 			if (counter(i)) {
 				lost += counter(i);
 			}
 		}
 		KindCounter& counter2 = mem->mItem;
 		for (int i = 0; i < counter2.getNumKinds(); i++) {
+			if (resettingFloor && !hasCollectedItemOnCurrentFloor(i)) continue;  // @P2GZ
 			if (counter2(i)) {
 				lost += counter2(i);
 			}
@@ -435,6 +475,7 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 			pelmgr               = PelletOtakara::mgr;
 			KindCounter& counter = mem->mOtakara;
 			for (int i = 0; i < counter.getNumKinds(); i++) {
+				if (resettingFloor && !hasCollectedOtakaraOnCurrentFloor(i)) continue;  // @P2GZ
 				int j = 0;
 				for (int k = 0; k < counter(i); k++) {
 					pelmgr->getPelletConfig(i);
@@ -455,6 +496,7 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 			for (int i = 0; i < counter3.getNumKinds(); i++) {
 				int j = 0;
 				for (int k = 0; k < counter3(i); k++) {
+					if (resettingFloor && !hasCollectedItemOnCurrentFloor(i)) continue;  // @P2GZ
 					pelmgr->getPelletConfig(i);
 					if (randFloat() <= calc / (f32)lost) {
 						pelmgr->getPelletConfig(i);
@@ -472,12 +514,54 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 	}
 }
 
+bool CaveState::hasCollectedItemOnCurrentFloor(int treasureId) {
+	for (int i = 0; i < numItemsCollectedOnCurFloor; i++) {
+		int collectedTreasureId = itemsCollectedOnCurFloor[i];
+		if (collectedTreasureId == treasureId) return true;
+	}
+	return false;
+}
+
+bool CaveState::hasCollectedOtakaraOnCurrentFloor(int treasureId) {
+	for (int i = 0; i < numOtakaraCollectedOnCurFloor; i++) {
+		int collectedTreasureId = otakaraCollectedOnCurFloor[i];
+		if (collectedTreasureId == treasureId) return true;
+	}
+	return false;
+}
+
 /**
  * @note Address: 0x80218BDC
  * @note Size: 0x490
  */
 void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, u32 naviID)
 {
+	// @P2GZ
+	if (config->is("s22_cv_suck_treasure") || config->is("s22_cv_suck_equipment")) {
+		Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
+
+		BasePelletMgr* pelmgr = PelletOtakara::mgr;
+		P2ASSERTLINE(1111, pelmgr->mConfigList);
+		for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
+			PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
+			if (cfg == pellet->mConfig) {
+				otakaraCollectedOnCurFloor[numOtakaraCollectedOnCurFloor] = i;
+				numOtakaraCollectedOnCurFloor++;
+				break;
+			}
+		}
+
+		pelmgr = PelletItem::mgr;
+		for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
+			PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
+			if (cfg == pellet->mConfig) {
+				itemsCollectedOnCurFloor[numItemsCollectedOnCurFloor] = i;
+				numItemsCollectedOnCurFloor++;
+				break;
+			}
+		}
+	}
+
 	if (config->is("s0B_cv_coursein")) {
 		game->createFallPikminSound();
 	}
