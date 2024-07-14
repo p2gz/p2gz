@@ -11136,6 +11136,14 @@
       "attributes": "00000000"
     },
     {
+      "message": "Counters",
+      "id": {
+        "id": 3005,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
       "message": "Today's Report",
       "id": {
         "id": 4000,
