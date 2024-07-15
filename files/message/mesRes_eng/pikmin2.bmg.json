@@ -11144,6 +11144,30 @@
       "attributes": "00000000"
     },
     {
+      "message": "\u001a40x00000005 Replay (random seed)",
+      "id": {
+        "id": 3100,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "\u001a40x00000006 Replay (same seed)",
+      "id": {
+        "id": 3101,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "\u001a40x00000007 Replay (increment seed)",
+      "id": {
+        "id": 3102,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
       "message": "Today's Report",
       "id": {
         "id": 4000,

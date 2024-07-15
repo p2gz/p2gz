@@ -541,7 +541,6 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
 
 		BasePelletMgr* pelmgr = PelletOtakara::mgr;
-		P2ASSERTLINE(1111, pelmgr->mConfigList);
 		for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
 			PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
 			if (cfg == pellet->mConfig) {
@@ -623,6 +622,8 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		Vector3f holepos = game->mHole->getPosition();
 		game->prepareHoleIn(holepos, true);
 		game->saveCaveMore();
+
+		Screen::gGame2DMgr->open_P2GZ_HoleIn(); // @P2GZ
 	}
 
 	if (config->is("s0C_cv_escape")) {

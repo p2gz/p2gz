@@ -19,6 +19,7 @@
 #include "Morimura/HiScore.h"
 #include "og/newScreen/KanteiDemo.h"
 #include "Game/GameSystem.h"
+#include "Screen/Enums.h"
 
 namespace Screen {
 
@@ -723,6 +724,13 @@ void Game2DMgr::startCount_CourseName()
 		og::Screen::DispMemberCourseName* disp = static_cast<og::Screen::DispMemberCourseName*>(mScreenMgr->getDispMember());
 		disp->mIsCounting                      = true;
 	}
+}
+
+// @P2GZ
+void Game2DMgr::open_P2GZ_HoleIn() {
+	SetSceneArg arg(SCENE_P2GZ_HOLE_IN, nullptr);
+	mScreenMgr->setScene(arg);
+	mScreenMgr->startScene(nullptr);
 }
 
 /**
