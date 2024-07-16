@@ -17,6 +17,7 @@ ObjHoleIn::ObjHoleIn(const char* name)
 	mName            = name;
 	mDisp            = nullptr;
 	mScreenControls  = nullptr;
+	mText1           = nullptr;
 }
 
 ObjHoleIn::~ObjHoleIn() { }
@@ -32,6 +33,7 @@ void ObjHoleIn::doCreate(JKRArchive* arc)
 
 	mScreenControls = new P2DScreen::Mgr_tuning;
 	mScreenControls->set("cavecontrols.blo", 0x1040000, arc);
+	og::Screen::setCallBackMessage(mScreenControls);
 }
 
 void ObjHoleIn::commonUpdate()
@@ -79,8 +81,6 @@ bool ObjHoleIn::doUpdateFadeout()
 }
 
 void ObjHoleIn::doUpdateFadeoutFinish() { }
-
-ObjHoleIn::StaticValues ObjHoleIn::msVal;
 
 } // namespace newScreen
 } // namespace og

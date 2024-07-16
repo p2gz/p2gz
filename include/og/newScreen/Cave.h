@@ -3,6 +3,7 @@
 
 #include "Screen/screenObj.h"
 #include "JSystem/J2D/J2DPane.h"
+#include "JSystem/J2D/J2DTextBox.h"
 #include "og/Screen/OtakaraSensor.h"
 #include "og/Screen/DispMember.h"
 #include "P2DScreen.h"
@@ -164,51 +165,7 @@ struct ObjHoleIn : public ::Screen::ObjBase {
 	
 	og::Screen::DispMemberHoleIn* mDisp;
 	P2DScreen::Mgr_tuning* mScreenControls;
-
-	static struct StaticValues {
-		inline StaticValues()
-		{
-			mFadeinTime                     = 0.3f;
-			mFadeoutTime                    = 0.1f;
-			mTotalPokoXPos                  = -50.0f;
-			mTotalPokoYPos                  = 0.0f;
-			mTotalPokoXScale                = 1.0f;
-			mTotalPokoYScale                = 1.0f;
-			mTreasureRadarXPos              = 0.0f;
-			mTreasureRadarYPos              = 2.0f;
-			mTreasureRadarScale             = 0.9f;
-			mDopingScreenXPos               = 0.0f;
-			mDopingScreenYPos               = -30.0f;
-			mTreasureRadarVecX              = 0.2f;
-			mTreasureRadarVecY              = 0.25f;
-			mTreasureRadarCompEfxXPos       = 0.0f;
-			mTreasureRadarCompEfxYPos       = -15.0f;
-			mTreasureRadarAppearEfxXPos     = 0.0f;
-			mTreasureRadarAppearEfxYPos     = -32.0f;
-			mTreasureRadarNoiseModifierHigh = 5.0f;
-			mTreasureRadarNoiseModifierLow  = 0.4f;
-		}
-
-		f32 mFadeinTime;                     // _00
-		f32 mFadeoutTime;                    // _04
-		f32 mTotalPokoXPos;                  // _08
-		f32 mTotalPokoYPos;                  // _0C
-		f32 mTotalPokoXScale;                // _10
-		f32 mTotalPokoYScale;                // _14
-		f32 mTreasureRadarXPos;              // _18
-		f32 mTreasureRadarYPos;              // _1C
-		f32 mTreasureRadarScale;             // _20
-		f32 mDopingScreenXPos;               // _24
-		f32 mDopingScreenYPos;               // _28
-		f32 mTreasureRadarVecX;              // _2C
-		f32 mTreasureRadarVecY;              // _30
-		f32 mTreasureRadarCompEfxXPos;       // _34
-		f32 mTreasureRadarCompEfxYPos;       // _38
-		f32 mTreasureRadarAppearEfxXPos;     // _3C
-		f32 mTreasureRadarAppearEfxYPos;     // _40
-		f32 mTreasureRadarNoiseModifierHigh; // _44
-		f32 mTreasureRadarNoiseModifierLow;  // _48
-	} msVal;
+	J2DTextBoxEx* mText1;
 };
 } // namespace newScreen
 } // namespace og
