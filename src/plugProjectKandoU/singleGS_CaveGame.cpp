@@ -30,6 +30,7 @@
 #include "PSSystem/PSMainSide_Scene.h"
 #include "Game/Entities/ItemPikihead.h"
 #include "nans.h"
+#include "GlobalData.h" // @P2GZ
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -171,15 +172,40 @@ void CaveState::exec(SingleGameSection* game)
 	if (mFadeout)
 		return;
 
-    // @P2GZ - replay same sublevel with random seed
-    if (moviePlayer->isPlaying("s09_holein") && game->mControllerP1->getButtonDown() & Controller::PRESS_Z) {
-        playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
-        OSReport("Restarting current sublevel (%d) with random seed\n", game->getCurrFloor());
-		resetEverythingForLevelTransition(game);
+    // @P2GZ Start - replay same sublevel
+    if (moviePlayer->isPlaying("s09_holein")) {
+		if (game->mControllerP1->getButtonDown() & Controller::PRESS_Z) {
+			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
+			OSReport("Restarting current sublevel (%d) with random seed\n", game->getCurrFloor());
+			resetEverythingForLevelTransition(game);
 
-        LoadArg arg(MapEnter_CaveGeyser, true, false, false);
-        transit(game, SGS_Load, &arg);
+			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
+			transit(game, SGS_Load, &arg);
+		}
+        else if (game->mControllerP1->getButtonDown() & Controller::PRESS_L) {
+			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
+			OSReport("Restarting current sublevel (%d) with same seed\n", game->getCurrFloor());
+			resetEverythingForLevelTransition(game);
+
+			p2gz->setCustomNextSeed = true;
+			p2gz->nextSeed = p2gz->seedHistory.peek().seed;
+
+			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
+			transit(game, SGS_Load, &arg);
+		}
+		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
+			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
+			OSReport("Restarting current sublevel (%d) with incremented seed\n", game->getCurrFloor());
+			resetEverythingForLevelTransition(game);
+
+			p2gz->setCustomNextSeed = true;
+			p2gz->nextSeed = p2gz->seedHistory.peek().seed + 1;
+
+			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
+			transit(game, SGS_Load, &arg);
+		}
     }
+	// @P2GZ End
 
 	// the saving between cave floors is part of this state
 	if (mDrawSave) {
