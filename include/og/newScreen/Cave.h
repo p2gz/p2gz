@@ -136,12 +136,8 @@ struct HoleIn : public ::Screen::SceneBase {
 	virtual SceneType getSceneType() { return SCENE_P2GZ_HOLE_IN; }    // _08 (weak)
 	virtual ScreenOwnerID getOwnerID() { return OWNER_OGA; }                  // _0C (weak)
 	virtual ScreenMemberID getMemberID() { return MEMBER_P2GZ_HOLE_IN; }      // _10 (weak)
-	virtual bool isUseBackupSceneInfo() { return true; }                      // _14 (weak)
 	virtual void doCreateObj(JKRArchive*);                                    // _20
 	virtual void doUserCallBackFunc(Resource::MgrCommand*);                   // _24
-	virtual void doUpdateActive();                                            // _2C
-	virtual bool doConfirmSetScene(::Screen::SetSceneArg&);                   // _30
-	virtual void doSetBackupScene(::Screen::SetSceneArg&);                    // _48
 };
 
 // @P2GZ

@@ -733,6 +733,13 @@ void Game2DMgr::open_P2GZ_HoleIn() {
 	mScreenMgr->startScene(nullptr);
 }
 
+// @P2GZ
+void Game2DMgr::close_P2GZ_HoleIn() {
+	if (mScreenMgr->getSceneType() == SCENE_P2GZ_HOLE_IN) {
+		mScreenMgr->endScene(nullptr);
+	}
+}
+
 /**
  * @note Address: 0x803FD94C
  * @note Size: 0x258

@@ -563,6 +563,7 @@ bool CaveState::hasCollectedOtakaraOnCurrentFloor(int treasureId) {
 void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, u32 naviID)
 {
 	// @P2GZ
+	OSReport("Playing movie \"%s\"\n", config->mMovieNameBuffer2);
 	if (config->is("s22_cv_suck_treasure") || config->is("s22_cv_suck_equipment")) {
 		Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
 
@@ -674,6 +675,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		transit(game, SGS_CaveResult, &arg);
 		return;
 	} else if (config->is("s09_holein")) {
+		Screen::gGame2DMgr->close_P2GZ_HoleIn(); // @P2GZ
 		moviePlayer->clearSuspendedDemo();
 		og::Screen::DispMemberSave disp;
 		disp.mDoSound = true;
