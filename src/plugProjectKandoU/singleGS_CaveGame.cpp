@@ -176,32 +176,39 @@ void CaveState::exec(SingleGameSection* game)
 
     // @P2GZ Start - replay same sublevel
     if (moviePlayer->isPlaying("s09_holein")) {
-		if (game->mControllerP1->getButtonDown() & Controller::PRESS_Z) {
-			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
-			OSReport("Restarting current sublevel (%d) with random seed\n", game->getCurrFloor());
-			resetEverythingForLevelTransition(game);
+		bool retry = false;
+		bool useCustomSeed = false;
+		u32 nextSeed = 0;
 
-			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
-			transit(game, SGS_Load, &arg);
+		if (game->mControllerP1->getButtonDown() & Controller::PRESS_Z) {
+			// Random seed
+			retry = true;
 		}
         else if (game->mControllerP1->getButtonDown() & Controller::PRESS_L) {
-			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
-			OSReport("Restarting current sublevel (%d) with same seed\n", game->getCurrFloor());
-			resetEverythingForLevelTransition(game);
-
-			p2gz->setCustomNextSeed = true;
-			p2gz->nextSeed = p2gz->seedHistory.peek().seed;
-
-			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
-			transit(game, SGS_Load, &arg);
+			// Same seed
+			retry = true;
+			useCustomSeed = true;
+			nextSeed = p2gz->seedHistory.peek().seed;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
+			// Increment seed
+			retry = true;
+			useCustomSeed = true;
+			nextSeed = p2gz->seedHistory.peek().seed + 1;
+		}
+
+		if (retry) {
 			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
-			OSReport("Restarting current sublevel (%d) with incremented seed\n", game->getCurrFloor());
 			resetEverythingForLevelTransition(game);
 
-			p2gz->setCustomNextSeed = true;
-			p2gz->nextSeed = p2gz->seedHistory.peek().seed + 1;
+			if (useCustomSeed) {
+				p2gz->setCustomNextSeed = true;
+				p2gz->nextSeed = nextSeed;
+			}
+
+			// Reset money
+			playData->mCavePokoCount -= p2gz->bugPokosCollectedSinceLoad;
+			playData->mCavePokoCount -= p2gz->treasurePokosCollectedSinceLoad;
 
 			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
 			transit(game, SGS_Load, &arg);
@@ -612,6 +619,12 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 
 	if (config->is("s0B_cv_coursein")) {
 		game->createFallPikminSound();
+		
+		// @P2GZ - reset poko counters
+		{
+			p2gz->bugPokosCollectedSinceLoad = 0;
+			p2gz->treasurePokosCollectedSinceLoad = 0;
+		}
 	}
 	Screen::gGame2DMgr->startFadeBG_Floor();
 	if (config->is("s05_pikminzero")) {

@@ -20,6 +20,8 @@ P2GZ::P2GZ()
     setCustomNextSeed = false;
     nextSeed = 0;
     seedHistory = SeedHistoryTracker();
+    bugPokosCollectedSinceLoad = 0;
+    treasurePokosCollectedSinceLoad = 0;
 }
 
 void P2GZ::init()

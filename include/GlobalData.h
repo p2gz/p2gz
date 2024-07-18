@@ -57,6 +57,9 @@ struct P2GZ {
 	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
 	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
 	SeedHistoryTracker seedHistory;
+
+	u32 bugPokosCollectedSinceLoad;
+	u32 treasurePokosCollectedSinceLoad;
 };
 
 extern P2GZ* p2gz;
