@@ -184,10 +184,11 @@ struct CaveState : public State {
 	virtual void onFountainReturn(SingleGameSection*, ItemBigFountain::Item*);                      // _3C
 	virtual void on_section_fadeout(SingleGameSection*);                                            // _40
 
-	void resetNavi(Game::Navi* navi); // @P2GZ
+	void resetNavi(Game::Navi* navi);                                // @P2GZ
 	void resetEverythingForLevelTransition(SingleGameSection* game); // @P2GZ
+	void registerPelletCollectedOnCurFloor(Pellet* pellet);          // @P2GZ
 
-	bool hasCollectedItemOnCurrentFloor(int); // @P2GZ
+	bool hasCollectedItemOnCurrentFloor(int);    // @P2GZ
 	bool hasCollectedOtakaraOnCurrentFloor(int); // @P2GZ
 
 	void check_SMenu(SingleGameSection*);

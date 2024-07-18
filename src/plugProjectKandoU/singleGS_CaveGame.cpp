@@ -163,6 +163,8 @@ void CaveState::resetEverythingForLevelTransition(SingleGameSection* game) {
 	resettingFloor = false;
 }
 
+static bool treasureCutsceneSkipRegistered = false; // @P2GZ
+
 /**
  * @note Address: 0x80217A70
  * @note Size: 0x2D4
@@ -205,6 +207,19 @@ void CaveState::exec(SingleGameSection* game)
 			transit(game, SGS_Load, &arg);
 		}
     }
+	// @P2GZ End
+
+	// @P2GZ Start - Skippable treasure cutscenes
+	if (moviePlayer->isPlaying("s22_cv_suck_treasure") || moviePlayer->isPlaying("s22_cv_suck_equipment")) {
+		if (!treasureCutsceneSkipRegistered && (strcmp(gameSystem->mMovieAction, "moviePl:skip") == 0)) {
+			Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
+			Onyon* pod = ItemOnyon::mgr->mPod;
+			pod->mFlags.set(CF_IsMovieExtra);
+			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
+			pod->stimulate(interaction);
+			treasureCutsceneSkipRegistered = true;
+		}	
+	}
 	// @P2GZ End
 
 	// the saving between cave floors is part of this state
@@ -556,37 +571,44 @@ bool CaveState::hasCollectedOtakaraOnCurrentFloor(int treasureId) {
 	return false;
 }
 
+void CaveState::registerPelletCollectedOnCurFloor(Pellet* pellet) {
+	BasePelletMgr* pelmgr = PelletOtakara::mgr;
+	for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
+		PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
+		if (cfg == pellet->mConfig) {
+			otakaraCollectedOnCurFloor[numOtakaraCollectedOnCurFloor] = i;
+			numOtakaraCollectedOnCurFloor++;
+			break;
+		}
+	}
+
+	pelmgr = PelletItem::mgr;
+	for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
+		PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
+		if (cfg == pellet->mConfig) {
+			itemsCollectedOnCurFloor[numItemsCollectedOnCurFloor] = i;
+			numItemsCollectedOnCurFloor++;
+			break;
+		}
+	}
+}
+
 /**
  * @note Address: 0x80218BDC
  * @note Size: 0x490
  */
 void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, u32 naviID)
 {
-	// @P2GZ
+	// @P2GZ Start
 	OSReport("Playing movie \"%s\"\n", config->mMovieNameBuffer2);
 	if (config->is("s22_cv_suck_treasure") || config->is("s22_cv_suck_equipment")) {
 		Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
+		registerPelletCollectedOnCurFloor(pellet);
 
-		BasePelletMgr* pelmgr = PelletOtakara::mgr;
-		for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
-			PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
-			if (cfg == pellet->mConfig) {
-				otakaraCollectedOnCurFloor[numOtakaraCollectedOnCurFloor] = i;
-				numOtakaraCollectedOnCurFloor++;
-				break;
-			}
-		}
-
-		pelmgr = PelletItem::mgr;
-		for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
-			PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
-			if (cfg == pellet->mConfig) {
-				itemsCollectedOnCurFloor[numItemsCollectedOnCurFloor] = i;
-				numItemsCollectedOnCurFloor++;
-				break;
-			}
-		}
+		treasureCutsceneSkipRegistered = false;
+		config->mFlags &= 0b01; // Make treasure cutscene skippable
 	}
+	// @P2GZ End
 
 	if (config->is("s0B_cv_coursein")) {
 		game->createFallPikminSound();
