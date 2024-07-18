@@ -3,33 +3,14 @@
 
 #include "types.h"
 #include "Game/Navi.h"
+#include "gzCollections.h"
+#include "Game/PikiContainer.h"
 
-struct SeedHistoryTracker {
-	static const u32 SEED_HISTORY_SIZE = 64;
+struct SeedRecord {
+	SeedRecord() {}
 
-	SeedHistoryTracker();
-	~SeedHistoryTracker() {}
-
-	struct SeedRecord {
-		SeedRecord() {} // necessary for default initialisation
-		SeedRecord(u32 seed, int floorIndex);
-
-		u32 seed;
-		int floorIndex;
-	};
-
-	void push(u32 seed, int floorIndex);
-
-	/// @brief Removes a seed from the history and returns it
-	/// @return The latest seed entry in the history
-	SeedRecord pop();
-
-	/// @brief Returns a copy of the latest seed entry in the history without removing it
-	/// @return The latest seed entry in the history
-	SeedRecord peek();
-
-	int seedBufHead;
-	SeedRecord seedRingBuf[SEED_HISTORY_SIZE];
+	u32 seed;
+	int floorIndex;
 };
 
 struct P2GZ {
@@ -56,7 +37,8 @@ struct P2GZ {
 
 	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
 	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
-	SeedHistoryTracker seedHistory;
+	bool usePreviousSquad;
+	RingBuffer<64, SeedRecord>* seedHistory;
 
 	u32 bugPokosCollectedSinceLoad;
 	u32 treasurePokosCollectedSinceLoad;

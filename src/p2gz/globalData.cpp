@@ -2,11 +2,6 @@
 
 P2GZ* p2gz;
 
-SeedHistoryTracker::SeedHistoryTracker()
-{
-    seedBufHead = 0;
-}
-
 P2GZ::P2GZ()
 {
     mIsScrollingCamera = false;
@@ -19,7 +14,7 @@ P2GZ::P2GZ()
     mCStickPicture = nullptr;
     setCustomNextSeed = false;
     nextSeed = 0;
-    seedHistory = SeedHistoryTracker();
+    seedHistory = new RingBuffer<64, SeedRecord>;
     bugPokosCollectedSinceLoad = 0;
     treasurePokosCollectedSinceLoad = 0;
 }
@@ -52,24 +47,4 @@ void P2GZ::update()
 f32 P2GZ::getAnimationCoefficient()
 {
     return mAnimationCoefficient;
-}
-
-SeedHistoryTracker::SeedRecord::SeedRecord(u32 seed, int floorIndex) {
-    this->seed = seed;
-    this->floorIndex = floorIndex;
-}
-
-void SeedHistoryTracker::push(u32 seed, int floorIndex) {
-    seedRingBuf[seedBufHead] = SeedRecord(seed, floorIndex);
-    seedBufHead = (seedBufHead + 1) % SEED_HISTORY_SIZE;
-}
-
-SeedHistoryTracker::SeedRecord SeedHistoryTracker::pop() {
-    seedBufHead = (seedBufHead - 1) % SEED_HISTORY_SIZE;
-    SeedRecord r = seedRingBuf[seedBufHead];
-    return r;
-}
-
-SeedHistoryTracker::SeedRecord SeedHistoryTracker::peek() {
-    return seedRingBuf[(seedBufHead - 1) % SEED_HISTORY_SIZE];
 }

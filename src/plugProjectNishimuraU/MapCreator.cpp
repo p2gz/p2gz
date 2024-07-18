@@ -5,6 +5,8 @@
 #include "types.h"
 #include "GlobalData.h"   // @P2GZ
 #include "Dolphin/rand.h" // @P2GZ
+#include "Game/PikiContainer.h" // @P2GZ
+#include "Game/PikiMgr.h" // @P2GZ
 
 namespace Game {
 namespace Cave {
@@ -29,7 +31,12 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 		p2gz->setCustomNextSeed = false;
 	}
 	u32 seed = getSeed();
-	p2gz->seedHistory.push(seed, floorInfo->mParms.mFloorIndex1);
+
+	SeedRecord seedRecord;
+	seedRecord.seed = seed;
+	seedRecord.floorIndex = floorInfo->mParms.mFloorIndex1;
+
+	p2gz->seedHistory->push(seedRecord);
 	OSReport("Generating sublevel with seed %X\n", seed);
 	// @P2GZ End
 

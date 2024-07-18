@@ -188,13 +188,13 @@ void CaveState::exec(SingleGameSection* game)
 			// Same seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->seedHistory.peek().seed;
+			nextSeed = p2gz->seedHistory->peek().seed;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
 			// Increment seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->seedHistory.peek().seed + 1;
+			nextSeed = p2gz->seedHistory->peek().seed + 1;
 		}
 
 		if (retry) {
