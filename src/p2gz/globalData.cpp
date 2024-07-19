@@ -5,13 +5,26 @@ P2GZ* p2gz;
 P2GZ::P2GZ()
 {
     mIsScrollingCamera = false;
+    mIsSaveLoadPosition = false;
+    mScrollCameraZoom = 768;
+
+    mSelectedPositionSlot = 0;
+    for (int i = 0; i < 4; i++) {
+        mSavedPositions[i] = Vector3f::zero;
+    }
+
     mAnimationCoefficient = 0.0f;
     mDirection = 1.0f;
     mWhistle = nullptr;
-    mBButtonPicture = nullptr;
-    mLButtonPicture = nullptr;
     mControlStickPicture = nullptr;
     mCStickPicture = nullptr;
+    mAButtonPicture = nullptr;
+    mBButtonPicture = nullptr;
+    mXButtonPicture = nullptr;
+    mYButtonPicture = nullptr;
+    mLButtonPicture = nullptr;
+    mRButtonPicture = nullptr;
+    mZButtonPicture = nullptr;
 }
 
 void P2GZ::init()
@@ -20,13 +33,23 @@ void P2GZ::init()
 
     ResTIMG* controlStickTimg = JKRGetImageResource("c_anim_otah_32.9.bti", arc);
     ResTIMG* cStickTimg = JKRGetImageResource("c_stick_anim_otah_32.5.bti", arc);
+    ResTIMG* aButtonTimg = JKRGetImageResource("ia4_abtn.bti", arc);
     ResTIMG* bButtonTimg = JKRGetImageResource("ia4_bbtn.bti", arc);
+    ResTIMG* xButtonTimg = JKRGetImageResource("x_btn.bti", arc);
+    ResTIMG* yButtonTimg = JKRGetImageResource("y_btn.bti", arc);
     ResTIMG* lButtonTimg = JKRGetImageResource("l_btn.bti", arc);
+    ResTIMG* rButtonTimg = JKRGetImageResource("r_btn.bti", arc);
+    ResTIMG* zButtonTimg = JKRGetImageResource("z_btn.bti", arc);
 
     mControlStickPicture = new J2DPicture(new JUTTexture(controlStickTimg));
     mCStickPicture = new J2DPicture(new JUTTexture(cStickTimg));
+    mAButtonPicture = new J2DPicture(new JUTTexture(aButtonTimg));
     mBButtonPicture = new J2DPicture(new JUTTexture(bButtonTimg));
+    mXButtonPicture = new J2DPicture(new JUTTexture(xButtonTimg));
+    mYButtonPicture = new J2DPicture(new JUTTexture(yButtonTimg));
     mLButtonPicture = new J2DPicture(new JUTTexture(lButtonTimg));
+    mRButtonPicture = new J2DPicture(new JUTTexture(rButtonTimg));
+    mZButtonPicture = new J2DPicture(new JUTTexture(zButtonTimg));
 }
 
 void P2GZ::update()

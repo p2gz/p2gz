@@ -26,7 +26,7 @@ static u64 areaIDs[4] = { '8390_00', '8391_00', '8392_00', '8393_00' }; // Valle
 static u64 warpIDs[4][5] = {
 	{ '3016_00', '8395_00', '8399_00', '8400_00', 'NULL' },    // Above Ground, Emergence Cave, Subterranean Complex, Frontier Cavern
 	{ '3016_00', '8396_00', '8398_00', '8401_00', '8410_00' }, // Above Ground, Hole of Beasts, White Flower Garden, Bulblax Kingdom, Snagret Hole
-	{ '3016_00', '8397_00', '8402_00', '8411_00', '8403_00' }, // Above Ground, Citadel of Spiders, Glutton's Kitchen, Shower Room, Submerged Castle
+	{ '3016_00', '8397_00', '8402_00', '8403_00', '8411_00' }, // Above Ground, Citadel of Spiders, Glutton's Kitchen, Shower Room, Submerged Castle
 	{ '3016_00', '8412_00', '8413_00', '8414_00', 'NULL' }     // Above Ground, Cavern of Chaos, Hole of Heroes, Dream Den
 };
 
@@ -40,13 +40,12 @@ static u64 caveIDs[4][5] = {
 static int maxSublevel[4][5] = {
 	{ 99, 2, 9, 8, -1 },
 	{ 99, 5, 5, 7, 7 },
-	{ 99, 5, 6, 5, 7 },
+	{ 99, 5, 6, 7, 5 },
 	{ 99, 10, 15, 14, -1 }
 };
 
 static u64 sublevelID = '8382_00'; // Sublevel
 static u64 dayID = '5040_00'; // Day
-
 
 ObjSMenuWarp::ObjSMenuWarp(char const* name)
 {
@@ -326,6 +325,9 @@ bool ObjSMenuWarp::doUpdate()
 				Game::SingleGame::LoadArg arg(0, false, false, false);
 				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 			} else {
+				Game::playData->mCaveSaveData.mTime = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
+				game->saveToGeneratorCache(game->mCurrentCourseInfo);
+				
 				ID32 caveID(Game::stageList->getCourseInfo(mSelectedArea)->getCaveID_FromIndex(mSelectedDestination - 1));
 				Game::ItemCave::Item* cave = new Game::ItemCave::Item;
 				cave->mCaveID = caveID;
