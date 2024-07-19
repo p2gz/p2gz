@@ -6,11 +6,12 @@
 #include "gzCollections.h"
 #include "Game/PikiContainer.h"
 
-struct SeedRecord {
-	SeedRecord() {}
+struct SegmentRecord {
+	SegmentRecord() {}
 
 	u32 seed;
 	int floorIndex;
+	Game::PikiContainer squad;
 };
 
 struct P2GZ {
@@ -25,6 +26,8 @@ struct P2GZ {
 	bool isCameraScroll();
 	void setCameraScroll(bool);
 
+	void setSquad(Game::PikiContainer* squad, bool falling);
+
 	bool mIsScrollingCamera; // controlling camera for warping
 	f32 mAnimationCoefficient;
 	f32 mDirection;
@@ -38,7 +41,7 @@ struct P2GZ {
 	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
 	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
 	bool usePreviousSquad;
-	RingBuffer<64, SeedRecord>* seedHistory;
+	RingBuffer<64, SegmentRecord>* history;
 
 	u32 bugPokosCollectedSinceLoad;
 	u32 treasurePokosCollectedSinceLoad;

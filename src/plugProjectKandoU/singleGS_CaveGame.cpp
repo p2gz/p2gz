@@ -188,13 +188,13 @@ void CaveState::exec(SingleGameSection* game)
 			// Same seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->seedHistory->peek().seed;
+			nextSeed = p2gz->history->peek()->seed;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
 			// Increment seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->seedHistory->peek().seed + 1;
+			nextSeed = p2gz->history->peek()->seed + 1;
 		}
 
 		if (retry) {
@@ -210,6 +210,7 @@ void CaveState::exec(SingleGameSection* game)
 			playData->mCavePokoCount -= p2gz->bugPokosCollectedSinceLoad;
 			playData->mCavePokoCount -= p2gz->treasurePokosCollectedSinceLoad;
 
+			p2gz->usePreviousSquad = true;
 			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
 			transit(game, SGS_Load, &arg);
 		}
@@ -618,6 +619,13 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 	// @P2GZ End
 
 	if (config->is("s0B_cv_coursein")) {
+		// @P2GZ - restore pikmin squad on restart sublevel
+		if (p2gz->usePreviousSquad) {
+			PikiContainer startingSquad = p2gz->history->peek()->squad;
+			p2gz->setSquad(&startingSquad, true);
+			p2gz->usePreviousSquad = false;
+		}
+
 		game->createFallPikminSound();
 		
 		// @P2GZ - reset poko counters
@@ -735,7 +743,6 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		gameStart(game);
 		return;
 	} else if (config->is("s0B_cv_coursein")) {
-
 		Iterator<Piki> it(pikiMgr);
 		CI_LOOP(it)
 		{
