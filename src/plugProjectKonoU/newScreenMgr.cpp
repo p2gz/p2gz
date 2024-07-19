@@ -149,6 +149,10 @@ namespace newScreen {
 	case SCENE_P2GZ_SQUAD:
 		base = new og::newScreen::SMenuSquad;
 		break;
+
+	case SCENE_P2GZ_HOLE_IN:
+		base = new og::newScreen::HoleIn;
+		break;
 	// @P2GZ end
 	}
 	return base;
