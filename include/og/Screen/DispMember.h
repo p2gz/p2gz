@@ -178,6 +178,16 @@ struct DispMemberCaveMore : public DispMemberAnaDemo {
 	u8 mCantProceed;  // _25
 };
 
+// @P2GZ
+struct DispMemberHoleIn : public DispMemberBase {
+	inline DispMemberHoleIn() {}
+
+	virtual u32 getSize() { return sizeof(DispMemberHoleIn); }
+	virtual u32 getOwnerID() { return OWNER_OGA; }
+	virtual u64 getMemberID() { return MEMBER_P2GZ_HOLE_IN; }
+};
+
+
 // size 0x78
 struct DispMemberChallenge1P : public DispMemberBase {
 

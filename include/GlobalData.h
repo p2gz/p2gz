@@ -3,6 +3,15 @@
 
 #include "types.h"
 #include "Game/Navi.h"
+#include "gzCollections.h"
+#include "Game/PikiContainer.h"
+
+struct SeedRecord {
+	SeedRecord() {}
+
+	u32 seed;
+	int floorIndex;
+};
 
 struct P2GZ {
 	P2GZ();
@@ -36,6 +45,14 @@ struct P2GZ {
 	J2DPicture* mLButtonPicture;
 	J2DPicture* mRButtonPicture;
 	J2DPicture* mZButtonPicture;
+
+	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
+	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
+	bool usePreviousSquad;
+	RingBuffer<64, SeedRecord>* seedHistory;
+
+	u32 bugPokosCollectedSinceLoad;
+	u32 treasurePokosCollectedSinceLoad;
 };
 
 extern P2GZ* p2gz;

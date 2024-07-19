@@ -12,10 +12,6 @@ P2GZ::P2GZ()
     for (int i = 0; i < 4; i++) {
         mSavedPositions[i] = Vector3f::zero;
     }
-
-    mAnimationCoefficient = 0.0f;
-    mDirection = 1.0f;
-    mWhistle = nullptr;
     mControlStickPicture = nullptr;
     mCStickPicture = nullptr;
     mAButtonPicture = nullptr;
@@ -25,6 +21,15 @@ P2GZ::P2GZ()
     mLButtonPicture = nullptr;
     mRButtonPicture = nullptr;
     mZButtonPicture = nullptr;
+
+    mAnimationCoefficient = 0.0f;
+    mDirection = 1.0f;
+
+    setCustomNextSeed = false;
+    nextSeed = 0;
+    seedHistory = new RingBuffer<64, SeedRecord>;
+    bugPokosCollectedSinceLoad = 0;
+    treasurePokosCollectedSinceLoad = 0;
 }
 
 void P2GZ::init()

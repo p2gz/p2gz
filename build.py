@@ -19,7 +19,8 @@ DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
 
 P2GZ_CUSTOM_ASSETS = [
     os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_squad'),
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_warp')
+    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_warp'),
+    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'hole_in')
 ]
 
 parser = argparse.ArgumentParser()
@@ -121,42 +122,19 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
 
         # patching existing asset
         if os.path.exists(archive):
-            existing_directories = set(next(os.walk(iso_path))[1])
-            subprocess.run(f'ArcExtract {archive}', shell=True, stdout=open(os.devnull, 'w'))
-            extracted_archive = os.path.join(iso_path, (set(next(os.walk(iso_path))[1]) - existing_directories).pop())
+            subprocess.run(f'cube extract {archive} -o {iso_dir}', shell=True)
 
-            print(f'Copying {patch_dir} to {extracted_archive}')
-            shutil.copytree(patch_dir, extracted_archive, dirs_exist_ok=True,
-                            ignore=lambda _, contents: [file for file in contents if file.endswith('json')])
+            print(f'Copying {patch_dir} to {iso_dir}')
+            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True)
             
-            for root, _, files in os.walk(patch_dir):
-                for file in files:
-                    if file.endswith('json'):
-                        subprocess.run(f'python3 pikminBMGtool.py PACK {os.path.join(patch_dir, file)} \
-                                       {os.path.join(extracted_archive, file.replace("json", "bmg"))}', shell=True, stdout=open(os.devnull, 'w'))
-            
-            subprocess.run(f'ArcPack {extracted_archive}', shell=True, stdout=open(os.devnull, 'w'))
-            os.remove(archive)
-            os.rename(f'{extracted_archive}.arc', archive)
-            shutil.rmtree(extracted_archive)
+            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
         
         # adding custom asset
         elif patch_dir in P2GZ_CUSTOM_ASSETS:
             print(f'Copying {patch_dir} to {iso_dir}')
-            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True,
-                            ignore=lambda _, contents: [file for file in contents if file.endswith('json')])
+            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True)
             
-            for root, _, files in os.walk(patch_dir):
-                for file in files:
-                    if file.endswith('json'):
-                        subprocess.run(f'python3 pikminBMGtool.py PACK {os.path.join(patch_dir, file)} \
-                                       {os.path.join(extracted_archive, file.replace("json", "bmg"))}', shell=True, stdout=open(os.devnull, 'w'))
-            
-            subprocess.run(f'ArcPack {iso_dir}', shell=True, stdout=open(os.devnull, 'w'))
-            shutil.rmtree(iso_dir)
-            if os.path.exists(f'{iso_dir}.szs'):
-                os.remove(f'{iso_dir}.szs')
-            os.rename(f'{iso_dir}.arc', f'{iso_dir}.szs')
+            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
             
 
 # patch dol
