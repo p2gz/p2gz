@@ -168,12 +168,14 @@ bool ObjSMenuWarp::doUpdate()
 	u32 input = pad->getButtonDown();
 
 	if (input & Controller::PRESS_UP) {
-		if (mIsEditingSetting && mSelectedRow == 2) {
-			if (mSublevelNumber == maxSublevel[mSelectedArea][mSelectedDestination]) {
-				ogSound->setError();
-			} else {
-				mSublevelNumber++;
-				mSublevelCounter->update();
+		if (mIsEditingSetting) {
+			if (mSelectedRow == 2) {
+				if (mSublevelNumber == maxSublevel[mSelectedArea][mSelectedDestination]) {
+					ogSound->setError();
+				} else {
+					mSublevelNumber++;
+					mSublevelCounter->update();
+				}
 			}
 		} else {
 			mLabels[mSelectedRow]->setAlpha(128);
@@ -184,12 +186,14 @@ bool ObjSMenuWarp::doUpdate()
 		}
 		ogSound->setPlusMinus(false);
 	} else if (input & Controller::PRESS_DOWN) {
-		if (mIsEditingSetting && mSelectedRow == 2) {
-			if (mSublevelNumber == 1) {
-				ogSound->setError();
-			} else {
-				mSublevelNumber--;
-				mSublevelCounter->update();
+		if (mIsEditingSetting) {
+			if (mSelectedRow == 2) {
+				if (mSublevelNumber == 1) {
+					ogSound->setError();
+				} else {
+					mSublevelNumber--;
+					mSublevelCounter->update();
+				}
 			}
 		} else {
 			mLabels[mSelectedRow]->setAlpha(128);
@@ -325,13 +329,15 @@ bool ObjSMenuWarp::doUpdate()
 				Game::SingleGame::LoadArg arg(0, false, false, false);
 				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 			} else {
-				Game::playData->mCaveSaveData.mTime = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
-				game->saveToGeneratorCache(game->mCurrentCourseInfo);
-				
 				ID32 caveID(Game::stageList->getCourseInfo(mSelectedArea)->getCaveID_FromIndex(mSelectedDestination - 1));
 				Game::ItemCave::Item* cave = new Game::ItemCave::Item;
 				cave->mCaveID = caveID;
 				cave->mCaveFilename = Game::stageList->getCourseInfo(mSelectedArea)->getCaveinfoFilename_FromID(caveID);
+
+				Game::playData->mCaveSaveData.mTime = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
+				Game::playData->mCaveSaveData.mCourseIdx = Game::stageList->getCourseInfo(mSelectedArea)->mCourseIndex;
+				Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
+				game->saveToGeneratorCache(game->mCurrentCourseInfo);
 
 				game->mCurrentCave = cave;
 				game->mCaveID = caveID;
