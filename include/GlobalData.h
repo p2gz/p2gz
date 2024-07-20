@@ -26,8 +26,6 @@ struct P2GZ {
 	bool isCameraScroll();
 	void setCameraScroll(bool);
 
-	void setSquad(Game::PikiContainer* squad, bool falling);
-
 	bool mIsScrollingCamera; // controlling camera for warping
 	f32 mAnimationCoefficient;
 	f32 mDirection;

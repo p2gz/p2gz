@@ -622,7 +622,9 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		// @P2GZ - restore pikmin squad on restart sublevel
 		if (p2gz->usePreviousSquad) {
 			PikiContainer startingSquad = p2gz->history->peek()->squad;
-			p2gz->setSquad(&startingSquad, true);
+			playData->mCaveSaveData.mCavePikis = startingSquad;
+			pikiMgr->killAllPikmins();
+			game->createFallPikmins();
 			p2gz->usePreviousSquad = false;
 		}
 
