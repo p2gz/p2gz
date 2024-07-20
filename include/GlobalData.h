@@ -34,7 +34,6 @@ struct P2GZ {
 
 	f32 mAnimationCoefficient;
 	f32 mDirection;
-	Game::NaviWhistle* mWhistle;
 	
 	J2DPicture* mControlStickPicture;
 	J2DPicture* mCStickPicture;
