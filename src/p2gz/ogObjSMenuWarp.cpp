@@ -183,8 +183,8 @@ bool ObjSMenuWarp::doUpdate()
 			mSelectedRow = (mSelectedRow - 1 + 4) % 4;
 			mLabels[mSelectedRow]->setAlpha(255);
 			mLabels[mSelectedRow]->update();
+			ogSound->setPlusMinus(false);
 		}
-		ogSound->setPlusMinus(false);
 	} else if (input & Controller::PRESS_DOWN) {
 		if (mIsEditingSetting) {
 			if (mSelectedRow == 2) {
@@ -201,8 +201,8 @@ bool ObjSMenuWarp::doUpdate()
 			mSelectedRow = (mSelectedRow + 1) % 4;
 			mLabels[mSelectedRow]->setAlpha(255);
 			mLabels[mSelectedRow]->update();
+			ogSound->setPlusMinus(false);
 		}
-		ogSound->setPlusMinus(false);
 	} else if (input & Controller::PRESS_LEFT) {
 		if (mIsEditingSetting) {
 			switch (mSelectedRow) {
@@ -329,6 +329,29 @@ bool ObjSMenuWarp::doUpdate()
 				Game::SingleGame::LoadArg arg(0, false, false, false);
 				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 			} else {
+				bool isEmptySquad = true;
+
+				Iterator<Game::Piki> iterator(Game::pikiMgr);
+				CI_LOOP(iterator)
+				{
+					Game::Piki* piki = *iterator;
+					if (piki->isAlive() && piki->getCurrActionID() == PikiAI::ACT_Formation) {
+						int state = piki->getStateID();
+						if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop && piki->mNavi
+							&& (!caveIDs[mSelectedArea][mSelectedDestination] != 'y_04' || piki->getKind() == Game::Blue)) {
+							isEmptySquad = false;
+							Game::playData->mCaveSaveData.mCavePikis(piki)++;
+						}
+					}
+				}
+
+				if (isEmptySquad) {
+					ogSound->setError();
+					mCancelToState = MENUCLOSE_Finish;
+					doUpdateCancelAction();
+					return true;
+				}
+
 				ID32 caveID(Game::stageList->getCourseInfo(mSelectedArea)->getCaveID_FromIndex(mSelectedDestination - 1));
 				Game::ItemCave::Item* cave = new Game::ItemCave::Item;
 				cave->mCaveID = caveID;
@@ -344,19 +367,6 @@ bool ObjSMenuWarp::doUpdate()
 				game->mCaveIndex = caveID.getID();
 				game->mCurrentFloor = mSublevelNumber - 1;
 				strcpy(game->mCaveFilename, cave->mCaveFilename);
-
-				Iterator<Game::Piki> iterator(Game::pikiMgr);
-				CI_LOOP(iterator)
-				{
-					Game::Piki* piki = *iterator;
-					if (piki->isAlive() && piki->getCurrActionID() == PikiAI::ACT_Formation) {
-						int state = piki->getStateID();
-						if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop && piki->mNavi
-							&& (!caveIDs[mSelectedArea][mSelectedDestination] != 'y_04' || piki->getKind() == Game::Blue)) {
-							Game::playData->mCaveSaveData.mCavePikis(piki)++;
-						}
-					}
-				}
 
 				Game::SingleGame::LoadArg arg(100, true, false, false);
 				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
