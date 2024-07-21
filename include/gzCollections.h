@@ -11,7 +11,7 @@ struct RingBuffer {
         bufHead = 0;
     }
 
-    void push(T val) {
+    void push(T* val) {
         buf[bufHead] = val;
         bufHead = (bufHead + 1) % N;
     }
@@ -26,12 +26,12 @@ struct RingBuffer {
 	/// @brief Returns a copy of the entry without removing it
 	/// @return The latest entry in the history
 	T* peek() {
-        return &buf[(bufHead - 1) % N];
+        return buf[(bufHead - 1) % N];
     }
 
 private:
 	int bufHead;
-	T buf[N];
+	T* buf[N];
 };
 
 #endif

@@ -41,7 +41,7 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 		record.squad = p2gz->history->peek()->squad;
 	}
 
-	p2gz->history->push(record);
+	p2gz->history->push(&record);
 	OSReport("Generating sublevel with seed %X\n", seed);
 	// @P2GZ End
 

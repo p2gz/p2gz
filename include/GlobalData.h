@@ -6,12 +6,16 @@
 #include "gzCollections.h"
 #include "Game/PikiContainer.h"
 
+
 struct SegmentRecord {
-	SegmentRecord() {}
+	SegmentRecord() {
+		timer = 0;
+	}
 
 	u32 seed;
 	int floorIndex;
 	Game::PikiContainer squad;
+	f32 timer;
 };
 
 struct P2GZ {
@@ -25,6 +29,8 @@ struct P2GZ {
 
 	bool isCameraScroll();
 	void setCameraScroll(bool);
+
+	void drawTimer();
 
 	bool mIsScrollingCamera; // controlling camera for warping
 	bool mIsSaveLoadPosition;

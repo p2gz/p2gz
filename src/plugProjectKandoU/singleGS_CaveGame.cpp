@@ -171,6 +171,9 @@ static bool treasureCutsceneSkipRegistered = false; // @P2GZ
  */
 void CaveState::exec(SingleGameSection* game)
 {
+	p2gz->history->peek()->timer += sys->getDeltaTime();
+	p2gz->drawTimer(); // @P2GZ
+
 	if (mFadeout)
 		return;
 
