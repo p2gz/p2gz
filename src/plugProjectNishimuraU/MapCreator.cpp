@@ -37,7 +37,6 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	record.floorIndex = floorInfo->mParms.mFloorIndex1;
 
 	record.squad = playData->mCaveSaveData.mCavePikis;
-	OSReport("squad total count: %d\n", record.squad.getTotalSum());
 	if (p2gz->usePreviousSquad) {
 		record.squad = p2gz->history->peek()->squad;
 	}

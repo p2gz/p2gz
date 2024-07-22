@@ -27,6 +27,9 @@
 #include "nans.h"
 #include "utilityU.h"
 #include "Game/NaviState.h"
+#include "GlobalData.h" // @P2GZ
+#include "JSystem/J2D/J2DPrint.h" // @P2GZ
+#include "P2JME/P2JME.h" //@P2GZ
 
 // @P2GZ
 #include "Game/CameraMgr.h"
@@ -51,6 +54,12 @@ namespace SingleGame {
  */
 void GameState::init(SingleGameSection* game, StateArg* arg)
 {
+	// @P2GZ Start
+	SegmentRecord record;
+	record.squad = playData->mPikiContainer;
+	p2gz->history->push(record);
+	// @P2GZ End
+
 	DeathMgr::mSoundDeathCount = 0;
 	moviePlayer->reset();
 	gameSystem->setFlag(GAMESYS_IsGameWorldActive);
@@ -1289,12 +1298,39 @@ void GameState::drawRepayDemo(Graphics&)
 	// UNUSED FUNCTION
 }
 
+// @P2GZ
+void GameState::drawTimer() {
+    f32 timerS = p2gz->history->peek()->timer;
+
+    Graphics* gfx = sys->getGfx();
+    gfx->initPerspPrintf(gfx->mCurrentViewport);
+    gfx->initPrimDraw(nullptr);
+    gfx->mOrthoGraph.setPort();
+
+    J2DPrint caveTimerText(gP2JMEMgr->mFont, 0.0f);
+    caveTimerText.initiate();
+    caveTimerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
+    caveTimerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
+    caveTimerText.mGlyphWidth = 16.0f;
+    caveTimerText.mGlyphHeight = 16.0f;
+
+	int minutes = (int)(timerS / 60.0f);
+	int seconds = (int)timerS % 60;
+	int tenths = (timerS - (int)timerS) * 10.0f;
+    caveTimerText.print(16, 16, "%d:%.2d.%.1d", minutes, seconds, tenths);
+}
+
 /**
  * @note Address: 0x802174B8
  * @note Size: 0x78
  */
 void GameState::draw(SingleGameSection* game, Graphics& gfx)
 {
+	// @P2GZ Start - timer
+	f32 dt = sys->getDeltaTime();
+	p2gz->history->peek()->timer += dt;
+	// @P2GZ End
+
 	if (mDoExit) {
 		return;
 	}
@@ -1307,6 +1343,8 @@ void GameState::draw(SingleGameSection* game, Graphics& gfx)
 	game->BaseGameSection::doDraw(gfx);
 	game->drawMainMapScreen();
 	game->test_draw_treasure_detector();
+
+	drawTimer(); // @P2GZ
 }
 
 /**

@@ -84,24 +84,3 @@ f32 P2GZ::getAnimationCoefficient()
 {
     return mAnimationCoefficient;
 }
-
-void P2GZ::drawTimer() {
-    f32 elapsedSeconds = history->peek()->timer;
-
-    Graphics* gfx = sys->getGfx();
-    gfx->initPerspPrintf(gfx->mCurrentViewport);
-    gfx->initPrimDraw(nullptr);
-    gfx->mOrthoGraph.setPort();
-
-    J2DPrint timerText(JFWSystem::systemFont, 0.0f);
-    timerText.initiate();
-    timerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
-    timerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
-    timerText.mGlyphWidth = 16.0f;
-    timerText.mGlyphHeight = 16.0f;
-
-    int minutes = elapsedSeconds / 60.0f;
-    int seconds = (int)elapsedSeconds % 60;
-    int tenths  = (elapsedSeconds - (int)elapsedSeconds) * 10;
-    timerText.print(16, 16, "%d:%.2d.%.1d", minutes, seconds, tenths);
-}

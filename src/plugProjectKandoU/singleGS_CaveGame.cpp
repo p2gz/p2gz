@@ -31,6 +31,8 @@
 #include "Game/Entities/ItemPikihead.h"
 #include "nans.h"
 #include "GlobalData.h" // @P2GZ
+#include "JSystem/J2D/J2DPrint.h" // @P2GZ
+#include "P2JME/P2JME.h" //@P2GZ
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -230,13 +232,6 @@ void CaveState::exec(SingleGameSection* game)
 	}
 	// @P2GZ End
 
-	// @P2GZ Start - In-game timer
-	p2gz->history->peek()->timer += sys->getDeltaTime();
-	if (p2gz->showTimer) {
-		p2gz->drawTimer();
-	}
-	// @P2GZ End
-
 	// the saving between cave floors is part of this state
 	if (mDrawSave) {
 		particle2dMgr->update();
@@ -304,12 +299,45 @@ void CaveState::exec(SingleGameSection* game)
 	}
 }
 
+// @P2GZ
+void CaveState::drawTimer() {
+    f32 sublevelTimerS = p2gz->history->peek()->timer;
+
+    Graphics* gfx = sys->getGfx();
+    gfx->initPerspPrintf(gfx->mCurrentViewport);
+    gfx->initPrimDraw(nullptr);
+    gfx->mOrthoGraph.setPort();
+
+    J2DPrint caveTimerText(gP2JMEMgr->mFont, 0.0f);
+    caveTimerText.initiate();
+    caveTimerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
+    caveTimerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
+    caveTimerText.mGlyphWidth = 16.0f;
+    caveTimerText.mGlyphHeight = 16.0f;
+
+	int cMinutes = (int)(mCaveTimer / 60.0f);
+	int cSeconds = (int)mCaveTimer % 60;
+	int cTenths = (mCaveTimer - (int)mCaveTimer) * 10.0f;
+	int sMinutes = (int)(sublevelTimerS / 60.0f);
+	int sSeconds = (int)sublevelTimerS % 60;
+	int sTenths = (sublevelTimerS - (int)sublevelTimerS) * 10.0f;
+    caveTimerText.print(16, 16, 
+		"%d:%.2d.%.1d\n%d:%.2d.%.1d", cMinutes, cSeconds, cTenths, sMinutes, sSeconds, sTenths
+	);
+}
+
 /**
  * @note Address: 0x80217D44
  * @note Size: 0x98
  */
 void CaveState::draw(SingleGameSection* game, Graphics& gfx)
 {
+	// @P2GZ Start - timer
+	f32 dt = sys->getDeltaTime();
+	p2gz->history->peek()->timer += dt;
+	mCaveTimer += dt;
+	// @P2GZ End
+
 	if (!mFadeout) {
 		if (mDrawSave) {
 			game->draw_Ogawa2D(gfx);
@@ -322,6 +350,8 @@ void CaveState::draw(SingleGameSection* game, Graphics& gfx)
 			game->test_draw_treasure_detector();
 		}
 	}
+
+	drawTimer(); // @P2GZ
 }
 
 /**
@@ -724,6 +754,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		pikiMgr->caveSaveAllPikmins(true, true);
 		CaveResultArg arg;
 		arg.mGameState = MapEnter_CaveGeyser;
+		mCaveTimer   = 0.0f;  // @P2GZ
 		transit(game, SGS_CaveResult, &arg);
 		return;
 	} else if (config->is("s09_holein")) {
@@ -823,6 +854,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 			gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 			CaveResultArg statearg;
 			statearg.mGameState = MapEnter_CaveNavisDown;
+			mCaveTimer   = 0.0f;  // @P2GZ
 			transit(game, SGS_CaveResult, &statearg);
 		}
 		return;
@@ -831,6 +863,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		Screen::gGame2DMgr->close_GameOver();
 		CaveResultArg statearg;
 		statearg.mGameState = MapEnter_CaveExtinction;
+		mCaveTimer   = 0.0f;  // @P2GZ
 		transit(game, SGS_CaveResult, &statearg);
 	} else if (config->is("s12_cv_giveup")) {
 		moviePlayer->clearSuspendedDemo();
@@ -849,6 +882,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		pikiMgr->caveSaveAllPikmins(true, true);
 		CaveResultArg statearg;
 		statearg.mGameState = MapEnter_CaveGiveUp;
+		mCaveTimer   = 0.0f;  // @P2GZ
 		transit(game, SGS_CaveResult, &statearg);
 	}
 }
