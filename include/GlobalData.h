@@ -63,6 +63,8 @@ struct P2GZ {
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
+	
+	bool showTimer;
 };
 
 extern P2GZ* p2gz;

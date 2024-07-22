@@ -41,6 +41,8 @@ P2GZ::P2GZ()
     mSelectedArea = 0;
     mSelectedDestination = 0;
     mSublevelNumber = 1;
+    
+    showTimer = true;
 }
 
 void P2GZ::init()

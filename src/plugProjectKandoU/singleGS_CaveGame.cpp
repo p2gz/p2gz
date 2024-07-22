@@ -171,9 +171,6 @@ static bool treasureCutsceneSkipRegistered = false; // @P2GZ
  */
 void CaveState::exec(SingleGameSection* game)
 {
-	p2gz->history->peek()->timer += sys->getDeltaTime();
-	p2gz->drawTimer(); // @P2GZ
-
 	if (mFadeout)
 		return;
 
@@ -230,6 +227,13 @@ void CaveState::exec(SingleGameSection* game)
 			pod->stimulate(interaction);
 			treasureCutsceneSkipRegistered = true;
 		}	
+	}
+	// @P2GZ End
+
+	// @P2GZ Start - In-game timer
+	p2gz->history->peek()->timer += sys->getDeltaTime();
+	if (p2gz->showTimer) {
+		p2gz->drawTimer();
 	}
 	// @P2GZ End
 
