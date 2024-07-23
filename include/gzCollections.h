@@ -25,8 +25,8 @@ struct RingBuffer {
 
 	/// @brief Returns a copy of the entry without removing it
 	/// @return The latest entry in the history
-	T peek() {
-        return buf[(bufHead - 1) % N];
+	T* peek() {
+        return &buf[(bufHead - 1) % N];
     }
 
 private:

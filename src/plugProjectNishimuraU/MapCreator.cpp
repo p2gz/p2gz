@@ -25,18 +25,23 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 		isVersusHiba = true;
 	}
 
-	// @P2GZ Start - record sublevel seeds
+	// @P2GZ Start - record sublevel starting conditions
 	if (p2gz->setCustomNextSeed) {
 		srand(p2gz->nextSeed);
 		p2gz->setCustomNextSeed = false;
 	}
 	u32 seed = getSeed();
 
-	SeedRecord seedRecord;
-	seedRecord.seed = seed;
-	seedRecord.floorIndex = floorInfo->mParms.mFloorIndex1;
+	SegmentRecord record;
+	record.seed = seed;
+	record.floorIndex = floorInfo->mParms.mFloorIndex1;
 
-	p2gz->seedHistory->push(seedRecord);
+	record.squad = playData->mCaveSaveData.mCavePikis;
+	if (p2gz->usePreviousSquad) {
+		record.squad = p2gz->history->peek()->squad;
+	}
+
+	p2gz->history->push(record);
 	OSReport("Generating sublevel with seed %X\n", seed);
 	// @P2GZ End
 

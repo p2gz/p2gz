@@ -1,4 +1,10 @@
 #include "GlobalData.h"
+#include "Game/Piki.h"
+#include "Game/PikiMgr.h"
+#include "Game/PikiState.h"
+#include "Game/MapMgr.h"
+
+using namespace Game;
 
 P2GZ* p2gz;
 
@@ -27,7 +33,7 @@ P2GZ::P2GZ()
 
     setCustomNextSeed = false;
     nextSeed = 0;
-    seedHistory = new RingBuffer<64, SeedRecord>;
+    history = new RingBuffer<64, SegmentRecord>;
     bugPokosCollectedSinceLoad = 0;
     treasurePokosCollectedSinceLoad = 0;
 
