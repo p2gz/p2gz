@@ -141,7 +141,7 @@ for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
 subprocess.run('python3 configure.py --no-check', cwd=DECOMP_ROOT, shell=True)
 subprocess.run('ninja', cwd=DECOMP_ROOT, shell=True)
 shutil.copy2('pikmin2/build/pikmin2.usa/main.dol', 'root/sys/main.dol')
-subprocess.run('git reset', cwd=DECOMP_ROOT, shell=True)
+subprocess.run('git reset', cwd=DECOMP_ROOT, shell=True, stdout=open(os.devnull, 'w'))
 
 print(f'Done! Build took {round(time.time() - start_time, 2)}s')
 

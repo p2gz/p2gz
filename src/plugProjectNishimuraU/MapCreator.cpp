@@ -27,6 +27,12 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	}
 
 	// @P2GZ Start - record sublevel starting conditions
+	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
+	SegmentRecord* previousRecord = p2gz->history->peek();
+	if (previousRecord != nullptr) {
+		previousRecord->endTime = currentTime;
+	}
+
 	if (p2gz->setCustomNextSeed) {
 		srand(p2gz->nextSeed);
 		p2gz->setCustomNextSeed = false;
@@ -36,7 +42,7 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	SegmentRecord record;
 	record.seed = seed;
 	record.floorIndex = floorInfo->mParms.mFloorIndex1;
-	record.startTime = OSTicksToMilliseconds(OSGetTime());;
+	record.startTime = currentTime;
 
 	record.squad = playData->mCaveSaveData.mCavePikis;
 	if (p2gz->usePreviousSquad) {

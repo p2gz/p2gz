@@ -56,9 +56,15 @@ namespace SingleGame {
 void GameState::init(SingleGameSection* game, StateArg* arg)
 {
 	// @P2GZ Start
+	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
+	SegmentRecord* previousRecord = p2gz->history->peek();
+	if (previousRecord != nullptr) {
+		previousRecord->endTime = currentTime;
+	}
+
 	SegmentRecord record;
 	record.squad = playData->mPikiContainer;
-	record.startTime = OSTicksToMilliseconds(OSGetTime());
+	record.startTime = currentTime;
 	p2gz->history->push(record);
 	// @P2GZ End
 

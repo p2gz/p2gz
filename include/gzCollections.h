@@ -18,19 +18,10 @@ struct RingBuffer {
         if (length < N) length++;
     }
 
-	/// @brief Removes value from the history and returns it
-	/// @return The latest entry in the history
-	T pop() {
-        P2ASSERTLINE(24, length > 0);
-        bufHead = (bufHead - 1) % N;
-        length--;
-        return buf[bufHead];
-    }
-
 	/// @brief Returns a copy of the entry without removing it
 	/// @return The latest entry in the history
 	T* peek() {
-        P2ASSERTLINE(33, length > 0);
+        if (length == 0) return nullptr;
         return &buf[(bufHead - 1) % N];
     }
 
