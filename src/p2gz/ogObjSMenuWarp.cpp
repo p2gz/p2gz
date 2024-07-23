@@ -15,6 +15,7 @@
 #include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
 #include "utilityU.h"
+#include "GlobalData.h"
 
 namespace og {
 namespace newScreen {
@@ -56,15 +57,15 @@ ObjSMenuWarp::ObjSMenuWarp(char const* name)
 
 	mAreaLabel = nullptr;
 	mAreaName = nullptr;
-	mSelectedArea = 0;
+	mSelectedArea = p2gz->mSelectedArea;
 
 	mDestinationLabel = nullptr;
 	mDestinationName = nullptr;
-	mSelectedDestination = 0;
+	mSelectedDestination = p2gz->mSelectedDestination;
 
 	mSublevelLabel = nullptr;
 	mSublevelCounter = nullptr;
-	mSublevelNumber = 0;
+	mSublevelNumber = p2gz->mSublevelNumber;
 
 	mGoText = nullptr;
 
@@ -92,15 +93,13 @@ void ObjSMenuWarp::doCreate(JKRArchive* arc)
 
 	mAreaLabel = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tarea'));
 	mAreaName = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tarea_n'));
-	mSelectedArea = 0;
 
 	mDestinationLabel = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tdest'));
 	mDestinationName = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tdest_n'));
-	mSelectedDestination = 0;
 
 	mSublevelLabel = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tsub'));
 	mSublevelCounter = og::Screen::setCallBack_CounterRV(mScreenWarp, 'Tsub01', &mSublevelNumber, 2, false, true, arc);
-	mSublevelNumber = 1;
+	mSublevelNumber = p2gz->mSublevelNumber = mSublevelNumber;;
 
 	mGoText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tgo'));
 
@@ -124,9 +123,9 @@ void ObjSMenuWarp::doCreate(JKRArchive* arc)
 	mSublevelCounter->getMotherPane()->setAlpha(128);
 	mGoText->setAlpha(128);
 
-	mAreaName->setMsgID(areaIDs[0]);
-	mDestinationName->setMsgID(warpIDs[0][0]);
-	mLabels[2]->setMsgID(dayID);
+	mAreaName->setMsgID(areaIDs[mSelectedArea]);
+	mDestinationName->setMsgID(warpIDs[mSelectedArea][mSelectedDestination]);
+	mLabels[2]->setMsgID(mSelectedDestination == 0 ? dayID : sublevelID);
 
 	doCreateAfter(arc, mScreenWarp);
 }
@@ -174,6 +173,7 @@ bool ObjSMenuWarp::doUpdate()
 					ogSound->setError();
 				} else {
 					mSublevelNumber++;
+					p2gz->mSublevelNumber = mSublevelNumber;
 					mSublevelCounter->update();
 				}
 			}
@@ -192,6 +192,7 @@ bool ObjSMenuWarp::doUpdate()
 					ogSound->setError();
 				} else {
 					mSublevelNumber--;
+					p2gz->mSublevelNumber = mSublevelNumber;
 					mSublevelCounter->update();
 				}
 			}
@@ -208,9 +209,11 @@ bool ObjSMenuWarp::doUpdate()
 			switch (mSelectedRow) {
 				case 0:
 				mSelectedArea = (mSelectedArea - 1 + 4) % 4;
+				p2gz->mSelectedArea = mSelectedArea;
 				mAreaName->setMsgID(areaIDs[mSelectedArea]);
 				mDestinationName->setMsgID(warpIDs[mSelectedArea][0]);
 				mSelectedDestination = 0;
+				p2gz->mSelectedDestination = 0;
 				mLabels[2]->setMsgID(dayID);
 				ogSound->setPlusMinus(false);
 				break;
@@ -221,12 +224,14 @@ bool ObjSMenuWarp::doUpdate()
 				}
 				int numDestinations = (mSelectedArea == 0 || mSelectedArea == 3) ? 4 : 5;
 				mSelectedDestination = (mSelectedDestination - 1 + numDestinations) % numDestinations;
+				p2gz->mSelectedDestination = mSelectedDestination;
 				mDestinationName->setMsgID(warpIDs[mSelectedArea][mSelectedDestination]);
 				if (mSelectedDestination == 0) {
 					mLabels[2]->setMsgID(dayID);
 				}
 				if (mSublevelNumber > maxSublevel[mSelectedArea][mSelectedDestination]) {
 					mSublevelNumber = maxSublevel[mSelectedArea][mSelectedDestination];
+					p2gz->mSublevelNumber = mSublevelNumber;
 					mSublevelCounter->update();
 				}
 				ogSound->setPlusMinus(false);
@@ -238,9 +243,11 @@ bool ObjSMenuWarp::doUpdate()
 			switch (mSelectedRow) {
 				case 0:
 				mSelectedArea = (mSelectedArea + 1) % 4;
+				p2gz->mSelectedArea = mSelectedArea;
 				mAreaName->setMsgID(areaIDs[mSelectedArea]);
 				mDestinationName->setMsgID(warpIDs[mSelectedArea][0]);
 				mSelectedDestination = 0;
+				p2gz->mSelectedDestination = 0;
 				mLabels[2]->setMsgID(dayID);
 				ogSound->setPlusMinus(false);
 				break;
@@ -251,12 +258,14 @@ bool ObjSMenuWarp::doUpdate()
 				}
 				int numDestinations = (mSelectedArea == 0 || mSelectedArea == 3) ? 4 : 5;
 				mSelectedDestination = (mSelectedDestination + 1) % numDestinations;
+				p2gz->mSelectedDestination = mSelectedDestination;
 				mDestinationName->setMsgID(warpIDs[mSelectedArea][mSelectedDestination]);
 				if (mSelectedDestination == 0) {
 					mLabels[2]->setMsgID(dayID);
 				}
 				if (mSublevelNumber > maxSublevel[mSelectedArea][mSelectedDestination]) {
 					mSublevelNumber = maxSublevel[mSelectedArea][mSelectedDestination];
+					p2gz->mSublevelNumber = mSublevelNumber;
 					mSublevelCounter->update();
 				}
 				ogSound->setPlusMinus(false);
@@ -273,9 +282,11 @@ bool ObjSMenuWarp::doUpdate()
 				Game::gameSystem->setFlag(Game::GAMESYS_DisableDeathCounter);
 				Game::moviePlayer->reset();
 				Game::moviePlayer->clearSuspendedDemo();
+
 				if (game->mTheExpHeap != nullptr) {
 					PSMCancelToPauseOffMainBgm();
 				}
+
 				Iterator<Game::Onyon> iOnyon(Game::ItemOnyon::mgr);
 				CI_LOOP(iOnyon)
 				{
@@ -283,7 +294,11 @@ bool ObjSMenuWarp::doUpdate()
 					(*iOnyon)->mSuckTimer = 4.0f;
 					(*iOnyon)->forceClose();
 				}
-				game->saveToGeneratorCache(game->mCurrentCourseInfo);
+
+				if (!Game::gameSystem->mIsInCave) {
+					game->saveToGeneratorCache(game->mCurrentCourseInfo);
+				}
+
 				Game::PelletIterator iPellet;
 				CI_LOOP(iPellet)
 				{
@@ -292,10 +307,12 @@ bool ObjSMenuWarp::doUpdate()
 						pellet->kill(nullptr);
 					}
 				}
+
 				Game::PelletCarcass::mgr->resetMgr();
 				Game::PelletFruit::mgr->resetMgr();
 				Game::PelletItem::mgr->resetMgrAndResources();
 				Game::PelletOtakara::mgr->resetMgrAndResources();
+
 				Game::Navi* navi = Game::naviMgr->getAt(NAVIID_Olimar);
 				if (navi->isAlive()) {
 					navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
@@ -304,6 +321,7 @@ bool ObjSMenuWarp::doUpdate()
 					effectsObj->killHamonA_();
 					effectsObj->killHamonB_();
 				}
+
 				navi = Game::naviMgr->getAt(NAVIID_Louie);
 				if (navi->isAlive()) {
 					navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
@@ -312,13 +330,16 @@ bool ObjSMenuWarp::doUpdate()
 					effectsObj->killHamonA_();
 					effectsObj->killHamonB_();
 				}
+
 				Game::pikiMgr->forceEnterPikmins(false);
 				Game::gameSystem->mTimeMgr->setStartTime();
+				
 				if (mSublevelNumber - 1 % 30 == 0) {
 					for (int i = 0; i < 4; i++) {
 						Game::playData->mLimitGen[i].mLoops.all_zero();
 					}
 				}
+
 				Game::gameSystem->mTimeMgr->mDayCount = mSublevelNumber - 1;
 				Game::gameSystem->detachObjectMgr(Game::generalEnemyMgr);
 				Game::gameSystem->detachObjectMgr(Game::mapMgr);
@@ -360,7 +381,10 @@ bool ObjSMenuWarp::doUpdate()
 				Game::playData->mCaveSaveData.mTime = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
 				Game::playData->mCaveSaveData.mCourseIdx = Game::stageList->getCourseInfo(mSelectedArea)->mCourseIndex;
 				Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
-				game->saveToGeneratorCache(game->mCurrentCourseInfo);
+
+				if (!Game::gameSystem->mIsInCave) {
+					game->saveToGeneratorCache(game->mCurrentCourseInfo);
+				}
 
 				game->mCurrentCave = cave;
 				game->mCaveID = caveID;

@@ -52,6 +52,10 @@ struct P2GZ {
 
 	u32 bugPokosCollectedSinceLoad;
 	u32 treasurePokosCollectedSinceLoad;
+
+	int mSelectedArea;
+	int mSelectedDestination;
+	int mSublevelNumber;
 };
 
 extern P2GZ* p2gz;

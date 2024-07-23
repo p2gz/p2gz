@@ -30,6 +30,10 @@ P2GZ::P2GZ()
     seedHistory = new RingBuffer<64, SeedRecord>;
     bugPokosCollectedSinceLoad = 0;
     treasurePokosCollectedSinceLoad = 0;
+
+    mSelectedArea = 0;
+    mSelectedDestination = 0;
+    mSublevelNumber = 1;
 }
 
 void P2GZ::init()

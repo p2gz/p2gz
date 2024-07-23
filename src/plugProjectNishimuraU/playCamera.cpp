@@ -200,9 +200,12 @@ void PlayCamera::doUpdate()
 		setSmoothThetaSpeed();
 	}
 	changeTargetTheta();
+
+	// @P2GZ
     if (!p2gz->mIsScrollingCamera) {
         changeTargetAtPosition();
     }
+
 	setCollisionCameraTargetPhi(flags);
 	updateParms(flags);
 	for (int i = 0; i < 3; i++) {
