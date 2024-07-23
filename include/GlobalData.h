@@ -8,14 +8,13 @@
 
 
 struct SegmentRecord {
-	SegmentRecord() {
-		timer = 0;
-	}
+	SegmentRecord() {}
 
 	u32 seed;
 	int floorIndex;
 	Game::PikiContainer squad;
-	f32 timer;
+	s64 startTime;
+	s64 endTime;
 };
 
 struct P2GZ {
@@ -63,7 +62,7 @@ struct P2GZ {
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
-	
+
 	bool showTimer;
 };
 

@@ -7,6 +7,7 @@
 #include "Dolphin/rand.h" // @P2GZ
 #include "Game/PikiContainer.h" // @P2GZ
 #include "Game/PikiMgr.h" // @P2GZ
+#include "Dolphin/os.h" // @P2GZ
 
 namespace Game {
 namespace Cave {
@@ -35,6 +36,7 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	SegmentRecord record;
 	record.seed = seed;
 	record.floorIndex = floorInfo->mParms.mFloorIndex1;
+	record.startTime = OSTicksToMilliseconds(OSGetTime());;
 
 	record.squad = playData->mCaveSaveData.mCavePikis;
 	if (p2gz->usePreviousSquad) {

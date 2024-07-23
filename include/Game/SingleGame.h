@@ -169,9 +169,7 @@ struct CaveResultState : public State {
 struct CaveState : public State {
 	inline CaveState()
 	    : State(SGS_Cave)
-	{
-		mCaveTimer = 0.0f; // @P2GZ
-	}
+	{}
 
 	virtual void init(SingleGameSection*, StateArg*);                                               // _08
 	virtual void exec(SingleGameSection*);                                                          // _0C
@@ -206,12 +204,12 @@ struct CaveState : public State {
 	u32 _14;           // _14, unknown
 	bool mDrawSave;    // _18
 
-	bool resettingFloor;                 // @P2GZ
+	bool mResettingFloor;                 // @P2GZ
 	u32 numOtakaraCollectedOnCurFloor;   // @P2GZ
 	int otakaraCollectedOnCurFloor[64];  // @P2GZ
 	u32 numItemsCollectedOnCurFloor;     // @P2GZ
 	int itemsCollectedOnCurFloor[64];    // @P2GZ
-	f32 mCaveTimer;                       // @P2GZ
+	s64 mCaveStartTimeMs;                // @P2GZ
 };
 
 struct DayEndArg : public StateArg {

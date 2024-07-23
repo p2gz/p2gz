@@ -30,6 +30,7 @@
 #include "GlobalData.h" // @P2GZ
 #include "JSystem/J2D/J2DPrint.h" // @P2GZ
 #include "P2JME/P2JME.h" //@P2GZ
+#include "Dolphin/os.h" // @P2GZ
 
 // @P2GZ
 #include "Game/CameraMgr.h"
@@ -57,6 +58,7 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	// @P2GZ Start
 	SegmentRecord record;
 	record.squad = playData->mPikiContainer;
+	record.startTime = OSTicksToMilliseconds(OSGetTime());
 	p2gz->history->push(record);
 	// @P2GZ End
 
@@ -1300,7 +1302,8 @@ void GameState::drawRepayDemo(Graphics&)
 
 // @P2GZ
 void GameState::drawTimer() {
-    f32 timerS = p2gz->history->peek()->timer;
+	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
+	s64 timerMs = currentTime - p2gz->history->peek()->startTime;
 
     Graphics* gfx = sys->getGfx();
     gfx->initPerspPrintf(gfx->mCurrentViewport);
@@ -1314,10 +1317,10 @@ void GameState::drawTimer() {
     caveTimerText.mGlyphWidth = 16.0f;
     caveTimerText.mGlyphHeight = 16.0f;
 
-	int minutes = (int)(timerS / 60.0f);
-	int seconds = (int)timerS % 60;
-	int tenths = (timerS - (int)timerS) * 10.0f;
-    caveTimerText.print(16, 16, "%d:%.2d.%.1d", minutes, seconds, tenths);
+	s64 minutes = timerMs / (60 * 1000);
+	s64 seconds = (timerMs / 1000) % 60;
+	s64 tenths = (timerMs / 100) % 10;
+    caveTimerText.print(16, 16, "%lld:%.2lld.%.1lld", minutes, seconds, tenths);
 }
 
 /**
@@ -1326,11 +1329,6 @@ void GameState::drawTimer() {
  */
 void GameState::draw(SingleGameSection* game, Graphics& gfx)
 {
-	// @P2GZ Start - timer
-	f32 dt = sys->getDeltaTime();
-	p2gz->history->peek()->timer += dt;
-	// @P2GZ End
-
 	if (mDoExit) {
 		return;
 	}
