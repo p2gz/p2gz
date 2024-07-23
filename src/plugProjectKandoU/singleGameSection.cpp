@@ -33,6 +33,8 @@
 #include "Game/Entities/PelletCarcass.h"
 #include "PikiAI.h"
 #include "nans.h"
+
+// @P2GZ:
 #include "GlobalData.h"
 
 namespace Game {
@@ -303,6 +305,8 @@ void SingleGameSection::onInit()
  */
 bool SingleGameSection::doUpdate()
 {
+	p2gz->update();
+	
 	if (!mDoEnd) {
 		mFsm->exec(this);
 

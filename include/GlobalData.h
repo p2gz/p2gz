@@ -26,14 +26,24 @@ struct P2GZ {
 	void setCameraScroll(bool);
 
 	bool mIsScrollingCamera; // controlling camera for warping
+	bool mIsSaveLoadPosition;
+	int mScrollCameraZoom;
+
+	int mSelectedPositionSlot;
+	Vector3f mSavedPositions[4];
+
 	f32 mAnimationCoefficient;
 	f32 mDirection;
-	Game::NaviWhistle* mWhistle;
 	
 	J2DPicture* mControlStickPicture;
 	J2DPicture* mCStickPicture;
+	J2DPicture* mAButtonPicture;
 	J2DPicture* mBButtonPicture;
+	J2DPicture* mXButtonPicture;
+	J2DPicture* mYButtonPicture;
 	J2DPicture* mLButtonPicture;
+	J2DPicture* mRButtonPicture;
+	J2DPicture* mZButtonPicture;
 
 	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
 	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
@@ -42,6 +52,10 @@ struct P2GZ {
 
 	u32 bugPokosCollectedSinceLoad;
 	u32 treasurePokosCollectedSinceLoad;
+
+	int mSelectedArea;
+	int mSelectedDestination;
+	int mSublevelNumber;
 };
 
 extern P2GZ* p2gz;

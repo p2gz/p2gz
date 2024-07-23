@@ -11144,6 +11144,46 @@
       "attributes": "00000000"
     },
     {
+      "message": "Warp",
+      "id": {
+        "id": 3013,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "Area",
+      "id": {
+        "id": 3014,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "Dest",
+      "id": {
+        "id": 3015,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "Above Ground",
+      "id": {
+        "id": 3016,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "Go",
+      "id": {
+        "id": 3017,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
       "message": "\u001a40x00000005 Replay (random seed)",
       "id": {
         "id": 3100,
