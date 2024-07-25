@@ -600,6 +600,8 @@ struct ObjSMenuWarp : public ObjSMenuBase {
 	virtual void doUpdateLAction();                       // _98
 	virtual void commonUpdate();                          // _A4
 
+	void updatePreset(); // @P2GZ
+
 	// _00     = VTBL1
 	// _18     = VTBL2
 	// _00-_A8 = ObjSMenuBase
@@ -619,10 +621,14 @@ struct ObjSMenuWarp : public ObjSMenuBase {
 	og::Screen::CallBack_CounterRV* mSublevelCounter;
 	u32 mSublevelNumber;
 
+	J2DTextBoxEx* mPresetLabel;
+	J2DTextBoxEx* mPresetName;
+	int mSelectedPreset;
+
 	J2DTextBoxEx* mGoText;
 
-	J2DTextBoxEx* mLabels[4];
-	J2DTextBoxEx* mSettings[4];
+	J2DTextBoxEx* mLabels[5];
+	J2DTextBoxEx* mSettings[5];
 
 	int mSelectedRow;
 	bool mIsEditingSetting;

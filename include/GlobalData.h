@@ -6,6 +6,22 @@
 #include "gzCollections.h"
 #include "Game/PikiContainer.h"
 
+struct Preset {
+	Preset() {
+		mNumBitters = 0;
+		mNumSpicies = 0;
+	}
+	Preset(const char* presetString);
+
+	void _addByCharCode(char code, u32 count, bool inOnion);
+
+	u64 mMsgId;
+	Game::PikiContainer mSquad;
+	Game::PikiContainer mOnionPikis;
+	u16 mNumBitters;
+	u16 mNumSpicies;
+	// TODO: upgrades
+};
 
 struct SegmentRecord {
 	SegmentRecord() {}
@@ -30,6 +46,8 @@ struct P2GZ {
 	void setCameraScroll(bool);
 
 	void drawTimer();
+	u32 getDefaultPresetId(int area, int destination, int sublevel);
+	void applyPreset(Preset&);
 
 	bool mIsScrollingCamera; // controlling camera for warping
 	bool mIsSaveLoadPosition;
@@ -54,7 +72,7 @@ struct P2GZ {
 	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
 	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
 	bool usePreviousSquad;
-	RingBuffer<64, SegmentRecord>* history;
+	gzCollections::RingBuffer<64, SegmentRecord>* history;
 
 	u32 bugPokosCollectedSinceLoad;
 	u32 treasurePokosCollectedSinceLoad;
@@ -64,6 +82,9 @@ struct P2GZ {
 	int mSublevelNumber;
 
 	bool showTimer;
+	
+	int mSelectedPreset;
+	gzCollections::Vec<Preset> mPresets;
 };
 
 extern P2GZ* p2gz;
