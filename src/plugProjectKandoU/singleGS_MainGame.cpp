@@ -1316,17 +1316,17 @@ void GameState::drawTimer() {
     gfx->initPrimDraw(nullptr);
     gfx->mOrthoGraph.setPort();
 
-    J2DPrint caveTimerText(gP2JMEMgr->mFont, 0.0f);
-    caveTimerText.initiate();
-    caveTimerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
-    caveTimerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
-    caveTimerText.mGlyphWidth = 16.0f;
-    caveTimerText.mGlyphHeight = 16.0f;
+    J2DPrint timerText(gP2JMEMgr->mFont, 0.0f);
+    timerText.initiate();
+    timerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
+    timerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
+    timerText.mGlyphWidth = 16.0f;
+    timerText.mGlyphHeight = 16.0f;
 
 	s64 minutes = timerMs / (60 * 1000);
 	s64 seconds = (timerMs / 1000) % 60;
 	s64 tenths = (timerMs / 100) % 10;
-    caveTimerText.print(16, 16, "%lld:%.2lld.%.1lld", minutes, seconds, tenths);
+    timerText.print(16, 16, "%lld:%.2lld.%.1lld", minutes, seconds, tenths);
 }
 
 /**
