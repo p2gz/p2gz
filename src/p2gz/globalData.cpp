@@ -1,4 +1,5 @@
 #include "GlobalData.h"
+#include "DefaultPresets.h"
 #include "GZMacros.h"
 #include "Game/Piki.h"
 #include "Game/PikiMgr.h"
@@ -43,16 +44,10 @@ P2GZ::P2GZ()
     mSelectedDestination = 0;
     mSublevelNumber = 1;
     mSelectedPresetIndex = 0;
-    
+
     showTimer = true;
 
-    #include "DefaultPresets.h" // God is dead and it's all our fault
-    size_t numPresets = sizeof(DEFAULT_PRESETS) / sizeof(DEFAULT_PRESETS[0]);
-    mPresets = gzCollections::Vec<Preset>(numPresets);
-    for (size_t i = 0; i < numPresets; i++) {
-        Preset preset = DEFAULT_PRESETS[i];
-        mPresets.push(preset);
-    }
+    mPresets = getDefaultPresets();
 }
 
 void P2GZ::init()
@@ -144,16 +139,38 @@ s64 P2GZ::getDefaultPresetId(int area, int destination, int sublevel) {
             return '3224_00';
         }
     }
-    
+
     return '3299_00'; // testing preset
 }
 
 void P2GZ::applyPreset(Preset& preset) {
+    // GameStat::mePikis.clear(); // clear sprouts
     playData->mCaveSaveData.mCavePikis = preset.mSquad;
-    playData->mPikiContainer = preset.mSquad;
+    playData->mPikiContainer = preset.mOnionPikis;
+
     playData->mSprayCount[0] = preset.mNumSpicies;
     playData->mSprayCount[1] = preset.mNumBitters;
-    // TODO: onion pikmin
+
+    // Set flags for having each pikmin type's onion
+    for (int pikiColor = White; pikiColor >= 0; pikiColor--) {
+        if (preset.mSquad.getColorSum(pikiColor) > 0 || preset.mOnionPikis.getColorSum(pikiColor) > 0) {
+            if (pikiColor <= LastOnyon) {
+                playData->setBootContainer(pikiColor);
+            }
+            playData->setContainer(pikiColor);
+            playData->setMeetPikmin(pikiColor);
+        }
+    }
+
+    // Set cutscene flags
+    for (size_t i = 0; i < preset.mCutsceneFlags.len(); i++) {
+        playData->mDemoFlags.setFlag(preset.mCutsceneFlags[i]);
+    }
+}
+
+Preset::Preset() {
+    mNumBitters = 0;
+    mNumSpicies = 0;
 }
 
 Preset& Preset::setMsgId(s64 msgId) {
@@ -174,5 +191,13 @@ Preset& Preset::setOnionPikmin(int happa, int color, int amount) {
 Preset& Preset::setSprays(int spicies, int bitters) {
     mNumSpicies = spicies;
     mNumBitters = bitters;
+    return *this;
+}
+
+Preset& Preset::addCutsceneFlags(u16 flags[], size_t numFlags) {
+    mCutsceneFlags.expandCapacityTo(mCutsceneFlags.len() + numFlags);
+    for (size_t i = 0; i < numFlags; i++) {
+        mCutsceneFlags.push(flags[i]);
+    }
     return *this;
 }

@@ -7,21 +7,20 @@
 #include "Game/PikiContainer.h"
 
 struct Preset {
-	Preset() {
-		mNumBitters = 0;
-		mNumSpicies = 0;
-	}
+	Preset();
 
 	Preset& setMsgId(s64 msgId);
 	Preset& setPikmin(int happa, int color, int amount);
 	Preset& setOnionPikmin(int happa, int color, int amount);
 	Preset& setSprays(int spicies, int bitters);
+	Preset& addCutsceneFlags(u16 flags[], size_t numFlags);
 
 	s64 mMsgId;
 	Game::PikiContainer mSquad;
 	Game::PikiContainer mOnionPikis;
 	u16 mNumBitters;
 	u16 mNumSpicies;
+	gzCollections::Vec<u16> mCutsceneFlags;
 	// TODO: upgrades
 };
 
@@ -61,7 +60,7 @@ struct P2GZ {
 
 	f32 mAnimationCoefficient;
 	f32 mDirection;
-	
+
 	J2DPicture* mControlStickPicture;
 	J2DPicture* mCStickPicture;
 	J2DPicture* mAButtonPicture;

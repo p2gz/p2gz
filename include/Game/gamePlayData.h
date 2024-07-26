@@ -437,7 +437,7 @@ struct PlayData : public CNode {
 		for (int i = 0; i < 2; i++) {
 			output.textWriteTab(output.mTabCount);
 			output.writeInt(mBerryCount[i]);
-			sprintf(textBuffer, "\t# dope-?¿½?¿½[%d]\r\n", i); // 'dope-berry'
+			sprintf(textBuffer, "\t# dope-?ï¿½ï¿½?ï¿½ï¿½[%d]\r\n", i); // 'dope-berry'
 			output.textWriteText(textBuffer);
 		}
 	}

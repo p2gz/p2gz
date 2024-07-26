@@ -175,7 +175,6 @@ void ObjSMenuWarp::commonUpdate()
 // @P2GZ
 void ObjSMenuWarp::updatePreset() {
 	s64 defaultPresetId = p2gz->getDefaultPresetId(mSelectedArea, mSelectedDestination, mSublevelNumber);
-	OSReport("default preset message ID: %lld\n", defaultPresetId);
 	for (size_t i = 0; i < p2gz->mPresets.len(); i++) {
 		if (p2gz->mPresets[i].mMsgId == defaultPresetId) {
 			mSelectedPresetIndex = i;
