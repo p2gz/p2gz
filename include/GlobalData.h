@@ -11,11 +11,13 @@ struct Preset {
 		mNumBitters = 0;
 		mNumSpicies = 0;
 	}
-	Preset(const char* presetString);
 
-	void _addByCharCode(char code, u32 count, bool inOnion);
+	Preset& setMsgId(s64 msgId);
+	Preset& setPikmin(int happa, int color, int amount);
+	Preset& setOnionPikmin(int happa, int color, int amount);
+	Preset& setSprays(int spicies, int bitters);
 
-	u64 mMsgId;
+	s64 mMsgId;
 	Game::PikiContainer mSquad;
 	Game::PikiContainer mOnionPikis;
 	u16 mNumBitters;
@@ -46,7 +48,8 @@ struct P2GZ {
 	void setCameraScroll(bool);
 
 	void drawTimer();
-	u32 getDefaultPresetId(int area, int destination, int sublevel);
+	Preset& getPresetByMsgId(s64 msgId);
+	s64 getDefaultPresetId(int area, int destination, int sublevel);
 	void applyPreset(Preset&);
 
 	bool mIsScrollingCamera; // controlling camera for warping
@@ -80,10 +83,10 @@ struct P2GZ {
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
+	int mSelectedPresetIndex;
 
 	bool showTimer;
-	
-	int mSelectedPreset;
+
 	gzCollections::Vec<Preset> mPresets;
 };
 

@@ -623,7 +623,7 @@ struct ObjSMenuWarp : public ObjSMenuBase {
 
 	J2DTextBoxEx* mPresetLabel;
 	J2DTextBoxEx* mPresetName;
-	int mSelectedPreset;
+	int mSelectedPresetIndex;
 
 	J2DTextBoxEx* mGoText;
 
