@@ -27,6 +27,10 @@
 #include "nans.h"
 #include "utilityU.h"
 #include "Game/NaviState.h"
+#include "GlobalData.h" // @P2GZ
+#include "JSystem/J2D/J2DPrint.h" // @P2GZ
+#include "P2JME/P2JME.h" //@P2GZ
+#include "Dolphin/os.h" // @P2GZ
 
 // @P2GZ
 #include "Game/CameraMgr.h"
@@ -51,6 +55,19 @@ namespace SingleGame {
  */
 void GameState::init(SingleGameSection* game, StateArg* arg)
 {
+	// @P2GZ Start
+	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
+	SegmentRecord* previousRecord = p2gz->history->peek();
+	if (previousRecord != nullptr) {
+		previousRecord->endTime = currentTime;
+	}
+
+	SegmentRecord record;
+	record.squad = playData->mPikiContainer;
+	record.startTime = currentTime;
+	p2gz->history->push(record);
+	// @P2GZ End
+
 	DeathMgr::mSoundDeathCount = 0;
 	moviePlayer->reset();
 	gameSystem->setFlag(GAMESYS_IsGameWorldActive);
@@ -1289,6 +1306,29 @@ void GameState::drawRepayDemo(Graphics&)
 	// UNUSED FUNCTION
 }
 
+// @P2GZ
+void GameState::drawTimer() {
+	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
+	s64 timerMs = currentTime - p2gz->history->peek()->startTime;
+
+    Graphics* gfx = sys->getGfx();
+    gfx->initPerspPrintf(gfx->mCurrentViewport);
+    gfx->initPrimDraw(nullptr);
+    gfx->mOrthoGraph.setPort();
+
+    J2DPrint timerText(gP2JMEMgr->mFont, 0.0f);
+    timerText.initiate();
+    timerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
+    timerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
+    timerText.mGlyphWidth = 16.0f;
+    timerText.mGlyphHeight = 16.0f;
+
+	s64 minutes = timerMs / (60 * 1000);
+	s64 seconds = (timerMs / 1000) % 60;
+	s64 tenths = (timerMs / 100) % 10;
+    timerText.print(16, 16, "%lld:%.2lld.%.1lld", minutes, seconds, tenths);
+}
+
 /**
  * @note Address: 0x802174B8
  * @note Size: 0x78
@@ -1307,6 +1347,8 @@ void GameState::draw(SingleGameSection* game, Graphics& gfx)
 	game->BaseGameSection::doDraw(gfx);
 	game->drawMainMapScreen();
 	game->test_draw_treasure_detector();
+
+	drawTimer(); // @P2GZ
 }
 
 /**

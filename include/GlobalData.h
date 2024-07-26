@@ -6,12 +6,15 @@
 #include "gzCollections.h"
 #include "Game/PikiContainer.h"
 
+
 struct SegmentRecord {
 	SegmentRecord() {}
 
 	u32 seed;
 	int floorIndex;
 	Game::PikiContainer squad;
+	s64 startTime;
+	s64 endTime;
 };
 
 struct P2GZ {
@@ -25,6 +28,8 @@ struct P2GZ {
 
 	bool isCameraScroll();
 	void setCameraScroll(bool);
+
+	void drawTimer();
 
 	bool mIsScrollingCamera; // controlling camera for warping
 	bool mIsSaveLoadPosition;
@@ -57,6 +62,8 @@ struct P2GZ {
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
+
+	bool showTimer;
 };
 
 extern P2GZ* p2gz;

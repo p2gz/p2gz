@@ -3,6 +3,7 @@
 #include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
 #include "Game/MapMgr.h"
+#include "JSystem/J2D/J2DPrint.h"
 
 using namespace Game;
 
@@ -40,6 +41,8 @@ P2GZ::P2GZ()
     mSelectedArea = 0;
     mSelectedDestination = 0;
     mSublevelNumber = 1;
+    
+    showTimer = true;
 }
 
 void P2GZ::init()

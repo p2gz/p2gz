@@ -31,6 +31,9 @@
 #include "Game/Entities/ItemPikihead.h"
 #include "nans.h"
 #include "GlobalData.h" // @P2GZ
+#include "JSystem/J2D/J2DPrint.h" // @P2GZ
+#include "P2JME/P2JME.h" //@P2GZ
+#include "Dolphin/os.h" // @P2GZ
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -49,13 +52,18 @@ void CaveState::init(SingleGameSection* game, StateArg* arg)
 	mLosePellets = false;
 	mDrawSave    = false;
 
-	// @P2GZ
-	{
-		resettingFloor = false;
-		numItemsCollectedOnCurFloor = 0;
-		numOtakaraCollectedOnCurFloor = 0;
+	// @P2GZ Start
+	// start full cave timer
+	if (static_cast<RoomMapMgr*>(mapMgr)->mSublevel == 0 && !mResettingFloor) {
+		// this runs after the segment's start time is set, so we can't just get the current time.
+		// instead we share the start time with the first sublevel's start time
+		mCaveStartTimeMs = p2gz->history->peek()->startTime;
 	}
-	
+
+	mResettingFloor = false;
+	numItemsCollectedOnCurFloor = 0;
+	numOtakaraCollectedOnCurFloor = 0;
+	// @P2GZ End
 
 	game->setupCaveGames();
 	game->mIsExitingMap = false;
@@ -152,15 +160,13 @@ void CaveState::resetNavi(Game::Navi* navi) {
 
 // @P2GZ
 void CaveState::resetEverythingForLevelTransition(SingleGameSection* game) {
-	resettingFloor = true;
+	mResettingFloor = true;
 
 	resetNavi(Game::naviMgr->getAt(NAVIID_Olimar));
 	resetNavi(Game::naviMgr->getAt(NAVIID_Louie));
 
 	// reset collected treasures and bugs
 	onMovieCommand(game, 0);
-
-	resettingFloor = false;
 }
 
 static bool treasureCutsceneSkipRegistered = false; // @P2GZ
@@ -297,6 +303,35 @@ void CaveState::exec(SingleGameSection* game)
 	}
 }
 
+// @P2GZ
+void CaveState::drawTimer() {
+	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
+    s64 sublevelTimerMs = currentTime - p2gz->history->peek()->startTime;
+	s64 caveTimerMs = currentTime - mCaveStartTimeMs;
+
+    Graphics* gfx = sys->getGfx();
+    gfx->initPerspPrintf(gfx->mCurrentViewport);
+    gfx->initPrimDraw(nullptr);
+    gfx->mOrthoGraph.setPort();
+
+    J2DPrint caveTimerText(gP2JMEMgr->mFont, 0.0f);
+    caveTimerText.initiate();
+    caveTimerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
+    caveTimerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
+    caveTimerText.mGlyphWidth = 16.0f;
+    caveTimerText.mGlyphHeight = 16.0f;
+
+	s64 cMinutes = caveTimerMs / (60 * 1000);
+	s64 cSeconds = (caveTimerMs / 1000) % 60;
+	s64 cTenths = (caveTimerMs / 100) % 10;
+	s64 sMinutes = sublevelTimerMs / (60 * 1000);
+	s64 sSeconds = (sublevelTimerMs / 1000) % 60;
+	s64 sTenths = (sublevelTimerMs / 100) % 10;
+    caveTimerText.print(16, 16, 
+		"%lld:%.2lld.%.1lld\n%lld:%.2lld.%.1lld", cMinutes, cSeconds, cTenths, sMinutes, sSeconds, sTenths
+	);
+}
+
 /**
  * @note Address: 0x80217D44
  * @note Size: 0x98
@@ -315,6 +350,8 @@ void CaveState::draw(SingleGameSection* game, Graphics& gfx)
 			game->test_draw_treasure_detector();
 		}
 	}
+
+	drawTimer(); // @P2GZ
 }
 
 /**
@@ -495,14 +532,14 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 
 		KindCounter& counter = mem->mOtakara;
 		for (int i = 0; i < counter.getNumKinds(); i++) {
-			if (resettingFloor && !hasCollectedOtakaraOnCurrentFloor(i)) continue;  // @P2GZ
+			if (mResettingFloor && !hasCollectedOtakaraOnCurrentFloor(i)) continue;  // @P2GZ
 			if (counter(i)) {
 				lost += counter(i);
 			}
 		}
 		KindCounter& counter2 = mem->mItem;
 		for (int i = 0; i < counter2.getNumKinds(); i++) {
-			if (resettingFloor && !hasCollectedItemOnCurrentFloor(i)) continue;  // @P2GZ
+			if (mResettingFloor && !hasCollectedItemOnCurrentFloor(i)) continue;  // @P2GZ
 			if (counter2(i)) {
 				lost += counter2(i);
 			}
@@ -524,7 +561,7 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 			pelmgr               = PelletOtakara::mgr;
 			KindCounter& counter = mem->mOtakara;
 			for (int i = 0; i < counter.getNumKinds(); i++) {
-				if (resettingFloor && !hasCollectedOtakaraOnCurrentFloor(i)) continue;  // @P2GZ
+				if (mResettingFloor && !hasCollectedOtakaraOnCurrentFloor(i)) continue;  // @P2GZ
 				int j = 0;
 				for (int k = 0; k < counter(i); k++) {
 					pelmgr->getPelletConfig(i);
@@ -545,7 +582,7 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 			for (int i = 0; i < counter3.getNumKinds(); i++) {
 				int j = 0;
 				for (int k = 0; k < counter3(i); k++) {
-					if (resettingFloor && !hasCollectedItemOnCurrentFloor(i)) continue;  // @P2GZ
+					if (mResettingFloor && !hasCollectedItemOnCurrentFloor(i)) continue;  // @P2GZ
 					pelmgr->getPelletConfig(i);
 					if (randFloat() <= calc / (f32)lost) {
 						pelmgr->getPelletConfig(i);
@@ -619,7 +656,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 	// @P2GZ End
 
 	if (config->is("s0B_cv_coursein")) {
-		// @P2GZ - restore pikmin squad on restart sublevel
+		// @P2GZ Start - restore pikmin squad on restart sublevel
 		if (p2gz->usePreviousSquad) {
 			PikiContainer startingSquad = p2gz->history->peek()->squad;
 			playData->mCaveSaveData.mCavePikis = startingSquad;
@@ -627,14 +664,14 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 			game->createFallPikmins();
 			p2gz->usePreviousSquad = false;
 		}
+		// @P2GZ End
 
 		game->createFallPikminSound();
 		
-		// @P2GZ - reset poko counters
-		{
-			p2gz->bugPokosCollectedSinceLoad = 0;
-			p2gz->treasurePokosCollectedSinceLoad = 0;
-		}
+		// @P2GZ Start
+		p2gz->bugPokosCollectedSinceLoad = 0;
+		p2gz->treasurePokosCollectedSinceLoad = 0;
+		// @P2GZ End
 	}
 	Screen::gGame2DMgr->startFadeBG_Floor();
 	if (config->is("s05_pikminzero")) {
