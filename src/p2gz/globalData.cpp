@@ -1,4 +1,6 @@
 #include "GlobalData.h"
+#include "DefaultPresets.h"
+#include "GZMacros.h"
 #include "Game/Piki.h"
 #include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
@@ -34,15 +36,18 @@ P2GZ::P2GZ()
 
     setCustomNextSeed = false;
     nextSeed = 0;
-    history = new RingBuffer<64, SegmentRecord>;
+    history = new gzCollections::RingBuffer<64, SegmentRecord>;
     bugPokosCollectedSinceLoad = 0;
     treasurePokosCollectedSinceLoad = 0;
 
     mSelectedArea = 0;
     mSelectedDestination = 0;
     mSublevelNumber = 1;
-    
+    mSelectedPresetIndex = 0;
+
     showTimer = true;
+
+    mPresets = getDefaultPresets();
 }
 
 void P2GZ::init()
@@ -83,4 +88,116 @@ void P2GZ::update()
 f32 P2GZ::getAnimationCoefficient()
 {
     return mAnimationCoefficient;
+}
+
+Preset& P2GZ::getPresetByMsgId(s64 msgId) {
+    for (size_t i = 0; i < mPresets.len(); i++) {
+        Preset& preset = mPresets[i];
+        if (preset.mMsgId == msgId) return preset;
+    }
+    GZASSERTLINE(0);
+}
+
+s64 P2GZ::getDefaultPresetId(int area, int destination, int sublevel) {
+    switch (area) {
+    case 0: // VoR
+        switch (destination) {
+        case 0: // AG
+            if (sublevel < 7) return '3215_00';
+            else return '3216_00';
+        case 1: // EC
+            return '3200_00';
+        case 2: // SCx
+            if (sublevel < 5) return '3217_00';
+            else return '3219_00';
+        case 3: // FC
+            return '3221_00';
+        }
+    case 1: // AW
+        switch (destination) {
+        case 0: // AG
+            return '3209_00'; // hardcoded for Enter BK
+        case 1: // HoB
+            if (sublevel < 3) return '3202_00';
+            else if (sublevel < 5) return '3203_00';
+            else return '3204_00';
+        case 2: // WFG
+            if (sublevel < 4) return '3204_00';
+            else return '3205_00';
+        case 3: // BK
+            return '3213_00';
+        case 4: // SH
+            if (sublevel < 3) return '3206_00';
+            else return '3207_00';
+        }
+    case 2: // PP
+        switch (destination) {
+        case 0: // AG
+            return '3223_00';
+        case 1: // CoS
+        case 2: // GK
+            return '3224_00';
+        }
+    }
+
+    return '3299_00'; // testing preset
+}
+
+void P2GZ::applyPreset(Preset& preset) {
+    // GameStat::mePikis.clear(); // clear sprouts
+    playData->mCaveSaveData.mCavePikis = preset.mSquad;
+    playData->mPikiContainer = preset.mOnionPikis;
+
+    playData->mSprayCount[0] = preset.mNumSpicies;
+    playData->mSprayCount[1] = preset.mNumBitters;
+
+    // Set flags for having each pikmin type's onion
+    for (int pikiColor = White; pikiColor >= 0; pikiColor--) {
+        if (preset.mSquad.getColorSum(pikiColor) > 0 || preset.mOnionPikis.getColorSum(pikiColor) > 0) {
+            if (pikiColor <= LastOnyon) {
+                playData->setBootContainer(pikiColor);
+            }
+            playData->setContainer(pikiColor);
+            playData->setMeetPikmin(pikiColor);
+        }
+    }
+
+    // Set cutscene flags
+    for (size_t i = 0; i < preset.mCutsceneFlags.len(); i++) {
+        playData->mDemoFlags.setFlag(preset.mCutsceneFlags[i]);
+    }
+}
+
+Preset::Preset() {
+    mNumBitters = 0;
+    mNumSpicies = 0;
+}
+
+Preset& Preset::setMsgId(s64 msgId) {
+    mMsgId = msgId;
+    return *this;
+}
+
+Preset& Preset::setPikmin(int happa, int color, int amount) {
+    mSquad.getCount(color, happa) += amount;
+    return *this;
+}
+
+Preset& Preset::setOnionPikmin(int happa, int color, int amount) {
+    mOnionPikis.getCount(color, happa) += amount;
+    return *this;
+}
+
+Preset& Preset::setSprays(int spicies, int bitters) {
+    mNumSpicies = spicies;
+    mNumBitters = bitters;
+    return *this;
+}
+
+Preset& Preset::addCutsceneFlags(u16 flags[], size_t numFlags) {
+    mCutsceneFlags.expandCapacityTo(mCutsceneFlags.len() + numFlags);
+    for (size_t i = 0; i < numFlags; i++) {
+        mCutsceneFlags.push(flags[i]);
+    }
+    return *this;
 }

@@ -6,6 +6,23 @@
 #include "gzCollections.h"
 #include "Game/PikiContainer.h"
 
+struct Preset {
+	Preset();
+
+	Preset& setMsgId(s64 msgId);
+	Preset& setPikmin(int happa, int color, int amount);
+	Preset& setOnionPikmin(int happa, int color, int amount);
+	Preset& setSprays(int spicies, int bitters);
+	Preset& addCutsceneFlags(u16 flags[], size_t numFlags);
+
+	s64 mMsgId;
+	Game::PikiContainer mSquad;
+	Game::PikiContainer mOnionPikis;
+	u16 mNumBitters;
+	u16 mNumSpicies;
+	gzCollections::Vec<u16> mCutsceneFlags;
+	// TODO: upgrades
+};
 
 struct SegmentRecord {
 	SegmentRecord() {}
@@ -30,6 +47,9 @@ struct P2GZ {
 	void setCameraScroll(bool);
 
 	void drawTimer();
+	Preset& getPresetByMsgId(s64 msgId);
+	s64 getDefaultPresetId(int area, int destination, int sublevel);
+	void applyPreset(Preset&);
 
 	bool mIsScrollingCamera; // controlling camera for warping
 	bool mIsSaveLoadPosition;
@@ -40,7 +60,7 @@ struct P2GZ {
 
 	f32 mAnimationCoefficient;
 	f32 mDirection;
-	
+
 	J2DPicture* mControlStickPicture;
 	J2DPicture* mCStickPicture;
 	J2DPicture* mAButtonPicture;
@@ -54,7 +74,7 @@ struct P2GZ {
 	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
 	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
 	bool usePreviousSquad;
-	RingBuffer<64, SegmentRecord>* history;
+	gzCollections::RingBuffer<64, SegmentRecord>* history;
 
 	u32 bugPokosCollectedSinceLoad;
 	u32 treasurePokosCollectedSinceLoad;
@@ -62,8 +82,11 @@ struct P2GZ {
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
+	int mSelectedPresetIndex;
 
 	bool showTimer;
+
+	gzCollections::Vec<Preset> mPresets;
 };
 
 extern P2GZ* p2gz;

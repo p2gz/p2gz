@@ -67,6 +67,10 @@ ObjSMenuWarp::ObjSMenuWarp(char const* name)
 	mSublevelCounter = nullptr;
 	mSublevelNumber = p2gz->mSublevelNumber;
 
+	mPresetLabel = nullptr;
+	mPresetName = nullptr;
+	mSelectedPresetIndex = 0;
+
 	mGoText = nullptr;
 
 	mIsEditingSetting = false;
@@ -99,7 +103,11 @@ void ObjSMenuWarp::doCreate(JKRArchive* arc)
 
 	mSublevelLabel = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tsub'));
 	mSublevelCounter = og::Screen::setCallBack_CounterRV(mScreenWarp, 'Tsub01', &mSublevelNumber, 2, false, true, arc);
-	mSublevelNumber = p2gz->mSublevelNumber = mSublevelNumber;;
+	mSublevelNumber = p2gz->mSublevelNumber = mSublevelNumber;
+
+	mPresetLabel = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tpreset'));
+	mPresetName = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tprese_n'));
+	mSelectedPresetIndex = p2gz->mSelectedPresetIndex;
 
 	mGoText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenWarp, 'Tgo'));
 
@@ -109,22 +117,27 @@ void ObjSMenuWarp::doCreate(JKRArchive* arc)
 	mLabels[0] = mAreaLabel;
 	mLabels[1] = mDestinationLabel;
 	mLabels[2] = mSublevelLabel;
-	mLabels[3] = mGoText;
+	mLabels[3] = mPresetLabel;
+	mLabels[4] = mGoText;
 
 	mSettings[0] = mAreaName;
 	mSettings[1] = mDestinationName;
 	mSettings[2] = nullptr;
-	mSettings[3] = nullptr;
+	mSettings[3] = mPresetName;
+	mSettings[4] = nullptr;
 
 	mAreaName->setAlpha(128);
 	mDestinationLabel->setAlpha(128);
 	mDestinationName->setAlpha(128);
 	mSublevelLabel->setAlpha(128);
 	mSublevelCounter->getMotherPane()->setAlpha(128);
+	mPresetLabel->setAlpha(128);
+	mPresetName->setAlpha(128);
 	mGoText->setAlpha(128);
 
 	mAreaName->setMsgID(areaIDs[mSelectedArea]);
 	mDestinationName->setMsgID(warpIDs[mSelectedArea][mSelectedDestination]);
+	mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId);
 	mLabels[2]->setMsgID(mSelectedDestination == 0 ? dayID : sublevelID);
 
 	doCreateAfter(arc, mScreenWarp);
@@ -159,6 +172,19 @@ void ObjSMenuWarp::commonUpdate()
 	mScreenWarp->update();
 }
 
+// @P2GZ
+void ObjSMenuWarp::updatePreset() {
+	s64 defaultPresetId = p2gz->getDefaultPresetId(mSelectedArea, mSelectedDestination, mSublevelNumber);
+	for (size_t i = 0; i < p2gz->mPresets.len(); i++) {
+		if (p2gz->mPresets[i].mMsgId == defaultPresetId) {
+			mSelectedPresetIndex = i;
+			p2gz->mSelectedPresetIndex = i;
+			break;
+		}
+	}
+	mPresetName->setMsgID(defaultPresetId);
+}
+
 bool ObjSMenuWarp::doUpdate()
 {
 	commonUpdate();
@@ -175,12 +201,13 @@ bool ObjSMenuWarp::doUpdate()
 					mSublevelNumber++;
 					p2gz->mSublevelNumber = mSublevelNumber;
 					mSublevelCounter->update();
+					updatePreset();
 				}
 			}
 		} else {
 			mLabels[mSelectedRow]->setAlpha(128);
 			mLabels[mSelectedRow]->update();
-			mSelectedRow = (mSelectedRow - 1 + 4) % 4;
+			mSelectedRow = (mSelectedRow - 1 + 5) % 5;
 			mLabels[mSelectedRow]->setAlpha(255);
 			mLabels[mSelectedRow]->update();
 			ogSound->setPlusMinus(false);
@@ -194,12 +221,13 @@ bool ObjSMenuWarp::doUpdate()
 					mSublevelNumber--;
 					p2gz->mSublevelNumber = mSublevelNumber;
 					mSublevelCounter->update();
+					updatePreset();
 				}
 			}
 		} else {
 			mLabels[mSelectedRow]->setAlpha(128);
 			mLabels[mSelectedRow]->update();
-			mSelectedRow = (mSelectedRow + 1) % 4;
+			mSelectedRow = (mSelectedRow + 1) % 5;
 			mLabels[mSelectedRow]->setAlpha(255);
 			mLabels[mSelectedRow]->update();
 			ogSound->setPlusMinus(false);
@@ -216,6 +244,7 @@ bool ObjSMenuWarp::doUpdate()
 				p2gz->mSelectedDestination = 0;
 				mLabels[2]->setMsgID(dayID);
 				ogSound->setPlusMinus(false);
+				updatePreset();
 				break;
 
 				case 1:
@@ -235,6 +264,15 @@ bool ObjSMenuWarp::doUpdate()
 					mSublevelCounter->update();
 				}
 				ogSound->setPlusMinus(false);
+				updatePreset();
+				break;
+
+				case 3:
+				int numPresets = p2gz->mPresets.len();
+				mSelectedPresetIndex = (mSelectedPresetIndex - 1 + numPresets) % numPresets;
+				p2gz->mSelectedPresetIndex = mSelectedPresetIndex;
+				mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId); 
+				ogSound->setPlusMinus(false);
 				break;
 			}
 		}
@@ -250,6 +288,7 @@ bool ObjSMenuWarp::doUpdate()
 				p2gz->mSelectedDestination = 0;
 				mLabels[2]->setMsgID(dayID);
 				ogSound->setPlusMinus(false);
+				updatePreset();
 				break;
 
 				case 1:
@@ -269,11 +308,19 @@ bool ObjSMenuWarp::doUpdate()
 					mSublevelCounter->update();
 				}
 				ogSound->setPlusMinus(false);
+				updatePreset();
+				break;
+
+				case 3:
+				mSelectedPresetIndex = (mSelectedPresetIndex + 1) % p2gz->mPresets.len();
+				p2gz->mSelectedPresetIndex = mSelectedPresetIndex;
+				mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId); 
+				ogSound->setPlusMinus(false);
 				break;
 			}
 		}
 	} else if (input & Controller::PRESS_A) {
-		if (mSelectedRow == 3) {
+		if (mSelectedRow == 4) {
 			Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 
 			if (mSelectedDestination == 0) {
@@ -347,10 +394,11 @@ bool ObjSMenuWarp::doUpdate()
 				game->mIsGameStarted = false;
 				game->mCurrentCourseInfo = Game::stageList->getCourseInfo(mSelectedArea);
 
+				p2gz->applyPreset(p2gz->mPresets[mSelectedPresetIndex]);
+
 				Game::SingleGame::LoadArg arg(0, false, false, false);
 				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 			} else {
-				bool isEmptySquad = true;
 
 				Iterator<Game::Piki> iterator(Game::pikiMgr);
 				CI_LOOP(iterator)
@@ -360,17 +408,9 @@ bool ObjSMenuWarp::doUpdate()
 						int state = piki->getStateID();
 						if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop && piki->mNavi
 							&& (!caveIDs[mSelectedArea][mSelectedDestination] != 'y_04' || piki->getKind() == Game::Blue)) {
-							isEmptySquad = false;
 							Game::playData->mCaveSaveData.mCavePikis(piki)++;
 						}
 					}
-				}
-
-				if (isEmptySquad) {
-					ogSound->setError();
-					mCancelToState = MENUCLOSE_Finish;
-					doUpdateCancelAction();
-					return true;
 				}
 
 				ID32 caveID(Game::stageList->getCourseInfo(mSelectedArea)->getCaveID_FromIndex(mSelectedDestination - 1));
@@ -391,6 +431,8 @@ bool ObjSMenuWarp::doUpdate()
 				game->mCaveIndex = caveID.getID();
 				game->mCurrentFloor = mSublevelNumber - 1;
 				strcpy(game->mCaveFilename, cave->mCaveFilename);
+
+				p2gz->applyPreset(p2gz->mPresets[mSelectedPresetIndex]);
 
 				Game::SingleGame::LoadArg arg(100, true, false, false);
 				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);

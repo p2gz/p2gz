@@ -11184,6 +11184,14 @@
       "attributes": "00000000"
     },
     {
+      "message": "Preset",
+      "id": {
+        "id": 3018,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
       "message": "\u001a40x00000005 Replay (random seed)",
       "id": {
         "id": 3100,
@@ -11203,6 +11211,222 @@
       "message": "\u001a40x00000007 Replay (increment seed)",
       "id": {
         "id": 3102,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD EC",
+      "id": {
+        "id": 3200,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter HoB",
+      "id": {
+        "id": 3201,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD HoB1",
+      "id": {
+        "id": 3202,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD HoB2-4",
+      "id": {
+        "id": 3203,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD HoB5-WFG3",
+      "id": {
+        "id": 3204,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD WFG4-Enter SH",
+      "id": {
+        "id": 3205,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SH1-2",
+      "id": {
+        "id": 3206,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SH3-7",
+      "id": {
+        "id": 3207,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SH7 (+5W)",
+      "id": {
+        "id": 3208,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter BK",
+      "id": {
+        "id": 3209,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter BK (+2B)",
+      "id": {
+        "id": 3210,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter BK (+5W)",
+      "id": {
+        "id": 3211,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter BK (+5W +2B)",
+      "id": {
+        "id": 3212,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD BK1-BK7",
+      "id": {
+        "id": 3213,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD BK1-BK7 (+5W)",
+      "id": {
+        "id": 3214,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter SCx (Day 6)",
+      "id": {
+        "id": 3215,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter SCx (Day 7)",
+      "id": {
+        "id": 3216,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SCx1-4",
+      "id": {
+        "id": 3217,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SCx1-4 (+5W)",
+      "id": {
+        "id": 3218,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SCx5-Enter FC",
+      "id": {
+        "id": 3219,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD SCx5-Enter FC (40W)",
+      "id": {
+        "id": 3220,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD FC1-FC7",
+      "id": {
+        "id": 3221,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD FC1-FC7 (+5W)",
+      "id": {
+        "id": 3222,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter CoS",
+      "id": {
+        "id": 3223,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD CoS1-GK6",
+      "id": {
+        "id": 3224,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD CoS1-GK6 (+5W)",
+      "id": {
+        "id": 3225,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "Max Everything",
+      "id": {
+        "id": 3299,
         "sub_id": 0
       },
       "attributes": "00000000"
