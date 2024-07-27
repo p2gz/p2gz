@@ -30,6 +30,9 @@
 #include "LoadResource.h"
 #include "Dolphin/__start.h"
 
+// @P2GZ
+#include "GlobalData.h"
+
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth
 	                                                 448, // efbHeight
@@ -307,7 +310,7 @@ void preUserCallback(u16, OSContext*, u32, u32)
 		JUTException::sConsole->startPrint(3, "--- Game debug information ---\n");
 		JUTConsoleManager::sManager->drawDirect(true);
 	} else {
-		OSReport("?¿½R?¿½?¿½?¿½\\?¿½[?¿½?¿½?¿½?¿½?¿½?¿½?¿½?¿½Ü‚ï¿½?¿½?¿½\n"); // 'no console'
+		OSReport("?ï¿½ï¿½R?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½\\?ï¿½ï¿½[?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½Ü‚ï¿½?ï¿½ï¿½?ï¿½ï¿½\n"); // 'no console'
 	}
 }
 

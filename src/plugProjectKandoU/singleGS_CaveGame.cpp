@@ -30,7 +30,11 @@
 #include "PSSystem/PSMainSide_Scene.h"
 #include "Game/Entities/ItemPikihead.h"
 #include "nans.h"
-#include "GlobalData.h" // @P2GZ
+
+// @P2GZ
+#include "GlobalData.h"
+#include "JSystem/J2D/J2DPrint.h"
+#include "Dolphin/rand.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -173,6 +177,41 @@ void CaveState::exec(SingleGameSection* game)
 {
 	if (mFadeout)
 		return;
+	
+	OSReport("read %d times since last CaveState::exec. RNG seed is %d\n", p2gz->mNumGamePadReads, getSeed());
+	p2gz->mNumGamePadReads = 0;
+	p2gz->mNumCaveStateExecs++;
+
+	// @P2GZ start - toggle global flag for recording and replaying inputs
+	if (p2gz->mIntendToRecordInputs && !p2gz->mIsRecordingInputs) {
+		P2ASSERT(!p2gz->mIsReplayingInputs);
+		OSReport("Started recording inputs\n");
+
+		p2gz->mIntendToRecordInputs = false;
+		p2gz->mIsRecordingInputs = true;
+		p2gz->mCurrentInputFrame = 0;
+	}
+
+	if (p2gz->mIntendToReplayInputs && !p2gz->mIsReplayingInputs) {
+		P2ASSERT(!p2gz->mIsRecordingInputs);
+		OSReport("Starting replay of %d input frames\n", p2gz->mCurrentInputFrame);
+
+		p2gz->mIntendToReplayInputs = false;
+		p2gz->mIsReplayingInputs = true;
+		p2gz->mCurrentInputFrame = 0;
+	}
+
+	if (p2gz->mIsReplayingInputs) {
+		J2DPrint print(JFWSystem::systemFont, 0.0f);
+		print.initiate();
+		print.mCharColor.set(JUtility::TColor(255, 255, 255, 128 * p2gz->getAnimationCoefficient()));
+		print.mGradientColor.set(JUtility::TColor(255, 255, 255, 128 * p2gz->getAnimationCoefficient()));
+		print.mGlyphWidth = 8.0f;
+		print.mGlyphHeight = 8.0f;
+		
+		print.print(50, 50, "Watching replay (press any button to exit)");
+	}
+	// @P2GZ end
 
     // @P2GZ Start - replay same sublevel
     if (moviePlayer->isPlaying("s09_holein")) {
@@ -189,6 +228,10 @@ void CaveState::exec(SingleGameSection* game)
 			retry = true;
 			useCustomSeed = true;
 			nextSeed = p2gz->history->peek()->seed;
+			
+			p2gz->mIsRecordingInputs = false;
+			p2gz->mIntendToReplayInputs = true;
+			p2gz->mShit = false;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
 			// Increment seed
@@ -211,6 +254,7 @@ void CaveState::exec(SingleGameSection* game)
 			playData->mCavePokoCount -= p2gz->treasurePokosCollectedSinceLoad;
 
 			p2gz->usePreviousSquad = true;
+			p2gz->mNumCaveStateExecs = 0;
 			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
 			transit(game, SGS_Load, &arg);
 		}

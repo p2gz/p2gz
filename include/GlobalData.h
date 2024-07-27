@@ -5,6 +5,22 @@
 #include "Game/Navi.h"
 #include "gzCollections.h"
 #include "Game/PikiContainer.h"
+#include "JSystem/JUtility/JUTGamePad.h"
+
+struct ControllerInput {
+	ControllerInput() {}
+	ControllerInput(PADStatus status, JUTGamePad::CButton button, JUTGamePad::CStick mStick, JUTGamePad::CStick sStick) {
+		mPadStatus = status;
+		mPadButton = button;
+		mPadMStick = mStick;
+		mPadSStick = sStick;
+	}
+
+	PADStatus mPadStatus;
+	JUTGamePad::CButton mPadButton;
+	JUTGamePad::CStick mPadMStick;
+	JUTGamePad::CStick mPadSStick;
+};
 
 struct SegmentRecord {
 	SegmentRecord() {}
@@ -57,6 +73,16 @@ struct P2GZ {
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
+
+	ControllerInput mControllerInputs[5400]; // 30fps * 60s * 3m
+	int mCurrentInputFrame;
+	bool mIntendToRecordInputs;
+	bool mIsRecordingInputs;
+	bool mIntendToReplayInputs;
+	bool mIsReplayingInputs;
+	bool mShit;
+	int mNumCaveStateExecs;
+	int mNumGamePadReads;
 };
 
 extern P2GZ* p2gz;

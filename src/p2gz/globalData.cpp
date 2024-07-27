@@ -40,6 +40,15 @@ P2GZ::P2GZ()
     mSelectedArea = 0;
     mSelectedDestination = 0;
     mSublevelNumber = 1;
+
+    mCurrentInputFrame = 0;
+    mIntendToRecordInputs = true;
+    mIsRecordingInputs = false;
+    mIntendToReplayInputs = false;
+    mIsReplayingInputs = false;
+    mShit = false;
+    mNumCaveStateExecs = 0;
+    mNumGamePadReads = 0;
 }
 
 void P2GZ::init()
