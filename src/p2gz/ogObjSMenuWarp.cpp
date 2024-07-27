@@ -426,6 +426,7 @@ bool ObjSMenuWarp::doUpdate()
 					game->saveToGeneratorCache(game->mCurrentCourseInfo);
 				}
 
+				game->mCurrentCourseInfo = Game::stageList->getCourseInfo(mSelectedArea);
 				game->mCurrentCave = cave;
 				game->mCaveID = caveID;
 				game->mCaveIndex = caveID.getID();
