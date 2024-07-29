@@ -28,14 +28,14 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 
 	// @P2GZ Start - record sublevel starting conditions
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	SegmentRecord* previousRecord = p2gz->history->peek();
+	SegmentRecord* previousRecord = p2gz->mHistory->peek();
 	if (previousRecord != nullptr) {
 		previousRecord->endTime = currentTime;
 	}
 
-	if (p2gz->setCustomNextSeed) {
-		srand(p2gz->nextSeed);
-		p2gz->setCustomNextSeed = false;
+	if (p2gz->mSetCustomNextSeed) {
+		srand(p2gz->mNextSeed);
+		p2gz->mSetCustomNextSeed = false;
 	}
 	u32 seed = getSeed();
 
@@ -43,13 +43,9 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	record.seed = seed;
 	record.floorIndex = floorInfo->mParms.mFloorIndex1;
 	record.startTime = currentTime;
-
 	record.squad = playData->mCaveSaveData.mCavePikis;
-	if (p2gz->usePreviousSquad) {
-		record.squad = p2gz->history->peek()->squad;
-	}
 
-	p2gz->history->push(record);
+	p2gz->mHistory->push(record);
 	OSReport("Generating sublevel with seed %X\n", seed);
 	// @P2GZ End
 

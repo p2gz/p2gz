@@ -29,6 +29,8 @@ struct SegmentRecord {
 
 	u32 seed;
 	int floorIndex;
+	int areaIndex;
+	int destinationIndex;
 	Game::PikiContainer squad;
 	s64 startTime;
 	s64 endTime;
@@ -51,6 +53,9 @@ struct P2GZ {
 	s64 getDefaultPresetId(int area, int destination, int sublevel);
 	void applyPreset(Preset&);
 
+	void warpToSelectedCave(Game::PikiContainer* squad);
+	void warpToSelectedArea();
+
 	bool mIsScrollingCamera; // controlling camera for warping
 	bool mIsSaveLoadPosition;
 	int mScrollCameraZoom;
@@ -71,20 +76,20 @@ struct P2GZ {
 	J2DPicture* mRButtonPicture;
 	J2DPicture* mZButtonPicture;
 
-	bool setCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
-	u32 nextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
-	bool usePreviousSquad;
-	gzCollections::RingBuffer<64, SegmentRecord>* history;
+	bool mSetCustomNextSeed; // whether to apply nextSeed next time a sublevel is generated
+	u32 mNextSeed;           // the seed to use for the next sublevel if setCustomNextSeed is true
+	gzCollections::RingBuffer<64, SegmentRecord>* mHistory;
 
-	u32 bugPokosCollectedSinceLoad;
-	u32 treasurePokosCollectedSinceLoad;
+	u32 mBugPokosCollectedSinceLoad;
+	u32 mTreasurePokosCollectedSinceLoad;
 
 	int mSelectedArea;
 	int mSelectedDestination;
 	int mSublevelNumber;
 	int mSelectedPresetIndex;
 
-	bool showTimer;
+	bool mShowTimer;
+	s64 mCaveStartTimeMs;
 
 	gzCollections::Vec<Preset> mPresets;
 };

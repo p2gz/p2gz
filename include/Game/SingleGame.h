@@ -205,11 +205,10 @@ struct CaveState : public State {
 	bool mDrawSave;    // _18
 
 	bool mResettingFloor;                 // @P2GZ
-	u32 numOtakaraCollectedOnCurFloor;   // @P2GZ
-	int otakaraCollectedOnCurFloor[64];  // @P2GZ
-	u32 numItemsCollectedOnCurFloor;     // @P2GZ
-	int itemsCollectedOnCurFloor[64];    // @P2GZ
-	s64 mCaveStartTimeMs;                // @P2GZ
+	u32 mNumOtakaraCollectedOnCurFloor;   // @P2GZ
+	int mOtakaraCollectedOnCurFloor[64];  // @P2GZ
+	u32 mNumItemsCollectedOnCurFloor;     // @P2GZ
+	int mItemsCollectedOnCurFloor[64];    // @P2GZ
 };
 
 struct DayEndArg : public StateArg {

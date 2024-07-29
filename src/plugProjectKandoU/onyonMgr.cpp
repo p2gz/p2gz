@@ -490,15 +490,15 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 			playData->mCavePokoCount += money;
 			// @P2GZ Start - track pokos for this segment
 			if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
-				p2gz->treasurePokosCollectedSinceLoad += money;
+				p2gz->mTreasurePokosCollectedSinceLoad += money;
 			}
 			else if (pellet->getKind() == PelletType::Carcass) {
-				p2gz->bugPokosCollectedSinceLoad += money;
+				p2gz->mBugPokosCollectedSinceLoad += money;
 			}
 			// @P2GZ End
 		} else {
 			gameSystem->mSection->mMoney += money;
-			p2gz->treasurePokosCollectedSinceLoad += money; // @P2GZ
+			p2gz->mTreasurePokosCollectedSinceLoad += money; // @P2GZ
 		}
 	}
 
