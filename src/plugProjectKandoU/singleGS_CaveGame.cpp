@@ -172,17 +172,6 @@ void CaveState::resetNavi(Game::Navi* navi) {
 	}
 }
 
-// @P2GZ
-void CaveState::resetEverythingForLevelTransition(SingleGameSection* game) {
-	mResettingFloor = true;
-
-	resetNavi(Game::naviMgr->getAt(NAVIID_Olimar));
-	resetNavi(Game::naviMgr->getAt(NAVIID_Louie));
-
-	// reset collected treasures and bugs
-	onMovieCommand(game, 0);
-}
-
 static bool treasureCutsceneSkipRegistered = false; // @P2GZ
 
 /**
@@ -254,7 +243,12 @@ void CaveState::exec(SingleGameSection* game)
 				}
 			}
 
+			// reset collected treasures and bugs
+			mResettingFloor = true;
+			onMovieCommand(game, 0);
+
 			p2gz->warpToSelectedCave(squad);
+			return;
 		}
     }
 	// @P2GZ End
@@ -264,10 +258,14 @@ void CaveState::exec(SingleGameSection* game)
 		if (!treasureCutsceneSkipRegistered && (strcmp(gameSystem->mMovieAction, "moviePl:skip") == 0)) {
 			Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
 			Onyon* pod = ItemOnyon::mgr->mPod;
-			pod->mFlags.set(CF_IsMovieExtra);
-			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
-			pod->stimulate(interaction);
-			treasureCutsceneSkipRegistered = true;
+			if (pellet != nullptr && pod != nullptr) {
+				pod->mFlags.set(CF_IsMovieExtra);
+				if (!pellet->mIsCaptured) {
+					InteractSuckDone interaction = InteractSuckDone(pellet, 0);
+					pod->stimulate(interaction);
+				}
+				treasureCutsceneSkipRegistered = true;
+			}
 		}
 	}
 	// @P2GZ End
@@ -659,7 +657,7 @@ void CaveState::registerPelletCollectedOnCurFloor(Pellet* pellet) {
 		if (cfg == pellet->mConfig) {
 			mOtakaraCollectedOnCurFloor[mNumOtakaraCollectedOnCurFloor] = i;
 			mNumOtakaraCollectedOnCurFloor++;
-			break;
+			return;
 		}
 	}
 
@@ -669,7 +667,7 @@ void CaveState::registerPelletCollectedOnCurFloor(Pellet* pellet) {
 		if (cfg == pellet->mConfig) {
 			mItemsCollectedOnCurFloor[mNumItemsCollectedOnCurFloor] = i;
 			mNumItemsCollectedOnCurFloor++;
-			break;
+			return;
 		}
 	}
 }

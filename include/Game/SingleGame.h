@@ -184,7 +184,6 @@ struct CaveState : public State {
 	virtual void on_section_fadeout(SingleGameSection*);                                            // _40
 
 	void resetNavi(Game::Navi* navi);                                // @P2GZ
-	void resetEverythingForLevelTransition(SingleGameSection* game); // @P2GZ
 	void registerPelletCollectedOnCurFloor(Pellet* pellet);          // @P2GZ
 
 	bool hasCollectedItemOnCurrentFloor(int);    // @P2GZ
