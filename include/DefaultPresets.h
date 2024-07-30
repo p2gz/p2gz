@@ -8,28 +8,28 @@ using namespace Game;
 
 gzCollections::Vec<Preset> getDefaultPresets() {
     u16 ec_cflags[] = {
-        DEMO_Pluck_First_Pikmin, \
-        DEMO_Discover_Treasure, \
-        DEMO_First_Gate_Down, \
-        DEMO_First_Nectar_Use, \
-        DEMO_Day_One_Start, \
-        DEMO_Meet_Red_Pikmin, \
-        DEMO_Louie_Finds_Red_Onion, \
-        DEMO_Unlock_Captain_Switch, \
-        DEMO_First_Use_Louie, \
-        DEMO_Reunite_Captains, \
+        DEMO_Pluck_First_Pikmin,
+        DEMO_Discover_Treasure,
+        DEMO_First_Gate_Down,
+        DEMO_First_Nectar_Use,
+        DEMO_Day_One_Start,
+        DEMO_Meet_Red_Pikmin,
+        DEMO_Louie_Finds_Red_Onion,
+        DEMO_Unlock_Captain_Switch,
+        DEMO_First_Use_Louie,
+        DEMO_Reunite_Captains,
         DEMO_First_Number_Pellet
     };
 
     u16 hob_cflags[] = {
-        DEMO_Find_Cave_Deeper_Hole, \
-        DEMO_Find_Cave_Geyser, \
-        DEMO_First_Cave_Enter, \
-        DEMO_First_Cave_Return, \
-        DEMO_First_Globe_Day_End, \
-        DEMO_Purple_Candypop, \
-        DEMO_Enter_Awakening_Wood, \
-        DEMO_First_Corpse_In_Cave, \
+        DEMO_Find_Cave_Deeper_Hole,
+        DEMO_Find_Cave_Geyser,
+        DEMO_First_Cave_Enter,
+        DEMO_First_Cave_Return,
+        DEMO_First_Globe_Day_End,
+        DEMO_Purple_Candypop,
+        DEMO_Enter_Awakening_Wood,
+        DEMO_First_Corpse_In_Cave,
         DEMO_Purples_In_Ship
     };
 
