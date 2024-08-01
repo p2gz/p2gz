@@ -244,7 +244,7 @@ void CaveState::exec(SingleGameSection* game)
 			}
 
 			// reset collected treasures and bugs
-			mResettingFloor = true;
+			mResettingFloor = nextFloor == 1;
 			onMovieCommand(game, 0);
 
 			p2gz->warpToSelectedCave(squad);
