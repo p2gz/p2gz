@@ -1,10 +1,21 @@
 #include "GlobalData.h"
+#include "utilityU.h"
 #include "DefaultPresets.h"
 #include "GZMacros.h"
 #include "Game/Piki.h"
 #include "Game/PikiMgr.h"
+#include "PikiAI.h"
 #include "Game/PikiState.h"
 #include "Game/MapMgr.h"
+#include "Game/NaviState.h"
+#include "Game/SingleGame.h"
+#include "Game/MoviePlayer.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/Entities/ItemCave.h"
+#include "Game/Entities/PelletCarcass.h"
+#include "Game/Entities/PelletFruit.h"
+#include "Game/Entities/PelletItem.h"
+#include "Game/Entities/PelletOtakara.h"
 #include "JSystem/J2D/J2DPrint.h"
 
 using namespace Game;
@@ -34,18 +45,19 @@ P2GZ::P2GZ()
     mAnimationCoefficient = 0.0f;
     mDirection = 1.0f;
 
-    setCustomNextSeed = false;
-    nextSeed = 0;
-    history = new gzCollections::RingBuffer<64, SegmentRecord>;
-    bugPokosCollectedSinceLoad = 0;
-    treasurePokosCollectedSinceLoad = 0;
+    mSetCustomNextSeed = false;
+    mNextSeed = 0;
+    mHistory = new gzCollections::RingBuffer<64, SegmentRecord>;
+    mBugPokosCollectedSinceLoad = 0;
+    mTreasurePokosCollectedSinceLoad = 0;
 
     mSelectedArea = 0;
     mSelectedDestination = 0;
     mSublevelNumber = 1;
     mSelectedPresetIndex = 0;
 
-    showTimer = true;
+    mShowTimer = true;
+    mCaveStartTimeMs = 0;
 
     mPresets = getDefaultPresets();
 }
@@ -88,6 +100,134 @@ void P2GZ::update()
 f32 P2GZ::getAnimationCoefficient()
 {
     return mAnimationCoefficient;
+}
+
+void P2GZ::warpToSelectedCave(PikiContainer* squad) {
+    Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+    Iterator<Game::Piki> iterator(Game::pikiMgr);
+    CI_LOOP(iterator)
+    {
+        Game::Piki* piki = *iterator;
+        if (piki->isAlive() && piki->getCurrActionID() == PikiAI::ACT_Formation) {
+            int state = piki->getStateID();
+            if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop && piki->mNavi
+                //    Check if we're in SmC
+                && (!(mSelectedArea == 2 && mSelectedDestination != 3) || piki->getKind() == Game::Blue)) {
+                Game::playData->mCaveSaveData.mCavePikis(piki)++;
+            }
+        }
+    }
+
+    ID32 caveID(Game::stageList->getCourseInfo(mSelectedArea)->getCaveID_FromIndex(mSelectedDestination - 1));
+    Game::ItemCave::Item* cave = new Game::ItemCave::Item;
+    cave->mCaveID = caveID;
+    cave->mCaveFilename = Game::stageList->getCourseInfo(mSelectedArea)->getCaveinfoFilename_FromID(caveID);
+
+    Game::playData->mCaveSaveData.mTime = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
+    Game::playData->mCaveSaveData.mCourseIdx = Game::stageList->getCourseInfo(mSelectedArea)->mCourseIndex;
+    Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
+
+    if (!Game::gameSystem->mIsInCave) {
+        game->saveToGeneratorCache(game->mCurrentCourseInfo);
+    }
+
+    game->mCurrentCourseInfo = Game::stageList->getCourseInfo(mSelectedArea);
+    game->mCurrentCave = cave;
+    game->mCaveID = caveID;
+    game->mCaveIndex = caveID.getID();
+    game->mCurrentFloor = mSublevelNumber - 1;
+    strcpy(game->mCaveFilename, cave->mCaveFilename);
+
+    if (squad != nullptr) {
+        Preset preset = mPresets[mSelectedPresetIndex];
+        preset.mSquad = *squad;
+        applyPreset(preset);
+    }
+    else {
+        applyPreset(mPresets[mSelectedPresetIndex]);
+    }
+
+    Game::SingleGame::LoadArg arg(100, true, false, false);
+    game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
+}
+
+void P2GZ::warpToSelectedArea() {
+    Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+
+    // TODO: Probably not all of this is necessary - copy-paste from DayEndState::exec()
+    Game::gameSystem->resetFlag(Game::GAMESYS_IsGameWorldActive);
+    Game::gameSystem->setFlag(Game::GAMESYS_DisableDeathCounter);
+    Game::moviePlayer->reset();
+    Game::moviePlayer->clearSuspendedDemo();
+
+    if (game->mTheExpHeap != nullptr) {
+        PSMCancelToPauseOffMainBgm();
+    }
+
+    Iterator<Game::Onyon> iOnyon(Game::ItemOnyon::mgr);
+    CI_LOOP(iOnyon)
+    {
+        (*iOnyon)->setSpotEffectActive(false);
+        (*iOnyon)->mSuckTimer = 4.0f;
+        (*iOnyon)->forceClose();
+    }
+
+    if (!Game::gameSystem->mIsInCave) {
+        game->saveToGeneratorCache(game->mCurrentCourseInfo);
+    }
+
+    Game::PelletIterator iPellet;
+    CI_LOOP(iPellet)
+    {
+        Game::Pellet* pellet = *iPellet;
+        if (pellet->isAlive() && pellet->mCaptureMatrix == nullptr) {
+            pellet->kill(nullptr);
+        }
+    }
+
+    Game::PelletCarcass::mgr->resetMgr();
+    Game::PelletFruit::mgr->resetMgr();
+    Game::PelletItem::mgr->resetMgrAndResources();
+    Game::PelletOtakara::mgr->resetMgrAndResources();
+
+    Game::Navi* navi = Game::naviMgr->getAt(NAVIID_Olimar);
+    if (navi->isAlive()) {
+        navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
+        efx::TNaviEffect* effectsObj = navi->mEffectsObj;
+        effectsObj->mFlags.unset(efx::NAVIFX_InWater);
+        effectsObj->killHamonA_();
+        effectsObj->killHamonB_();
+    }
+
+    navi = Game::naviMgr->getAt(NAVIID_Louie);
+    if (navi->isAlive()) {
+        navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
+        efx::TNaviEffect* effectsObj = navi->mEffectsObj;
+        effectsObj->mFlags.unset(efx::NAVIFX_InWater);
+        effectsObj->killHamonA_();
+        effectsObj->killHamonB_();
+    }
+
+    Game::pikiMgr->forceEnterPikmins(false);
+    Game::gameSystem->mTimeMgr->setStartTime();
+
+    if (mSublevelNumber % 30 == 0) {
+        for (int i = 0; i < 4; i++) {
+            Game::playData->mLimitGen[i].mLoops.all_zero();
+        }
+    }
+
+    Game::gameSystem->mTimeMgr->mDayCount = mSublevelNumber;
+    Game::gameSystem->detachObjectMgr(generalEnemyMgr);
+    Game::gameSystem->detachObjectMgr(mapMgr);
+
+    game->mIsGameStarted = false;
+    game->mCurrentCourseInfo = Game::stageList->getCourseInfo(mSelectedArea);
+
+    applyPreset(mPresets[mSelectedPresetIndex]);
+
+    Game::SingleGame::LoadArg arg(0, false, false, false);
+    game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 }
 
 Preset& P2GZ::getPresetByMsgId(s64 msgId) {

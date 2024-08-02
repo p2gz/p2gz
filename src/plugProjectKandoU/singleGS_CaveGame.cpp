@@ -53,16 +53,30 @@ void CaveState::init(SingleGameSection* game, StateArg* arg)
 	mDrawSave    = false;
 
 	// @P2GZ Start
+	SegmentRecord* record = p2gz->mHistory->peek();
+	CourseInfo* course = playData->getCurrentCourse();
+	record->mAreaIndex = course->mCourseIndex;
+	record->mDestinationIndex = course->getCaveIndex_FromID(game->mCaveID) + 1;
+
 	// start full cave timer
-	if (static_cast<RoomMapMgr*>(mapMgr)->mSublevel == 0 && !mResettingFloor) {
+	bool isWarpingToCave = false;
+	SegmentRecord* prevRecord = p2gz->mHistory->peekN(1);
+	if (prevRecord == nullptr
+	    || prevRecord->mDestinationIndex != record->mDestinationIndex
+		|| prevRecord->mAreaIndex != record->mAreaIndex)
+	{
+		isWarpingToCave = true;
+	}
+
+	if ((record->mFloorIndex == 0 && !mResettingFloor) || isWarpingToCave || p2gz->mCaveStartTimeMs == 0) {
 		// this runs after the segment's start time is set, so we can't just get the current time.
 		// instead we share the start time with the first sublevel's start time
-		mCaveStartTimeMs = p2gz->history->peek()->startTime;
+		p2gz->mCaveStartTimeMs = p2gz->mHistory->peek()->mStartTime;
 	}
 
 	mResettingFloor = false;
-	numItemsCollectedOnCurFloor = 0;
-	numOtakaraCollectedOnCurFloor = 0;
+	mNumItemsCollectedOnCurFloor = 0;
+	mNumOtakaraCollectedOnCurFloor = 0;
 	// @P2GZ End
 
 	game->setupCaveGames();
@@ -158,17 +172,6 @@ void CaveState::resetNavi(Game::Navi* navi) {
 	}
 }
 
-// @P2GZ
-void CaveState::resetEverythingForLevelTransition(SingleGameSection* game) {
-	mResettingFloor = true;
-
-	resetNavi(Game::naviMgr->getAt(NAVIID_Olimar));
-	resetNavi(Game::naviMgr->getAt(NAVIID_Louie));
-
-	// reset collected treasures and bugs
-	onMovieCommand(game, 0);
-}
-
 static bool treasureCutsceneSkipRegistered = false; // @P2GZ
 
 /**
@@ -181,10 +184,11 @@ void CaveState::exec(SingleGameSection* game)
 		return;
 
     // @P2GZ Start - replay same sublevel
-    if (moviePlayer->isPlaying("s09_holein")) {
+    if (moviePlayer->isPlaying("s09_holein") || moviePlayer->isPlaying("s0C_cv_escape")) {
 		bool retry = false;
 		bool useCustomSeed = false;
 		u32 nextSeed = 0;
+		int nextFloor = game->getCurrFloor() + 1; // warping functions use 1-indexed numbers
 
 		if (game->mControllerP1->getButtonDown() & Controller::PRESS_Z) {
 			// Random seed
@@ -194,31 +198,57 @@ void CaveState::exec(SingleGameSection* game)
 			// Same seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->history->peek()->seed;
+			nextSeed = p2gz->mHistory->peek()->mSeed;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
 			// Increment seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->history->peek()->seed + 1;
+			nextSeed = p2gz->mHistory->peek()->mSeed + 1;
+		}
+		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_DPAD_DOWN) {
+			// Restart cave
+			retry = true;
+			nextFloor = 1; // warping functions use 1-indexed numbers
 		}
 
 		if (retry) {
-			playData->setCurrentCaveFloor(game->getCurrFloor() - 1);
-			resetEverythingForLevelTransition(game);
+			// Set the current area and destination number in case they're not already set
+			CourseInfo* course = playData->getCurrentCourse();
+			p2gz->mSelectedArea = course->mCourseIndex;
+			p2gz->mSelectedDestination = course->getCaveIndex_FromID(game->mCaveID) + 1;
+
+			p2gz->mSublevelNumber = nextFloor;
 
 			if (useCustomSeed) {
-				p2gz->setCustomNextSeed = true;
-				p2gz->nextSeed = nextSeed;
+				p2gz->mSetCustomNextSeed = true;
+				p2gz->mNextSeed = nextSeed;
 			}
 
 			// Reset money
-			playData->mCavePokoCount -= p2gz->bugPokosCollectedSinceLoad;
-			playData->mCavePokoCount -= p2gz->treasurePokosCollectedSinceLoad;
+			playData->mCavePokoCount -= p2gz->mBugPokosCollectedSinceLoad;
+			playData->mCavePokoCount -= p2gz->mTreasurePokosCollectedSinceLoad;
 
-			p2gz->usePreviousSquad = true;
-			LoadArg arg(MapEnter_CaveGeyser, true, false, false);
-			transit(game, SGS_Load, &arg);
+			// Reset squad to the one we entered the cave with when restarting from floor 1
+			// If we didn't enter from floor 1, just use our current squad.
+			// TBD: is this desired behavior?
+			PikiContainer* squad = &p2gz->mHistory->peek()->mSquad;
+			if (nextFloor == 1) {
+				for (size_t i = 0; i < p2gz->mHistory->len(); i++) {
+					SegmentRecord* record = p2gz->mHistory->peekN(i);
+					if (record != nullptr && record->mFloorIndex == 0) {
+						squad = &record->mSquad;
+						break;
+					}
+				}
+			}
+
+			// reset collected treasures and bugs
+			mResettingFloor = nextFloor == 1;
+			onMovieCommand(game, 0);
+
+			p2gz->warpToSelectedCave(squad);
+			return;
 		}
     }
 	// @P2GZ End
@@ -228,11 +258,15 @@ void CaveState::exec(SingleGameSection* game)
 		if (!treasureCutsceneSkipRegistered && (strcmp(gameSystem->mMovieAction, "moviePl:skip") == 0)) {
 			Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
 			Onyon* pod = ItemOnyon::mgr->mPod;
-			pod->mFlags.set(CF_IsMovieExtra);
-			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
-			pod->stimulate(interaction);
-			treasureCutsceneSkipRegistered = true;
-		}	
+			if (pellet != nullptr && pod != nullptr) {
+				pod->mFlags.set(CF_IsMovieExtra);
+				if (!pellet->mIsCaptured) {
+					InteractSuckDone interaction = InteractSuckDone(pellet, 0);
+					pod->stimulate(interaction);
+				}
+				treasureCutsceneSkipRegistered = true;
+			}
+		}
 	}
 	// @P2GZ End
 
@@ -306,8 +340,8 @@ void CaveState::exec(SingleGameSection* game)
 // @P2GZ
 void CaveState::drawTimer() {
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-    s64 sublevelTimerMs = currentTime - p2gz->history->peek()->startTime;
-	s64 caveTimerMs = currentTime - mCaveStartTimeMs;
+    s64 sublevelTimerMs = currentTime - p2gz->mHistory->peek()->mStartTime;
+	s64 caveTimerMs = currentTime - p2gz->mCaveStartTimeMs;
 
     Graphics* gfx = sys->getGfx();
     gfx->initPerspPrintf(gfx->mCurrentViewport);
@@ -327,7 +361,7 @@ void CaveState::drawTimer() {
 	s64 sMinutes = sublevelTimerMs / (60 * 1000);
 	s64 sSeconds = (sublevelTimerMs / 1000) % 60;
 	s64 sTenths = (sublevelTimerMs / 100) % 10;
-    caveTimerText.print(16, 16, 
+    caveTimerText.print(16, 16,
 		"%lld:%.2lld.%.1lld\n%lld:%.2lld.%.1lld", cMinutes, cSeconds, cTenths, sMinutes, sSeconds, sTenths
 	);
 }
@@ -601,16 +635,16 @@ void CaveState::onMovieCommand(SingleGameSection* game, int command)
 }
 
 bool CaveState::hasCollectedItemOnCurrentFloor(int treasureId) {
-	for (int i = 0; i < numItemsCollectedOnCurFloor; i++) {
-		int collectedTreasureId = itemsCollectedOnCurFloor[i];
+	for (int i = 0; i < mNumItemsCollectedOnCurFloor; i++) {
+		int collectedTreasureId = mItemsCollectedOnCurFloor[i];
 		if (collectedTreasureId == treasureId) return true;
 	}
 	return false;
 }
 
 bool CaveState::hasCollectedOtakaraOnCurrentFloor(int treasureId) {
-	for (int i = 0; i < numOtakaraCollectedOnCurFloor; i++) {
-		int collectedTreasureId = otakaraCollectedOnCurFloor[i];
+	for (int i = 0; i < mNumOtakaraCollectedOnCurFloor; i++) {
+		int collectedTreasureId = mOtakaraCollectedOnCurFloor[i];
 		if (collectedTreasureId == treasureId) return true;
 	}
 	return false;
@@ -621,9 +655,9 @@ void CaveState::registerPelletCollectedOnCurFloor(Pellet* pellet) {
 	for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
 		PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
 		if (cfg == pellet->mConfig) {
-			otakaraCollectedOnCurFloor[numOtakaraCollectedOnCurFloor] = i;
-			numOtakaraCollectedOnCurFloor++;
-			break;
+			mOtakaraCollectedOnCurFloor[mNumOtakaraCollectedOnCurFloor] = i;
+			mNumOtakaraCollectedOnCurFloor++;
+			return;
 		}
 	}
 
@@ -631,9 +665,9 @@ void CaveState::registerPelletCollectedOnCurFloor(Pellet* pellet) {
 	for (int i = 0; i < pelmgr->mConfigList->mConfigCnt; i++) {
 		PelletConfig* cfg = &pelmgr->mConfigList->mConfigs[i];
 		if (cfg == pellet->mConfig) {
-			itemsCollectedOnCurFloor[numItemsCollectedOnCurFloor] = i;
-			numItemsCollectedOnCurFloor++;
-			break;
+			mItemsCollectedOnCurFloor[mNumItemsCollectedOnCurFloor] = i;
+			mNumItemsCollectedOnCurFloor++;
+			return;
 		}
 	}
 }
@@ -656,21 +690,11 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 	// @P2GZ End
 
 	if (config->is("s0B_cv_coursein")) {
-		// @P2GZ Start - restore pikmin squad on restart sublevel
-		if (p2gz->usePreviousSquad) {
-			PikiContainer startingSquad = p2gz->history->peek()->squad;
-			playData->mCaveSaveData.mCavePikis = startingSquad;
-			pikiMgr->killAllPikmins();
-			game->createFallPikmins();
-			p2gz->usePreviousSquad = false;
-		}
-		// @P2GZ End
-
 		game->createFallPikminSound();
-		
+
 		// @P2GZ Start
-		p2gz->bugPokosCollectedSinceLoad = 0;
-		p2gz->treasurePokosCollectedSinceLoad = 0;
+		p2gz->mBugPokosCollectedSinceLoad = 0;
+		p2gz->mTreasurePokosCollectedSinceLoad = 0;
 		// @P2GZ End
 	}
 	Screen::gGame2DMgr->startFadeBG_Floor();
@@ -739,6 +763,8 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 		Vector3f geyserpos = game->mFountain->getPosition();
 		game->prepareFountainOn(geyserpos);
+
+		Screen::gGame2DMgr->open_P2GZ_HoleIn(); // @P2GZ
 	}
 }
 
@@ -749,6 +775,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* config, u32, u32 naviID)
 {
 	if (config->is("s0C_cv_escape")) {
+		Screen::gGame2DMgr->close_P2GZ_HoleIn(); // @P2GZ
 		PSMCancelToPauseOffMainBgm();
 		moviePlayer->clearSuspendedDemo();
 		pikiMgr->caveSaveAllPikmins(true, true);

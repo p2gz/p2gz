@@ -271,7 +271,7 @@ bool ObjSMenuWarp::doUpdate()
 				int numPresets = p2gz->mPresets.len();
 				mSelectedPresetIndex = (mSelectedPresetIndex - 1 + numPresets) % numPresets;
 				p2gz->mSelectedPresetIndex = mSelectedPresetIndex;
-				mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId); 
+				mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId);
 				ogSound->setPlusMinus(false);
 				break;
 			}
@@ -314,7 +314,7 @@ bool ObjSMenuWarp::doUpdate()
 				case 3:
 				mSelectedPresetIndex = (mSelectedPresetIndex + 1) % p2gz->mPresets.len();
 				p2gz->mSelectedPresetIndex = mSelectedPresetIndex;
-				mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId); 
+				mPresetName->setMsgID(p2gz->mPresets[mSelectedPresetIndex].mMsgId);
 				ogSound->setPlusMinus(false);
 				break;
 			}
@@ -324,119 +324,9 @@ bool ObjSMenuWarp::doUpdate()
 			Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 
 			if (mSelectedDestination == 0) {
-				// TODO: Probably not all of this is necessary - copy-paste from DayEndState::exec()
-				Game::gameSystem->resetFlag(Game::GAMESYS_IsGameWorldActive);
-				Game::gameSystem->setFlag(Game::GAMESYS_DisableDeathCounter);
-				Game::moviePlayer->reset();
-				Game::moviePlayer->clearSuspendedDemo();
-
-				if (game->mTheExpHeap != nullptr) {
-					PSMCancelToPauseOffMainBgm();
-				}
-
-				Iterator<Game::Onyon> iOnyon(Game::ItemOnyon::mgr);
-				CI_LOOP(iOnyon)
-				{
-					(*iOnyon)->setSpotEffectActive(false);
-					(*iOnyon)->mSuckTimer = 4.0f;
-					(*iOnyon)->forceClose();
-				}
-
-				if (!Game::gameSystem->mIsInCave) {
-					game->saveToGeneratorCache(game->mCurrentCourseInfo);
-				}
-
-				Game::PelletIterator iPellet;
-				CI_LOOP(iPellet)
-				{
-					Game::Pellet* pellet = *iPellet;
-					if (pellet->isAlive() && pellet->mCaptureMatrix == nullptr) {
-						pellet->kill(nullptr);
-					}
-				}
-
-				Game::PelletCarcass::mgr->resetMgr();
-				Game::PelletFruit::mgr->resetMgr();
-				Game::PelletItem::mgr->resetMgrAndResources();
-				Game::PelletOtakara::mgr->resetMgrAndResources();
-
-				Game::Navi* navi = Game::naviMgr->getAt(NAVIID_Olimar);
-				if (navi->isAlive()) {
-					navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
-					efx::TNaviEffect* effectsObj = navi->mEffectsObj;
-					effectsObj->mFlags.unset(efx::NAVIFX_InWater);
-					effectsObj->killHamonA_();
-					effectsObj->killHamonB_();
-				}
-
-				navi = Game::naviMgr->getAt(NAVIID_Louie);
-				if (navi->isAlive()) {
-					navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
-					efx::TNaviEffect* effectsObj = navi->mEffectsObj;
-					effectsObj->mFlags.unset(efx::NAVIFX_InWater);
-					effectsObj->killHamonA_();
-					effectsObj->killHamonB_();
-				}
-
-				Game::pikiMgr->forceEnterPikmins(false);
-				Game::gameSystem->mTimeMgr->setStartTime();
-				
-				if (mSublevelNumber - 1 % 30 == 0) {
-					for (int i = 0; i < 4; i++) {
-						Game::playData->mLimitGen[i].mLoops.all_zero();
-					}
-				}
-
-				Game::gameSystem->mTimeMgr->mDayCount = mSublevelNumber - 1;
-				Game::gameSystem->detachObjectMgr(Game::generalEnemyMgr);
-				Game::gameSystem->detachObjectMgr(Game::mapMgr);
-
-				game->mIsGameStarted = false;
-				game->mCurrentCourseInfo = Game::stageList->getCourseInfo(mSelectedArea);
-
-				p2gz->applyPreset(p2gz->mPresets[mSelectedPresetIndex]);
-
-				Game::SingleGame::LoadArg arg(0, false, false, false);
-				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
+				p2gz->warpToSelectedArea();
 			} else {
-
-				Iterator<Game::Piki> iterator(Game::pikiMgr);
-				CI_LOOP(iterator)
-				{
-					Game::Piki* piki = *iterator;
-					if (piki->isAlive() && piki->getCurrActionID() == PikiAI::ACT_Formation) {
-						int state = piki->getStateID();
-						if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop && piki->mNavi
-							&& (!caveIDs[mSelectedArea][mSelectedDestination] != 'y_04' || piki->getKind() == Game::Blue)) {
-							Game::playData->mCaveSaveData.mCavePikis(piki)++;
-						}
-					}
-				}
-
-				ID32 caveID(Game::stageList->getCourseInfo(mSelectedArea)->getCaveID_FromIndex(mSelectedDestination - 1));
-				Game::ItemCave::Item* cave = new Game::ItemCave::Item;
-				cave->mCaveID = caveID;
-				cave->mCaveFilename = Game::stageList->getCourseInfo(mSelectedArea)->getCaveinfoFilename_FromID(caveID);
-
-				Game::playData->mCaveSaveData.mTime = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
-				Game::playData->mCaveSaveData.mCourseIdx = Game::stageList->getCourseInfo(mSelectedArea)->mCourseIndex;
-				Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
-
-				if (!Game::gameSystem->mIsInCave) {
-					game->saveToGeneratorCache(game->mCurrentCourseInfo);
-				}
-
-				game->mCurrentCourseInfo = Game::stageList->getCourseInfo(mSelectedArea);
-				game->mCurrentCave = cave;
-				game->mCaveID = caveID;
-				game->mCaveIndex = caveID.getID();
-				game->mCurrentFloor = mSublevelNumber - 1;
-				strcpy(game->mCaveFilename, cave->mCaveFilename);
-
-				p2gz->applyPreset(p2gz->mPresets[mSelectedPresetIndex]);
-
-				Game::SingleGame::LoadArg arg(100, true, false, false);
-				game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
+				p2gz->warpToSelectedCave(nullptr);
 			}
 			return true;
 		}

@@ -57,15 +57,18 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 {
 	// @P2GZ Start
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	SegmentRecord* previousRecord = p2gz->history->peek();
+	SegmentRecord* previousRecord = p2gz->mHistory->peek();
 	if (previousRecord != nullptr) {
-		previousRecord->endTime = currentTime;
+		previousRecord->mEndTime = currentTime;
+		CourseInfo* course = playData->getCurrentCourse();
+		previousRecord->mAreaIndex = course->mCourseIndex;
+		previousRecord->mDestinationIndex = 0;
 	}
 
 	SegmentRecord record;
-	record.squad = playData->mPikiContainer;
-	record.startTime = currentTime;
-	p2gz->history->push(record);
+	record.mSquad = playData->mPikiContainer;
+	record.mStartTime = currentTime;
+	p2gz->mHistory->push(record);
 	// @P2GZ End
 
 	DeathMgr::mSoundDeathCount = 0;
@@ -612,7 +615,7 @@ void GameState::exec(SingleGameSection* game)
 			active.print(82, 92, "Save Position");
 			active.print(82, 116, "Load Position");
 			active.print(82, 140, "Go Back");
-			
+
 			for (int i = 0; i < 4; i++) {
 				char position[32];
 				sprintf(position, "(%d, %d)", int(p2gz->mSavedPositions[i].x), int(p2gz->mSavedPositions[i].z));
@@ -773,7 +776,7 @@ void GameState::exec(SingleGameSection* game)
 			// set camera parameters
 			camera->mGoalVerticalAngle = PI / 2;
 			camera->mCameraParms->mSettingChangeSpeed.mValue = 1.0f;
-			
+
 			// calculate control stick vector
 			f32 ax = 0.0f;
 			f32 az = ax;
@@ -860,7 +863,7 @@ void GameState::exec(SingleGameSection* game)
 				print.print(100, 200, "Can't move out of bounds!");
 				color = Color4(rgb, 0, 0, 255);
 			}
-			
+
 			// change camera angle with dampening on c-stick value
 			camera->mCameraAngleTarget -= cStickX * 0.05f;
 
@@ -874,7 +877,7 @@ void GameState::exec(SingleGameSection* game)
 					og::ogSound->setZoomOut();
 				}
 			}
-			
+
 			// draw circle
 			gfx->initPerspPrintf(gfx->mCurrentViewport);
 
@@ -882,11 +885,11 @@ void GameState::exec(SingleGameSection* game)
 			Vector3f naviPos = camera->mGoalPosition;
 			Vector3f vertices[3];
 			vertices[0] = naviPos;
-			
+
 			for (int i = 0; i < 32; i++) {
 				f32 theta = -HALF_PI - (TAU * i / 32);
 				vertices[1] = Vector3f(radius * sinf(theta), 0.0f, radius * cosf(theta)) + naviPos;
-				
+
 				f32 nextTheta = -HALF_PI - (TAU * (i + 1) / 32);
 				vertices[2] = Vector3f(radius * sinf(nextTheta), 0.0f, radius * cosf(nextTheta)) + naviPos;
 
@@ -1309,7 +1312,7 @@ void GameState::drawRepayDemo(Graphics&)
 // @P2GZ
 void GameState::drawTimer() {
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	s64 timerMs = currentTime - p2gz->history->peek()->startTime;
+	s64 timerMs = currentTime - p2gz->mHistory->peek()->mStartTime;
 
     Graphics* gfx = sys->getGfx();
     gfx->initPerspPrintf(gfx->mCurrentViewport);

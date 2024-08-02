@@ -11216,6 +11216,14 @@
       "attributes": "00000000"
     },
     {
+      "message": "\u001a40x0000000a Down - Restart Cave",
+      "id": {
+        "id": 3103,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
       "message": "PoD EC",
       "id": {
         "id": 3200,
