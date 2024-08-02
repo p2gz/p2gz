@@ -247,7 +247,6 @@ void CaveState::exec(SingleGameSection* game)
 		mResetting = nextFloor == 1;
 		onMovieCommand(game, 0);
 
-		while (Screen::gGame2DMgr->mScreenMgr->isCurrentSceneLoading()) {}
 		p2gz->warpToSelectedCave(squad);
 		return;
 	}
