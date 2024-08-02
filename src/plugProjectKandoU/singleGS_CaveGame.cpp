@@ -255,7 +255,9 @@ void CaveState::exec(SingleGameSection* game)
 
 	// @P2GZ Start - Skippable treasure cutscenes
 	if (moviePlayer->isPlaying("s22_cv_suck_treasure") || moviePlayer->isPlaying("s22_cv_suck_equipment")) {
-		if (!treasureCutsceneSkipRegistered && (strcmp(gameSystem->mMovieAction, "moviePl:skip") == 0)) {
+		if (!treasureCutsceneSkipRegistered
+		    && (gameSystem->mMovieAction != nullptr && strcmp(gameSystem->mMovieAction, "moviePl:skip") == 0))
+		{
 			Pellet* pellet = static_cast<Pellet*>(game->mDraw2DCreature);
 			Onyon* pod = ItemOnyon::mgr->mPod;
 			if (pellet != nullptr && pod != nullptr) {
