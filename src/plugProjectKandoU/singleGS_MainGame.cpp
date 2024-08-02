@@ -59,15 +59,15 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
 	SegmentRecord* previousRecord = p2gz->mHistory->peek();
 	if (previousRecord != nullptr) {
-		previousRecord->endTime = currentTime;
+		previousRecord->mEndTime = currentTime;
 		CourseInfo* course = playData->getCurrentCourse();
-		previousRecord->areaIndex = course->mCourseIndex;
-		previousRecord->destinationIndex = 0;
+		previousRecord->mAreaIndex = course->mCourseIndex;
+		previousRecord->mDestinationIndex = 0;
 	}
 
 	SegmentRecord record;
-	record.squad = playData->mPikiContainer;
-	record.startTime = currentTime;
+	record.mSquad = playData->mPikiContainer;
+	record.mStartTime = currentTime;
 	p2gz->mHistory->push(record);
 	// @P2GZ End
 
@@ -1312,7 +1312,7 @@ void GameState::drawRepayDemo(Graphics&)
 // @P2GZ
 void GameState::drawTimer() {
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	s64 timerMs = currentTime - p2gz->mHistory->peek()->startTime;
+	s64 timerMs = currentTime - p2gz->mHistory->peek()->mStartTime;
 
     Graphics* gfx = sys->getGfx();
     gfx->initPerspPrintf(gfx->mCurrentViewport);

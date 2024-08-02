@@ -55,23 +55,23 @@ void CaveState::init(SingleGameSection* game, StateArg* arg)
 	// @P2GZ Start
 	SegmentRecord* record = p2gz->mHistory->peek();
 	CourseInfo* course = playData->getCurrentCourse();
-	record->areaIndex = course->mCourseIndex;
-	record->destinationIndex = course->getCaveIndex_FromID(game->mCaveID) + 1;
+	record->mAreaIndex = course->mCourseIndex;
+	record->mDestinationIndex = course->getCaveIndex_FromID(game->mCaveID) + 1;
 
 	// start full cave timer
 	bool isWarpingToCave = false;
 	SegmentRecord* prevRecord = p2gz->mHistory->peekN(1);
 	if (prevRecord == nullptr
-	    || prevRecord->destinationIndex != record->destinationIndex
-		|| prevRecord->areaIndex != record->areaIndex)
+	    || prevRecord->mDestinationIndex != record->mDestinationIndex
+		|| prevRecord->mAreaIndex != record->mAreaIndex)
 	{
 		isWarpingToCave = true;
 	}
 
-	if ((record->floorIndex == 0 && !mResettingFloor) || isWarpingToCave || p2gz->mCaveStartTimeMs == 0) {
+	if ((record->mFloorIndex == 0 && !mResettingFloor) || isWarpingToCave || p2gz->mCaveStartTimeMs == 0) {
 		// this runs after the segment's start time is set, so we can't just get the current time.
 		// instead we share the start time with the first sublevel's start time
-		p2gz->mCaveStartTimeMs = p2gz->mHistory->peek()->startTime;
+		p2gz->mCaveStartTimeMs = p2gz->mHistory->peek()->mStartTime;
 	}
 
 	mResettingFloor = false;
@@ -198,13 +198,13 @@ void CaveState::exec(SingleGameSection* game)
 			// Same seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->mHistory->peek()->seed;
+			nextSeed = p2gz->mHistory->peek()->mSeed;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_R) {
 			// Increment seed
 			retry = true;
 			useCustomSeed = true;
-			nextSeed = p2gz->mHistory->peek()->seed + 1;
+			nextSeed = p2gz->mHistory->peek()->mSeed + 1;
 		}
 		else if (game->mControllerP1->getButtonDown() & Controller::PRESS_DPAD_DOWN) {
 			// Restart cave
@@ -232,12 +232,12 @@ void CaveState::exec(SingleGameSection* game)
 			// Reset squad to the one we entered the cave with when restarting from floor 1
 			// If we didn't enter from floor 1, just use our current squad.
 			// TBD: is this desired behavior?
-			PikiContainer* squad = &p2gz->mHistory->peek()->squad;
+			PikiContainer* squad = &p2gz->mHistory->peek()->mSquad;
 			if (nextFloor == 1) {
 				for (size_t i = 0; i < p2gz->mHistory->len(); i++) {
 					SegmentRecord* record = p2gz->mHistory->peekN(i);
-					if (record != nullptr && record->floorIndex == 0) {
-						squad = &record->squad;
+					if (record != nullptr && record->mFloorIndex == 0) {
+						squad = &record->mSquad;
 						break;
 					}
 				}
@@ -340,7 +340,7 @@ void CaveState::exec(SingleGameSection* game)
 // @P2GZ
 void CaveState::drawTimer() {
 	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-    s64 sublevelTimerMs = currentTime - p2gz->mHistory->peek()->startTime;
+    s64 sublevelTimerMs = currentTime - p2gz->mHistory->peek()->mStartTime;
 	s64 caveTimerMs = currentTime - p2gz->mCaveStartTimeMs;
 
     Graphics* gfx = sys->getGfx();

@@ -27,13 +27,13 @@ struct Preset {
 struct SegmentRecord {
 	SegmentRecord() {}
 
-	u32 seed;
-	int floorIndex;
-	int areaIndex;
-	int destinationIndex;
-	Game::PikiContainer squad;
-	s64 startTime;
-	s64 endTime;
+	u32 mSeed;
+	int mFloorIndex;
+	int mAreaIndex;
+	int mDestinationIndex;
+	Game::PikiContainer mSquad;
+	s64 mStartTime;
+	s64 mEndTime;
 };
 
 struct P2GZ {
