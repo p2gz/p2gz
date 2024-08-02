@@ -251,7 +251,8 @@ s64 P2GZ::getDefaultPresetId(int area, int destination, int sublevel) {
             if (sublevel < 5) return '3217_00';
             else return '3219_00';
         case 3: // FC
-            return '3221_00';
+            if (sublevel < 6) return '3221_00';
+            else return '3228_00';
         }
     case 1: // AW
         switch (destination) {
@@ -262,7 +263,7 @@ s64 P2GZ::getDefaultPresetId(int area, int destination, int sublevel) {
             else if (sublevel < 5) return '3203_00';
             else return '3204_00';
         case 2: // WFG
-            if (sublevel < 4) return '3204_00';
+            if (sublevel < 4) return '3226_00';
             else return '3205_00';
         case 3: // BK
             return '3213_00';
@@ -303,8 +304,19 @@ void P2GZ::applyPreset(Preset& preset) {
     }
 
     // Set cutscene flags
-    for (size_t i = 0; i < preset.mCutsceneFlags.len(); i++) {
-        playData->mDemoFlags.setFlag(preset.mCutsceneFlags[i]);
+    gzCollections::IndexBitflag<u64>::Iter iter1 = preset.mCutsceneFlags.iter();
+    while (true) {
+        s32 flag = iter1.next();
+        if (flag == -1) break;
+        playData->mDemoFlags.setFlag(flag);
+    }
+
+    // Set upgrades
+    gzCollections::IndexBitflag<u32>::Iter iter2 = preset.mUpgrades.iter();
+    while (true) {
+        s32 flag = iter2.next();
+        if (flag == -1) break;
+        playData->mOlimarData->getItem(flag);
     }
 }
 
@@ -334,10 +346,12 @@ Preset& Preset::setSprays(int spicies, int bitters) {
     return *this;
 }
 
-Preset& Preset::addCutsceneFlags(u16 flags[], size_t numFlags) {
-    mCutsceneFlags.expandCapacityTo(mCutsceneFlags.len() + numFlags);
-    for (size_t i = 0; i < numFlags; i++) {
-        mCutsceneFlags.push(flags[i]);
-    }
+Preset& Preset::addCutsceneFlags(gzCollections::IndexBitflag<u64> flags) {
+    mCutsceneFlags.setAll(flags);
+    return *this;
+}
+
+Preset& Preset::addUpgrades(gzCollections::IndexBitflag<u32> flags) {
+    mUpgrades.setAll(flags);
     return *this;
 }

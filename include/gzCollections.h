@@ -127,6 +127,59 @@ private:
     T* mBuf;
 };
 
+template<typename T>
+struct IndexBitflag {
+    IndexBitflag() {
+        mFlags = 0;
+    }
+
+    IndexBitflag(const IndexBitflag<T>& other) {
+        mFlags = other.mFlags;
+    }
+
+    IndexBitflag<T>& set(T index) {
+        mFlags |= 1 << index;
+        return *this;
+    }
+
+    IndexBitflag<T>& setAll(IndexBitflag<T> other) {
+        mFlags |= other.mFlags;
+        return *this;
+    }
+
+    struct Iter {
+        Iter(T flags) {
+            mFlags = flags;
+            mIdx = 0;
+        }
+
+        s32 next() {
+            s32 ret = -1;
+            while (ret == -1 && mIdx < sizeof(T) * 8) {
+                if (mFlags & 1 << mIdx) {
+                    ret = mIdx;
+                }
+                mIdx++;
+            }
+            return ret;
+        }
+
+    private:
+        T mFlags;
+        s32 mIdx;
+    };
+
+    Iter iter() {
+        return Iter(mFlags);
+    }
+
+    bool isSet(T index) {
+        return mFlags & 1 << index;
+    }
+
+    T mFlags;
+};
+
 } // namespace gzCollections
 
 #endif

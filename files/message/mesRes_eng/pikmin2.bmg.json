@@ -11256,7 +11256,7 @@
       "attributes": "00000000"
     },
     {
-      "message": "PoD HoB5-WFG3",
+      "message": "PoD HoB5",
       "id": {
         "id": 3204,
         "sub_id": 0
@@ -11264,7 +11264,7 @@
       "attributes": "00000000"
     },
     {
-      "message": "PoD WFG4-Enter SH",
+      "message": "PoD WFG4-WFG5",
       "id": {
         "id": 3205,
         "sub_id": 0
@@ -11392,7 +11392,7 @@
       "attributes": "00000000"
     },
     {
-      "message": "PoD FC1-FC7",
+      "message": "PoD FC1-FC5",
       "id": {
         "id": 3221,
         "sub_id": 0
@@ -11400,7 +11400,7 @@
       "attributes": "00000000"
     },
     {
-      "message": "PoD FC1-FC7 (+5W)",
+      "message": "PoD FC1-FC5 (+5W)",
       "id": {
         "id": 3222,
         "sub_id": 0
@@ -11427,6 +11427,38 @@
       "message": "PoD CoS1-GK6 (+5W)",
       "id": {
         "id": 3225,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter WFG-WFG3",
+      "id": {
+        "id": 3226,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD Enter SH",
+      "id": {
+        "id": 3227,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD FC6-FC7",
+      "id": {
+        "id": 3228,
+        "sub_id": 0
+      },
+      "attributes": "00000000"
+    },
+    {
+      "message": "PoD FC6-FC7 (+5W)",
+      "id": {
+        "id": 3229,
         "sub_id": 0
       },
       "attributes": "00000000"

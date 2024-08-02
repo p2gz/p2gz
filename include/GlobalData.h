@@ -13,15 +13,17 @@ struct Preset {
 	Preset& setPikmin(int happa, int color, int amount);
 	Preset& setOnionPikmin(int happa, int color, int amount);
 	Preset& setSprays(int spicies, int bitters);
-	Preset& addCutsceneFlags(u16 flags[], size_t numFlags);
+	Preset& addCutsceneFlags(gzCollections::IndexBitflag<u64> flags);
+	Preset& addUpgrades(gzCollections::IndexBitflag<u32> flags);
 
 	s64 mMsgId;
 	Game::PikiContainer mSquad;
 	Game::PikiContainer mOnionPikis;
 	u16 mNumBitters;
 	u16 mNumSpicies;
-	gzCollections::Vec<u16> mCutsceneFlags;
-	// TODO: upgrades
+	gzCollections::IndexBitflag<u64> mCutsceneFlags;
+	gzCollections::IndexBitflag<u32> mUpgrades;
+	// TODO: area flags, area unlocked flags?
 };
 
 struct SegmentRecord {
