@@ -203,11 +203,13 @@ struct CaveState : public State {
 	u32 _14;           // _14, unknown
 	bool mDrawSave;    // _18
 
-	bool mResettingFloor;                 // @P2GZ
-	u32 mNumOtakaraCollectedOnCurFloor;   // @P2GZ
-	int mOtakaraCollectedOnCurFloor[64];  // @P2GZ
-	u32 mNumItemsCollectedOnCurFloor;     // @P2GZ
-	int mItemsCollectedOnCurFloor[64];    // @P2GZ
+	// @P2GZ Start
+	bool mResetting;
+	u32 mNumOtakaraCollectedOnCurFloor;
+	int mOtakaraCollectedOnCurFloor[64];
+	u32 mNumItemsCollectedOnCurFloor;
+	int mItemsCollectedOnCurFloor[64];
+	// @P2GZ End
 };
 
 struct DayEndArg : public StateArg {
