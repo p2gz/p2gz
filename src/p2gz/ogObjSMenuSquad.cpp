@@ -68,10 +68,6 @@ void ObjSMenuSquad::doCreate(JKRArchive* arc)
 			mIcons[row][col]->setAlpha(128);
 			mCounters[row][col] = og::Screen::setCallBack_CounterRV(mScreenSquad, counterTags[row][col], &mPikminCounts[row][col], 3, false, true, arc);
 			mCounters[row][col]->mIsP2GZCounter = true;
-			for (int i = 0; i < 3; i++) {
-				mCounters[row][col]->getKetaPicture(i)->setAlpha(128);
-			}
-			mCounters[row][col]->update();
 			mPikminCounts[row][col] = 0;
 		}
 	}
@@ -105,6 +101,15 @@ void ObjSMenuSquad::doCreate(JKRArchive* arc)
 		}
 
 		mPikminCounts[row][col]++;
+	}
+
+	for (int row = 0; row < mNumRows; row++) {
+		for (int col = 0; col < mNumCols; col++) {
+			for (int i = 0; i < 3; i++) {
+				mCounters[row][col]->getKetaPicture(i)->setAlpha(128);
+			}
+			mCounters[row][col]->update();
+		}
 	}
 
 	doCreateAfter(arc, mScreenSquad);
@@ -309,14 +314,14 @@ bool ObjSMenuSquad::doUpdate()
 			mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
 			mCounters[mRow][mCol]->update();
 		}
-	} else if (input & Controller::PRESS_B) {
+	} else if (input & Controller::PRESS_B || input & Controller::PRESS_START) {
 		if (mIsEditingPikminCount) {
 			mIsEditingPikminCount = false;
 			ogSound->setDecide();
 			mCounters[mRow][mCol]->getKetaPicture(mSelectedDigit)->setAlpha(128);
 			mCounters[mRow][mCol]->update();
 			
-			// return early as ObjSMenuBase::doUpdate() will close the menu if B is pressed
+			// return early as ObjSMenuBase::doUpdate() will close the menu if B or START is pressed
 			mScreenSquad->animation();
 			return false;
 		}
