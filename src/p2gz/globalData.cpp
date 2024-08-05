@@ -60,6 +60,8 @@ P2GZ::P2GZ()
     mCaveStartTimeMs = 0;
 
     mPresets = getDefaultPresets();
+
+    mDoSaves = false;
 }
 
 void P2GZ::init()

@@ -92,6 +92,8 @@ struct P2GZ {
 	s64 mCaveStartTimeMs;
 
 	gzCollections::Vec<Preset> mPresets;
+
+	bool mDoSaves;
 };
 
 extern P2GZ* p2gz;

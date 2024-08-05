@@ -275,7 +275,9 @@ void CaveState::exec(SingleGameSection* game)
 	if (mDrawSave) {
 		particle2dMgr->update();
 		Screen::gGame2DMgr->update();
-		if ((u8)Screen::gGame2DMgr->check_Save()) {
+		// @P2GZ - skip save prompts
+		//  vvvvvvvvvvvvvvvvvv
+		if (!p2gz->mDoSaves || (u8)Screen::gGame2DMgr->check_Save()) {
 			// MapEnter type isnt used when loading into caves
 			LoadArg arg(MapEnter_CaveGeyser, false, false, game->mInCave);
 			transit(game, SGS_Load, &arg);
