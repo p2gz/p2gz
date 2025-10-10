@@ -3,10 +3,8 @@
 
 #include "Screen/screenObj.h"
 #include "JSystem/J2D/J2DPane.h"
-#include "JSystem/J2D/J2DTextBox.h"
 #include "og/Screen/OtakaraSensor.h"
 #include "og/Screen/DispMember.h"
-#include "P2DScreen.h"
 
 namespace P2DScreen {
 struct Mgr_tuning;
@@ -126,42 +124,6 @@ struct ObjCave : public ::Screen::ObjBase {
 		f32 mTreasureRadarNoiseModifierHigh; // _44
 		f32 mTreasureRadarNoiseModifierLow;  // _48
 	} msVal;
-};
-
-// @P2GZ
-struct HoleIn : public ::Screen::SceneBase {
-	HoleIn();
-
-	virtual const char* getResName() const { return "hole_in.szs"; } // _1C (weak)
-	virtual SceneType getSceneType() { return SCENE_P2GZ_HOLE_IN; }    // _08 (weak)
-	virtual ScreenOwnerID getOwnerID() { return OWNER_OGA; }                  // _0C (weak)
-	virtual ScreenMemberID getMemberID() { return MEMBER_P2GZ_HOLE_IN; }      // _10 (weak)
-	virtual void doCreateObj(JKRArchive*);                                    // _20
-	virtual void doUserCallBackFunc(Resource::MgrCommand*);                   // _24
-};
-
-// @P2GZ
-struct ObjHoleIn : public ::Screen::ObjBase {
-	ObjHoleIn(const char*);
-	
-	virtual ~ObjHoleIn();                                   // _08 (weak)
-	virtual bool doStart(const ::Screen::StartSceneArg*); // _44
-	virtual bool doEnd(const ::Screen::EndSceneArg*);     // _48
-	virtual void doCreate(JKRArchive*);                   // _4C
-	virtual bool doUpdateFadein();                        // _50
-	virtual void doUpdateFadeinFinish();                  // _54
-	virtual bool doUpdate();                              // _58
-	virtual void doUpdateFinish();                        // _5C
-	virtual bool doUpdateFadeout();                       // _60
-	virtual void doUpdateFadeoutFinish();                 // _64
-	virtual void doDraw(Graphics&);                       // _68
-
-	void commonUpdate();
-
-	
-	og::Screen::DispMemberHoleIn* mDisp;
-	P2DScreen::Mgr_tuning* mScreenControls;
-	J2DTextBoxEx* mText1;
 };
 } // namespace newScreen
 } // namespace og

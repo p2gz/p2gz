@@ -141,8 +141,6 @@ struct CallBack_CounterRV : public P2DScreen::CallBackNode {
 	f32 mPaneOffsetY;                 // _A0
 	f32 mPaneOffsetX;                 // _A4
 
-	bool mIsP2GZCounter; // @P2GZ: don't set digit alpha to parent pane alpha
-
 	static struct StaticValues {
 		inline StaticValues()
 		{

@@ -290,24 +290,22 @@ void preUserCallback(u16, OSContext*, u32, u32)
 
 	int i = 0;
 	// wait until all required inputs are in before passing, disable this if you want instant crash log
-	// @P2GZ start
-	// while (inputs[i]) {
-	// 	u32 input;
-	// 	JUTException::waitTime(100);
-	// 	JUTException::sErrorManager->readPad(&input, nullptr);
-	// 	// if current input is correct, go to next input, otherwise reset back to 0
-	// 	if (input) {
-	// 		i = ((inputs[i] == input) ? i + 1 : 0);
-	// 	}
-	// }
-	// @P2GZ end
+	while (inputs[i]) {
+		u32 input;
+		JUTException::waitTime(100);
+		JUTException::sErrorManager->readPad(&input, nullptr);
+		// if current input is correct, go to next input, otherwise reset back to 0
+		if (input) {
+			i = ((inputs[i] == input) ? i + 1 : 0);
+		}
+	}
 
 	sUseABXCommand = true;
 	if (JUTException::sConsole) {
 		JUTException::sConsole->startPrint(3, "--- Game debug information ---\n");
 		JUTConsoleManager::sManager->drawDirect(true);
 	} else {
-		OSReport("?¿½R?¿½?¿½?¿½\\?¿½[?¿½?¿½?¿½?¿½?¿½?¿½?¿½?¿½Ü‚ï¿½?¿½?¿½\n"); // 'no console'
+		OSReport("ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“\n"); // 'no console'
 	}
 }
 
@@ -315,7 +313,10 @@ void preUserCallback(u16, OSContext*, u32, u32)
  * @note Address: 0x80422204
  * @note Size: 0x2C
  */
-void myTask(void* data) { sys->mCardMgr->cardProc(data); }
+void myTask(void* data)
+{
+	sys->mCardMgr->cardProc(data);
+}
 
 /**
  * @note Address: 0x80422230
@@ -542,7 +543,10 @@ void System::constructWithDvdAccessSecond()
  * @note Address: 0x80422920
  * @note Size: 0x54
  */
-void System::createRomFont(JKRHeap* heap) { mRomFont = new JUTRomFont(heap); }
+void System::createRomFont(JKRHeap* heap)
+{
+	mRomFont = new JUTRomFont(heap);
+}
 
 /**
  * @note Address: 0x80422974
@@ -608,10 +612,10 @@ void System::loadSoundResource()
 	newheap->becomeCurrentHeap();
 
 	// something in these inlines is doing bad regalloc things. or not enough bad regalloc things. not sure.
-	PSSystem::Scene* scene = PSMGetSceneMgrCheck()->mScenes;
+	PSSystem::Scene* scene = PSMGetPikSceneMgrCheck()->mScenes;
 	P2ASSERTLINE(1245, scene);
-
 	scene->scene1stLoadSync();
+
 	newheap->adjustSize();
 	old->becomeCurrentHeap();
 	/*
@@ -777,7 +781,10 @@ int System::run()
  * @note Address: 0x80422EB8
  * @note Size: 0x58
  */
-f32 System::getTime() { return OSTicksToMilliseconds(OSGetTick()); }
+f32 System::getTime()
+{
+	return OSTicksToMilliseconds(OSGetTick());
+}
 
 /**
  * @note Address: N/A
@@ -792,19 +799,28 @@ void System::checkOptionBlockSaveFlag()
  * @note Address: 0x80422F10
  * @note Size: 0x10
  */
-void System::clearOptionBlockSaveFlag() { mPlayData->mChallengeOpen = false; }
+void System::clearOptionBlockSaveFlag()
+{
+	mPlayData->mDoSaveOptions = false;
+}
 
 /**
  * @note Address: 0x80422F20
  * @note Size: 0x10
  */
-void System::setOptionBlockSaveFlag() { mPlayData->mChallengeOpen = true; }
+void System::setOptionBlockSaveFlag()
+{
+	mPlayData->mDoSaveOptions = true;
+}
 
 /**
  * @note Address: 0x80422F30
  * @note Size: 0x8
  */
-Game::CommonSaveData::Mgr* System::getPlayCommonData() { return mPlayData; }
+Game::CommonSaveData::Mgr* System::getPlayCommonData()
+{
+	return mPlayData;
+}
 
 /**
  * @note Address: 0x80422F38
@@ -967,7 +983,10 @@ System::ERenderMode System::setRenderMode(ERenderMode mode)
  * @note Address: 0x80423224
  * @note Size: 0x18
  */
-_GXRenderModeObj* System::getRenderModeObj() { return sRenderModeTable[mRenderMode]; }
+_GXRenderModeObj* System::getRenderModeObj()
+{
+	return sRenderModeTable[mRenderMode];
+}
 
 /**
  * @note Address: 0x8042323C
@@ -1010,31 +1029,42 @@ void System::changeRenderMode(ERenderMode newmode)
  * @note Address: 0x8042335C
  * @note Size: 0x8
  */
-u32 System::heapStatusStart(char*, JKRHeap*) { return 0; }
+u32 System::heapStatusStart(char*, JKRHeap*)
+{
+	return 0;
+}
 
 /**
  * @note Address: 0x80423364
  * @note Size: 0x4
  */
-void System::heapStatusEnd(char*) { }
+void System::heapStatusEnd(char*)
+{
+}
 
 /**
  * @note Address: 0x80423368
  * @note Size: 0x4
  */
-void System::heapStatusDump(bool) { }
+void System::heapStatusDump(bool)
+{
+}
 
 /**
  * @note Address: 0x8042336C
  * @note Size: 0x4
  */
-void System::heapStatusIndividual() { }
+void System::heapStatusIndividual()
+{
+}
 
 /**
  * @note Address: 0x80423370
  * @note Size: 0x4
  */
-void System::heapStatusNormal() { }
+void System::heapStatusNormal()
+{
+}
 
 /**
  * @note Address: N/A
@@ -1071,31 +1101,46 @@ void System::resetOff()
  * @note Address: 0x8042339C
  * @note Size: 0x14
  */
-void System::resetPermissionOn() { mResetMgr->setFlag(RESETFLAG_ResetAllowed); }
+void System::resetPermissionOn()
+{
+	mResetMgr->setFlag(RESETFLAG_ResetAllowed);
+}
 
 /**
  * @note Address: 0x804233B0
  * @note Size: 0x18
  */
-bool System::isResetActive() { return mResetMgr->mState; }
+bool System::isResetActive()
+{
+	return mResetMgr->mState;
+}
 
 /**
  * @note Address: 0x804233C8
  * @note Size: 0x14
  */
-void System::activeGP() { mResetMgr->setFlag(RESETFLAG_GPProcessing); }
+void System::activeGP()
+{
+	mResetMgr->setFlag(RESETFLAG_GPProcessing);
+}
 
 /**
  * @note Address: 0x804233DC
  * @note Size: 0x14
  */
-void System::inactiveGP() { mResetMgr->resetFlag(RESETFLAG_GPProcessing); }
+void System::inactiveGP()
+{
+	mResetMgr->resetFlag(RESETFLAG_GPProcessing);
+}
 
 /**
  * @note Address: 0x804233F0
  * @note Size: 0x24
  */
-bool System::isDvdErrorOccured() { return mDvdStatus->isErrorOccured(); }
+bool System::isDvdErrorOccured()
+{
+	return mDvdStatus->isErrorOccured();
+}
 
 /**
  * @note Address: 0x80423414
@@ -1135,19 +1180,25 @@ void System::endChangeCurrentHeap()
  * @note Address: 0x80423520
  * @note Size: 0x4
  */
-void System::addGenNode(CNode*) { }
+void System::addGenNode(CNode*)
+{
+}
 
 /**
  * @note Address: 0x80423524
  * @note Size: 0x4
  */
-void System::initGenNode() { }
+void System::initGenNode()
+{
+}
 
 /**
  * @note Address: 0x80423528
  * @note Size: 0x4
  */
-void System::refreshGenNode() { }
+void System::refreshGenNode()
+{
+}
 
 /**
  * @note Address: 0x8042352C

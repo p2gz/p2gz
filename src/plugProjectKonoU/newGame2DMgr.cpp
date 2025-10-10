@@ -19,7 +19,6 @@
 #include "Morimura/HiScore.h"
 #include "og/newScreen/KanteiDemo.h"
 #include "Game/GameSystem.h"
-#include "Screen/Enums.h"
 
 namespace Screen {
 
@@ -51,37 +50,54 @@ Game2DMgr::Game2DMgr()
  * @note Address: 0x803FBFA4
  * @note Size: 0x68
  */
-Game2DMgr::~Game2DMgr() { gGame2DMgr = nullptr; }
+Game2DMgr::~Game2DMgr()
+{
+	gGame2DMgr = nullptr;
+}
 
 /**
  * @note Address: 0x803FC00C
  * @note Size: 0x20
  */
-void Game2DMgr::initInCourse() { og::newScreen::initGround(); }
+void Game2DMgr::initInCourse()
+{
+	og::newScreen::initGround();
+}
 
 /**
  * @note Address: 0x803FC02C
  * @note Size: 0x24
  */
-void Game2DMgr::update() { mScreenMgr->update(); }
+void Game2DMgr::update()
+{
+	mScreenMgr->update();
+}
 
 /**
  * @note Address: 0x803FC050
  * @note Size: 0x24
  */
-void Game2DMgr::draw(Graphics& gfx) { mScreenMgr->draw(gfx); }
+void Game2DMgr::draw(Graphics& gfx)
+{
+	mScreenMgr->draw(gfx);
+}
 
 /**
  * @note Address: 0x803FC074
  * @note Size: 0x4
  */
-void Game2DMgr::drawIndirect(Graphics&) { }
+void Game2DMgr::drawIndirect(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x803FC078
  * @note Size: 0x24
  */
-void Game2DMgr::setGamePad(Controller* cont) { mScreenMgr->setGamePad(cont); }
+void Game2DMgr::setGamePad(Controller* cont)
+{
+	mScreenMgr->setGamePad(cont);
+}
 
 /**
  * @note Address: 0x803FC09C
@@ -100,7 +116,10 @@ bool Game2DMgr::setDispMember(og::Screen::DispMemberBase* disp)
  * @note Address: 0x803FC0D0
  * @note Size: 0x38
  */
-void Game2DMgr::setToumeiBG() { mScreenMgr->mBackupScene->setColorBG(0, 0, 0, 0); }
+void Game2DMgr::setToumeiBG()
+{
+	mScreenMgr->mBackupScene->setColorBG(0, 0, 0, 0);
+}
 
 /**
  * @note Address: 0x803FC108
@@ -108,7 +127,7 @@ void Game2DMgr::setToumeiBG() { mScreenMgr->mBackupScene->setColorBG(0, 0, 0, 0)
  */
 bool Game2DMgr::open_GameGround(og::Screen::DispMemberGround& disp)
 {
-	if (Game::playData->mStoryFlags & Game::STORY_DebtPaid) {
+	if (Game::playData->isStoryFlag(Game::STORY_DebtPaid)) {
 		disp.mPayDebt = true;
 	}
 	disp.mDataGame.mPokoCount = Game::playData->mPokoCount;
@@ -139,7 +158,7 @@ bool Game2DMgr::is_GameGround()
  */
 bool Game2DMgr::open_GameCave(og::Screen::DispMemberCave& disp, int type)
 {
-	if (Game::playData->mStoryFlags & Game::STORY_DebtPaid) {
+	if (Game::playData->isStoryFlag(Game::STORY_DebtPaid)) {
 		disp.mPayDebt = true;
 	}
 	disp.mDataGame.mPokoCount = Game::playData->mCavePokoCount;
@@ -399,9 +418,7 @@ int Game2DMgr::check_SMenu()
 	case SCENE_PAUSE_MENU_DOUKUTU:
 	case SCENE_PAUSE_MENU_MAP:
 	case SCENE_PAUSE_MENU_ITEMS:
-	case SCENE_PAUSE_MENU_VS:
-	case SCENE_P2GZ_SQUAD:
-	case SCENE_P2GZ_WARP: { // @P2GZ
+	case SCENE_PAUSE_MENU_VS: {
 		if (mScreenMgr->isSceneFinish()) {
 			int scene = mScreenMgr->getSceneFinishState();
 			switch (scene) {
@@ -724,20 +741,6 @@ void Game2DMgr::startCount_CourseName()
 	if (mScreenMgr->getSceneType() == SCENE_COURSE_NAME) {
 		og::Screen::DispMemberCourseName* disp = static_cast<og::Screen::DispMemberCourseName*>(mScreenMgr->getDispMember());
 		disp->mIsCounting                      = true;
-	}
-}
-
-// @P2GZ
-void Game2DMgr::open_P2GZ_HoleIn() {
-	SetSceneArg arg(SCENE_P2GZ_HOLE_IN, nullptr);
-	mScreenMgr->setScene(arg);
-	mScreenMgr->startScene(nullptr);
-}
-
-// @P2GZ
-void Game2DMgr::close_P2GZ_HoleIn() {
-	if (mScreenMgr->getSceneType() == SCENE_P2GZ_HOLE_IN) {
-		mScreenMgr->endScene(nullptr);
 	}
 }
 
@@ -1282,28 +1285,28 @@ bool Game2DMgr::open_Contena(og::Screen::DispMemberContena& disp)
 
 	SceneType id = (SceneType)0;
 	switch (disp.mDataContena.mOnyonID) {
-	case ONYON_TYPE_BLUE:
+	case Game::Blue:
 		id = SCENE_CONTENA_BLUE;
 		break;
-	case ONYON_TYPE_RED:
+	case Game::Red:
 		id = SCENE_CONTENA_RED;
 		break;
-	case ONYON_TYPE_YELLOW:
+	case Game::Yellow:
 		id = SCENE_CONTENA_YELLOW;
 		break;
-	case 4:
+	case Game::White:
 		id = SCENE_CONTENA_WHITE;
 		break;
-	case 3:
+	case Game::Purple:
 		id = SCENE_CONTENA_PURPLE;
 		break;
 	}
 	SetSceneArg arg(id, &disp);
 	if (mScreenMgr->setScene(arg) && mScreenMgr->startScene(nullptr)) {
 		switch (disp.mDataContena.mOnyonID) {
-		case ONYON_TYPE_BLUE:
-		case ONYON_TYPE_RED:
-		case ONYON_TYPE_YELLOW:
+		case Game::Blue:
+		case Game::Red:
+		case Game::Yellow:
 			PSPause_StartMenuOn();
 			break;
 		}
@@ -1521,13 +1524,19 @@ bool Game2DMgr::open_ZukanItem(Morimura::DispMemberZukanItem& disp)
  * @note Address: 0x803FF604
  * @note Size: 0x30
  */
-bool Game2DMgr::isZukanEnemy() { return (mScreenMgr->getSceneType() == SCENE_ZUKAN_ENEMY); }
+bool Game2DMgr::isZukanEnemy()
+{
+	return (mScreenMgr->getSceneType() == SCENE_ZUKAN_ENEMY);
+}
 
 /**
  * @note Address: 0x803FF634
  * @note Size: 0x30
  */
-bool Game2DMgr::isZukanItem() { return (mScreenMgr->getSceneType() == SCENE_ZUKAN_ITEM); }
+bool Game2DMgr::isZukanItem()
+{
+	return (mScreenMgr->getSceneType() == SCENE_ZUKAN_ITEM);
+}
 
 /**
  * @note Address: 0x803FF664

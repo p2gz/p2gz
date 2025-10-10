@@ -3,11 +3,6 @@
 #include "Game/Cave/RandMapMgr.h"
 #include "Game/mapParts.h"
 #include "types.h"
-#include "GlobalData.h"   // @P2GZ
-#include "Dolphin/rand.h" // @P2GZ
-#include "Game/PikiContainer.h" // @P2GZ
-#include "Game/PikiMgr.h" // @P2GZ
-#include "Dolphin/os.h" // @P2GZ
 
 namespace Game {
 namespace Cave {
@@ -25,29 +20,6 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	if (gameSystem && gameSystem->isVersusMode() && gGameConfig.mParms.mVsHiba.mData) {
 		isVersusHiba = true;
 	}
-
-	// @P2GZ Start - record sublevel starting conditions
-	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	SegmentRecord* previousRecord = p2gz->mHistory->peek();
-	if (previousRecord != nullptr) {
-		previousRecord->mEndTime = currentTime;
-	}
-
-	if (p2gz->mSetCustomNextSeed) {
-		srand(p2gz->mNextSeed);
-		p2gz->mSetCustomNextSeed = false;
-	}
-	u32 seed = getSeed();
-
-	SegmentRecord record;
-	record.mSeed = seed;
-	record.mFloorIndex = floorInfo->mParms.mFloorIndex1;
-	record.mStartTime = currentTime;
-	record.mSquad = playData->mCaveSaveData.mCavePikis;
-
-	p2gz->mHistory->push(record);
-	OSReport("Generating sublevel with seed %X\n", seed);
-	// @P2GZ End
 
 	Cave::randMapMgr = new Cave::RandMapMgr(isVersusHiba);
 	Cave::randMapMgr->loadResource(muiArray, p2, floorInfo, lastFloor, unit);

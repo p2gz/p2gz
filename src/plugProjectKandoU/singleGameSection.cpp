@@ -34,9 +34,6 @@
 #include "PikiAI.h"
 #include "nans.h"
 
-// @P2GZ:
-#include "GlobalData.h"
-
 namespace Game {
 
 static const u32 padding[]    = { 0, 0, 0 };
@@ -46,7 +43,10 @@ static const char className[] = "SingleGameSection";
  * @note Address: 0x80152074
  * @note Size: 0x84
  */
-SingleGameSection::~SingleGameSection() { Radar::mgr = nullptr; }
+SingleGameSection::~SingleGameSection()
+{
+	Radar::mgr = nullptr;
+}
 
 /**
  * @note Address: 0x801520F8
@@ -236,7 +236,10 @@ void SingleGame::CaveDayEndState::draw(SingleGameSection* section, Graphics& gfx
  * @note Address: 0x80152A08
  * @note Size: 0x34
  */
-void SingleGame::CaveDayEndState::cleanup(SingleGameSection* section) { gameSystem->setPause(false, "cavedayend", 3); }
+void SingleGame::CaveDayEndState::cleanup(SingleGameSection* section)
+{
+	gameSystem->setPause(false, "cavedayend", 3);
+}
 
 /**
  * @note Address: 0x80152A3C
@@ -255,13 +258,19 @@ SingleGameSection::SingleGameSection(JKRHeap* heap)
  * @note Address: 0x80152B1C
  * @note Size: 0x34
  */
-void SingleGameSection::section_fadeout() { mCurrentState->on_section_fadeout(this); }
+void SingleGameSection::section_fadeout()
+{
+	mCurrentState->on_section_fadeout(this);
+}
 
 /**
  * @note Address: 0x80152B54
  * @note Size: 0xC
  */
-void SingleGameSection::flow_goto_title() { mDoEnd = true; }
+void SingleGameSection::flow_goto_title()
+{
+	mDoEnd = true;
+}
 
 /**
  * @note Address: 0x80152B60
@@ -293,10 +302,6 @@ void SingleGameSection::onInit()
 
 	Radar::mgr = new Radar::Mgr;
 	disableTimer(DEMOTIMER_None);
-
-	// @P2GZ: add p2gz loadin
-	p2gz = new P2GZ;
-	p2gz->init();
 }
 
 /**
@@ -305,8 +310,6 @@ void SingleGameSection::onInit()
  */
 bool SingleGameSection::doUpdate()
 {
-	p2gz->update();
-	
 	if (!mDoEnd) {
 		mFsm->exec(this);
 
@@ -452,7 +455,10 @@ void SingleGameSection::onClearHeap()
  * @note Address: 0x80153410
  * @note Size: 0xC
  */
-void SingleGameSection::onStartHeap() { mIsExitingMap = 0; }
+void SingleGameSection::onStartHeap()
+{
+	mIsExitingMap = 0;
+}
 
 /**
  * @note Address: 0x8015341C
@@ -469,7 +475,9 @@ void SingleGameSection::gmOrimaDown(int naviID)
  * @note Address: 0x80153464
  * @note Size: 0x4
  */
-void SingleGameSection::gmPikminZero() { }
+void SingleGameSection::gmPikminZero()
+{
+}
 
 /**
  * @note Address: 0x80153468
@@ -591,7 +599,7 @@ void SingleGameSection::playMovie_helloPikmin(Piki* piki)
 		moviePlayer->play(arg);
 		playData->setMeetPikmin(piki->mPikiKind);
 		playData->setContainer(piki->mPikiKind);
-		disableTimer(1);
+		disableTimer(DEMOTIMER_Piki_Seed_In_Ground);
 		break;
 	}
 	case Yellow: {
@@ -641,7 +649,9 @@ void SingleGameSection::playMovie_helloPikmin(Piki* piki)
  * @note Address: 0x80153CC4
  * @note Size: 0x4
  */
-void SingleGameSection::playMovie_firstexperience(int, Game::Creature*) { }
+void SingleGameSection::playMovie_firstexperience(int, Game::Creature*)
+{
+}
 
 /**
  * @note Address: 0x80153CC8
@@ -651,15 +661,14 @@ void SingleGameSection::saveMainMapSituation(bool isSubmergedCastle)
 {
 	if (isSubmergedCastle) {
 		Iterator<Piki> iterator(pikiMgr, 0, nullptr);
-		iterator.first();
-		while (!iterator.isDone()) {
+		CI_LOOP(iterator)
+		{
 			Piki* piki = (*iterator);
 			if (piki->isAlive() && piki->getKind() != Blue) {
 				playData->mPikiContainer.getCount(piki->getKind(), piki->getHappa())++;
 				PikiKillArg killArg(CKILL_DontCountAsDeath | CKILL_Unk17);
 				piki->kill(&killArg);
 			}
-			iterator.next();
 		}
 	}
 	pikiMgr->caveSaveFormationPikmins(false);
@@ -672,7 +681,10 @@ void SingleGameSection::saveMainMapSituation(bool isSubmergedCastle)
  * @note Address: 0x80153F68
  * @note Size: 0x30
  */
-void SingleGameSection::loadMainMapSituation() { gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mTime); }
+void SingleGameSection::loadMainMapSituation()
+{
+	gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mTime);
+}
 
 /**
  * @note Address: 0x80153F98
@@ -704,7 +716,7 @@ void SingleGameSection::openCaveInMenu(ItemCave::Item* cave, int naviID)
 		disp.mUnusedValue    = 0;
 		disp.mCaveOtakaraNum = cave->getCaveOtakaraNum();
 		disp.mCaveOtakaraMax = cave->getCaveOtakaraMax();
-		disp.mPayedDebt      = playData->mStoryFlags & STORY_DebtPaid;
+		disp.mPayedDebt      = playData->isStoryFlag(STORY_DebtPaid);
 		disp.mPikisField     = GameStat::getMapPikmins(AllPikminCalcs) - GameStat::getZikatuPikmins(AllPikminCalcs);
 
 		int enteringPikiCount = 0;
@@ -725,7 +737,7 @@ void SingleGameSection::openCaveInMenu(ItemCave::Item* cave, int naviID)
 		disp.mPikis  = enteringPikiCount;
 		disp.mCaveID = mCaveIndex;
 		if (Screen::gGame2DMgr->open_CaveInMenu(disp)) {
-			playData->setSaveFlag(3, nullptr);
+			playData->setSaveFlag(STORYSAVE_Cave, nullptr);
 			playData->setCurrentCourse(getCurrentCourseInfo()->mCourseIndex);
 			playData->setCurrentCave(cave->mCaveID, 0);
 			getCurrentCourseInfo()->getCaveinfoFilename_FromID(cave->mCaveID);
@@ -761,7 +773,7 @@ void SingleGameSection::openCaveMoreMenu(ItemHole::Item* hole, Controller* input
 		}
 
 		if (Screen::gGame2DMgr->open_CaveMoreMenu(disp)) {
-			playData->setSaveFlag(3, nullptr);
+			playData->setSaveFlag(STORYSAVE_Cave, nullptr);
 			mHole = hole;
 			mOpenMenuFlags |= 2;
 			gameSystem->setPause(true, "openCaveMore", 3);
@@ -774,7 +786,10 @@ void SingleGameSection::openCaveMoreMenu(ItemHole::Item* hole, Controller* input
  * @note Address: 0x8015456C
  * @note Size: 0x2C
  */
-void SingleGameSection::saveCaveMore() { pikiMgr->caveSaveAllPikmins(false, false); }
+void SingleGameSection::saveCaveMore()
+{
+	pikiMgr->caveSaveAllPikmins(false, false);
+}
 
 /**
  * @note Address: 0x80154598
@@ -915,13 +930,19 @@ void SingleGameSection::goMainMap(ItemBigFountain::Item* fountain)
  * @note Address: 0x80154B24
  * @note Size: 0x20
  */
-void SingleGameSection::setupMainMapGames() { createFallPikmins(); }
+void SingleGameSection::setupMainMapGames()
+{
+	createFallPikmins();
+}
 
 /**
  * @note Address: 0x80154B44
  * @note Size: 0x20
  */
-void SingleGameSection::setupCaveGames() { createFallPikmins(); }
+void SingleGameSection::setupCaveGames()
+{
+	createFallPikmins();
+}
 
 /**
  * @note Address: 0x80154B64
@@ -1014,9 +1035,10 @@ void SingleGameSection::setDispMemberSMenu(og::Screen::DispMemberSMenuAll& disp)
 	disp.mSMenuMap.mDataMap.mCurrentPikminCounts[og::Screen::MAPPIKI_White]  = GameStat::formationPikis.getCount(id, White);
 	disp.mSMenuMap.mDataMap.mCurrentPikminCounts[og::Screen::MAPPIKI_Purple] = GameStat::formationPikis.getCount(id, Purple);
 
-	int form                            = GameStat::formationPikis;
-	int work                            = GameStat::workPikis;
-	int alive                           = GameStat::alivePikis;
+	int form  = GameStat::formationPikis;
+	int work  = GameStat::workPikis;
+	int alive = GameStat::alivePikis;
+
 	disp.mSMenuMap.mDataMap.mFreePikmin = alive - form - work;
 	disp.mSMenuMap.mDataMap.mPokos      = _aiConstants->mDebt.mData - playData->mPokoCount;
 	disp.mSMenuMap.mInCave              = gameSystem->mIsInCave;
@@ -1163,7 +1185,7 @@ void SingleGameSection::updateMainMapScreen()
 		disp.mHasSpicy = false;
 	}
 
-	if (playData->mStoryFlags & STORY_DebtPaid) {
+	if (playData->isStoryFlag(STORY_DebtPaid)) {
 		disp.mPayDebt = true;
 	}
 
@@ -1198,7 +1220,9 @@ void SingleGameSection::updateMainMapScreen()
  * @note Address: 0x80155A78
  * @note Size: 0x4
  */
-void SingleGameSection::drawMainMapScreen() { }
+void SingleGameSection::drawMainMapScreen()
+{
+}
 
 /**
  * @note Address: 0x80155A7C
@@ -1255,7 +1279,7 @@ void SingleGameSection::updateCaveScreen()
 
 	disp.mDataGame.mPokoCount = playData->getPokoCount() + playData->getCavePokoCount();
 
-	if (playData->mStoryFlags & STORY_DebtPaid) {
+	if (playData->isStoryFlag(STORY_DebtPaid)) {
 		disp.mPayDebt = true;
 	}
 
@@ -1290,7 +1314,9 @@ void SingleGameSection::updateCaveScreen()
  * @note Address: 0x80155F5C
  * @note Size: 0x4
  */
-void SingleGameSection::drawCaveScreen() { }
+void SingleGameSection::drawCaveScreen()
+{
+}
 
 /**
  * @note Address: 0x80155F60

@@ -214,8 +214,6 @@ struct Game2DMgr : public JKRDisposer {
 	void startFadeBG_CourseName();
 	void close_CourseName();
 	void startCount_CourseName();
-    void open_P2GZ_HoleIn();  // @P2GZ
-	void close_P2GZ_HoleIn(); // @P2GZ
 	void open_GameOver(Screen::Game2DMgr::GameOverTitle);
 	void close_GameOver();
 	bool open_CaveInMenu(og::Screen::DispMemberAnaDemo&);

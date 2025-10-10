@@ -23,27 +23,6 @@ Creature* Creature::currOp;
 bool Creature::usePacketCulling = true;
 
 /**
- * @brief Kills the creature and performs cleanup actions.
- */
-inline void Creature::killInline(Game::CreatureKillArg* arg)
-{
-	endStick();
-	setAlive(false);
-	Cell::sCurrCellMgr = cellMgr;
-	exitCell();
-	Cell::sCurrCellMgr = nullptr;
-	mUpdateContext.exit();
-	releaseAllStickers();
-	clearCapture();
-	onKill(arg);
-
-	if (mGenerator) {
-		mGenerator->informDeath(this);
-		mGenerator = nullptr;
-	}
-}
-
-/**
  * @note Address: 0x8013AE84
  * @note Size: 0x12C
  */
@@ -99,7 +78,23 @@ void Creature::init(CreatureInitArg* arg)
  * @note Address: 0x8013B0F0
  * @note Size: 0xB4
  */
-void Creature::kill(CreatureKillArg* arg) { killInline(arg); }
+void Creature::kill(CreatureKillArg* arg)
+{
+	endStick();
+	setAlive(false);
+	Cell::sCurrCellMgr = cellMgr;
+	exitCell();
+	Cell::sCurrCellMgr = nullptr;
+	mUpdateContext.exit();
+	releaseAllStickers();
+	clearCapture();
+	onKill(arg);
+
+	if (mGenerator) {
+		mGenerator->informDeath(this);
+		mGenerator = nullptr;
+	}
+}
 
 /**
  * Sets the position of the Creature.
@@ -206,7 +201,10 @@ f32 Creature::getCellRadius()
  * @note Address: 0x8013B448
  * @note Size: 0x24
  */
-char* Creature::getTypeName() { return ObjType::getName(mObjectTypeID); }
+char* Creature::getTypeName()
+{
+	return ObjType::getName(mObjectTypeID);
+}
 
 /**
  * @brief Retrieves the shadow parameters for the creature.
@@ -231,7 +229,10 @@ void Creature::getShadowParam(ShadowParam& param)
  * @note Address: 0x8013B4F8
  * @note Size: 0xC
  */
-bool Creature::needShadow() { return mLod.isFlag(AILOD_IsVisible); }
+bool Creature::needShadow()
+{
+	return mLod.isFlag(AILOD_IsVisible);
+}
 
 /**
  * @brief Retrieves the parameters for the life gauge of the creature.
@@ -345,7 +346,9 @@ void Creature::doAnimation()
  * @note Address: 0x8013B8AC
  * @note Size: 0x4
  */
-void Creature::doEntry() { }
+void Creature::doEntry()
+{
+}
 
 /**
  * Sets the viewport for the creature.
@@ -396,31 +399,46 @@ void Creature::doViewCalc()
  * @note Address: 0x8013B9E4
  * @note Size: 0x10
  */
-bool Creature::isPiki() { return mObjectTypeID == OBJTYPE_Piki; }
+bool Creature::isPiki()
+{
+	return mObjectTypeID == OBJTYPE_Piki;
+}
 
 /**
  * @note Address: 0x8013B9F4
  * @note Size: 0x14
  */
-bool Creature::isNavi() { return mObjectTypeID == OBJTYPE_Navi; }
+bool Creature::isNavi()
+{
+	return mObjectTypeID == OBJTYPE_Navi;
+}
 
 /**
  * @note Address: 0x8013BA08
  * @note Size: 0x14
  */
-bool Creature::isTeki() { return mObjectTypeID == OBJTYPE_Teki; }
+bool Creature::isTeki()
+{
+	return mObjectTypeID == OBJTYPE_Teki;
+}
 
 /**
  * @note Address: 0x8013BA1C
  * @note Size: 0x14
  */
-bool Creature::isPellet() { return mObjectTypeID == OBJTYPE_Pellet; }
+bool Creature::isPellet()
+{
+	return mObjectTypeID == OBJTYPE_Pellet;
+}
 
 /**
  * @note Address: 0x8013BA30
  * @note Size: 0x20
  */
-bool Creature::sound_culling() { return !(mLod.isFlag(AILOD_PikiInCell) || mLod.isFlag(AILOD_IsVisible)); }
+bool Creature::sound_culling()
+{
+	return !(mLod.isFlag(AILOD_PikiInCell) || mLod.isFlag(AILOD_IsVisible));
+}
 
 /**
  * @note Address: 0x8013BA50
@@ -506,15 +524,13 @@ int Creature::checkHell(Creature::CheckHellArg& hellArg)
 {
 	Vector3f pos = getPosition();
 
-    // @P2GZ - Early Blues Patch
-    //                  vvvvvvvvvvvv
-	if (pos.y < -500.0f && !isNavi()) {
+	if (pos.y < -500.0f) {
 		if (isPiki() && static_cast<Piki*>(this)->isPikmin()) {
 			deathMgr->inc(DeathCounter::COD_Battle); // getting sent to hell would get you into valhalla in P2
 		}
 
 		if (hellArg.mIsKillPiki) {
-			killInline(nullptr);
+			kill(nullptr);
 		}
 
 		return CREATURE_HELL_DEATH;
