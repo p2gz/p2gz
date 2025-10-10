@@ -27,16 +27,6 @@
 #include "nans.h"
 #include "utilityU.h"
 #include "Game/NaviState.h"
-#include "GlobalData.h" // @P2GZ
-#include "JSystem/J2D/J2DPrint.h" // @P2GZ
-#include "P2JME/P2JME.h" //@P2GZ
-#include "Dolphin/os.h" // @P2GZ
-
-// @P2GZ
-#include "Game/CameraMgr.h"
-#include "JSystem/J2D/J2DPrint.h"
-#include "og/Sound.h"
-#include "GlobalData.h"
 
 #define LOUIE_START_X   (-1260.0f)
 #define LOUIE_START_Y   (-80.0f)
@@ -55,22 +45,6 @@ namespace SingleGame {
  */
 void GameState::init(SingleGameSection* game, StateArg* arg)
 {
-	// @P2GZ Start
-	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	SegmentRecord* previousRecord = p2gz->mHistory->peek();
-	if (previousRecord != nullptr) {
-		previousRecord->mEndTime = currentTime;
-		CourseInfo* course = playData->getCurrentCourse();
-		previousRecord->mAreaIndex = course->mCourseIndex;
-		previousRecord->mDestinationIndex = 0;
-	}
-
-	SegmentRecord record;
-	record.mSquad = playData->mPikiContainer;
-	record.mStartTime = currentTime;
-	p2gz->mHistory->push(record);
-	// @P2GZ End
-
 	DeathMgr::mSoundDeathCount = 0;
 	moviePlayer->reset();
 	gameSystem->setFlag(GAMESYS_IsGameWorldActive);
@@ -103,9 +77,9 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	game->mIsExitingMap   = false;
 
 	if ((playData->mDeadNaviID & 1) == 0) {
-		game->setPlayerMode(0);
+		game->setPlayerMode(NAVIID_Olimar);
 	} else {
-		game->setPlayerMode(1);
+		game->setPlayerMode(NAVIID_Louie);
 	}
 	game->setCamController();
 	if (game->mWeatherEfx) {
@@ -128,10 +102,16 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 
 		// Set all enemies to be active in intro
 		GeneralMgrIterator<EnemyBase> iEnemyMgr(generalEnemyMgr);
-		CI_LOOP(iEnemyMgr) { iEnemyMgr.getObject()->movie_begin(false); }
+		CI_LOOP(iEnemyMgr)
+		{
+			iEnemyMgr.getObject()->movie_begin(false);
+		}
 
 		Iterator<Piki> iPiki(pikiMgr);
-		CI_LOOP(iPiki) { (*iPiki)->movie_begin(false); }
+		CI_LOOP(iPiki)
+		{
+			(*iPiki)->movie_begin(false);
+		}
 		moviePlayArg.mDelegateStart = game->mMovieStartCallback;
 		moviePlayer->play(moviePlayArg);
 		gameSystem->mTimeMgr->setStartTime();
@@ -177,7 +157,7 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 				}
 			}
 		}
-		if (startType == 1) {
+		if (startType == MapEnter_CaveGeyser) {
 			gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mTime);
 		}
 	} break;
@@ -186,7 +166,7 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	}
 
 	sys->heapStatusDump(true);
-	gameSystem->mTimeMgr->mFlags.unset(TIMEFLAG_Stopped);
+	gameSystem->mTimeMgr->resetFlag(TIMEFLAG_Stopped);
 	if (startType != MapEnter_CaveExtinction) {
 		// Check if any pikmin types are extinct, if they are, the post-extinction cutscene is needed
 		bool noPikisLeft = false;
@@ -234,13 +214,18 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
  */
 unknown GameState::gameStart(SingleGameSection*)
 {
-	// Feels like there should be more to this, but the DispObjGround stuff is sometimes before this stuff, sometimes after, idk
 	gameSystem->setFlag(GAMESYS_IsPlaying);
 	if (gameSystem->mTimeMgr->mDayCount != 0) {
-		PSMGetSceneMgr()->mScenes->mChild->startMainSeq();
+		PSSystem::getSceneMgr()->doStartMainSeq();
 	} else {
-		static_cast<PSM::Scene_Objects*>(PSMGetSceneMgr()->mScenes->mChild)->onStartMainSeq();
-		static_cast<PSM::Scene_Objects*>(PSMGetSceneMgr()->mScenes->mChild)->getEnvSe()->on();
+		// PikSceneMgr cast is solely to fix a regswap, very cool
+		PSGame::PikSceneMgr* mgr = static_cast<PSGame::PikSceneMgr*>(PSSystem::getSceneMgr());
+		mgr->checkScene();
+		static_cast<PSM::Scene_Objects*>(mgr->mScenes->mChild)->onStartMainSeq();
+
+		mgr = static_cast<PSGame::PikSceneMgr*>(PSSystem::getSceneMgr());
+		mgr->checkScene();
+		static_cast<PSM::Scene_Game*>(mgr->mScenes->mChild)->getEnvSe()->on();
 	}
 }
 
@@ -305,7 +290,10 @@ bool GameState::check_DemoInout(SingleGameSection* game)
  * @note Address: 0x802140E4
  * @note Size: 0xC
  */
-void GameState::on_section_fadeout(SingleGameSection*) { mDoExit = 1; }
+void GameState::on_section_fadeout(SingleGameSection*)
+{
+	mDoExit = 1;
+}
 
 /**
  * @note Address: 0x802140F0
@@ -586,322 +574,6 @@ void GameState::exec(SingleGameSection* game)
 			director->directOff();
 		}
 	}
-
-	// @P2GZ: teleport menu
-	Navi* navi = naviMgr->getActiveNavi();
-	if (navi != nullptr) {
-		PlayCamera* camera = cameraMgr->mCameraObjList[navi->getNaviID()];
-
-		Graphics* gfx = sys->getGfx();
-		gfx->initPerspPrintf(gfx->mCurrentViewport);
-		gfx->initPrimDraw(nullptr);
-		gfx->mOrthoGraph.setPort();
-
-		J2DPrint inactive(JFWSystem::systemFont, 0.0f);
-		inactive.initiate();
-		inactive.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
-		inactive.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
-		inactive.mGlyphWidth = 16.0f;
-		inactive.mGlyphHeight = 16.0f;
-
-		J2DPrint active(JFWSystem::systemFont, 0.0f);
-		active.initiate();
-		active.mCharColor.set(JUtility::TColor(255, 255, 255, 255));
-		active.mGradientColor.set(JUtility::TColor(255, 255, 255, 255));
-		active.mGlyphWidth = 16.0f;
-		active.mGlyphHeight = 16.0f;
-
-		if (p2gz->mIsScrollingCamera && p2gz->mIsSaveLoadPosition) {
-			active.print(82, 92, "Save Position");
-			active.print(82, 116, "Load Position");
-			active.print(82, 140, "Go Back");
-
-			for (int i = 0; i < 4; i++) {
-				char position[32];
-				sprintf(position, "(%d, %d)", int(p2gz->mSavedPositions[i].x), int(p2gz->mSavedPositions[i].z));
-				if (p2gz->mSelectedPositionSlot == i) {
-					active.print(50, 172 + (24 * i), "Slot %d - %s", i + 1, p2gz->mSavedPositions[i] == Vector3f::zero ? "unused" : position);
-				} else {
-					inactive.print(50, 172 + (24 * i), "Slot %d - %s", i + 1, p2gz->mSavedPositions[i] == Vector3f::zero ? "unused" : position);
-				}
-			}
-
-			// NB: drawing J2DPictures must occur after all text is printed
-			p2gz->mAButtonPicture->draw(50.0f, 76.0f, 16, 16, false, false, false);
-			p2gz->mXButtonPicture->draw(50.0f, 100.0f, 16, 16, false, false, false);
-			p2gz->mBButtonPicture->draw(50.0f, 124.0f, 16, 16, false, false, false);
-
-			camera->mGoalPosition = camera->mGoalPosition;
-			camera->mCameraParms->mSettingChangeSpeed.mValue = 0.0f;
-
-			if (navi->mController1->getButtonDown() & Controller::PRESS_UP || navi->mController1->getButtonDown() & Controller::PRESS_DPAD_UP) {
-				p2gz->mSelectedPositionSlot = (p2gz->mSelectedPositionSlot - 1 + 4) % 4;
-			} else if (navi->mController1->getButtonDown() & Controller::PRESS_DOWN || navi->mController1->getButtonDown() & Controller::PRESS_DPAD_DOWN) {
-				p2gz->mSelectedPositionSlot = (p2gz->mSelectedPositionSlot + 1) % 4;
-			} else if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
-				Vector3f naviPos = camera->mGoalPosition;
-				naviPos.y = mapMgr->getMinY(camera->mGoalPosition);
-				p2gz->mSavedPositions[p2gz->mSelectedPositionSlot] = naviPos;
-				og::ogSound->setDecide();
-			} else if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
-				p2gz->mIsSaveLoadPosition = false;
-			} else if (navi->mController1->getButtonDown() & Controller::PRESS_X) {
-				// don't allow warping to an unused slot
-				if (p2gz->mSavedPositions[p2gz->mSelectedPositionSlot] == Vector3f::zero) {
-					og::ogSound->setError();
-					return;
-				}
-
-				// exit scroll state
-				p2gz->mIsScrollingCamera = false;
-				p2gz->mIsSaveLoadPosition = false;
-				gameSystem->setPause(false, "cameraScroll", 3);
-
-				// reset camera parameters
-				camera->mGoalPosition -= Vector3f(0, p2gz->mScrollCameraZoom, 0);
-				camera->mGoalVerticalAngle = PI / 8;
-				camera->mCameraParms->mSettingChangeSpeed.mValue = 0.1f;
-
-				// set navi position
-				navi->setPosition(p2gz->mSavedPositions[p2gz->mSelectedPositionSlot], false);
-
-				// set squad position
-				Iterator<Piki> iterator(pikiMgr);
-				CI_LOOP(iterator)
-				{
-					Piki* piki = *iterator;
-					if (piki->mNavi == navi) {
-						piki->setPosition(p2gz->mSavedPositions[p2gz->mSelectedPositionSlot], false);
-					}
-				}
-
-				og::ogSound->setDecide();
-			}
-
-			return;
-		}
-
-		// enter scroll state
-		if (!p2gz->mIsScrollingCamera && !gameSystem->paused() && navi->getStateID() != NSID_ThrowWait && navi->mController1->getButtonDown() & Controller::PRESS_DPAD_LEFT) {
-			p2gz->mIsScrollingCamera = true;
-			gameSystem->setPause(true, "cameraScroll", 3);
-
-			// set camera parameters
-			camera->mGoalPosition += Vector3f(0, p2gz->mScrollCameraZoom, 0);
-			camera->mGoalVerticalAngle = PI / 2;
-
-			og::ogSound->setOpen();
-			return;
-		}
-
-		// switch captains
-		if (p2gz->mIsScrollingCamera && naviMgr->getActiveNavi() != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_Y) {
-			Navi* otherNavi = naviMgr->getAt(GET_OTHER_NAVI(navi));
-			int otherNaviID = otherNavi->getStateID();
-
-			if (otherNavi->isAlive() && otherNaviID != NSID_Nuku && otherNaviID != NSID_NukuAdjust && otherNaviID != NSID_Punch) {
-				// play captain switch sound effect
-				if (navi->mNaviIndex == NAVIID_Olimar) {
-					PSSystem::spSysIF->playSystemSe(PSSE_SY_CHANGE_LUI, 0);
-				} else if (playData->isStoryFlag(STORY_DebtPaid)) {
-					PSSystem::spSysIF->playSystemSe(PSSE_SY_CHANGE_SHACHO, 0);
-				} else {
-					PSSystem::spSysIF->playSystemSe(PSSE_SY_CHANGE_ORIMA, 0);
-				}
-
-				// reset camera position for current captain
-				camera->mGoalPosition -= Vector3f(0, p2gz->mScrollCameraZoom, 0);
-
-				gameSystem->mSection->pmTogglePlayer();
-
-				// update parameters for other navi's camera
-				cameraMgr->mCameraObjList[GET_OTHER_NAVI(navi)]->mGoalPosition += Vector3f(0, p2gz->mScrollCameraZoom, 0);
-				cameraMgr->mCameraObjList[GET_OTHER_NAVI(navi)]->mGoalVerticalAngle = PI / 2;
-				cameraMgr->mCameraObjList[GET_OTHER_NAVI(navi)]->mCameraParms->mSettingChangeSpeed.mValue = 1.0f;
-				return;
-			}
-		}
-
-		// cancel
-		if (p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_B) {
-			// exit scrolling state
-			p2gz->mIsScrollingCamera = false;
-			gameSystem->setPause(false, "cameraScroll", 3);
-
-			// reset camera parameters
-			camera->mGoalPosition -= Vector3f(0, p2gz->mScrollCameraZoom, 0);
-			camera->mGoalVerticalAngle = PI / 8;
-			camera->mCameraParms->mSettingChangeSpeed.mValue = 0.1f;
-
-			og::ogSound->setCancel();
-		}
-
-		// warp
-		if (p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_A) {
-			// exit scrolling state
-			p2gz->mIsScrollingCamera = false;
-			gameSystem->setPause(false, "cameraScroll", 3);
-
-			// reset camera parameters
-			camera->mGoalPosition -= Vector3f(0, p2gz->mScrollCameraZoom, 0);
-			camera->mGoalVerticalAngle = PI / 8;
-			camera->mCameraParms->mSettingChangeSpeed.mValue = 0.1f;
-
-			// set navi position
-			Vector3f naviPos = camera->mGoalPosition;
-			naviPos.y = mapMgr->getMinY(camera->mGoalPosition);
-			navi->setPosition(naviPos, false);
-
-			// set squad position
-			Iterator<Piki> iterator(pikiMgr);
-			CI_LOOP(iterator)
-			{
-				Piki* piki = *iterator;
-				if (piki->mNavi == navi) {
-					piki->setPosition(naviPos, false);
-				}
-			}
-
-			og::ogSound->setDecide();
-		}
-
-		// open saved positions menu
-		if (p2gz->mIsScrollingCamera && navi->mController1->getButtonDown() & Controller::PRESS_R) {
-			p2gz->mIsSaveLoadPosition = true;
-			return;
-		}
-
-		// calculate new camera position
-		if (p2gz->mIsScrollingCamera) {
-			// set camera parameters
-			camera->mGoalVerticalAngle = PI / 2;
-			camera->mCameraParms->mSettingChangeSpeed.mValue = 1.0f;
-
-			// calculate control stick vector
-			f32 ax = 0.0f;
-			f32 az = ax;
-			if (navi->mController1) {
-				ax = -navi->mController1->getMainStickX();
-				az = navi->mController1->getMainStickY();
-			}
-			Vector3f inputPos(ax, 0.0f, az);
-			navi->reviseController(inputPos);
-
-			f32 x = inputPos.x;
-			f32 z = inputPos.z;
-
-			Vector3f side = camera->getSideVector();
-			Vector3f up   = camera->getUpVector();
-			Vector3f view = camera->getViewVector();
-			side.y        = 0.0f;
-
-			side.qNormalise();
-
-			if (up.y > view.y) {
-				view.x = view.x;
-				view.z = view.z;
-			} else {
-				view.x = up.x;
-				view.z = up.z;
-			}
-			Vector3f view2D(view.x, 0.0f, view.z);
-			view2D.qNormalise();
-
-			Vector3f result(side * x + view2D * z);
-
-			if (result != Vector3f::zero) {
-				active.print(82, 92, "Move");
-			} else {
-				inactive.print(82, 92, "Move");
-			}
-			f32 cStickX = navi->mController1->getSubStickX();
-			f32 cStickY = navi->mController1->getSubStickY();
-			if (cStickX != 0 || cStickY != 0) {
-				active.print(82, 116, "Camera");
-			} else {
-				inactive.print(82, 116, "Camera");
-			}
-
-			inactive.print(82, 140, "Warp");
-			inactive.print(82, 164, "Cancel");
-			inactive.print(82, 188, "Switch");
-
-			if (navi->mController1->getButton() & Controller::PRESS_L) {
-				active.print(82, 212, "Move Faster");
-			} else {
-				inactive.print(82, 212, "Move Faster");
-			}
-
-			inactive.print(82, 236, "Saved Positions");
-
-			p2gz->mControlStickPicture->draw(50.0f, 76.0f, 16, 16, false, false, false);
-			p2gz->mCStickPicture->draw(50.0f, 100.0f, 16, 16, false, false, false);
-			p2gz->mAButtonPicture->draw(50.0f, 124.0f, 16, 16, false, false, false);
-			p2gz->mBButtonPicture->draw(50.0f, 148.0f, 16, 16, false, false, false);
-			p2gz->mYButtonPicture->draw(50.0f, 172.0f, 16, 16, false, false, false);
-			p2gz->mLButtonPicture->draw(50.0f, 196.0f, 16, 16, false, false, false);
-			p2gz->mRButtonPicture->draw(50.0f, 220.0f, 16, 16, false, false, false);
-
-			// calculate and set new position, unless there is no collision
-			int speed = (navi->mController1->getButton() & Controller::PRESS_L) ? 32 : 16;
-			Vector3f goalPosition(camera->mGoalPosition.x + result.x * speed, camera->mGoalPosition.y, camera->mGoalPosition.z + result.z * speed);
-
-			// circle color
-			int rgb = p2gz->getAnimationCoefficient() * 255;
-			Color4 color = Color4(rgb, rgb, rgb, 255);
-
-			if (mapMgr->getMinY(goalPosition) > -1000) {
-				camera->mGoalPosition = goalPosition;
-			} else {
-				gfx->mOrthoGraph.setPort();
-				J2DPrint print(JFWSystem::systemFont, 0.0f);
-				print.initiate();
-				print.mCharColor.set(JUtility::TColor(rgb, 0, 0, 255));
-				print.mGradientColor.set(JUtility::TColor(rgb, 0, 0, 255));
-				print.mGlyphWidth = 16.0f;
-				print.mGlyphHeight = 16.0f;
-				print.print(100, 200, "Can't move out of bounds!");
-				color = Color4(rgb, 0, 0, 255);
-			}
-
-			// change camera angle with dampening on c-stick value
-			camera->mCameraAngleTarget -= cStickX * 0.05f;
-
-			// set zoom level with clamping
-			if (p2gz->mScrollCameraZoom > 0 && p2gz->mScrollCameraZoom - cStickY * 25 > 0 && p2gz->mScrollCameraZoom < 1700 && p2gz->mScrollCameraZoom - cStickY * 25 < 1700) {
-				p2gz->mScrollCameraZoom -= cStickY * 25;
-				camera->mGoalPosition -= Vector3f(0, cStickY * 25, 0);
-				if (cStickY > 0) {
-					og::ogSound->setZoomIn();
-				} else if (cStickY < 0) {
-					og::ogSound->setZoomOut();
-				}
-			}
-
-			// draw circle
-			gfx->initPerspPrintf(gfx->mCurrentViewport);
-
-			f32 radius = 4 + 4 * p2gz->getAnimationCoefficient();
-			Vector3f naviPos = camera->mGoalPosition;
-			Vector3f vertices[3];
-			vertices[0] = naviPos;
-
-			for (int i = 0; i < 32; i++) {
-				f32 theta = -HALF_PI - (TAU * i / 32);
-				vertices[1] = Vector3f(radius * sinf(theta), 0.0f, radius * cosf(theta)) + naviPos;
-
-				f32 nextTheta = -HALF_PI - (TAU * (i + 1) / 32);
-				vertices[2] = Vector3f(radius * sinf(nextTheta), 0.0f, radius * cosf(nextTheta)) + naviPos;
-
-				GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
-				for (int j = 0; j < 3; j++) {
-					GXPosition3f32(vertices[j].x, vertices[j].y, vertices[j].z);
-					GXColor4u8(color.r, color.g, color.b, 255);
-				}
-				GXEnd();
-			}
-		}
-	}
 }
 
 /**
@@ -941,7 +613,9 @@ void GameState::onHoleIn(SingleGameSection* game, ItemCave::Item* item)
  * @note Address: 0x80215684
  * @note Size: 0x4
  */
-void GameState::onMovieCommand(SingleGameSection*, int) { }
+void GameState::onMovieCommand(SingleGameSection*, int)
+{
+}
 
 /**
  * @note Address: 0x80215688
@@ -964,11 +638,11 @@ void GameState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		Screen::Game2DMgr::GameOverTitle naviType;
 		if (naviID == 0) {
 			naviType = Screen::Game2DMgr::GOTITLE_OlimarDown;
-			game->setPlayerMode(0);
+			game->setPlayerMode(NAVIID_Olimar);
 		} else {
-			naviType = (playData->mStoryFlags & STORY_DebtPaid) ? Screen::Game2DMgr::GOTITLE_PresidentDown
-			                                                    : Screen::Game2DMgr::GOTITLE_LouieDown;
-			game->setPlayerMode(1);
+			naviType
+			    = playData->isStoryFlag(STORY_DebtPaid) ? Screen::Game2DMgr::GOTITLE_PresidentDown : Screen::Game2DMgr::GOTITLE_LouieDown;
+			game->setPlayerMode(NAVIID_Louie);
 		}
 		Screen::gGame2DMgr->open_GameOver(naviType);
 	}
@@ -1095,7 +769,7 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 	// Regular/first time course landing, check usual stuff after it
 	if (config->is("s00_coursein") || config->is("x01_coursein_forest") || config->is("x01_coursein_yakushima")
 	    || config->is("x01_coursein_last")) {
-		if ((playData->mStoryFlags & STORY_DebtPaid) && !playData->isDemoFlag(DEMO_President_Start)) {
+		if (playData->isStoryFlag(STORY_DebtPaid) && !playData->isDemoFlag(DEMO_President_Start)) {
 			playData->setDemoFlag(DEMO_President_Start);
 			char* name = const_cast<char*>(game->mCurrentCourseInfo->mName);
 			MoviePlayArg moviePlayArg("g35_president_gamestart", name, game->mMovieFinishCallback, 0);
@@ -1152,13 +826,13 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 			return;
 		}
 
-		// @intns: only remaining regswaps are in this loop - Piki* piki should load into r25 not r28.
+		// ground all pikmin when cutscene ends
 		Iterator<Piki> iterator(pikiMgr);
 		CI_LOOP(iterator)
 		{
-			FakePiki* piki = *iterator;
-			Vector3f pos   = piki->getPosition();
-			pos.y          = mapMgr->getMinY(pos);
+			Piki* piki   = *iterator;
+			Vector3f pos = piki->getPosition();
+			pos.y        = mapMgr->getMinY(pos);
 			piki->setPosition(pos, false);
 		}
 
@@ -1202,9 +876,9 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 		naviMgr->getAt(id)->setDeadLaydown();
 		if (naviMgr->mDeadNavis != 2) {
 			if ((int)id == NAVIID_Olimar) {
-				gameSystem->mSection->setPlayerMode(1);
+				gameSystem->mSection->setPlayerMode(NAVIID_Louie);
 			} else {
-				gameSystem->mSection->setPlayerMode(0);
+				gameSystem->mSection->setPlayerMode(NAVIID_Olimar);
 			}
 		} else {
 			gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
@@ -1229,7 +903,7 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
  */
 bool GameState::needRepayDemo()
 {
-	if (mCheckRepay || gameSystem->paused()) { // @P2GZ: return false if game is paused
+	if (mCheckRepay) {
 		return false;
 	}
 
@@ -1309,29 +983,6 @@ void GameState::drawRepayDemo(Graphics&)
 	// UNUSED FUNCTION
 }
 
-// @P2GZ
-void GameState::drawTimer() {
-	s64 currentTime = OSTicksToMilliseconds(OSGetTime());
-	s64 timerMs = currentTime - p2gz->mHistory->peek()->mStartTime;
-
-    Graphics* gfx = sys->getGfx();
-    gfx->initPerspPrintf(gfx->mCurrentViewport);
-    gfx->initPrimDraw(nullptr);
-    gfx->mOrthoGraph.setPort();
-
-    J2DPrint timerText(gP2JMEMgr->mFont, 0.0f);
-    timerText.initiate();
-    timerText.mCharColor.set(JUtility::TColor(255, 255, 255, 128));
-    timerText.mGradientColor.set(JUtility::TColor(255, 255, 255, 128));
-    timerText.mGlyphWidth = 16.0f;
-    timerText.mGlyphHeight = 16.0f;
-
-	s64 minutes = timerMs / (60 * 1000);
-	s64 seconds = (timerMs / 1000) % 60;
-	s64 tenths = (timerMs / 100) % 10;
-    timerText.print(16, 16, "%lld:%.2lld.%.1lld", minutes, seconds, tenths);
-}
-
 /**
  * @note Address: 0x802174B8
  * @note Size: 0x78
@@ -1350,8 +1001,6 @@ void GameState::draw(SingleGameSection* game, Graphics& gfx)
 	game->BaseGameSection::doDraw(gfx);
 	game->drawMainMapScreen();
 	game->test_draw_treasure_detector();
-
-	drawTimer(); // @P2GZ
 }
 
 /**

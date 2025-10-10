@@ -169,7 +169,8 @@ struct CaveResultState : public State {
 struct CaveState : public State {
 	inline CaveState()
 	    : State(SGS_Cave)
-	{}
+	{
+	}
 
 	virtual void init(SingleGameSection*, StateArg*);                                               // _08
 	virtual void exec(SingleGameSection*);                                                          // _0C
@@ -183,14 +184,6 @@ struct CaveState : public State {
 	virtual void onFountainReturn(SingleGameSection*, ItemBigFountain::Item*);                      // _3C
 	virtual void on_section_fadeout(SingleGameSection*);                                            // _40
 
-	void resetNavi(Game::Navi* navi);                                // @P2GZ
-	void registerPelletCollectedOnCurFloor(Pellet* pellet);          // @P2GZ
-
-	bool hasCollectedItemOnCurrentFloor(int);    // @P2GZ
-	bool hasCollectedOtakaraOnCurrentFloor(int); // @P2GZ
-
-	void drawTimer(); // @P2GZ
-
 	void check_SMenu(SingleGameSection*);
 
 	// Unused/inlined:
@@ -202,14 +195,6 @@ struct CaveState : public State {
 	bool mFadeout;     // _11
 	u32 _14;           // _14, unknown
 	bool mDrawSave;    // _18
-
-	// @P2GZ Start
-	bool mResetting;
-	u32 mNumOtakaraCollectedOnCurFloor;
-	int mOtakaraCollectedOnCurFloor[64];
-	u32 mNumItemsCollectedOnCurFloor;
-	int mItemsCollectedOnCurFloor[64];
-	// @P2GZ End
 };
 
 struct DayEndArg : public StateArg {
@@ -390,8 +375,6 @@ struct GameState : public State {
 	bool needRepayDemo();
 	void startRepayDemo();
 	RepayDemoState updateRepayDemo();
-
-	void drawTimer(); // @P2GZ
 
 	// Unused/inlined:
 	void drawRepayDemo(Graphics&);

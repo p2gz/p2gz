@@ -49,7 +49,6 @@ CallBack_CounterRV::CallBack_CounterRV(char** characterTexturePaths, u16 maxDigi
 	mIsInitialized    = 1;
 	mPaneOffsetX      = 0.0f;
 	mPaneOffsetY      = 0.0f;
-	mIsP2GZCounter    = false; // @P2GZ: don't set digit alpha to parent pane alpha
 }
 
 /**
@@ -95,19 +94,28 @@ J2DPane* CallBack_CounterRV::getMotherPane()
  * @note Address: 0x8030B7D8
  * @note Size: 0x8
  */
-void CallBack_CounterRV::setPuyoAnim(bool isPuyoAnim) { mIsPuyoAnim = isPuyoAnim; }
+void CallBack_CounterRV::setPuyoAnim(bool isPuyoAnim)
+{
+	mIsPuyoAnim = isPuyoAnim;
+}
 
 /**
  * @note Address: 0x8030B7E0
  * @note Size: 0x8
  */
-void CallBack_CounterRV::setPuyoAnimZero(bool isPuyoAnimZero) { mIsPuyoAnimZero = isPuyoAnimZero; }
+void CallBack_CounterRV::setPuyoAnimZero(bool isPuyoAnimZero)
+{
+	mIsPuyoAnimZero = isPuyoAnimZero;
+}
 
 /**
  * @note Address: 0x8030B7E8
  * @note Size: 0x8
  */
-void CallBack_CounterRV::setBlind(bool isBlind) { mIsBlind = isBlind; }
+void CallBack_CounterRV::setBlind(bool isBlind)
+{
+	mIsBlind = isBlind;
+}
 
 /**
  * @note Address: N/A
@@ -132,7 +140,10 @@ void CallBack_CounterRV::setValPtr(u32*)
  * @note Address: 0x8030B7F0
  * @note Size: 0x8
  */
-void CallBack_CounterRV::setZeroAlpha(u8 alpha) { mZeroAlpha = alpha; }
+void CallBack_CounterRV::setZeroAlpha(u8 alpha)
+{
+	mZeroAlpha = alpha;
+}
 
 /**
  * @note Address: 0x8030B7F8
@@ -141,84 +152,24 @@ void CallBack_CounterRV::setZeroAlpha(u8 alpha) { mZeroAlpha = alpha; }
 void CallBack_CounterRV::startPuyoUp(f32 scaleDelayFactor)
 {
 	setPuyoAnim(true);
-	u16 max = (mCurrentDigitNum >= mMaxDisplayDigitNum) ? mMaxDisplayDigitNum : mCurrentDigitNum;
+	u16 max = mCurrentDigitNum;
+	if (max >= mMaxDisplayDigitNum) {
+		max = mMaxDisplayDigitNum;
+	}
 	for (int i = 0; i < max; i++) {
 		mCounterDigits[i]->mScaleMgr->up(msVal.mScaleRestoreAmplitude, msVal.mScaleAngularFreq, msVal.mScaleMaxRestoreTime,
 		                                 (0.025f * f32(i)) * scaleDelayFactor);
 	}
-
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	stw      r0, 0x64(r1)
-	stfd     f31, 0x50(r1)
-	psq_st   f31, 88(r1), 0, qr0
-	stfd     f30, 0x40(r1)
-	psq_st   f30, 72(r1), 0, qr0
-	stfd     f29, 0x30(r1)
-	psq_st   f29, 56(r1), 0, qr0
-	stmw     r26, 0x18(r1)
-	mr       r26, r3
-	li       r0, 1
-	stb      r0, 0x84(r3)
-	fmr      f29, f1
-	lhz      r4, 0x2c(r3)
-	lhz      r0, 0x2e(r3)
-	cmplw    r4, r0
-	blt      lbl_8030B844
-	mr       r4, r0
-
-	lbl_8030B844:
-	lis      r3, msVal__Q32og6Screen18CallBack_CounterRV@ha
-	lfs      f30, lbl_8051D6A4@sda21(r2)
-	lfd      f31, lbl_8051D6A8@sda21(r2)
-	addi     r30, r3, msVal__Q32og6Screen18CallBack_CounterRV@l
-	clrlwi   r28, r4, 0x10
-	li       r27, 0
-	li       r29, 0
-	lis      r31, 0x4330
-	b        lbl_8030B8A8
-
-	lbl_8030B868:
-	xoris    r0, r27, 0x8000
-	lwz      r3, 0x7c(r26)
-	stw      r0, 0xc(r1)
-	lwzx     r3, r3, r29
-	stw      r31, 8(r1)
-	lwz      r3, 8(r3)
-	lfd      f0, 8(r1)
-	lfs      f1, 0(r30)
-	fsubs    f0, f0, f31
-	lfs      f2, 4(r30)
-	lfs      f3, 8(r30)
-	fmuls    f0, f30, f0
-	fmuls    f4, f0, f29
-	bl       up__Q32og6Screen8ScaleMgrFffff
-	addi     r29, r29, 4
-	addi     r27, r27, 1
-
-	lbl_8030B8A8:
-	cmpw     r27, r28
-	blt      lbl_8030B868
-	psq_l    f31, 88(r1), 0, qr0
-	lfd      f31, 0x50(r1)
-	psq_l    f30, 72(r1), 0, qr0
-	lfd      f30, 0x40(r1)
-	psq_l    f29, 56(r1), 0, qr0
-	lfd      f29, 0x30(r1)
-	lmw      r26, 0x18(r1)
-	lwz      r0, 0x64(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
 }
 
 /**
  * @note Address: 0x8030B8DC
  * @note Size: 0x8
  */
-void CallBack_CounterRV::setCenteringMode(EnumCenteringMode centeringMode) { mCenteringMode = centeringMode; }
+void CallBack_CounterRV::setCenteringMode(EnumCenteringMode centeringMode)
+{
+	mCenteringMode = centeringMode;
+}
 
 /**
  * @note Address: 0x8030B8E4
@@ -315,11 +266,7 @@ void CallBack_CounterRV::setKetaSub(int displayDigitNum, bool isUp, bool isDown)
 			if (i + 1 > mCurrentDigitNum && !mIsBlind) {
 				alpha = mZeroAlpha;
 			}
-			// @P2GZ start
-			if (!mIsP2GZCounter || alpha == mZeroAlpha) {
-				mCounterDigits[i]->mPicture->setAlpha(alpha);
-			}
-			// @P2GZ end
+			mCounterDigits[i]->mPicture->setAlpha(alpha);
 			if (i + 1 <= mCurrentDigitNum) {
 				setCounterUpDown(i, isUp, isDown);
 			} else {
@@ -484,7 +431,9 @@ void CallBack_CounterRV::update()
  * @note Address: 0x8030C52C
  * @note Size: 0x4
  */
-void CallBack_CounterRV::draw(Graphics&, J2DGrafContext&) { }
+void CallBack_CounterRV::draw(Graphics&, J2DGrafContext&)
+{
+}
 
 /**
  * @note Address: 0x8030C530

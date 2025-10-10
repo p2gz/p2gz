@@ -16,9 +16,7 @@ int rand()
  * @note Address: 0x800C9598
  * @note Size: 0x8
  */
-void srand(u32 seed) { next = seed; }
-
-// @P2GZ
-u32 getSeed() {
-	return next;
+void srand(u32 seed)
+{
+	next = seed;
 }

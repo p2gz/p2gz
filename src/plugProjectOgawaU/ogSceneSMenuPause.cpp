@@ -8,25 +8,34 @@ namespace newScreen {
  * @note Address: 0x803140B4
  * @note Size: 0x50
  */
-SMenuPause::SMenuPause() { }
+SMenuPause::SMenuPause()
+{
+}
 
 /**
  * @note Address: 0x80314104
  * @note Size: 0x4
  */
-void SMenuPause::doUserCallBackFunc(Resource::MgrCommand*) { }
+void SMenuPause::doUserCallBackFunc(Resource::MgrCommand*)
+{
+}
 
 /**
  * @note Address: 0x80314108
  * @note Size: 0x60
  */
-void SMenuPause::doCreateObj(JKRArchive* archive) { registObj(new ObjSMenuPause("SMenuPause screen"), archive); }
+void SMenuPause::doCreateObj(JKRArchive* archive)
+{
+	registObj(new ObjSMenuPause("SMenuPause screen"), archive);
+}
 
 /**
  * @note Address: 0x80314168
  * @note Size: 0x4
  */
-void SMenuPause::doUpdateActive() { }
+void SMenuPause::doUpdateActive()
+{
+}
 
 /**
  * @note Address: 0x8031416C
@@ -45,10 +54,6 @@ bool SMenuPause::doConfirmSetScene(::Screen::SetSceneArg& sceneArg)
 	case SCENE_CHALLENGE_2P:
 	case SCENE_CHALLENGE_1P:
 	case SCENE_PAUSE_MENU_CONTROLS:
-	// @P2GZ start
-	case SCENE_P2GZ_SQUAD:
-	case SCENE_P2GZ_WARP:
-	// @P2GZ end
 		result = true;
 	}
 

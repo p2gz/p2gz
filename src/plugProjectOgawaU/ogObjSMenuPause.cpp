@@ -13,7 +13,10 @@
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace og {
 namespace newScreen {
@@ -94,7 +97,9 @@ ObjSMenuPause::ObjSMenuPause(char const* name)
  * @note Address: 0x803144FC
  * @note Size: 0xC4
  */
-ObjSMenuPause::~ObjSMenuPause() { }
+ObjSMenuPause::~ObjSMenuPause()
+{
+}
 
 /**
  * @note Address: 0x803145C0
@@ -346,16 +351,24 @@ void ObjSMenuPause::doUpdateLAction()
  */
 void ObjSMenuPause::doUpdateRAction()
 {
-	// RIGHT = P2GZ WARP
-	::Screen::SetSceneArg arg(SCENE_P2GZ_WARP, getDispMember()); // @P2GZ
-	jump_R(arg);
+	// R = CONTROLLER OR ITEMS
+	if (msBaseVal.mUseControlMenu) {
+		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_CONTROLS, getDispMember());
+		jump_R(arg);
+	} else {
+		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_ITEMS, getDispMember());
+		jump_R(arg);
+	}
 }
 
 /**
  * @note Address: 0x80314D1C
  * @note Size: 0x10
  */
-void ObjSMenuPause::doUpdateCancelAction() { mDisp->mExitStatus = 2; }
+void ObjSMenuPause::doUpdateCancelAction()
+{
+	mDisp->mExitStatus = 2;
+}
 
 /**
  * @note Address: 0x80314D2C
@@ -418,7 +431,7 @@ bool ObjSMenuPause::doStart(::Screen::StartSceneArg const* arg)
 	mAnims->setSpeed(1.0f);
 	mAnims->start();
 
-	setYajiName('6050_00', '3013_00', '6052_00'); // @P2GZ: change to "Radar" "Warp" "Menu"
+	setYajiName('6050_00', '6051_00', '6052_00'); // "Radar" "Items" "Menu"
 	stopYaji();
 	start_LR(arg);
 }
@@ -427,7 +440,10 @@ bool ObjSMenuPause::doStart(::Screen::StartSceneArg const* arg)
  * @note Address: 0x80314F9C
  * @note Size: 0x8
  */
-bool ObjSMenuPause::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjSMenuPause::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80314FA4

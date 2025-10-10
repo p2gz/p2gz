@@ -1,4 +1,3 @@
-#include "Game/gamePlayData.h"
 #include "og/newScreen/SMenu.h"
 #include "og/Screen/anime.h"
 #include "og/Screen/ogScreen.h"
@@ -7,7 +6,10 @@
 namespace og {
 namespace newScreen {
 
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 /**
  * @note Address: 0x80330658
@@ -19,19 +21,15 @@ ObjSMenuCont::ObjSMenuCont(char const* name)
 	mScreenCont = nullptr;
 	mAnimGroup  = nullptr;
 	mName       = name;
-
-	// @P2GZ start
-	mSelectedOption = 0;
-	mNumOptions = 3;
-	mIsEditingOption = false;
-	// @P2GZ end
 }
 
 /**
  * @note Address: 0x803306BC
  * @note Size: 0xC4
  */
-ObjSMenuCont::~ObjSMenuCont() { }
+ObjSMenuCont::~ObjSMenuCont()
+{
+}
 
 /**
  * @note Address: 0x80330780
@@ -53,22 +51,6 @@ void ObjSMenuCont::doCreate(JKRArchive* arc)
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenCont, "s_menu_controller.btk", msBaseVal.mAnimSpeed);
 	og::Screen::registAnimGroupScreen(mAnimGroup, arc, mScreenCont, "s_menu_controller_02.btk", msBaseVal.mAnimSpeed);
 
-	// @P2GZ start
-	J2DTextBoxEx* bitterText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tbitter'));
-	og::Screen::CallBack_CounterRV* bitterCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Pbitter1', &(Game::playData->mSprayCount[1]), 2, false, true, arc);
-	mOptions[0] = new BitterSprayMenuOption(bitterText, bitterCounter, &(Game::playData->mSprayCount[1]), 2, 0, 99);
-
-	J2DTextBoxEx* spicyText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tspicy'));
-	og::Screen::CallBack_CounterRV* spicyCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Pspicy01', &(Game::playData->mSprayCount[0]), 2, false, true, arc);
-	mOptions[1] = new SpicySprayMenuOption(spicyText, spicyCounter, &(Game::playData->mSprayCount[0]), 2, 0, 99);
-
-	J2DTextBoxEx* pokoText = static_cast<J2DTextBoxEx*>(og::Screen::TagSearch(mScreenCont, 'Tpokos'));
-	og::Screen::CallBack_CounterRV* pokoCounter = og::Screen::setCallBack_CounterRV(mScreenCont, 'Ppokos01', &(Game::playData->mPokoCount), 5, false, true, arc);
-	mOptions[2] = new PokoCountMenuOption(pokoText, pokoCounter, &(Game::playData->mPokoCount), 5, 0, 99999);
-
-	mOptions[0]->mText->setAlpha(255);
-	// @P2GZ end
-
 	doCreateAfter(arc, mScreenCont);
 }
 
@@ -83,7 +65,7 @@ void ObjSMenuCont::doUpdateLAction()
 		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU_DOUKUTU, getDispMember());
 		jump_L(arg);
 	} else {
-		::Screen::SetSceneArg arg(SCENE_P2GZ_SQUAD, getDispMember()); // @P2GZ
+		::Screen::SetSceneArg arg(SCENE_PAUSE_MENU, getDispMember());
 		jump_L(arg);
 	}
 }
@@ -118,60 +100,6 @@ void ObjSMenuCont::commonUpdate()
 bool ObjSMenuCont::doUpdate()
 {
 	commonUpdate();
-
-	// @P2GZ start
-	Controller* pad = getGamePad();
-	u32 input = pad->getButtonDown();
-
-	if (input & Controller::PRESS_UP) {
-		if (!mIsEditingOption) {
-			mOptions[mSelectedOption]->disableText();
-			mSelectedOption = (mSelectedOption - 1 + mNumOptions) % mNumOptions;
-			mOptions[mSelectedOption]->enableText();
-			ogSound->setPlusMinus(false);
-		} else {
-			mOptions[mSelectedOption]->up();
-		}
-	} else if (input & Controller::PRESS_DOWN) {
-		if (!mIsEditingOption) {
-			mOptions[mSelectedOption]->disableText();
-			mSelectedOption = (mSelectedOption + 1) % mNumOptions;
-			mOptions[mSelectedOption]->enableText();
-			ogSound->setPlusMinus(false);
-		} else {
-			mOptions[mSelectedOption]->down();
-		}
-	} else if (input & Controller::PRESS_LEFT) {
-		if (mIsEditingOption) {
-			mOptions[mSelectedOption]->left();
-		}
-	} else if (input & Controller::PRESS_RIGHT) {
-		if (mIsEditingOption) {
-			mOptions[mSelectedOption]->right();
-		}
-	} else if (input & Controller::PRESS_A) {
-		if (!mIsEditingOption) {
-			mOptions[mSelectedOption]->enableCurrentDigit();
-			ogSound->setOpen();
-			mIsEditingOption = true;
-		} else {
-			mOptions[mSelectedOption]->disableCurrentDigit();
-			ogSound->setDecide();
-			mIsEditingOption = false;
-		}
-	} else if (input & Controller::PRESS_B) {
-		if (mIsEditingOption) {
-			mOptions[mSelectedOption]->disableCurrentDigit();
-			ogSound->setDecide();
-			mIsEditingOption = false;
-
-			// return early as ObjSMenuBase::doUpdate() will close the menu if B is pressed
-			mScreenCont->animation();
-			return false;
-		}
-	}
-	// @P2GZ end
-
 	bool ret = ObjSMenuBase::doUpdate();
 	mScreenCont->animation();
 	return ret;
@@ -215,7 +143,10 @@ void ObjSMenuCont::in_R()
  * @note Address: 0x80330B84
  * @note Size: 0xC
  */
-void ObjSMenuCont::wait() { mState = MENUSTATE_Default; }
+void ObjSMenuCont::wait()
+{
+	mState = MENUSTATE_Default;
+}
 
 /**
  * @note Address: 0x80330B90
@@ -247,7 +178,7 @@ bool ObjSMenuCont::doStart(::Screen::StartSceneArg const* arg)
 	mAnimGroup->setRepeat(true);
 	mAnimGroup->setSpeed(1.0f);
 	mAnimGroup->start();
-	setYajiName('3003_00', '6051_00', '3005_00'); // @P2GZ: change to "Squad" "Items" "Counters"
+	setYajiName('6052_00', '6050_00', '6051_00'); // "Menu" "Radar" "Items"
 	stopYaji();
 	return start_LR(arg);
 }
@@ -256,13 +187,19 @@ bool ObjSMenuCont::doStart(::Screen::StartSceneArg const* arg)
  * @note Address: 0x80330C8C
  * @note Size: 0x8
  */
-bool ObjSMenuCont::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjSMenuCont::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80330C94
  * @note Size: 0x20
  */
-void ObjSMenuCont::doUpdateFinish() { ObjSMenuBase::doUpdateFinish(); }
+void ObjSMenuCont::doUpdateFinish()
+{
+	ObjSMenuBase::doUpdateFinish();
+}
 
 /**
  * @note Address: 0x80330CB4
@@ -278,7 +215,9 @@ bool ObjSMenuCont::doUpdateFadeout()
  * @note Address: 0x80330D00
  * @note Size: 0x4
  */
-void ObjSMenuCont::doUpdateCancelAction() { }
+void ObjSMenuCont::doUpdateCancelAction()
+{
+}
 
 ObjSMenuCont::StaticValues ObjSMenuCont::msVal;
 

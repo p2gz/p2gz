@@ -265,7 +265,7 @@ struct PlayData : public CNode {
 		CaveOtakara()
 		    : mCaveCount(0)
 		    , mOtakaraCountsOld(nullptr)
-		    , _08(nullptr)
+		    , mVisitStatus(nullptr)
 		{
 		}
 
@@ -278,11 +278,11 @@ struct PlayData : public CNode {
 			if (caves > 0) {
 				mCaveCount        = caves;
 				mOtakaraCountsOld = new u8[caves];
-				_08               = new int[caves];
+				mVisitStatus      = new int[caves];
 				if (mCaveCount > 0) {
 					for (int j = 0; j < mCaveCount; j++) {
 						mOtakaraCountsOld[j] = 0;
-						_08[j]               = 0;
+						mVisitStatus[j]      = 0;
 					}
 				}
 			}
@@ -293,7 +293,7 @@ struct PlayData : public CNode {
 			if (mCaveCount > 0) {
 				for (int j = 0; j < mCaveCount; j++) {
 					mOtakaraCountsOld[j] = 0;
-					_08[j]               = 0;
+					mVisitStatus[j]      = 0;
 				}
 			}
 		}
@@ -305,8 +305,8 @@ struct PlayData : public CNode {
 		// so I guess it's both for some reason.
 		u8* mOtakaraCountsOld; // _04
 
-		// Pointer to array indexed by cave index.
-		int* _08; // _08
+		// Pointer to array indexed by cave index. 0 = not visited, 1 or 2 = visited?
+		int* mVisitStatus; // _08
 	};
 
 	struct LimitGen {
@@ -415,6 +415,7 @@ struct PlayData : public CNode {
 	bool isCaveFirstReturn(int, ID32&);
 	bool closeCourse(int);
 
+	inline void setStoryFlag(StoryFlags flag) { mStoryFlags |= flag; }
 	inline bool isStoryFlag(StoryFlags flag) { return mStoryFlags & flag; }
 
 	inline bool hasGotWhites() { return !isDemoFlag(DEMO_White_Candypop); }
@@ -437,7 +438,7 @@ struct PlayData : public CNode {
 		for (int i = 0; i < 2; i++) {
 			output.textWriteTab(output.mTabCount);
 			output.writeInt(mBerryCount[i]);
-			sprintf(textBuffer, "\t# dope-?��?��[%d]\r\n", i); // 'dope-berry'
+			sprintf(textBuffer, "\t# dope-実[%d]\r\n", i); // 'dope-berry'
 			output.textWriteText(textBuffer);
 		}
 	}
@@ -478,7 +479,7 @@ struct PlayData : public CNode {
 
 	// _00     = VTBL
 	// _00-_18 = CNode
-	bool _18;                               // _18
+	bool mDoAllowDebugPikiSpawn;            // _18
 	u8 mLoadType;                           // _19, see SaveFlags enum
 	void* mBeforeSaveDelegate;              // _1C
 	u8 mDeadNaviID;                         // _20
@@ -499,7 +500,7 @@ struct PlayData : public CNode {
 	PelletCropMemory* mMainCropMemory;      // _B4
 	PelletCropMemory* mCaveCropMemory;      // _B8
 	int mTreasureCount;                     // _BC
-	u32 mSprayCount[2];                     // _C0, @P2GZ: int --> u32
+	int mSprayCount[2];                     // _C0
 	int mBerryCount[2];                     // _C8
 	u64 mOsTime;                            // _D0
 	u8* mBitfieldPerCourse;                 // _D8
@@ -512,7 +513,7 @@ struct PlayData : public CNode {
 	LimitGen* mLimitGen; // _E4
 
 	// Current Poko count.
-	u32 mPokoCount; // _E8, @P2GZ: int --> u32
+	int mPokoCount; // _E8
 
 	int mCavePokoCount; // _EC
 

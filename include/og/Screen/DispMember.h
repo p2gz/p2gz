@@ -6,6 +6,8 @@
 #include "IDelegate.h"
 #include "id32.h"
 #include "Rect.h"
+// solely for the piki id enum
+#include "Game/Piki.h"
 
 struct Controller;
 
@@ -177,16 +179,6 @@ struct DispMemberCaveMore : public DispMemberAnaDemo {
 	u8 mPikiInDanger; // _24
 	u8 mCantProceed;  // _25
 };
-
-// @P2GZ
-struct DispMemberHoleIn : public DispMemberBase {
-	inline DispMemberHoleIn() {}
-
-	virtual u32 getSize() { return sizeof(DispMemberHoleIn); }
-	virtual u32 getOwnerID() { return OWNER_OGA; }
-	virtual u64 getMemberID() { return MEMBER_P2GZ_HOLE_IN; }
-};
-
 
 // size 0x78
 struct DispMemberChallenge1P : public DispMemberBase {
@@ -465,30 +457,6 @@ struct DispMemberSMenuCont : public DispMemberBase {
 	// _00-_08 = DispMemberBase
 };
 
-// @P2GZ
-struct DispMemberSMenuSquad : public DispMemberBase {
-
-	virtual u32 getSize() { return sizeof(DispMemberSMenuSquad); }    // _08 (weak)
-	virtual u32 getOwnerID() { return OWNER_OGA; }                   // _0C (weak)
-	virtual u64 getMemberID() { return MEMBER_P2GZ_SQUAD; } // _10 (weak)
-
-	// _00     = VTBL
-	// _00-_08 = DispMemberBase
-
-};
-
-// @P2GZ
-struct DispMemberSMenuWarp : public DispMemberBase {
-
-	virtual u32 getSize() { return sizeof(DispMemberSMenuWarp); }    // _08 (weak)
-	virtual u32 getOwnerID() { return OWNER_OGA; }                   // _0C (weak)
-	virtual u64 getMemberID() { return MEMBER_P2GZ_WARP; } // _10 (weak)
-
-	// _00     = VTBL
-	// _00-_08 = DispMemberBase
-
-};
-
 // size 0x28
 struct DispMemberSMenuItem : public DispMemberBase {
 	DispMemberSMenuItem()
@@ -644,11 +612,6 @@ struct DispMemberSMenuAll : public DispMemberBase {
 		setSubMember(&mSMenuMap);
 		setSubMember(&mSMenuVS);
 		setSubMember(&mSMenuCont);
-
-		// @P2GZ start
-		setSubMember(&mSMenuSquad);
-		setSubMember(&mSMenuWarp);
-		// @P2GZ end
 	} // _14 (weak)
 
 	// _00     = VTBL
@@ -659,8 +622,6 @@ struct DispMemberSMenuAll : public DispMemberBase {
 	DispMemberSMenuMap mSMenuMap;                   // _5C
 	DispMemberSMenuPauseVS mSMenuVS;                // _A8
 	DispMemberSMenuCont mSMenuCont;                 // _B4
-	DispMemberSMenuSquad mSMenuSquad;               // @P2GZ
-	DispMemberSMenuWarp mSMenuWarp;                 // @P2GZ
 	int mOpenMode;                                  // _BC
 	bool mIsDay1;                                   // _C0
 };
@@ -708,8 +669,8 @@ struct DispMemberUfoGroup : public DispMemberBase {
 	{
 		mHasWhite                       = false;
 		mHasPurple                      = false;
-		mContena1.mDataContena.mOnyonID = 4;
-		mContena2.mDataContena.mOnyonID = 3;
+		mContena1.mDataContena.mOnyonID = Game::White;
+		mContena2.mDataContena.mOnyonID = Game::Purple;
 		mHasPaidDebt                    = false;
 	}
 

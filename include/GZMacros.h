@@ -1,1 +1,0 @@
-#define GZASSERTLINE(cond) JUT_ASSERTLINE(__LINE__, cond, "GZAssert")

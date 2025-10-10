@@ -29,7 +29,6 @@
 #include "Dolphin/rand.h"
 #include "PikiAi.h"
 #include "JSystem/J3D/J3DModelLoader.h"
-#include "GlobalData.h" // @P2GZ
 
 Game::ItemOnyon::Mgr* Game::ItemOnyon::mgr;
 static bool sVolveFlag;
@@ -57,7 +56,7 @@ void Onyon::movieUserCommand(u32 code, MoviePlayer* player)
 
 		// This whole section of code is almost entirely redundant, it spawns a new sprout,
 		// kills it, then spawns the actual sprout it uses, WTF?
-		if (code == 105 || !GameStat::checkZikatu(static_cast<EPikiKind>(mOnyonType))) {
+		if (code == CC_MovieCommand6 || !GameStat::checkZikatu(static_cast<EPikiKind>(mOnyonType))) {
 			playData->setContainer(mOnyonType);
 
 			// Generate new sprout and play cutscene
@@ -213,7 +212,10 @@ bool Onyon::isSuckReady()
  * @note Address: 0x80175590
  * @note Size: 0x28
  */
-BOOL Onyon::isSuckArriveWait() { return mOnyonType == ONYON_TYPE_SHIP ? mSuckState == SUCKSTATE_Closing : FALSE; }
+BOOL Onyon::isSuckArriveWait()
+{
+	return mOnyonType == ONYON_TYPE_SHIP ? mSuckState == SUCKSTATE_Closing : FALSE;
+}
 
 /**
  * @note Address: 0x801755B8
@@ -287,7 +289,10 @@ void Onyon::setupTevRegAnim(int type)
  * @note Address: 0x80175E1C
  * @note Size: 0x74
  */
-bool Onyon::stimulate(Interaction& act) { return act.actCommon(this) ? act.actOnyon(this) : false; }
+bool Onyon::stimulate(Interaction& act)
+{
+	return act.actCommon(this) ? act.actOnyon(this) : false;
+}
 
 /**
  * @note Address: 0x80175E90
@@ -332,7 +337,10 @@ bool InteractSuckArrive::actOnyon(Onyon* item)
  * @note Address: 0x80175FE8
  * @note Size: 0x8
  */
-bool Onyon::needShadow() { return false; }
+bool Onyon::needShadow()
+{
+	return false;
+}
 
 /**
  * @note Address: 0x80175FF0
@@ -355,7 +363,10 @@ void Onyon::getShadowParam(ShadowParam& param)
  * @note Address: 0x80176094
  * @note Size: 0x34
  */
-bool Onyon::sound_culling() { return (mOnyonType <= ONYON_TYPE_YELLOW) ? Creature::sound_culling() : false; }
+bool Onyon::sound_culling()
+{
+	return (mOnyonType <= ONYON_TYPE_YELLOW) ? Creature::sound_culling() : false;
+}
 
 /**
  * @note Address: 0x801760C8
@@ -459,8 +470,7 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 					pellet->setAlive(true);
 					pellet->finish_carrymotion();
 
-					// TODO: define when pellet states
-					pellet->mPelletSM->transit(pellet, 5, nullptr);
+					pellet->mPelletSM->transit(pellet, PELSTATE_ScaleAppear, nullptr);
 				} else {
 					GameMessageVsBattleFinished msg;
 					msg.mWinningSide = 1 - i;
@@ -488,17 +498,8 @@ bool InteractSuckDone::actOnyon(Onyon* item)
 
 		if (gameSystem->mIsInCave) {
 			playData->mCavePokoCount += money;
-			// @P2GZ Start - track pokos for this segment
-			if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
-				p2gz->mTreasurePokosCollectedSinceLoad += money;
-			}
-			else if (pellet->getKind() == PelletType::Carcass) {
-				p2gz->mBugPokosCollectedSinceLoad += money;
-			}
-			// @P2GZ End
 		} else {
 			gameSystem->mSection->mMoney += money;
-			p2gz->mTreasurePokosCollectedSinceLoad += money; // @P2GZ
 		}
 	}
 
@@ -558,13 +559,19 @@ bool InteractSuckDone::actOnyon(Onyon* item)
  * @note Address: 0x80176E84
  * @note Size: 0xC
  */
-void Onyon::startPropera() { mPropera = 20.0f; }
+void Onyon::startPropera()
+{
+	mPropera = 20.0f;
+}
 
 /**
  * @note Address: 0x80176E90
  * @note Size: 0xC
  */
-void Onyon::stopPropera() { mPropera = -20.0f; }
+void Onyon::stopPropera()
+{
+	mPropera = -20.0f;
+}
 
 /**
  * @note Address: 0x80176E9C
@@ -600,7 +607,7 @@ void Onyon::doDirectDraw(Graphics& gfx)
 Onyon::Onyon()
     : BaseItem(OBJTYPE_Onyon)
 {
-	mCollTree      = new CollTree();
+	mCollTree      = new CollTree;
 	mMass          = 0.0f;
 	mGoalWayPoint  = nullptr;
 	mFaceDir       = 0.0f;
@@ -630,7 +637,9 @@ void Onyon::onInit(CreatureInitArg*)
  * @note Address: 0x8017703C
  * @note Size: 0x4
  */
-void Onyon::onKill(Game::CreatureKillArg*) { }
+void Onyon::onKill(Game::CreatureKillArg*)
+{
+}
 
 /**
  * @note Address: 0x80177040
@@ -808,15 +817,7 @@ Vector3f Onyon::getGoalPos()
  */
 void Onyon::doAI()
 {
-	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
-	int animid;
-	if (!info) {
-		animid = -1;
-	} else {
-		animid = info->mId;
-	}
-
-	if (animid == 2 && mOnyonType <= ONYON_TYPE_YELLOW) {
+	if (mAnimator.getAnimIndex() == 2 && mOnyonType <= ONYON_TYPE_YELLOW) {
 		PSM::SeSound* sound = static_cast<PSM::SeSound*>(mSoundObj->startSound(PSSE_PK_SE_INSIDE_ONYON, 0));
 		if (sound) {
 			PSGame::SoundTable::SePerspInfo persp;
@@ -858,7 +859,7 @@ void Onyon::doAI()
 void Onyon::forceClose()
 {
 	if (mOnyonType == ONYON_TYPE_SHIP) {
-		mAnimator.setFrameByKeyType(1000);
+		mAnimator.setFrameByKeyType(KEYEVENT_END);
 		mAnimSpeed = 0.0f;
 		mUfoPodOpenSuck->fade();
 		mSuckState = SUCKSTATE_IdleClosed;
@@ -958,7 +959,7 @@ void Onyon::do_doAnimation()
 				PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
 				PSSystem::validateSceneMgr(mgr);
 				PSM::Scene_Game* scene = static_cast<PSM::Scene_Game*>(mgr->getChildScene());
-				scene                  = (scene->isGameScene()) ? scene : nullptr;
+				scene                  = (static_cast<PSM::SceneBase*>(scene)->isGameScene()) ? scene : nullptr;
 
 				if (scene) {
 					if (scene->_4C < 390) {
@@ -1038,12 +1039,7 @@ void Onyon::startWaitMotion()
 			mAnimator.startAnim(0, 0);
 		} else {
 			if (getStoreCount() > 0) {
-				int animid;
-				if (!mAnimator.mAnimInfo) {
-					animid = -1;
-				} else {
-					animid = mAnimator.mAnimInfo->mId;
-				}
+				int animid = mAnimator.getAnimIndex();
 				if (animid <= (u32)1 || animid == 3) {
 					mAnimator.startAnim(2, this);
 				}
@@ -1119,13 +1115,7 @@ void Onyon::vsChargePikmin()
 	P2ASSERTLINE(1791, gameSystem->isVersusMode());
 	mPikminType = mOnyonType;
 	mToBirth++;
-	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
-	int animid;
-	if (!info) {
-		animid = -1;
-	} else {
-		animid = info->mId;
-	}
+	int animid = mAnimator.getAnimIndex();
 	if (animid == 0 || animid == 2) {
 		SysShape::MotionListener* mlisten = this;
 		mAnimator.startAnim(1, mlisten);
@@ -1138,13 +1128,7 @@ void Onyon::vsChargePikmin()
  */
 void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 {
-	SysShape::AnimInfo* info = mAnimator.mAnimInfo;
-	int animid;
-	if (!info) {
-		animid = -1;
-	} else {
-		animid = info->mId;
-	}
+	int animid = mAnimator.getAnimIndex();
 
 	switch (event.mType) {
 	case KEYEVENT_END:
@@ -1210,8 +1194,7 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 							}
 
 							mPikminType = mOnyonType;
-							int& count  = playData->mPikiContainer.getCount(mPikminType, Leaf);
-							count++;
+							playData->mPikiContainer.getCount(mPikminType, Leaf)++;
 							BirthMgr::inc(mOnyonType);
 							mToBirth--;
 						}
@@ -1226,9 +1209,6 @@ void Onyon::onKeyEvent_Onyon(SysShape::KeyEvent const& event)
 				break;
 			}
 		}
-		break;
-
-	default:
 		break;
 	}
 }
@@ -1332,12 +1312,7 @@ void Onyon::makeTrMatrix()
 void Onyon::changeMaterial()
 {
 	if (mOnyonType <= ONYON_TYPE_YELLOW) {
-		int animid;
-		if (!mAnimator.mAnimInfo) {
-			animid = -1;
-		} else {
-			animid = mAnimator.mAnimInfo->mId;
-		}
+		int animid = mAnimator.getAnimIndex();
 
 		f32 mattime, anmtime;
 		Sys::MatBaseAnimation* anim = mMatAnim1->mAnimation;
@@ -1506,7 +1481,10 @@ void Onyon::efxPafuKira()
  * @note Address: 0x8017959C
  * @note Size: 0x2C
  */
-int Onyon::getStoreCount() { return playData->mPikiContainer.getColorSum(mOnyonType); }
+int Onyon::getStoreCount()
+{
+	return playData->mPikiContainer.getColorSum(mOnyonType);
+}
 
 /**
  * @note Address: 0x801795C8
@@ -1521,12 +1499,7 @@ void Onyon::enterPiki(Piki* piki)
 	piki->kill(&killarg);
 
 	if (mOnyonType <= ONYON_TYPE_YELLOW && mToBirth) {
-		int animid;
-		if (!mAnimator.mAnimInfo) {
-			animid = -1;
-		} else {
-			animid = mAnimator.mAnimInfo->mId;
-		}
+		int animid = mAnimator.getAnimIndex();
 		if (animid != 1) {
 			mAnimator.startAnim(1, this);
 		}
@@ -1627,9 +1600,9 @@ Creature* Onyon::exitPiki()
 				if (navi) {
 					piki->mNavi = navi;
 					PikiAI::ActFormationInitArg arg(navi);
-					piki->mBrain->start(0, &arg);
+					piki->mBrain->start(PikiAI::ACT_Formation, &arg);
 				} else {
-					piki->mBrain->start(1, 0);
+					piki->mBrain->start(PikiAI::ACT_Free, nullptr);
 				}
 
 				int whites = playData->mPikiContainer.getColorSum(White);
@@ -1642,7 +1615,7 @@ Creature* Onyon::exitPiki()
 
 			} else {
 				PikiAI::CreatureActionArg arg(this);
-				piki->mBrain->start(3, &arg);
+				piki->mBrain->start(PikiAI::ACT_Exit, &arg);
 			}
 		}
 	}
@@ -1722,7 +1695,9 @@ BaseItem* ItemOnyon::Mgr::generatorBirth(Vector3f& pos, Vector3f& angle, GenItem
  * @note Address: 0x80179E7C
  * @note Size: 0x4
  */
-void ItemOnyon::Mgr::setupSoundViewerAndBas() { }
+void ItemOnyon::Mgr::setupSoundViewerAndBas()
+{
+}
 
 /**
  * @note Address: 0x80179E80
@@ -1762,7 +1737,7 @@ Vector3f Onyon::getOutStart_UFO()
 	if (mPikiOutJoint) {
 		return getJointPosition(mPikiOutJoint);
 	} else {
-		JUT_PANICLINE(2569, "���߂ł�");
+		JUT_PANICLINE(2569, "だめです");
 		return Vector3f::zero;
 	}
 }
@@ -1839,10 +1814,7 @@ void Onyon::update_pmotions()
 			panim.animate(time * getPMotionSpeed(i));
 			SysShape::Joint* jnt = mModel->getJoint(names[i]);
 			if (jnt) {
-				u16 id                                                         = jnt->mJointIndex;
-				SysShape::Model* model                                         = mModel;
-				J3DMtxCalc* calc                                               = static_cast<SysShape::BaseAnimator*>(&panim)->getCalc();
-				model->mJ3dModel->mModelData->mJointTree.mJoints[id]->mMtxCalc = static_cast<J3DMtxCalcAnmBase*>(calc);
+				panim.setModelCalc(mModel, jnt->mJointIndex);
 			} else {
 				JUT_PANICLINE(2643, "no joint (%s)\n", names[i]);
 			}
@@ -1894,7 +1866,10 @@ J3DModelData* ItemOnyon::Mgr::generatorGetShape(GenItemParm* parm)
  * @note Address: 0x8017A66C
  * @note Size: 0x54
  */
-GenItemParm* ItemOnyon::Mgr::generatorNewItemParm() { return new GenOnyonParm(); }
+GenItemParm* ItemOnyon::Mgr::generatorNewItemParm()
+{
+	return new GenOnyonParm();
+}
 
 /**
  * @note Address: 0x8017A6C0
@@ -1948,7 +1923,9 @@ ItemOnyon::Mgr::Mgr()
  * @note Address: 0x8017A7C4
  * @note Size: 0x188
  */
-ItemOnyon::Mgr::~Mgr() { }
+ItemOnyon::Mgr::~Mgr()
+{
+}
 
 /**
  * @note Address: 0x8017AC88
@@ -1971,13 +1948,8 @@ void Onyon::on_movie_end(bool)
 		mAnimSpeed = 30.0f;
 	}
 
-	if (mOnyonType <= ONYON_TYPE_YELLOW) {
-
-		int animid = (mAnimator.mAnimInfo) ? mAnimator.mAnimInfo->mId : -1;
-
-		if (animid == 1) {
-			return;
-		}
+	if (mOnyonType <= ONYON_TYPE_YELLOW && mAnimator.getAnimIndex() == 1) {
+		return;
 	}
 
 	startWaitMotion();
@@ -2055,7 +2027,7 @@ Onyon* ItemOnyon::Mgr::birth(int objType, int onyonType)
 		onyon->mObjectTypeID = OBJTYPE_Ufo;
 		onyon->mModel        = new SysShape::Model(mModelData[objType], J3DMODEL_ShareDL, 2);
 
-		onyon->mModel->mJ3dModel->newDifferedDisplayList(0x1000000);
+		onyon->mModel->mJ3dModel->newDifferedDisplayList(J3DMDF_DiffColorReg);
 		onyon->mModel->mJ3dModel->calc();
 		onyon->mModel->mJ3dModel->calcMaterial();
 		onyon->mModel->mJ3dModel->makeDL();
@@ -2097,7 +2069,10 @@ Onyon* ItemOnyon::Mgr::getOnyon(int i)
  * @note Address: 0x8017BAFC
  * @note Size: 0x20
  */
-void ItemOnyon::Mgr::init() { load(); }
+void ItemOnyon::Mgr::init()
+{
+	load();
+}
 
 /**
  * @note Address: 0x8017BB1C
@@ -2118,7 +2093,7 @@ void ItemOnyon::Mgr::load()
 
 	void* file = JKRFileLoader::getGlbResource("goal.bmd", nullptr);
 	JUT_ASSERTLINE(2966, file, "goal.bmd not found !!\n");
-	mModelData[0] = J3DModelLoaderDataBase::load(file, 0x240000);
+	mModelData[0] = J3DModelLoaderDataBase::load(file, J3DMLF_UseUniqueMaterials | J3DMLF_UseSingleSharedDL);
 
 	JKRArchive* podarc = nullptr;
 	if ((gameSystem->isChallengeMode() || gameSystem->mIsInCave) && !gameSystem->isVersusMode()) {
@@ -2133,13 +2108,12 @@ void ItemOnyon::Mgr::load()
 
 		file = JKRFileLoader::getGlbResource("pot.bmd", nullptr);
 		JUT_ASSERTLINE(2998, file, "pot.bmd not found !!\n");
-		J3DModelData* modelDataPod = J3DModelLoaderDataBase::load(file, 0x00000030);
+		J3DModelData* modelDataPod = J3DModelLoaderDataBase::load(file, J3DMLF_UsePostTexMtx | J3DMLF_UseImmediateMtx);
 		mModelData[1]              = modelDataPod;
-		mModelData[1]->newSharedDisplayList(0x40000);
+		mModelData[1]->newSharedDisplayList(J3DMLF_UseSingleSharedDL);
 		mModelData[1]->makeSharedDL();
-		for (u16 i = 0; i < modelDataPod->mShapeTable.mCount; i++) {
-			u32 flags                                   = modelDataPod->mShapeTable.mItems[i]->mFlags & 0xFFFF0FFF;
-			modelDataPod->mShapeTable.mItems[i]->mFlags = flags | 0x2000;
+		for (u16 i = 0; i < modelDataPod->getShapeNum(); i++) {
+			modelDataPod->getShapeNodePointer(i)->setTexMtxLoadType(0x2000);
 		}
 
 	} else {
@@ -2164,7 +2138,7 @@ void ItemOnyon::Mgr::load()
 	closeTextArc(onyontextarc);
 
 	if ((gameSystem->isChallengeMode() || gameSystem->mIsInCave) && !gameSystem->isVersusMode()) {
-		if (playData->mStoryFlags & STORY_DebtPaid) {
+		if (playData->isStoryFlag(STORY_DebtPaid)) {
 			mObjectPathComponent = "user/Kando/pod_gold";
 		} else {
 			mObjectPathComponent = "user/Kando/pod";
@@ -2189,13 +2163,14 @@ void ItemOnyon::Mgr::load()
 	}
 	file = JKRFileLoader::getGlbResource("ufo.bmd", nullptr);
 	JUT_ASSERTLINE(3123, file, "ufo.bmd not found!\n");
-	J3DModelData* modelDataUfo = J3DModelLoaderDataBase::load(file, 0x21020030);
+	J3DModelData* modelDataUfo = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_FogOff | J3DMLF_Material_UseIndirect | J3DMLF_18
+	                                                                    | J3DMLF_UsePostTexMtx | J3DMLF_UseImmediateMtx);
 	mModelData[2]              = modelDataUfo;
-	mModelData[2]->newSharedDisplayList(0x40000);
+	mModelData[2]->newSharedDisplayList(J3DMLF_UseSingleSharedDL);
 	mModelData[2]->makeSharedDL();
-	for (u16 i = 0; i < modelDataUfo->mShapeTable.mCount; i++) {
-		u32 flags                                   = modelDataUfo->mShapeTable.mItems[i]->mFlags & 0xFFFF0FFF;
-		modelDataUfo->mShapeTable.mItems[i]->mFlags = flags | 0x2000;
+
+	for (u16 i = 0; i < modelDataUfo->getShapeNum(); i++) {
+		modelDataUfo->getShapeNodePointer(i)->setTexMtxLoadType(0x2000);
 	}
 
 	SysShape::Model::enableMaterialAnim(mModelData[2], 0);
@@ -2208,7 +2183,7 @@ void ItemOnyon::Mgr::load()
 	P2ASSERTLINE(3156, file);
 	mUfoTevAnim[1].attachResource(file, mModelData[2]);
 
-	if (playData->mStoryFlags & STORY_DebtPaid) {
+	if (playData->isStoryFlag(STORY_DebtPaid)) {
 		mObjectPathComponent = "user/Kando/ufo_gold";
 	} else {
 		mObjectPathComponent = "user/Kando/ufo";

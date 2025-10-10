@@ -144,20 +144,6 @@ namespace newScreen {
 	case SCENE_PAUSE_MENU_CONTROLS:
 		base = new og::newScreen::SMenuCont;
 		break;
-
-	// @P2GZ start
-	case SCENE_P2GZ_SQUAD:
-		base = new og::newScreen::SMenuSquad;
-		break;
-
-	case SCENE_P2GZ_WARP:
-		base = new og::newScreen::SMenuWarp;
-		break;
-		
-	case SCENE_P2GZ_HOLE_IN:
-		base = new og::newScreen::HoleIn;
-		break;
-	// @P2GZ end
 	}
 	return base;
 }
