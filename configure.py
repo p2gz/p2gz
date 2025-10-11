@@ -2089,7 +2089,8 @@ config.libs = [
         "host": True,
         "objects": [
             # p2gz: add new files here...
-            Object(Matching, "p2gz/globalData.cpp"),
+            Object(Matching, "p2gz/p2gz.cpp"),
+            Object(Matching, "p2gz/gzmenu.cpp"),
         ],
     },
 ]
@@ -2106,7 +2107,8 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
     if module_id == 0:  # DOL
         return objects + [
             # p2gz: ... and here
-            "p2gz/globalData.cpp",
+            "p2gz/p2gz.cpp",
+            "p2gz/gzmenu.cpp",
             ]
     return objects
 

@@ -29,6 +29,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "LoadResource.h"
 #include "Dolphin/__start.h"
+#include <p2gz/p2gz.h>
 
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth
@@ -923,6 +924,13 @@ bool System::beginFrame()
 {
 	mCpuRetraceCount = 0;
 	JUTGamePad::read();
+
+	// @P2GZ
+	if (p2gz) {
+		p2gz->update();
+		p2gz->draw();
+	}
+
 	mDvdStatus->update();
 }
 
