@@ -2082,17 +2082,16 @@ config.libs = [
             Object(NonMatching, "utilityU/PSMainSide_ObjCalc.cpp"),
         ],
     },
-    # Uncomment the below and add in any new files with their paths within src/
-    # NB: They must be marked as Matching or Equivalent to get linked for modding.
-    # {
-    #     "lib": "moddingU",
-    #     "cflags": [*cflags_pikmin],
-    #     "mw_version": "GC/2.6",
-    #     "host": True,
-    #     "objects": [
-    #         Object(Matching, "folder/file.cpp"),
-    #     ],
-    # },
+    {
+        "lib": "p2gz",
+        "cflags": [*cflags_pikmin],
+        "mw_version": "GC/2.6",
+        "host": True,
+        "objects": [
+            # p2gz: add new files here...
+            Object(Matching, "p2gz/globalData.cpp"),
+        ],
+    },
 ]
 
 # Optional callback to adjust link order. This can be used to add, remove, or reorder objects.
@@ -2106,9 +2105,8 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
         return objects
     if module_id == 0:  # DOL
         return objects + [
-            # Add new files here.
-            # NB: any new files added here need to also be added to a library above
-            # "folder/file.cpp",
+            # p2gz: ... and here
+            "p2gz/globalData.cpp",
             ]
     return objects
 

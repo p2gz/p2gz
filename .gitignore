@@ -55,6 +55,12 @@ tools/mwcc_compiler/
 tools/powerpc/
 compile_commands.json
 
-!aoi.exe
+*.exe
+*.iso
+root
+pikminBMGtool.py
+Dolphin.exe.lnk
+nodtool.*
+
 !clang-format.exe
 !orig/*/.gitkeep
