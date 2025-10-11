@@ -34,6 +34,9 @@
 #include "PikiAI.h"
 #include "nans.h"
 
+#include <p2gz/p2gz.h>
+#include <p2gz/gzmenu.h>
+
 namespace og {
 namespace Screen {
 
@@ -258,6 +261,12 @@ void BaseGameSection::init()
 	onInit();
 	sys->heapStatusEnd("baseGameSection::init");
 	mTreasureGetState = 0;
+
+	p2gz = new P2GZ; // @P2GZ
+
+	// @P2GZ: setup demo menu actions for captains
+	p2gz->menu->get("captain")->get("die painfully");
+	p2gz->menu->get("captain")->get("boing");
 }
 
 /**
@@ -323,6 +332,15 @@ bool BaseGameSection::doUpdate()
 	sys->mTimers->_stop("ENT-B");
 	sys->mTimers->_stop("ENT");
 	sys->mTimers->_start("doSim", true);
+
+	// @P2GZ - demo menu actions
+	if (p2gz->menu->get("captain")->get("die painfully")->selected()) {
+		p2gz->die_painfully(mPrevNaviIdx);
+	}
+
+	if (p2gz->menu->get("captain")->get("boing")->selected()) {
+		p2gz->boing(mPrevNaviIdx);
+	}
 
 	if (!gameSystem->paused()) {
 		f32 frameRate = sys->getFrameRate(1.0f);
