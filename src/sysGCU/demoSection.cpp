@@ -108,15 +108,11 @@ bool Section::doUpdate()
 	mTimer += sys->mDeltaTime;
 
 	BaseHIOSection::doUpdate();
-	if (mMoviePlayer.isFinishPlaying()) {
-		mIsMainActive = false;
-	}
 
-	// if any button is pressed
-	if (mController->isButtonDown(~JUTGamePad::False) && mIsMainActive) {
-		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
-		mIsMainActive = false;
-	}
+	// @p2gz: auto-ski-thp
+	// just auto end any movie files now that they are all black screens (pretend like we're never loading them :P)
+	PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
+	mIsMainActive = false;
 
 	mMoviePlayer.play();
 	mMoviePlayer.update();
