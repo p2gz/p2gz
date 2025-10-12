@@ -33,7 +33,7 @@ GZMenu::GZMenu()
             ->push(new PerformActionMenuOption("die painfully"))
             ->push(new PerformActionMenuOption("boing"))
         ))
-        ->push(new OpenSubMenuOption("menu options", (new ListMenu())
+        ->push(new OpenSubMenuOption("settings", (new ListMenu())
             ->push(new PerformActionMenuOption("increase text size"))
             ->push(new PerformActionMenuOption("decrease text size"))
             ->push(new ToggleMenuOption("toggle demo", true))
@@ -70,17 +70,16 @@ void GZMenu::update_menu_settings() {
     MenuOption* opt;
 
     // some demo stuff for the menu
-    opt = get_option("menu options/toggle demo");
+    opt = get_option("settings/toggle demo");
     if (opt && opt->check_selected()) {
         // do something
     }
-
-    opt = get_option("menu options/increase text size");
+    opt = get_option("settings/increase text size");
     if (opt && opt->check_selected()) {
         glyph_width += 2.0;
         glyph_height += 2.0;
     }
-    opt = get_option("menu options/decrease text size");
+    opt = get_option("settings/decrease text size");
     if (opt && opt->check_selected()) {
         glyph_width -= 2.0;
         glyph_height -= 2.0;
