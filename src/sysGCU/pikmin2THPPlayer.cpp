@@ -10,41 +10,42 @@
 
 namespace Game {
 
-namespace {
-#if BUILDTARGET == USADEMO1 // demo
-static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
-	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
-	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
-	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
-	{ "/thp/ending2.thp", "", 0, THPPlayer::ENDING_AllTreasures },
-	{ "/thp/staffroll.thp", "", 0, THPPlayer::STAFF_ROLL },
-	{ "/thp/play1.thp", "/thp/play1.ini", 0, THPPlayer::PLAY_1 },
-	{ "/thp/play2.thp", "/thp/play2.ini", 0, THPPlayer::PLAY_2 },
-	{ "/thp/play3.thp", "/thp/play3.ini", 0, THPPlayer::PLAY_3 },
-	{ "/thp/play4.thp", "/thp/play4.ini", 0, THPPlayer::PLAY_4 },
-	{ "/thp/play5.thp", "/thp/play5.ini", 0, THPPlayer::PLAY_5 },
-	{ "/thp/play6.thp", "/thp/play6.ini", 0, THPPlayer::PLAY_6 },
-	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
+// @p2gz: remove THP files to save space
+// namespace {
+// #if BUILDTARGET == USADEMO1 // demo
+// static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
+// 	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
+// 	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
+// 	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
+// 	{ "/thp/ending2.thp", "", 0, THPPlayer::ENDING_AllTreasures },
+// 	{ "/thp/staffroll.thp", "", 0, THPPlayer::STAFF_ROLL },
+// 	{ "/thp/play1.thp", "/thp/play1.ini", 0, THPPlayer::PLAY_1 },
+// 	{ "/thp/play2.thp", "/thp/play2.ini", 0, THPPlayer::PLAY_2 },
+// 	{ "/thp/play3.thp", "/thp/play3.ini", 0, THPPlayer::PLAY_3 },
+// 	{ "/thp/play4.thp", "/thp/play4.ini", 0, THPPlayer::PLAY_4 },
+// 	{ "/thp/play5.thp", "/thp/play5.ini", 0, THPPlayer::PLAY_5 },
+// 	{ "/thp/play6.thp", "/thp/play6.ini", 0, THPPlayer::PLAY_6 },
+// 	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
 
-};
-#else // usa
-static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
-	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
-	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
-	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
-	{ "/thp/ending2.thp", "", 0, THPPlayer::ENDING_AllTreasures },
-	{ "/thp/staffroll.thp", "", 0, THPPlayer::STAFF_ROLL },
-	{ "/thp/play1.thp", "", 0, THPPlayer::PLAY_1 },
-	{ "/thp/play2.thp", "", 0, THPPlayer::PLAY_2 },
-	{ "/thp/play3.thp", "", 0, THPPlayer::PLAY_3 },
-	{ "/thp/play4.thp", "", 0, THPPlayer::PLAY_4 },
-	{ "/thp/play5.thp", "", 0, THPPlayer::PLAY_5 },
-	{ "/thp/play6.thp", "", 0, THPPlayer::PLAY_6 },
-	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
+// };
+// #else // usa
+// static const THPPlayer::THPPlayerFileSettingTable sTHPPlayerFileSettingTable[12] = {
+// 	{ "/thp/opening1.thp", "/thp/opening1.ini", 0, THPPlayer::OPENING_GameStart },
+// 	{ "/thp/opening2.thp", "/thp/opening2.ini", 0, THPPlayer::OPENING_PostDebtStart },
+// 	{ "/thp/ending1.thp", "/thp/ending1.ini", 0, THPPlayer::ENDING_PayDebt },
+// 	{ "/thp/ending2.thp", "", 0, THPPlayer::ENDING_AllTreasures },
+// 	{ "/thp/staffroll.thp", "", 0, THPPlayer::STAFF_ROLL },
+// 	{ "/thp/play1.thp", "", 0, THPPlayer::PLAY_1 },
+// 	{ "/thp/play2.thp", "", 0, THPPlayer::PLAY_2 },
+// 	{ "/thp/play3.thp", "", 0, THPPlayer::PLAY_3 },
+// 	{ "/thp/play4.thp", "", 0, THPPlayer::PLAY_4 },
+// 	{ "/thp/play5.thp", "", 0, THPPlayer::PLAY_5 },
+// 	{ "/thp/play6.thp", "", 0, THPPlayer::PLAY_6 },
+// 	{ "/thp/crime.thp", "/thp/crime.ini", 0, THPPlayer::CRIME },
 
-};
-#endif
-} // namespace
+// };
+// #endif
+// } // namespace
 
 /**
  * @note Address: 0x8044FDF0
@@ -81,31 +82,33 @@ THPPlayer::~THPPlayer()
  */
 void THPPlayer::load(EMovieIndex movieIdx)
 {
-	bool idCheck = false;
-	if (movieIdx >= 0 && movieIdx < 12) {
-		idCheck = true;
-	}
+// @p2gz: remove THP files to save space
+// stubs out the load function so it doesn't look for non-existent files and crash
+// 	bool idCheck = false;
+// 	if (movieIdx >= 0 && movieIdx < 12) {
+// 		idCheck = true;
+// 	}
 
-#if BUILDTARGET == USADEMO1 // demo
-	P2ASSERTLINE(233, idCheck);
-#elif BUILDTARGET == USAFINAL // usa
-	P2ASSERTLINE(227, idCheck);
-#endif
+// #if BUILDTARGET == USADEMO1 // demo
+// 	P2ASSERTLINE(233, idCheck);
+// #elif BUILDTARGET == USAFINAL // usa
+// 	P2ASSERTLINE(227, idCheck);
+// #endif
 
-	const THPPlayerFileSettingTable* data = &sTHPPlayerFileSettingTable[movieIdx];
-	mLoadResArg.mThpFileName              = data->mThpFilePath;
-	mLoadResArg.mCaptionFileName          = data->mIniFilePath;
-	mDrawPosType                          = data->mDrawPosType;
+// 	const THPPlayerFileSettingTable* data = &sTHPPlayerFileSettingTable[movieIdx];
+// 	mLoadResArg.mThpFileName              = data->mThpFilePath;
+// 	mLoadResArg.mCaptionFileName          = data->mIniFilePath;
+// 	mDrawPosType                          = data->mDrawPosType;
 
-	load();
+// 	load();
 
-#if BUILDTARGET == USADEMO1 // demo
-	P2ASSERTLINE(241, data->mThpID < 12);
-#elif BUILDTARGET == USAFINAL // usa
-	P2ASSERTLINE(235, data->mThpID < 12);
-#endif
+// #if BUILDTARGET == USADEMO1 // demo
+// 	P2ASSERTLINE(241, data->mThpID < 12);
+// #elif BUILDTARGET == USAFINAL // usa
+// 	P2ASSERTLINE(235, data->mThpID < 12);
+// #endif
 
-	PSM::sTHPDinamicsProc.setSetting((PSM::THP_ID)data->mThpID);
+// 	PSM::sTHPDinamicsProc.setSetting((PSM::THP_ID)data->mThpID);
 }
 
 /**
