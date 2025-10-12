@@ -524,7 +524,10 @@ int Creature::checkHell(Creature::CheckHellArg& hellArg)
 {
 	Vector3f pos = getPosition();
 
-	if (pos.y < -500.0f) {
+	// @P2GZ: Early Blues Patch
+	// adds !isNavi() to below check to prevent splitting of captain and pellet
+	//     between -500 and -300
+	if (pos.y < -500.0f && !isNavi()) {
 		if (isPiki() && static_cast<Piki*>(this)->isPikmin()) {
 			deathMgr->inc(DeathCounter::COD_Battle); // getting sent to hell would get you into valhalla in P2
 		}

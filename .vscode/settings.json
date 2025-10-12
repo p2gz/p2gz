@@ -61,6 +61,11 @@
         "card.h": "c",
         "FILE_POS.c": "cpp",
         "ctype_api.h": "c",
-        "fdlibm.h": "c"
+        "fdlibm.h": "c",
+        "critical_regions.h": "c",
+        "secure_error.h": "c",
+        "stdio_api.h": "c",
+        "string.h": "c",
+        "stdarg.h": "c"
     }
 }

@@ -263,10 +263,13 @@ void BaseGameSection::init()
 	mTreasureGetState = 0;
 
 	p2gz = new P2GZ; // @P2GZ
+<<<<<<< HEAD
 
 	// @P2GZ: setup demo menu actions for captains
 	p2gz->menu->get("captain")->get("die painfully");
 	p2gz->menu->get("captain")->get("boing");
+	== == == =
+>>>>>>> origin/main
 }
 
 /**
@@ -334,11 +337,12 @@ bool BaseGameSection::doUpdate()
 	sys->mTimers->_start("doSim", true);
 
 	// @P2GZ - demo menu actions
-	if (p2gz->menu->get("captain")->get("die painfully")->selected()) {
+	gz::MenuOption* opt = p2gz->menu->get_option("captain/die painfully");
+	if (opt && opt->check_selected()) {
 		p2gz->die_painfully(mPrevNaviIdx);
 	}
-
-	if (p2gz->menu->get("captain")->get("boing")->selected()) {
+	opt = p2gz->menu->get_option("captain/boing");
+	if (opt && opt->check_selected()) {
 		p2gz->boing(mPrevNaviIdx);
 	}
 

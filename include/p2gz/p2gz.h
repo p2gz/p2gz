@@ -17,8 +17,6 @@ public:
 	void die_painfully(int navi_id);
 	void boing(int navi_id);
 
-	void teleport();
-
 	gz::GZMenu* menu;
 };
 
