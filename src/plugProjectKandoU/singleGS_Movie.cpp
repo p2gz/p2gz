@@ -124,8 +124,8 @@ void MovieState::exec(SingleGameSection* gs)
 			}
 			break;
 		case true:
-			// @p2gz: auto-ski-thp
-			// just auto end any movie files now that they are all black screens (pretend like we're never loading them :P)
+			// @p2gz: auto-skip-thp
+			// Automatically end the movie since its files have been removed
 			{
 				gs->mDisplayWiper = gs->mWipeInFader;
 				gs->mWipeInFader->start(4.0f);
