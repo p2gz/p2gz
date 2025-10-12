@@ -1,18 +1,25 @@
+#ifndef _FREECAM_H
+#define _FREECAM_H
+
+#include <Game/CameraMgr.h>
+#include <Game/Navi.h>
+
+namespace gz {
 struct FreeCam {
 public:
-	FreeCam(bool teleport_)
-	    : teleport(teleport_)
+	FreeCam()
 	{
+		enabled = false;
+		zoom    = 0;
+		camera  = nullptr;
+		navi    = nullptr;
+
+		animation_coefficient   = 0;
+		is_coefficient_positive = true;
 	}
 	~FreeCam() { }
 
-	Game::PlayCamera* camera;
-	Game::Navi* navi;
-	bool teleport;
-	bool enabled;
-	int zoom;
-	f32 animation_coefficient;
-	bool is_coefficient_positive;
+	bool is_enabled() { return enabled; }
 
 	void disable();
 	void enable();
@@ -24,4 +31,15 @@ private:
 	void draw_current_position();
 	void update_position();
 	void update_zoom();
+
+	Game::PlayCamera* camera;
+	Game::Navi* navi;
+	bool enabled;
+	int zoom;
+	f32 animation_coefficient;
+	bool is_coefficient_positive;
 };
+
+} // namespace gz
+
+#endif

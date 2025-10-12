@@ -263,13 +263,6 @@ void BaseGameSection::init()
 	mTreasureGetState = 0;
 
 	p2gz = new P2GZ; // @P2GZ
-<<<<<<< HEAD
-
-	// @P2GZ: setup demo menu actions for captains
-	p2gz->menu->get("captain")->get("die painfully");
-	p2gz->menu->get("captain")->get("boing");
-	== == == =
->>>>>>> origin/main
 }
 
 /**

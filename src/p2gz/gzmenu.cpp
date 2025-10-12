@@ -27,15 +27,22 @@ GZMenu::GZMenu()
 	color_highlight   = JUtility::TColor(255, 40, 40, 255);
 	color_breadcrumbs = JUtility::TColor(226, 192, 116, 255);
 
+	// clang-format off
 	// Structure of GZ menu defined here:
-	root_layer = (new ListMenu())
-	                 ->push(new OpenSubMenuOption(
-	                     "captain",
-	                     (new ListMenu())->push(new PerformActionMenuOption("die painfully"))->push(new PerformActionMenuOption("boing"))))
-	                 ->push(new OpenSubMenuOption("settings", (new ListMenu())
-	                                                              ->push(new PerformActionMenuOption("increase text size"))
-	                                                              ->push(new PerformActionMenuOption("decrease text size"))
-	                                                              ->push(new ToggleMenuOption("toggle demo", true))));
+    root_layer = (new ListMenu())
+        ->push(new OpenSubMenuOption("captain", (new ListMenu())
+            ->push(new PerformActionMenuOption("die painfully"))
+            ->push(new PerformActionMenuOption("boing"))
+        ))
+        ->push(new OpenSubMenuOption("settings", (new ListMenu())
+            ->push(new PerformActionMenuOption("increase text size"))
+            ->push(new PerformActionMenuOption("decrease text size"))
+            ->push(new ToggleMenuOption("toggle demo", true))
+        ))
+		->push(new OpenSubMenuOption("tools", (new ListMenu())
+			->push(new ToggleMenuOption("freecam", false))
+		));
+	// clang-format on
 
 	layer = root_layer;
 }
@@ -85,6 +92,16 @@ void GZMenu::update_menu_settings()
 	if (opt && opt->check_selected()) {
 		glyph_width -= 2.0;
 		glyph_height -= 2.0;
+	}
+	opt = p2gz->menu->get_option("tools/freecam");
+	if (opt) {
+		if (opt->check_selected() && !p2gz->freecam->is_enabled()) {
+			p2gz->freecam->enable();
+		} else if (opt->check_selected()) {
+			p2gz->freecam->update();
+		} else if (!opt->check_selected() && p2gz->freecam->is_enabled()) {
+			p2gz->freecam->disable();
+		}
 	}
 }
 

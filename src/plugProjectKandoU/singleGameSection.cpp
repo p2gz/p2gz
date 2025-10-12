@@ -34,6 +34,9 @@
 #include "PikiAI.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 
 static const u32 padding[]    = { 0, 0, 0 };

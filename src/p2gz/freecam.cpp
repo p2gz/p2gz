@@ -20,25 +20,18 @@ const int NORMAL_SPEED           = 16;
 const int FAST_SPEED             = 32;
 char* FREECAM_PAUSE_IDENTIFIER   = "freecam";
 
-FreeCam::FreeCam(bool teleport)
-{
-	enabled = false;
-	zoom    = DEFAULT_FREECAM_ZOOM;
-	camera  = nullptr;
-	navi    = nullptr;
-
-	animation_coefficient   = 0;
-	is_coefficient_positive = true;
-}
-
 // Enable freecam on the active Navi's camera.
 void FreeCam::enable()
 {
 	GZASSERTLINE(!enabled);
+	enabled = true;
+	p2gz->menu->close();
 
 	navi   = Game::naviMgr->getActiveNavi();
 	camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
 	Game::gameSystem->setPause(true, FREECAM_PAUSE_IDENTIFIER, 3);
+
+	zoom = DEFAULT_FREECAM_ZOOM;
 	camera->mGoalPosition += Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle = PI / 2;
 
@@ -49,14 +42,17 @@ void FreeCam::enable()
 void FreeCam::disable()
 {
 	GZASSERTLINE(enabled);
+	enabled = false;
+	p2gz->menu->get_option("tools/freecam")->on_selected();
+	p2gz->menu->open();
 	Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
 
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle                       = PI / 8;
 	camera->mCameraParms->mSettingChangeSpeed.mValue = 0.1f;
 
-	camera = nullptr;
 	navi   = nullptr;
+	camera = nullptr;
 
 	og::ogSound->setCancel();
 }
@@ -70,10 +66,15 @@ void FreeCam::update()
 	update_zoom();
 	draw_current_position();
 
-	// I don't remember exactly why this guard is necessary, but I think there are certain conditions where
-	// the active Navi can be a nullptr for a few frames, so asserting here would cause crashes all the time.
-	// Just continue polling for the Y button, and the switch will occur when the active Navi is no longer a nullptr.
-	if (Game::naviMgr->getActiveNavi() != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_Y) {
+	if (navi != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_A) {
+		warp_to_current_position();
+	}
+
+	if (navi != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_B) {
+		disable();
+	}
+
+	if (navi != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_Y) {
 		switch_captains();
 	}
 
@@ -125,7 +126,6 @@ void FreeCam::switch_captains()
 void FreeCam::warp_to_current_position()
 {
 	GZASSERTLINE(enabled);
-	disable();
 
 	Vector3f naviPos = camera->mGoalPosition;
 	naviPos.y        = Game::mapMgr->getMinY(camera->mGoalPosition);
@@ -139,6 +139,8 @@ void FreeCam::warp_to_current_position()
 			piki->setPosition(naviPos, false);
 		}
 	}
+
+	disable();
 
 	og::ogSound->setDecide();
 }
