@@ -1,5 +1,6 @@
 #include <p2gz/p2gz.h>
 #include <Game/Navi.h>
+#include <IDelegate.h>
 
 using namespace gz;
 
@@ -15,6 +16,8 @@ void P2GZ::update() {
 
 void P2GZ::draw() {
     Graphics* gfx = sys->getGfx();
+    if (!gfx || !gfx->mCurrentViewport) return;
+
     menu->draw(gfx);
 }
 

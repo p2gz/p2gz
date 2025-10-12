@@ -7,12 +7,15 @@
 #include <Controller.h>
 #include <Dolphin/os.h>
 #include <p2gz/p2gz.h>
+#include <string.h>
 
 using namespace gz;
 
-GZMenu::GZMenu() : openCloseAction(DoublePress(Controller::PRESS_DPAD_LEFT, 10)) {
-    enabled = false;
-
+GZMenu::GZMenu()
+  : openCloseAction(DoublePress(Controller::PRESS_DPAD_LEFT, 15)),
+    enabled(false),
+    eat_inputs(true)
+{
     glyph_width = 16.0f;
     glyph_height = 16.0f;
     start_offset_x = 16.0f;
@@ -24,66 +27,82 @@ GZMenu::GZMenu() : openCloseAction(DoublePress(Controller::PRESS_DPAD_LEFT, 10))
     color_highlight = JUtility::TColor(255, 40, 40, 255);
     color_breadcrumbs = JUtility::TColor(226, 192, 116, 255);
 
-    root_layer = new GZMenuLayer();
+    // Structure of GZ menu defined here:
+    root_layer = (new ListMenu())
+        ->push(new OpenSubMenuOption("captain", (new ListMenu())
+            ->push(new PerformActionMenuOption("die painfully"))
+            ->push(new PerformActionMenuOption("boing"))
+        ))
+        ->push(new OpenSubMenuOption("menu options", (new ListMenu())
+            ->push(new PerformActionMenuOption("increase text size"))
+            ->push(new PerformActionMenuOption("decrease text size"))
+            ->push(new ToggleMenuOption("toggle demo", true))
+        ));
+
     layer = root_layer;
 }
 
 void GZMenu::update() {
     JUTGamePad* controller = JUTGamePad::getGamePad(0);
 
-    // If we ever press A the double press to open/close the menu should be ignored
-    // so we don't do it accidentally when switching pikmin or something
-    if (!enabled && controller->getButton() & Controller::PRESS_A) {
-        openCloseAction.reset();
-    }
+    if (controller) {
+        // If we ever press A the double press to open/close the menu should be ignored
+        // so we don't do it accidentally when switching pikmin or something
+        if (!enabled && controller->getButton() & Controller::PRESS_A) {
+            openCloseAction.reset();
+        }
 
-    // Open/close the menu
-    if (openCloseAction.check(controller)) {
-        if (enabled) close();
-        else open();
-    }
-
-    // Menu navigation
-    if (enabled && layer) {
-        u32 btn = controller->getButtonDown();
-        if (btn & Controller::PRESS_DPAD_UP && layer->selected > 0) {
-            layer->selected -= 1;
-        }
-        if (btn & Controller::PRESS_DPAD_DOWN && layer->options.len() > 0 && layer->selected < layer->options.len() - 1) {
-            layer->selected += 1;
-        }
-        if (btn & Controller::PRESS_A) {
-            GZMenuOption* option = layer->options[layer->selected];
-            option->select();
-            if (option->sub_menu && option->sub_menu->options.len() > 0) {
-                layer = option->sub_menu;
-                breadcrumbs.push(option->title);
-            }
-        }
-        if (btn & Controller::PRESS_B) {
-            GZMenuLayer* parent = layer->parent;
-            if (parent) {
-                layer = parent;
-                breadcrumbs.pop();
-            }
-            else {
-                close();
-            }
+        // Open/close the menu
+        if (openCloseAction.check(controller)) {
+            if (enabled) close();
+            else open();
         }
     }
 
-    check_menu_settings();
+    if (enabled && layer && controller) {
+        layer->update(controller);
+    }
+
+    update_menu_settings();
 }
 
-// some demo stuff for the menu
-void GZMenu::check_menu_settings() {
-    if (get("menu settings")->get("increase text size")->selected()) {
+void GZMenu::update_menu_settings() {
+    MenuOption* opt;
+
+    // some demo stuff for the menu
+    opt = get_option("menu options/toggle demo");
+    if (opt && opt->check_selected()) {
+        // do something
+    }
+
+    opt = get_option("menu options/increase text size");
+    if (opt && opt->check_selected()) {
         glyph_width += 2.0;
         glyph_height += 2.0;
     }
-    if (get("menu settings")->get("decrease text size")->selected()) {
+    opt = get_option("menu options/decrease text size");
+    if (opt && opt->check_selected()) {
         glyph_width -= 2.0;
         glyph_height -= 2.0;
+    }
+}
+
+void GZMenu::push_layer(MenuLayer* layer_) {
+    if (layer_) {
+        layer = layer_;
+        if (layer->title) {
+            breadcrumbs.push(layer->title);
+        }
+    }
+}
+
+void GZMenu::pop_layer() {
+    if (layer->parent) {
+        layer = layer->parent;
+        breadcrumbs.pop();
+    }
+    else {
+        close();
     }
 }
 
@@ -91,6 +110,7 @@ void GZMenu::open() {
     if (enabled) return;
 
     layer = root_layer;
+    breadcrumbs.clear();
     enabled = true;
 }
 
@@ -101,7 +121,7 @@ void GZMenu::close() {
 }
 
 void GZMenu::draw(Graphics* gfx) {
-    if (!enabled || !gfx || !layer) {
+    if (!enabled || !layer) {
         return;
     }
 
@@ -109,58 +129,122 @@ void GZMenu::draw(Graphics* gfx) {
     gfx->initPrimDraw(nullptr);
     gfx->mOrthoGraph.setPort();
 
-    J2DPrint menu_text(gP2JMEMgr->mFont, 0.0f);
-    menu_text.initiate();
-    menu_text.mGlyphWidth = glyph_width;
-    menu_text.mGlyphHeight = glyph_height;
+    J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
+    j2d.initiate();
+    j2d.mGlyphWidth = glyph_width;
+    j2d.mGlyphHeight = glyph_height;
 
     f32 x = breadcrumb_start_offset_x;
     f32 z = start_offset_z;
 
     if (breadcrumbs.len() > 0) {
         for (size_t i = 0; i < breadcrumbs.len(); i++) {
-            menu_text.mCharColor.set(color_std);
-            menu_text.mGradientColor.set(color_std);
-            x += menu_text.print(x, z, " > ");
+            j2d.mCharColor.set(color_std);
+            j2d.mGradientColor.set(color_std);
+            x += j2d.print(x, z, " > ");
 
-            menu_text.mCharColor.set(color_breadcrumbs);
-            menu_text.mGradientColor.set(color_breadcrumbs);
-            x += menu_text.print(x, z, breadcrumbs[i]);
+            j2d.mCharColor.set(color_breadcrumbs);
+            j2d.mGradientColor.set(color_breadcrumbs);
+            x += j2d.print(x, z, breadcrumbs[i]);
         }
         z += line_height;
     }
 
-    x = start_offset_x;
-    for (size_t i = 0; i < layer->options.len(); i++) {
-        if (!layer->options[i]->visible) {
-            continue;
-        }
+    x = start_offset_x; // reset x to the left
+    layer->draw(j2d, x, z);
+}
 
-        if (i == layer->selected) {
-            menu_text.mCharColor.set(color_highlight);
-            menu_text.mGradientColor.set(color_highlight);
-        }
-        else {
-            menu_text.mCharColor.set(color_std);
-            menu_text.mGradientColor.set(color_std);
-        }
+MenuOption* GZMenu::get_option(const char* path) {
+    if (!root_layer) {
+        return nullptr;
+    }
 
-        const char* option_txt = layer->options[i]->title;
-        menu_text.print(x, z, option_txt);
-        z += line_height;
+    MenuOption* opt = root_layer->get_option(path);
+    if (!opt) {
+        OSReport("Option \"%s\" does not exist in GZ menu\n", path);
+    }
+    return opt;
+}
+
+MenuOption* ListMenu::get_option(const char* path) {
+    const char* name_end = strchr(path, '/');
+    bool is_final_path_component = false;
+    int name_len;
+    if (name_end == nullptr) {
+        name_len = strlen(path);
+        is_final_path_component = true;
+    }
+    else {
+        name_len = name_end - path;
+    }
+
+    for (size_t i = 0; i < options.len(); i++) {
+        if (strncmp(options[i]->title, path, name_len) == 0) {
+            if (is_final_path_component) {
+                return options[i];
+            }
+            else {
+                MenuLayer* sub_menu = options[i]->get_sub_menu();
+                if (sub_menu) {
+                    return sub_menu->get_option(name_end + 1);
+                }
+                else {
+                    return nullptr;
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+void ListMenu::update(JUTGamePad* controller) {
+    // Menu navigation
+    u32 btn = controller->getButtonDown();
+    if (btn & Controller::PRESS_DPAD_UP && selected > 0) {
+        selected -= 1;
+    }
+    if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected < options.len() - 1) {
+        selected += 1;
+    }
+    if (btn & Controller::PRESS_A) {
+        options[selected]->on_selected();
+    }
+    if (btn & Controller::PRESS_B) {
+        p2gz->menu->pop_layer();
     }
 }
 
-GZMenuOption* GZMenuLayer::get(const char* name) {
+void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z) {
     for (size_t i = 0; i < options.len(); i++) {
-        GZMenuOption* option = options[i];
-        if (strcmp(option->title, name) == 0) {
-            return option;
+        if (!options[i]->visible) {
+            continue;
         }
-    }
 
-    GZMenuOption* new_option = new GZMenuOption(name);
-    new_option->sub_menu->parent = this;
-    options.push(new_option);
-    return new_option;
+        if (i == selected) {
+            j2d.mCharColor.set(p2gz->menu->color_highlight);
+            j2d.mGradientColor.set(p2gz->menu->color_highlight);
+        }
+        else {
+            j2d.mCharColor.set(p2gz->menu->color_std);
+            j2d.mGradientColor.set(p2gz->menu->color_std);
+        }
+
+        options[i]->draw(j2d, x, z);
+        z += p2gz->menu->line_height;
+    }
+}
+
+OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
+  : MenuOption(title_),
+    sub_menu(sub_menu_)
+{
+    if (sub_menu) {
+        sub_menu->title = title_;
+    }
+}
+
+void OpenSubMenuOption::on_selected() {
+    if (!sub_menu) return;
+    p2gz->menu->push_layer(sub_menu);
 }
