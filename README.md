@@ -12,10 +12,16 @@ Index
   - [macOS](#macos)
   - [Linux](#linux)
 - [Building](#building)
-- [Modding](#modding)
 
 Dependencies
 ------------
+
+Pre-requisites:
+1. python3
+1. ninja
+1. [nodtool](https://github.com/AxioDL/nod)
+1. [cube](https://github.com/mayabyte/cube)
+1. wine (if not on windows)
 
 ### Windows
 
@@ -61,33 +67,29 @@ Building
   git clone https://github.com/p2gz/p2gz.git
   ```
 
-- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game's system data to `orig/GPVE01`.
-  - Right-click the game in Dolphin's game list and select `Properties`.
-  - Go to the `Filesystem` tab and right-click `Disc` -> `Extract System Data`.
-![Dolphin filesystem extract](assets/dolphin-extract.png)
-  - After extraction, the following file should exist: `orig/GPVE01/sys/main.dol`.
-- Configure:
+- Place your USA Pikmin 2 (GPVE01) .iso in the main directory.
 
+- Run:
   ```sh
-  python configure.py --non-matching
+  python3 build.py
   ```
 
-  This:
+- Open `root/sys/main.dol` via Dolphin to see your changes.
 
-  - Disables final hash verification.
-  - Builds all source files marked as `Matching` and `Equivalent` in `configure.py`.
-  - Uses assembly generated from the supplied .iso for any `NonMatching` files.
+  - Alternatively, add a shortcut to your Dolphin executable in the main directory as `Dolphin.exe.lnk` and run:
+    ```sh
+    python3 build.py --restart-dolphin
+    ```
 
-- Build:
-
-  ```sh
-  ninja
-  ```
-
-To add new source files to the DOL:
+To add new source code files to the DOL:
 
 - Uncomment the final `"lib": "moddingU"` bracket in `configure.py` - change the name to whatever you like, and feel free to add more than one new lib using this as a template.
 - Add any new files along with their paths as `Object(Matching, folder/file.cpp)` where indicated.
 - Within the `link_order_callback` function below the object configuration, uncomment and add each new file with its path within `src`, as indicated.
 
-Once built with `ninja`, the new DOL will exist at `build/GPVE01/main.dol`.
+To add or replace asset files:
+
+- Save the new file(s) in `files/path/to/asset`.
+- Add `files/path/to/asset` to `build.py`.
+
+Once built, the new DOL will exist at `root/sys/main.dol`, along with a Dolphin-readable directory of all game files.
