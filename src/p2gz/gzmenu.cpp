@@ -6,7 +6,6 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <JSystem/JUtility/JUTGamePad.h>
 #include <P2JME/P2JME.h>
-#include <Graphics.h>
 #include <System.h>
 #include <Controller.h>
 #include <Dolphin/os.h>
@@ -52,6 +51,11 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+		))
+		->push(new OpenSubMenuOption("timer", (new ListMenu())
+			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
+			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
+			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
 		));
 	// clang-format on
 
@@ -143,15 +147,11 @@ void GZMenu::close()
 	enabled = false;
 }
 
-void GZMenu::draw(Graphics* gfx)
+void GZMenu::draw()
 {
 	if (!enabled || !layer) {
 		return;
 	}
-
-	gfx->initPerspPrintf(gfx->mCurrentViewport);
-	gfx->initPrimDraw(nullptr);
-	gfx->mOrthoGraph.setPort();
 
 	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
 	j2d.initiate();

@@ -5,7 +5,6 @@
 #include <p2gz/gzCollections.h>
 #include <p2gz/DoublePress.h>
 #include <JSystem/JUtility/TColor.h>
-#include <Graphics.h>
 #include <JSystem/JUtility/JUTGamePad.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <Dolphin/os.h>
@@ -163,7 +162,7 @@ public:
 	void init_menu();
 
 	void update();
-	void draw(Graphics* gfx);
+	void draw();
 
 	void open();
 	void close();

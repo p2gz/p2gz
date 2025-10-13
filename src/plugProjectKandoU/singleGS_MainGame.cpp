@@ -27,6 +27,7 @@
 #include "nans.h"
 #include "utilityU.h"
 #include "Game/NaviState.h"
+#include <p2gz/p2gz.h>
 
 #define LOUIE_START_X   (-1260.0f)
 #define LOUIE_START_Y   (-80.0f)
@@ -206,6 +207,10 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 		PSSystem::checkGameScene(scene);
 		scene->setPollutUp();
 	}
+
+	// @P2GZ - timer
+	// Reset main timer when loading an above-ground area
+	p2gz->timer->reset_main_timer();
 }
 
 /**
