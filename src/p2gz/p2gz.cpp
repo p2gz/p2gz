@@ -10,14 +10,16 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
-	menu    = new GZMenu();
-	freecam = new FreeCam();
-	navi_tools = new NaviTools();
+	menu             = new GZMenu();
+	freecam          = new FreeCam();
+	navi_tools       = new NaviTools();
+	collision_viewer = new CollisionViewer();
 }
 
 void P2GZ::update()
 {
 	freecam->update();
+	collision_viewer->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
