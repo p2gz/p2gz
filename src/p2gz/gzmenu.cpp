@@ -1,4 +1,7 @@
+#include <p2gz/p2gz.h>
 #include <p2gz/gzmenu.h>
+#include <p2gz/NaviTools.h>
+#include <p2gz/FreeCam.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <JSystem/JUtility/JUTGamePad.h>
 #include <P2JME/P2JME.h>
@@ -6,41 +9,45 @@
 #include <System.h>
 #include <Controller.h>
 #include <Dolphin/os.h>
-#include <p2gz/p2gz.h>
 #include <string.h>
+#include <IDelegate.h>
 
 using namespace gz;
 
 GZMenu::GZMenu()
     : openCloseAction(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
     , enabled(false)
+    , lock(false)
     , eat_inputs(true)
 {
-	glyph_width               = 16.0f;
-	glyph_height              = 16.0f;
-	start_offset_x            = 16.0f;
+	glyph_width               = 18.0f;
+	glyph_height              = 18.0f;
+	start_offset_x            = 32.0f;
 	breadcrumb_start_offset_x = 10.0f;
-	start_offset_z            = 16.0f;
-	line_height               = 20.0f;
+	start_offset_z            = 32.0f;
+	line_height               = 22.0f;
 
 	color_std         = JUtility::TColor(255, 255, 255, 255);
 	color_highlight   = JUtility::TColor(255, 40, 40, 255);
 	color_breadcrumbs = JUtility::TColor(226, 192, 116, 255);
+}
 
+void GZMenu::init_menu()
+{
 	// clang-format off
 	// Structure of GZ menu defined here:
     root_layer = (new ListMenu())
         ->push(new OpenSubMenuOption("captain", (new ListMenu())
-            ->push(new PerformActionMenuOption("die painfully"))
-            ->push(new PerformActionMenuOption("boing"))
+            ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
+            ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
         ->push(new OpenSubMenuOption("settings", (new ListMenu())
-            ->push(new PerformActionMenuOption("increase text size"))
-            ->push(new PerformActionMenuOption("decrease text size"))
-            ->push(new ToggleMenuOption("toggle demo", true))
+            ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
+            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
+            ->push(new ToggleMenuOption("toggle demo", true, nullptr))
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
-			->push(new ToggleMenuOption("freecam", false))
+			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
 		));
 	// clang-format on
 
@@ -49,6 +56,13 @@ GZMenu::GZMenu()
 
 void GZMenu::update()
 {
+	// When other classes control the menu (via navigate_to etc.) this prevents
+	// their button inputs from affecting the menu the same frame they happen.
+	if (lock) {
+		lock = false;
+		return;
+	}
+
 	JUTGamePad* controller = JUTGamePad::getGamePad(0);
 
 	if (controller) {
@@ -70,39 +84,20 @@ void GZMenu::update()
 	if (enabled && layer && controller) {
 		layer->update(controller);
 	}
-
-	update_menu_settings();
 }
 
-void GZMenu::update_menu_settings()
+void GZMenu::increase_text_size()
 {
-	MenuOption* opt;
+	glyph_width += 2.0;
+	glyph_height += 2.0;
+	line_height += 2.0;
+}
 
-	// some demo stuff for the menu
-	opt = get_option("settings/toggle demo");
-	if (opt && opt->check_selected()) {
-		// do something
-	}
-	opt = get_option("settings/increase text size");
-	if (opt && opt->check_selected()) {
-		glyph_width += 2.0;
-		glyph_height += 2.0;
-	}
-	opt = get_option("settings/decrease text size");
-	if (opt && opt->check_selected()) {
-		glyph_width -= 2.0;
-		glyph_height -= 2.0;
-	}
-	opt = p2gz->menu->get_option("tools/freecam");
-	if (opt) {
-		if (opt->check_selected() && !p2gz->freecam->is_enabled()) {
-			p2gz->freecam->enable();
-		} else if (opt->check_selected()) {
-			p2gz->freecam->update();
-		} else if (!opt->check_selected() && p2gz->freecam->is_enabled()) {
-			p2gz->freecam->disable();
-		}
-	}
+void GZMenu::decrease_text_size()
+{
+	glyph_width -= 2.0;
+	glyph_height -= 2.0;
+	line_height -= 2.0;
 }
 
 void GZMenu::push_layer(MenuLayer* layer_)
@@ -133,6 +128,7 @@ void GZMenu::open()
 	layer = root_layer;
 	breadcrumbs.clear();
 	enabled = true;
+	lock    = true;
 }
 
 void GZMenu::close()
@@ -191,6 +187,13 @@ MenuOption* GZMenu::get_option(const char* path)
 	return opt;
 }
 
+void GZMenu::navigate_to(const char* path)
+{
+	close();
+	open();
+	root_layer->navigate_to(path);
+}
+
 MenuOption* ListMenu::get_option(const char* path)
 {
 	const char* name_end         = strchr(path, '/');
@@ -221,6 +224,35 @@ MenuOption* ListMenu::get_option(const char* path)
 	return nullptr;
 }
 
+void ListMenu::navigate_to(const char* path)
+{
+	const char* name_end         = strchr(path, '/');
+	bool is_final_path_component = false;
+	int name_len;
+	if (name_end == nullptr) {
+		name_len                = strlen(path);
+		is_final_path_component = true;
+	} else {
+		name_len = name_end - path;
+	}
+
+	for (size_t i = 0; i < options.len(); i++) {
+		if (strncmp(options[i]->title, path, name_len) == 0) {
+			selected = i;
+			OSReport("found %s\n", options[i]->title);
+			if (!is_final_path_component) {
+				MenuLayer* sub_menu = options[i]->get_sub_menu();
+				if (sub_menu) {
+					p2gz->menu->push_layer(sub_menu);
+					OSReport("pushed layer %s\n", sub_menu->title);
+					sub_menu->navigate_to(name_end + 1);
+				}
+			}
+			return;
+		}
+	}
+}
+
 void ListMenu::update(JUTGamePad* controller)
 {
 	// Menu navigation
@@ -232,7 +264,7 @@ void ListMenu::update(JUTGamePad* controller)
 		selected += 1;
 	}
 	if (btn & Controller::PRESS_A) {
-		options[selected]->on_selected();
+		options[selected]->select();
 	}
 	if (btn & Controller::PRESS_B) {
 		p2gz->menu->pop_layer();
@@ -268,9 +300,7 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 	}
 }
 
-void OpenSubMenuOption::on_selected()
+void OpenSubMenuOption::select()
 {
-	if (!sub_menu)
-		return;
 	p2gz->menu->push_layer(sub_menu);
 }

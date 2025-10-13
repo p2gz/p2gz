@@ -3,6 +3,7 @@
 
 #include <p2gz/gzmenu.h>
 #include <p2gz/FreeCam.h>
+#include <p2gz/NaviTools.h>
 #include <Game/BaseGameSection.h>
 #include <Graphics.h>
 
@@ -14,12 +15,9 @@ public:
 	void update();
 	void draw();
 
-	// some demo functions for the menu
-	void die_painfully(int navi_id);
-	void boing(int navi_id);
-
 	gz::GZMenu* menu;
 	gz::FreeCam* freecam;
+	gz::NaviTools* navi_tools;
 };
 
 // global instance
