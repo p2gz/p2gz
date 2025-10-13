@@ -37,6 +37,11 @@ void GZMenu::init_menu()
 	// clang-format off
 	// Structure of GZ menu defined here:
     root_layer = (new ListMenu())
+		->push(new OpenSubMenuOption("warp", (new ListMenu())
+			->push(new RadioMenuOption("area", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_area)))
+			->push(new RadioMenuOption("cave", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_cave)))
+			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
+		))
         ->push(new OpenSubMenuOption("captain", (new ListMenu())
             ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
             ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
@@ -181,7 +186,7 @@ void GZMenu::draw()
 
 MenuOption* GZMenu::get_option(const char* path)
 {
-	if (!root_layer) {
+	if (!root_layer || !path) {
 		return nullptr;
 	}
 
@@ -201,6 +206,10 @@ void GZMenu::navigate_to(const char* path)
 
 MenuOption* ListMenu::get_option(const char* path)
 {
+	if (!path) {
+		return nullptr;
+	}
+
 	const char* name_end         = strchr(path, '/');
 	bool is_final_path_component = false;
 	int name_len;
@@ -258,7 +267,6 @@ void ListMenu::navigate_to(const char* path)
 
 void ListMenu::update(Controller* controller)
 {
-	// Menu navigation
 	u32 btn = controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_UP && selected > 0) {
 		selected -= 1;
@@ -272,6 +280,8 @@ void ListMenu::update(Controller* controller)
 	if (btn & Controller::PRESS_B) {
 		p2gz->menu->pop_layer();
 	}
+
+	options[selected]->update(controller);
 }
 
 void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
@@ -306,4 +316,100 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 void OpenSubMenuOption::select()
 {
 	p2gz->menu->push_layer(sub_menu);
+}
+
+void RadioMenuOption::update(JUTGamePad* controller)
+{
+	size_t init_selected_idx = selected_idx;
+	u32 btn                  = controller->getButtonDown();
+	if (btn & Controller::PRESS_DPAD_LEFT) {
+		selected_idx = (((int)selected_idx) - 1) % options.len();
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT) {
+		selected_idx = (selected_idx + 1) % options.len();
+	}
+
+	if (init_selected_idx != selected_idx) {
+		on_selected->invoke(selected_idx);
+	}
+}
+
+void RadioMenuOption::select()
+{
+	on_selected->invoke(selected_idx);
+}
+
+f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	x += j2d.print(x, z, "%s: < ", title);
+
+	j2d.mCharColor.set(p2gz->menu->color_std);
+	j2d.mGradientColor.set(p2gz->menu->color_std);
+	x += j2d.print(x, z, options[selected_idx]);
+
+	j2d.mCharColor.set(p2gz->menu->color_highlight);
+	j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	x += j2d.print(x, z, ">");
+
+	return x;
+}
+
+void RangeMenuOption::update(JUTGamePad* controller)
+{
+	size_t init_selected_val = selected_val;
+	u32 btn                  = controller->getButtonDown();
+	if (btn & Controller::PRESS_DPAD_LEFT) {
+		selected_val -= 1;
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT) {
+		selected_val += 1;
+	}
+	check_overflow();
+
+	if (init_selected_val != selected_val) {
+		on_selected->invoke(selected_val);
+	}
+}
+
+void RangeMenuOption::select()
+{
+	on_selected->invoke(selected_val);
+}
+
+void RangeMenuOption::check_overflow()
+{
+	if (selected_val > max) {
+		if (overflow_behavior == RangeMenuOption::CAP) {
+			selected_val = max;
+		} else {
+			selected_val = min;
+		}
+	} else if (selected_val < min) {
+		if (overflow_behavior == RangeMenuOption::CAP) {
+			selected_val = min;
+		} else {
+			selected_val = max;
+		}
+	}
+}
+
+f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	x += j2d.print(x, z, "%s: ", title);
+
+	if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
+		x += j2d.print(x, z, "< ");
+	}
+
+	j2d.mCharColor.set(p2gz->menu->color_std);
+	j2d.mGradientColor.set(p2gz->menu->color_std);
+	x += j2d.print(x, z, "%s", selected_val);
+
+	j2d.mCharColor.set(p2gz->menu->color_highlight);
+	j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
+		x += j2d.print(x, z, ">");
+	}
+
+	return x;
 }

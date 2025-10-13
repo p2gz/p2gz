@@ -3,6 +3,7 @@
 #include <p2gz/NaviTools.h>
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/warp.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -19,6 +20,15 @@ P2GZ::P2GZ()
 	navi_tools       = new NaviTools();
 	timer            = new Timer();
 	waypoint_viewer  = new WaypointViewer();
+	warp             = new Warp();
+}
+
+void P2GZ::init()
+{
+	// Menu must come first since other inits might change menu options
+	menu->init_menu();
+
+	warp->init();
 }
 
 void P2GZ::update()

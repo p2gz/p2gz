@@ -263,7 +263,7 @@ void BaseGameSection::init()
 	mTreasureGetState = 0;
 
 	p2gz = new P2GZ; // @P2GZ
-	p2gz->menu->init_menu();
+	p2gz->init();
 }
 
 /**
