@@ -4,8 +4,8 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/FreeCam.h>
 #include <p2gz/NaviTools.h>
+#include <p2gz/timer.h>
 #include <Game/BaseGameSection.h>
-#include <Graphics.h>
 
 struct P2GZ {
 public:
@@ -18,6 +18,7 @@ public:
 	gz::GZMenu* menu;
 	gz::FreeCam* freecam;
 	gz::NaviTools* navi_tools;
+	gz::Timer* timer;
 };
 
 // global instance

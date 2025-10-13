@@ -1,6 +1,7 @@
 #include <p2gz/p2gz.h>
 #include <p2gz/FreeCam.h>
 #include <p2gz/NaviTools.h>
+#include <p2gz/timer.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -10,9 +11,10 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
-	menu    = new GZMenu();
-	freecam = new FreeCam();
+	menu       = new GZMenu();
+	freecam    = new FreeCam();
 	navi_tools = new NaviTools();
+	timer      = new Timer();
 }
 
 void P2GZ::update()
@@ -26,9 +28,6 @@ void P2GZ::update()
 
 void P2GZ::draw()
 {
-	Graphics* gfx = sys->getGfx();
-	if (!gfx || !gfx->mCurrentViewport)
-		return;
-
-	menu->draw(gfx);
+	timer->draw();
+	menu->draw();
 }
