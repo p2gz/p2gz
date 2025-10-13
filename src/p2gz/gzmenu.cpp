@@ -2,6 +2,7 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/NaviTools.h>
 #include <p2gz/FreeCam.h>
+#include <p2gz/WaypointViewer.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <JSystem/JUtility/JUTGamePad.h>
 #include <P2JME/P2JME.h>
@@ -43,6 +44,7 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
 			->push(new ToggleMenuOption("collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
+			->push(new ToggleMenuOption("waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 		))
         ->push(new OpenSubMenuOption("settings", (new ListMenu())
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
