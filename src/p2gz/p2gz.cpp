@@ -20,8 +20,8 @@ P2GZ::P2GZ()
 
 void P2GZ::update()
 {
-	freecam->update();
 	collision_viewer->update();
+	freecam->update();
 	waypoint_viewer->update();
 
 	// Menu must update last so button presses for menu interactions don't
