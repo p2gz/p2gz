@@ -5,6 +5,7 @@
 #include <p2gz/FreeCam.h>
 #include <p2gz/NaviTools.h>
 #include <p2gz/timer.h>
+#include <p2gz/WaypointViewer.h>
 #include <Game/BaseGameSection.h>
 
 struct P2GZ {
@@ -19,6 +20,7 @@ public:
 	gz::FreeCam* freecam;
 	gz::NaviTools* navi_tools;
 	gz::Timer* timer;
+	gz::WaypointViewer* waypoint_viewer;
 };
 
 // global instance
