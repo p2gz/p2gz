@@ -5,11 +5,11 @@
 #include <p2gz/gzCollections.h>
 #include <p2gz/DoublePress.h>
 #include <JSystem/JUtility/TColor.h>
-#include <Game/BaseGameSection.h>
 #include <Graphics.h>
 #include <JSystem/JUtility/JUTGamePad.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <Dolphin/os.h>
+#include <IDelegate.h>
 
 namespace gz {
 
@@ -33,14 +33,13 @@ public:
 	{
 	}
 
-	virtual void on_selected() = 0;
-	virtual bool check_selected() { return false; }
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z)
 	{
 		if (title)
 			return j2d.print(x, z, title);
 		return 0.0f;
 	}
+	virtual void select() = 0;
 
 	const char* title;
 	bool visible;
@@ -59,35 +58,30 @@ public:
 	}
 	OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_);
 
-	virtual void on_selected();
+	virtual void select();
 };
 
 struct PerformActionMenuOption : public MenuOption {
 public:
 	PerformActionMenuOption()
 	    : MenuOption()
+	    , on_selected(nullptr)
 	{
-		just_selected = false;
 	}
-	PerformActionMenuOption(const char* title_)
+	PerformActionMenuOption(const char* title_, IDelegate* on_selected_)
 	    : MenuOption(title_)
+	    , on_selected(on_selected_)
 	{
-		just_selected = false;
 	}
 
-	virtual void on_selected() { just_selected = true; }
-
-	bool check_selected()
+	virtual void select()
 	{
-		if (just_selected) {
-			just_selected = false;
-			return true;
-		}
-		return false;
+		if (on_selected)
+			on_selected->invoke();
 	}
 
 private:
-	bool just_selected;
+	IDelegate* on_selected;
 };
 
 struct ToggleMenuOption : public MenuOption {
@@ -95,22 +89,29 @@ public:
 	ToggleMenuOption()
 	    : MenuOption()
 	    , on(false)
+	    , on_selected(nullptr)
 	{
 	}
-	ToggleMenuOption(const char* title_, bool on_)
+	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_)
 	    : MenuOption(title_)
 	    , on(on_)
+	    , on_selected(on_selected_)
 	{
 	}
 
 	f32 draw(J2DPrint& j2d, f32 x, f32 z) { return j2d.print(x, z, "%s: %s", title, on ? "true" : "false"); }
 
-	void on_selected() { on = !on; }
-
-	bool check_selected() { return on; }
+	void select()
+	{
+		on = !on;
+		if (on_selected) {
+			on_selected->invoke(on);
+		}
+	}
 
 private:
 	bool on;
+	IDelegate1<bool>* on_selected;
 };
 
 /// Base class for different types of menus
@@ -121,6 +122,7 @@ public:
 	virtual void update(JUTGamePad* controller)    = 0;
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
+	virtual void navigate_to(const char* path) { }
 
 	const char* title;
 	MenuLayer* parent;
@@ -133,6 +135,7 @@ public:
 	virtual void update(JUTGamePad* controller);
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
+	virtual void navigate_to(const char* path);
 
 	MenuOption* cur_option() { return options[selected]; }
 
@@ -157,11 +160,14 @@ struct GZMenu {
 public:
 	GZMenu();
 
+	void init_menu();
+
 	void update();
 	void draw(Graphics* gfx);
 
 	void open();
 	void close();
+	bool is_open() { return enabled; }
 
 	/// Returns a reference to the option, or creates it if
 	/// it doesn't exist. Use slashes to indicate heirarchy,
@@ -170,6 +176,9 @@ public:
 
 	void push_layer(MenuLayer* layer_);
 	void pop_layer();
+
+	/// Opens the menu to the specified absolute path.
+	void navigate_to(const char* path);
 
 	f32 glyph_width;
 	f32 glyph_height;
@@ -183,7 +192,8 @@ public:
 	JUtility::TColor color_breadcrumbs;
 
 private:
-	void update_menu_settings();
+	void increase_text_size();
+	void decrease_text_size();
 
 	DoublePress openCloseAction;
 	ListMenu* root_layer;
@@ -193,6 +203,7 @@ private:
 	MenuLayer* layer;
 	Vec<const char*> breadcrumbs;
 	bool eat_inputs;
+	bool lock;
 };
 
 } // namespace gz

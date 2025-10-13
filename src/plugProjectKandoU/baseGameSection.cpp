@@ -263,6 +263,7 @@ void BaseGameSection::init()
 	mTreasureGetState = 0;
 
 	p2gz = new P2GZ; // @P2GZ
+	p2gz->menu->init_menu();
 }
 
 /**
@@ -328,16 +329,6 @@ bool BaseGameSection::doUpdate()
 	sys->mTimers->_stop("ENT-B");
 	sys->mTimers->_stop("ENT");
 	sys->mTimers->_start("doSim", true);
-
-	// @P2GZ - demo menu actions
-	gz::MenuOption* opt = p2gz->menu->get_option("captain/die painfully");
-	if (opt && opt->check_selected()) {
-		p2gz->die_painfully(mPrevNaviIdx);
-	}
-	opt = p2gz->menu->get_option("captain/boing");
-	if (opt && opt->check_selected()) {
-		p2gz->boing(mPrevNaviIdx);
-	}
 
 	if (!gameSystem->paused()) {
 		f32 frameRate = sys->getFrameRate(1.0f);
