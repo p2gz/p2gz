@@ -16,7 +16,6 @@ DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
 
 # add any new assets (files, folders, etc.) here as required
 P2GZ_CUSTOM_ASSETS = [
-    os.path.join(P2GZ_ASSETS, 'test_dir', 'sheargrub.png'),
     os.path.join(P2GZ_ASSETS, 'memoryCard', 'memoryCardHeader.szs'),
     os.path.join(P2GZ_ASSETS, 'opening.bnr'),
     os.path.join(P2GZ_SYS_ASSETS, 'boot.bin')
@@ -65,7 +64,7 @@ for path in P2GZ_CUSTOM_ASSETS:
     print(f'{iso_path}')
 
     # Copy existing system files
-    if path.find("sys\\") > -1:
+    if os.path.exists(os.path.join(path, 'sys')):
         iso_path = path.replace(P2GZ_SYS_ASSETS, ISO_SYS_ASSETS)
         # We should never be adding new files to sys dir, so we can assume we are replacing
         print(f'Copying {path} to {iso_path}')

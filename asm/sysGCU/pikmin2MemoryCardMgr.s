@@ -38,7 +38,7 @@
 .endobj lbl_8049AE7C
 .balign 4
 .obj lbl_8049AE94, local
-	.asciz "P2Gz" # @p2gz new-banner-and-id: Rename the save file banner text to P2GZ (new game title)
+	.asciz "Pikmin 2"
 .endobj lbl_8049AE94
 .balign 4
 .obj lbl_8049AEA0, local
