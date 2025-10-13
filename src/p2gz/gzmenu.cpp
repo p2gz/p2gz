@@ -239,12 +239,10 @@ void ListMenu::navigate_to(const char* path)
 	for (size_t i = 0; i < options.len(); i++) {
 		if (strncmp(options[i]->title, path, name_len) == 0) {
 			selected = i;
-			OSReport("found %s\n", options[i]->title);
 			if (!is_final_path_component) {
 				MenuLayer* sub_menu = options[i]->get_sub_menu();
 				if (sub_menu) {
 					p2gz->menu->push_layer(sub_menu);
-					OSReport("pushed layer %s\n", sub_menu->title);
 					sub_menu->navigate_to(name_end + 1);
 				}
 			}
