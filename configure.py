@@ -141,6 +141,8 @@ config.sjiswrap_path = args.sjiswrap
 config.progress = args.progress
 if not is_windows():
     config.wrapper = args.wrapper
+# @P2GZ: use curated .s files from asm directory, rather than dtk assembly
+# config.asm_dir = None
 
 # Tool versions
 config.binutils_tag = "2.42-1"
