@@ -5,6 +5,9 @@
 #include "PSSystem/PSSystemIF.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 
 /**
@@ -203,7 +206,12 @@ void PlayCamera::doUpdate()
 		setSmoothThetaSpeed();
 	}
 	changeTargetTheta();
-	changeTargetAtPosition();
+
+	// @P2GZ: freecam
+	if (!p2gz->freecam->is_enabled()) {
+		changeTargetAtPosition();
+	}
+
 	setCollisionCameraTargetPhi(flags);
 	updateParms(flags);
 	for (int i = 0; i < 3; i++) {
