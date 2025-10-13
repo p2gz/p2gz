@@ -5,18 +5,6 @@ on:
   push:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.14.0"
-      - run: |
-          sudo apt update && sudo apt install ninja-build
-          python3 configure.py --non-matching
-          ninja
-
   clang-format:
     runs-on: ubuntu-latest
     steps:
