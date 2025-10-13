@@ -15,6 +15,25 @@ const Color4 NOT_IN_ROUTE_COLOR = Color4(0, 0, 0, 255);
 
 const int RENDER_DISTANCE = SQUARE(512);
 
+// Reset node classifications and adjacency matrix.
+void WaypointViewer::clear()
+{
+	for (int i = 0; i < 256; i++) {
+		approaching[i] = false;
+	}
+	for (int i = 0; i < 256; i++) {
+		upcoming[i] = false;
+	}
+	for (int i = 0; i < 256; i++) {
+		visited[i] = false;
+	}
+
+	for (int i = 0; i < 256; i++) {
+		edges[0][i] = -1;
+		edges[1][i] = -1;
+	}
+}
+
 // Classify each node as visited, approaching, or upcoming.
 void WaypointViewer::categorize_nodes()
 {
@@ -53,6 +72,7 @@ void WaypointViewer::draw_node(Game::WayPoint* wp, Graphics* gfx)
 		gfx->mDrawColor = UPCOMING_COLOR;
 	}
 
+	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	gfx->drawCone(wp->mPosition, apex, 16, 8);
 	gfx->mDrawColor = Color4(0, 0, 0, 255);
 }
@@ -94,9 +114,6 @@ void WaypointViewer::draw_edges(Graphics* gfx)
 		Game::WayPoint* vertex2 = Game::mapMgr->mRouteMgr->getWayPoint(wp2);
 		Vector3f apex2          = vertex2->mPosition + Vector3f(0, 16, 0);
 
-		GXSetLineWidth(10, GX_TO_ZERO);
-		gfx->initPerspPrintf(gfx->mCurrentViewport);
-
 		if (visited[wp1] && visited[wp2]) {
 			gfx->mDrawColor = VISITED_COLOR;
 		} else if ((visited[wp1] && approaching[wp2]) || (visited[wp2] && approaching[wp1])) {
@@ -109,18 +126,24 @@ void WaypointViewer::draw_edges(Graphics* gfx)
 			gfx->mDrawColor = NOT_IN_ROUTE_COLOR;
 		}
 
+		GXSetLineWidth(10, GX_TO_ZERO);
+		gfx->initPerspPrintf(gfx->mCurrentViewport);
 		gfx->drawLine(apex1, apex2);
 		gfx->mDrawColor = NOT_IN_ROUTE_COLOR;
 	}
 }
 
 // Draw the waypoint graph.
-void WaypointViewer::draw()
+void WaypointViewer::update()
 {
+	if (!enabled) {
+		return;
+	}
+
 	Graphics* gfx = sys->getGfx();
-	gfx->initPrimDraw(nullptr);
 	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
 
+	clear();
 	categorize_nodes();
 
 	int nextEdge = 0;

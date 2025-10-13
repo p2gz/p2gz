@@ -1,6 +1,6 @@
 #ifndef _WAYPOINT_VIEWER_H
 #define _WAYPOINT_VIEWER_H
-#include <Game/pathfinder.h>
+#include <Game/routeMgr.h>
 #include <types.h>
 #include <System.h>
 
@@ -9,27 +9,18 @@ struct WaypointViewer {
 public:
 	WaypointViewer()
 	{
-		for (int i = 0; i < 256; i++) {
-			approaching[i] = false;
-		}
-		for (int i = 0; i < 256; i++) {
-			upcoming[i] = false;
-		}
-		for (int i = 0; i < 256; i++) {
-			visited[i] = false;
-		}
-
-		for (int i = 0; i < 256; i++) {
-			edges[0][i] = -1;
-			edges[1][i] = -1;
-		}
+		clear();
+		enabled = false;
 	}
 	~WaypointViewer() { }
 
-	void draw();
+	void update();
+
+	void toggle(bool enabled_) { enabled = enabled_; }
 
 private:
 	void categorize_nodes();
+	void clear();
 	void draw_edges(Graphics*);
 	void draw_node(Game::WayPoint*, Graphics*);
 	void populate_adjacency_matrix(Game::WayPoint*, int*);
@@ -37,8 +28,9 @@ private:
 	bool approaching[256];
 	bool upcoming[256];
 	bool visited[256];
-
 	s16 edges[2][256];
+
+	bool enabled;
 };
 } // namespace gz
 #endif
