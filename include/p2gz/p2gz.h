@@ -7,17 +7,17 @@
 
 struct P2GZ {
 public:
-    P2GZ();
-    ~P2GZ() {}
+	P2GZ();
+	~P2GZ() { }
 
-    void update();
-    void draw();
+	void update();
+	void draw();
 
-    // some demo functions for the menu
-    void die_painfully(int navi_id);
-    void boing(int navi_id);
+	// some demo functions for the menu
+	void die_painfully(int navi_id);
+	void boing(int navi_id);
 
-    gz::GZMenu* menu;
+	gz::GZMenu* menu;
 };
 
 // global instance
