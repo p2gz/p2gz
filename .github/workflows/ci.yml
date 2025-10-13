@@ -20,5 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
+          sudo apt update && sudo apt install ninja-build
           python3 configure.py --non-matching
           ninja
