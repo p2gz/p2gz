@@ -433,20 +433,18 @@ void Section::doUpdateOmake()
 		}
 		mThpPlayer->update();
 		if (mThpPlayer->isFinishLoading()) {
-			if (mThpPlayer->isFinishPlaying() || mController1->getButtonDown() & Controller::PRESS_B) {
-				if (mController1->getButtonDown() & Controller::PRESS_B) {
-					PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
-				}
-				mThpPlayer->pause();
-				mThpPlayer->stop();
-				mOmakeMgr.restartFromMovieState();
-				mMovieIndex = -1;
-				mgr         = PSSystem::getSceneMgr();
-				PSSystem::validateSceneMgr(mgr);
-				mgr->checkScene();
-				seq = PSSystem::getSeqData(mgr, BGM_Bonus);
-				seq->startSeq();
-			}
+			// @p2gz: auto-skip-thp
+			// Automatically end the movie since its files have been removed
+			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
+			mThpPlayer->pause();
+			mThpPlayer->stop();
+			mOmakeMgr.restartFromMovieState();
+			mMovieIndex = -1;
+			mgr         = PSSystem::getSceneMgr();
+			PSSystem::validateSceneMgr(mgr);
+			mgr->checkScene();
+			seq = PSSystem::getSeqData(mgr, BGM_Bonus);
+			seq->startSeq();
 		}
 	}
 

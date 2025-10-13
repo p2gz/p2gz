@@ -166,12 +166,12 @@ void EndingState::exec(SingleGameSection* game)
 					mTHPPlayer->play();
 				}
 			} else {
-				if (mTHPPlayer->isFinishPlaying()) {
-					mTHPPlayer->stop();
-					mStatus   = EndingStatus_PlayMovieCredits;
-					mThpState = 1;
-					mTHPPlayer->load(THPPlayer::STAFF_ROLL);
-				}
+				// @p2gz: auto-skip-thp
+				// Automatically end the movie since its files have been removed
+				mTHPPlayer->stop();
+				mStatus   = EndingStatus_PlayMovieCredits;
+				mThpState = 1;
+				mTHPPlayer->load(THPPlayer::STAFF_ROLL);				
 			}
 			break;
 		case EndingStatus_PlayMovieCredits:
@@ -182,25 +182,25 @@ void EndingState::exec(SingleGameSection* game)
 					mTHPPlayer->play();
 				}
 			} else {
-				if (mTHPPlayer->isFinishPlaying()) {
-					mTHPPlayer->stop();
-					mStatus = EndingStatus_ShowFinalResultsDebt;
-					kh::Screen::DispFinalResult disp(mResultData, kh::Screen::DispFinalResult::PostDebt, mMainHeap);
-					Screen::gGame2DMgr->setGamePad(mController);
-					Screen::gGame2DMgr->open_FinalResult(disp);
+				// @p2gz: auto-skip-thp
+				// Automatically end the movie since its files have been removed
+				mTHPPlayer->stop();
+				mStatus = EndingStatus_ShowFinalResultsDebt;
+				kh::Screen::DispFinalResult disp(mResultData, kh::Screen::DispFinalResult::PostDebt, mMainHeap);
+				Screen::gGame2DMgr->setGamePad(mController);
+				Screen::gGame2DMgr->open_FinalResult(disp);
 
-					PSSystem::getSceneMgr()->doStartMainSeq();
+				PSSystem::getSceneMgr()->doStartMainSeq();
 
-					playData->clearCurrentCave();
-					sys->mPlayData->mDoSaveOptions = true;
-					sys->getPlayCommonData()->mChallengeFlags.set(1);
-					// Only open Wistful Wild if Perplexing Pool is opened
-					if (playData->courseOpen(2)) {
-						playData->openCourse(3);
-					}
-					playData->setStoryFlag(STORY_DebtPaid);
-					playData->setSaveFlag(STORYSAVE_DebtPaid, nullptr);
+				playData->clearCurrentCave();
+				sys->mPlayData->mDoSaveOptions = true;
+				sys->getPlayCommonData()->mChallengeFlags.set(1);
+				// Only open Wistful Wild if Perplexing Pool is opened
+				if (playData->courseOpen(2)) {
+					playData->openCourse(3);
 				}
+				playData->setStoryFlag(STORY_DebtPaid);
+				playData->setSaveFlag(STORYSAVE_DebtPaid, nullptr);
 			}
 			break;
 		case EndingStatus_ShowFinalResultsDebt:
@@ -234,10 +234,10 @@ void EndingState::exec(SingleGameSection* game)
 					mTHPPlayer->play();
 				}
 			} else {
-				if (mTHPPlayer->isFinishPlaying()) {
-					mTHPPlayer->stop();
-					transit(game, SGS_Select, nullptr);
-				}
+				// @p2gz: auto-skip-thp
+				// Automatically end the movie since its files have been removed
+				mTHPPlayer->stop();
+				transit(game, SGS_Select, nullptr);
 			}
 			break;
 		case EndingStatus_PlayMovieAllTreasure:
@@ -247,7 +247,9 @@ void EndingState::exec(SingleGameSection* game)
 					mThpState = 0;
 					mTHPPlayer->play();
 				}
-			} else if (mTHPPlayer->isFinishPlaying()) {
+			} else {
+				// @p2gz: auto-skip-thp
+				// Automatically end the movie since its files have been removed
 				mTHPPlayer->stop();
 				kh::Screen::DispFinalResult disp(mResultData, kh::Screen::DispFinalResult::Complete, mMainHeap);
 				Screen::gGame2DMgr->setGamePad(mController);
