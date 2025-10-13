@@ -8,17 +8,22 @@ import time
 import itertools
 
 # set paths
-ISO_ASSETS = os.path.join(os.getcwd(), 'root', 'files')
-ISO_SYS_ASSETS = os.path.join(os.getcwd(), 'root', 'sys')
-P2GZ_ASSETS = os.path.join(os.getcwd(), 'files')
-P2GZ_SYS_ASSETS = os.path.join(os.getcwd(), 'files', 'sys')
 DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
+P2GZ_ASSETS = os.path.join(os.getcwd(), 'assets')
+NEW_ISO_ASSETS = os.path.join(os.getcwd(), 'root')
 
-# add any new assets (files, folders, etc.) here as required
-P2GZ_CUSTOM_ASSETS = [
-    os.path.join(P2GZ_ASSETS, 'memoryCard', 'memoryCardHeader.szs'),
-    os.path.join(P2GZ_ASSETS, 'opening.bnr'),
-    os.path.join(P2GZ_SYS_ASSETS, 'boot.bin')
+
+# Any asset that is a compressed .szs file; this will point to the UNCOMPRESSED directory
+# i.e. (P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader') -> files\memoryCard\memoryCardHeader\ directory
+# contents within this directory will all be compressed into memoryCardHeader.szs at build time
+P2GZ_CUSTOM_ASSETS_COMPRESSED = [
+    os.path.join(P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader')
+]
+
+# Any asset that is NOT compressed - this is just the file path to the file itself to be replaced
+P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
+    os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
+    os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
 ]
 
 # argument parsing
@@ -55,27 +60,42 @@ if not os.path.exists(os.path.join(os.getcwd(), 'root')):
     shutil.copy2('root/sys/main.dol', 'orig/GPVE01/sys/main.dol')
 
     # remove .thp intro videos to save space
-    for file in glob.glob(os.path.join(ISO_ASSETS, 'thp', '*.thp')):
+    for file in glob.glob(os.path.join(NEW_ISO_ASSETS, 'files', 'thp', '*.thp')):
         os.remove(file)
 
-# patch assets into new extracted game folders
-for path in P2GZ_CUSTOM_ASSETS:
-    iso_path = path.replace(P2GZ_ASSETS, ISO_ASSETS)
+# patch compressed assets (anything with a .szs file type)
+for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
+    # Creates a directory for the szs file - anything in the directory are the szs file's uncompressed contents
+    iso_dir = compressed_dir.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
+    archive = iso_dir + '.szs'
+
+    # patching existing asset
+    if os.path.exists(archive):
+        subprocess.run(f'cube extract {archive} -o {iso_dir}', shell=True)
+
+        print(f'Copying {compressed_dir} to {iso_dir}')
+        shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
+
+        subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
+
+    # adding custom asset
+    else:
+        print(f'Copying {compressed_dir} to {iso_dir}')
+        shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
+
+        subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
+
+# patch non-compressed assets
+for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
+    iso_path = path.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
     print(f'{iso_path}')
 
-    # Copy existing system files
-    if os.path.exists(os.path.join(path, 'sys')):
-        iso_path = path.replace(P2GZ_SYS_ASSETS, ISO_SYS_ASSETS)
-        # We should never be adding new files to sys dir, so we can assume we are replacing
+    # Copy existing uncompressed file
+    if os.path.exists(iso_path):
         print(f'Copying {path} to {iso_path}')
         shutil.copy(path, iso_path)
 
-    # Copy existing standard files
-    elif os.path.exists(iso_path):
-        print(f'Copying {path} to {iso_path}')
-        shutil.copy(path, iso_path)
-
-    # Add new files + directories
+    # Add new directory + file
     else:
         path_dir = os.path.dirname(path)
         iso_new_dir = os.path.dirname(iso_path)
