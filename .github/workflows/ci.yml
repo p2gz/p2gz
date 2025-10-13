@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  pull_request:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt update && sudo apt install clang-format
+          find -iname "*.h" -o -iname "*.c" -o -iname "*.cpp" | xargs clang-format --dry-run --Werror
+
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.14-alpine
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 configure.py --non-matching
+          ninja
