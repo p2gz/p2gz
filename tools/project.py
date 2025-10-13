@@ -996,7 +996,8 @@ def generate_build_ninja(
                 link_built_obj = False
 
             # Assembly overrides
-            if obj.asm_path is not None and obj.asm_path.exists():
+            # @P2GZ: only override NonMatching files with .s files
+            if obj.asm_path is not None and obj.asm_path.exists() and obj.completed is False:
                 link_built_obj = True
                 built_obj_path = asm_build(obj, obj.asm_path, obj.asm_obj_path)
 

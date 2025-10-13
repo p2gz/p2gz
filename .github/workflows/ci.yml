@@ -1,0 +1,13 @@
+name: ci
+
+on:
+  pull_request:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: DoozyX/clang-format-lint-action@v0.18.2

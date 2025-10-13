@@ -108,15 +108,11 @@ bool Section::doUpdate()
 	mTimer += sys->mDeltaTime;
 
 	BaseHIOSection::doUpdate();
-	if (mMoviePlayer.isFinishPlaying()) {
-		mIsMainActive = false;
-	}
 
-	// if any button is pressed
-	if (mController->isButtonDown(~JUTGamePad::False) && mIsMainActive) {
-		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
-		mIsMainActive = false;
-	}
+	// @p2gz: auto-skip-thp
+	// Automatically end the movie since its files have been removed
+	PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
+	mIsMainActive = false;
 
 	mMoviePlayer.play();
 	mMoviePlayer.update();
