@@ -82,33 +82,33 @@ THPPlayer::~THPPlayer()
  */
 void THPPlayer::load(EMovieIndex movieIdx)
 {
-// @p2gz: remove THP files to save space
-// stubs out the load function so it doesn't look for non-existent files and crash
-// 	bool idCheck = false;
-// 	if (movieIdx >= 0 && movieIdx < 12) {
-// 		idCheck = true;
-// 	}
+	// @p2gz: remove THP files to save space
+	// stubs out the load function so it doesn't look for non-existent files and crash
+	// 	bool idCheck = false;
+	// 	if (movieIdx >= 0 && movieIdx < 12) {
+	// 		idCheck = true;
+	// 	}
 
-// #if BUILDTARGET == USADEMO1 // demo
-// 	P2ASSERTLINE(233, idCheck);
-// #elif BUILDTARGET == USAFINAL // usa
-// 	P2ASSERTLINE(227, idCheck);
-// #endif
+	// #if BUILDTARGET == USADEMO1 // demo
+	// 	P2ASSERTLINE(233, idCheck);
+	// #elif BUILDTARGET == USAFINAL // usa
+	// 	P2ASSERTLINE(227, idCheck);
+	// #endif
 
-// 	const THPPlayerFileSettingTable* data = &sTHPPlayerFileSettingTable[movieIdx];
-// 	mLoadResArg.mThpFileName              = data->mThpFilePath;
-// 	mLoadResArg.mCaptionFileName          = data->mIniFilePath;
-// 	mDrawPosType                          = data->mDrawPosType;
+	// 	const THPPlayerFileSettingTable* data = &sTHPPlayerFileSettingTable[movieIdx];
+	// 	mLoadResArg.mThpFileName              = data->mThpFilePath;
+	// 	mLoadResArg.mCaptionFileName          = data->mIniFilePath;
+	// 	mDrawPosType                          = data->mDrawPosType;
 
-// 	load();
+	// 	load();
 
-// #if BUILDTARGET == USADEMO1 // demo
-// 	P2ASSERTLINE(241, data->mThpID < 12);
-// #elif BUILDTARGET == USAFINAL // usa
-// 	P2ASSERTLINE(235, data->mThpID < 12);
-// #endif
+	// #if BUILDTARGET == USADEMO1 // demo
+	// 	P2ASSERTLINE(241, data->mThpID < 12);
+	// #elif BUILDTARGET == USAFINAL // usa
+	// 	P2ASSERTLINE(235, data->mThpID < 12);
+	// #endif
 
-// 	PSM::sTHPDinamicsProc.setSetting((PSM::THP_ID)data->mThpID);
+	// 	PSM::sTHPDinamicsProc.setSetting((PSM::THP_ID)data->mThpID);
 }
 
 /**
