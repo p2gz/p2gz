@@ -2,6 +2,7 @@
 #define _P2GZ_H
 
 #include <p2gz/gzmenu.h>
+#include <p2gz/FreeCam.h>
 #include <Game/BaseGameSection.h>
 #include <Graphics.h>
 
@@ -18,6 +19,7 @@ public:
 	void boing(int navi_id);
 
 	gz::GZMenu* menu;
+	gz::FreeCam* freecam;
 };
 
 // global instance

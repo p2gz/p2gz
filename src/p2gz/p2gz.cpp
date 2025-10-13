@@ -1,4 +1,5 @@
 #include <p2gz/p2gz.h>
+#include <p2gz/FreeCam.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -8,7 +9,8 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
-	menu = new GZMenu();
+	menu    = new GZMenu();
+	freecam = new FreeCam();
 }
 
 void P2GZ::update()
