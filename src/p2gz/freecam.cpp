@@ -62,20 +62,29 @@ void FreeCam::update()
 {
 	GZASSERTLINE(enabled);
 
+	navi = Game::naviMgr->getActiveNavi();
+	if (navi == nullptr) {
+		return;
+	}
+	camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
+
 	update_position();
 	update_zoom();
 	draw_current_position();
 
-	if (navi != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_A) {
+	if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
 		warp_to_current_position();
+		return;
 	}
 
-	if (navi != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_B) {
+	if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
 		disable();
+		return;
 	}
 
-	if (navi != nullptr && navi->mController1->getButtonDown() & Controller::PRESS_Y) {
+	if (navi->mController1->getButtonDown() & Controller::PRESS_Y) {
 		switch_captains();
+		return;
 	}
 
 	if (is_coefficient_positive) {
@@ -116,9 +125,6 @@ void FreeCam::switch_captains()
 		otherCamera->mGoalPosition += Vector3f(0, zoom, 0);
 		otherCamera->mGoalVerticalAngle                       = PI / 2;
 		otherCamera->mCameraParms->mSettingChangeSpeed.mValue = 1.0f;
-
-		navi   = otherNavi;
-		camera = otherCamera;
 	}
 }
 
@@ -166,12 +172,11 @@ void FreeCam::update_position()
 	f32 z = inputPos.z;
 
 	Vector3f side = camera->getSideVector();
-	Vector3f up   = camera->getUpVector();
-	Vector3f view = camera->getViewVector();
 	side.y        = 0.0f;
-
 	side.qNormalise();
 
+	Vector3f up   = camera->getUpVector();
+	Vector3f view = camera->getViewVector();
 	if (up.y > view.y) {
 		view.x = view.x;
 		view.z = view.z;
@@ -179,11 +184,15 @@ void FreeCam::update_position()
 		view.x = up.x;
 		view.z = up.z;
 	}
+
 	Vector3f view2D(view.x, 0.0f, view.z);
 	view2D.qNormalise();
 	Vector3f result(side * x + view2D * z);
 
-	int speed = (navi->mController1->getButton() & Controller::PRESS_L) ? FAST_SPEED : NORMAL_SPEED;
+	int speed = NORMAL_SPEED;
+	if (navi->mController1 && navi->mController1->getButton() & Controller::PRESS_L) {
+		speed = FAST_SPEED;
+	}
 	Vector3f goalPosition(camera->mGoalPosition.x + result.x * speed, camera->mGoalPosition.y, camera->mGoalPosition.z + result.z * speed);
 	if (Game::mapMgr->getMinY(goalPosition) > OUT_OF_BOUNDS_MIN_Y) {
 		camera->mGoalPosition = goalPosition;
