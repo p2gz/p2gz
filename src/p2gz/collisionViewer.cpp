@@ -82,13 +82,11 @@ void CollisionViewer::update()
 		return;
 	}
 
-	Vector3f naviPos = navi->getPosition();
-	Sys::Sphere boundingSphere(naviPos, 0.0f);
-
 	Graphics* gfx = sys->getGfx();
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	gfx->initPrimDraw(nullptr);
 
+	Vector3f naviPos = navi->getPosition();
 	for (int i = -RENDER_DISTANCE; i <= RENDER_DISTANCE; i++) {
 		for (int j = -RENDER_DISTANCE; j <= RENDER_DISTANCE; j++) {
 			Vector3f scoutPos = naviPos + Vector3f(32 * i, 0, 32 * j);
