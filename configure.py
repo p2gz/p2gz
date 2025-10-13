@@ -2092,6 +2092,7 @@ config.libs = [
             Object(Matching, "p2gz/p2gz.cpp"),
             Object(Matching, "p2gz/gzmenu.cpp"),
             Object(Matching, "p2gz/freecam.cpp"),
+            Object(Matching, "p2gz/navitools.cpp"),
         ],
     },
 ]
@@ -2111,6 +2112,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/p2gz.cpp",
             "p2gz/gzmenu.cpp",
             "p2gz/freecam.cpp",
+            "p2gz/navitools.cpp",
             ]
     return objects
 

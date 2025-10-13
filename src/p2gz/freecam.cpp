@@ -23,7 +23,9 @@ char* FREECAM_PAUSE_IDENTIFIER   = "freecam";
 // Enable freecam on the active Navi's camera.
 void FreeCam::enable()
 {
-	GZASSERTLINE(!enabled);
+	if (enabled)
+		return;
+
 	enabled = true;
 	p2gz->menu->close();
 
@@ -41,10 +43,10 @@ void FreeCam::enable()
 // Disable freecam on the active Navi's camera.
 void FreeCam::disable()
 {
-	GZASSERTLINE(enabled);
+	if (!enabled)
+		return;
+
 	enabled = false;
-	p2gz->menu->get_option("tools/freecam")->on_selected();
-	p2gz->menu->open();
 	Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
 
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
@@ -60,7 +62,8 @@ void FreeCam::disable()
 // Perform all updates to the freecam based on the controller inputs on this frame.
 void FreeCam::update()
 {
-	GZASSERTLINE(enabled);
+	if (!enabled)
+		return;
 
 	navi = Game::naviMgr->getActiveNavi();
 	if (navi == nullptr) {
@@ -78,6 +81,10 @@ void FreeCam::update()
 	}
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
+		if (!p2gz->menu->is_open()) {
+			p2gz->menu->navigate_to("tools/freecam");
+		}
+
 		disable();
 		return;
 	}
