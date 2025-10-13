@@ -124,7 +124,9 @@ void MovieState::exec(SingleGameSection* gs)
 			}
 			break;
 		case true:
-			if ((mController->getButtonDown() & Controller::PRESS_START) || mMoviePlayer->isFinishPlaying()) { // skip the movie with start
+			// @p2gz: auto-skip-thp
+			// Automatically end the movie since its files have been removed
+			{
 				gs->mDisplayWiper = gs->mWipeInFader;
 				gs->mWipeInFader->start(4.0f);
 				gs->mCurrentCourseInfo = stageList->getCourseInfo(0);

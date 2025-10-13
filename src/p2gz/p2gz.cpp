@@ -10,8 +10,8 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
-	menu    = new GZMenu();
-	freecam = new FreeCam();
+	menu       = new GZMenu();
+	freecam    = new FreeCam();
 	navi_tools = new NaviTools();
 }
 
