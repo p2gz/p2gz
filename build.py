@@ -9,14 +9,17 @@ import itertools
 
 # set paths
 ISO_ASSETS = os.path.join(os.getcwd(), 'root', 'files')
+ISO_SYS_ASSETS = os.path.join(os.getcwd(), 'root', 'sys')
 P2GZ_ASSETS = os.path.join(os.getcwd(), 'files')
+P2GZ_SYS_ASSETS = os.path.join(os.getcwd(), 'files', 'sys')
 DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
 
-# add new asset folders here as required
+# add any new assets (files, folders, etc.) here as required
 P2GZ_CUSTOM_ASSETS = [
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_squad'),
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_warp'),
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'hole_in')
+    os.path.join(P2GZ_ASSETS, 'test_dir', 'sheargrub.png'),
+    os.path.join(P2GZ_ASSETS, 'memoryCard', 'memoryCardHeader.szs'),
+    os.path.join(P2GZ_ASSETS, 'opening.bnr'),
+    os.path.join(P2GZ_SYS_ASSETS, 'boot.bin')
 ]
 
 # argument parsing
@@ -56,30 +59,31 @@ if not os.path.exists(os.path.join(os.getcwd(), 'root')):
     for file in glob.glob(os.path.join(ISO_ASSETS, 'thp', '*.thp')):
         os.remove(file)
 
-# patch assets
-for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
-    iso_path = p2gz_path.replace(P2GZ_ASSETS, ISO_ASSETS)
+# patch assets into new extracted game folders
+for path in P2GZ_CUSTOM_ASSETS:
+    iso_path = path.replace(P2GZ_ASSETS, ISO_ASSETS)
+    print(f'{iso_path}')
 
-    for dir in dirs:
-        patch_dir = os.path.join(p2gz_path, dir)
-        iso_dir = os.path.join(iso_path, dir)
-        archive = iso_dir + '.szs'
+    # Copy existing system files
+    if path.find("sys\\") > -1:
+        iso_path = path.replace(P2GZ_SYS_ASSETS, ISO_SYS_ASSETS)
+        # We should never be adding new files to sys dir, so we can assume we are replacing
+        print(f'Copying {path} to {iso_path}')
+        shutil.copy(path, iso_path)
 
-        # patching existing asset
-        if os.path.exists(archive):
-            subprocess.run(f'cube extract {archive} -o {iso_dir}', shell=True)
+    # Copy existing standard files
+    elif os.path.exists(iso_path):
+        print(f'Copying {path} to {iso_path}')
+        shutil.copy(path, iso_path)
 
-            print(f'Copying {patch_dir} to {iso_dir}')
-            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True)
-
-            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
-
-        # adding custom asset
-        elif patch_dir in P2GZ_CUSTOM_ASSETS:
-            print(f'Copying {patch_dir} to {iso_dir}')
-            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True)
-
-            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
+    # Add new files + directories
+    else:
+        path_dir = os.path.dirname(path)
+        iso_new_dir = os.path.dirname(iso_path)
+        print(f'Creating new directory {path_dir} in {iso_new_dir}')
+        shutil.copytree(path_dir, iso_new_dir)
+        print(f'Adding {path} to {iso_path}')
+        shutil.copy(path, iso_path)
 
 
 # patch dol
