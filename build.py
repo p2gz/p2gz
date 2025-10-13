@@ -67,20 +67,22 @@ if not os.path.exists(os.path.join(os.getcwd(), 'root')):
 for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
     # Creates a directory for the szs file - anything in the directory are the szs file's uncompressed contents
     iso_dir = compressed_dir.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
-    archive = iso_dir + '.szs'
+    iso_archive = iso_dir + '.szs'
+    asset_archive = compressed_dir + '.szs'
+    
 
     # patching existing asset
-    if os.path.exists(archive):
-        subprocess.run(f'cube extract {archive} -o {iso_dir}', shell=True)
+    if os.path.exists(iso_archive):
+        subprocess.run(f'cube extract {iso_archive} -o {iso_dir}', shell=True)
 
-        print(f'Copying {compressed_dir} to {iso_dir}')
+        print(f'Copying {asset_archive} to {iso_archive}')
         shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
 
         subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
 
     # adding custom asset
     else:
-        print(f'Copying {compressed_dir} to {iso_dir}')
+        print(f'Copying {asset_archive} to {iso_archive}')
         shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
 
         subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
@@ -88,7 +90,6 @@ for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
 # patch non-compressed assets
 for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
     iso_path = path.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
-    print(f'{iso_path}')
 
     # Copy existing uncompressed file
     if os.path.exists(iso_path):
