@@ -8,12 +8,14 @@
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
 #include <Game/BaseGameSection.h>
+#include <p2gz/warp.h>
 
 struct P2GZ {
 public:
 	P2GZ();
 	~P2GZ() { }
 
+	void init();
 	void update();
 	void draw();
 
@@ -27,6 +29,7 @@ public:
 	gz::NaviTools* navi_tools;
 	gz::Timer* timer;
 	gz::WaypointViewer* waypoint_viewer;
+	gz::Warp* warp;
 };
 
 // global instance

@@ -20,23 +20,14 @@ struct MenuOption {
 	virtual MenuLayer* get_sub_menu() { return nullptr; }
 
 public:
-	MenuOption()
-	    : title(nullptr)
-	    , visible(true)
-	{
-	}
 	MenuOption(const char* title_)
 	    : title(title_)
 	    , visible(true)
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z)
-	{
-		if (title)
-			return j2d.print(x, z, title);
-		return 0.0f;
-	}
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update() { }
 	virtual void select() = 0;
 
 	const char* title;
@@ -49,11 +40,6 @@ struct OpenSubMenuOption : public MenuOption {
 	MenuLayer* sub_menu;
 
 public:
-	OpenSubMenuOption()
-	    : MenuOption()
-	    , sub_menu(nullptr)
-	{
-	}
 	OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_);
 
 	virtual void select();
@@ -61,11 +47,6 @@ public:
 
 struct PerformActionMenuOption : public MenuOption {
 public:
-	PerformActionMenuOption()
-	    : MenuOption()
-	    , on_selected(nullptr)
-	{
-	}
 	PerformActionMenuOption(const char* title_, IDelegate* on_selected_)
 	    : MenuOption(title_)
 	    , on_selected(on_selected_)
@@ -84,12 +65,6 @@ private:
 
 struct ToggleMenuOption : public MenuOption {
 public:
-	ToggleMenuOption()
-	    : MenuOption()
-	    , on(false)
-	    , on_selected(nullptr)
-	{
-	}
 	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_)
 	    : MenuOption(title_)
 	    , on(on_)
@@ -97,9 +72,9 @@ public:
 	{
 	}
 
-	f32 draw(J2DPrint& j2d, f32 x, f32 z) { return j2d.print(x, z, "%s: %s", title, on ? "true" : "false"); }
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 
-	void select()
+	virtual void select()
 	{
 		on = !on;
 		if (on_selected) {
@@ -112,13 +87,65 @@ private:
 	IDelegate1<bool>* on_selected;
 };
 
+struct RadioMenuOption : public MenuOption {
+public:
+	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_)
+	    : MenuOption(title_)
+	    , on_selected(on_selected_)
+	    , selected_idx(0)
+	{
+	}
+
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update();
+	virtual void select();
+
+	void set_selection(size_t idx) { selected_idx = idx; }
+
+	Vec<const char*> options;
+
+private:
+	IDelegate1<size_t>* on_selected;
+	size_t selected_idx;
+};
+
+struct RangeMenuOption : public MenuOption {
+public:
+	enum OverflowBehavior { CAP, WRAP };
+
+	RangeMenuOption(const char* title_, s32 min_, s32 max_, s32 initial, OverflowBehavior overflow_behavior_, IDelegate1<s32>* on_selected_)
+	    : MenuOption(title_)
+	    , on_selected(on_selected_)
+	    , selected_val(initial)
+	    , min(min_)
+	    , max(max_)
+	    , overflow_behavior(overflow_behavior_)
+	{
+	}
+
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update();
+	virtual void select();
+
+	void set_selection(s32 val) { selected_val = val; }
+
+	s32 min;
+	s32 max;
+
+private:
+	void check_overflow();
+
+	IDelegate1<s32>* on_selected;
+	s32 selected_val;
+	OverflowBehavior overflow_behavior;
+};
+
 /// Base class for different types of menus
 struct MenuLayer {
 public:
-	MenuLayer() { }
-
-	virtual void update(Controller* controller)    = 0;
+	virtual void update()                          = 0;
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
+	virtual void reset_selection()                 = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
 	virtual void navigate_to(const char* path) { }
 
@@ -128,12 +155,11 @@ public:
 
 struct ListMenu : public MenuLayer {
 public:
-	ListMenu() { }
-
-	virtual void update(Controller* controller);
+	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
+	virtual void reset_selection() { selected = 0; }
 
 	MenuOption* cur_option() { return options[selected]; }
 
@@ -178,6 +204,10 @@ public:
 	/// Opens the menu to the specified absolute path.
 	void navigate_to(const char* path);
 
+	/// Call in `update()` in menu options that use Dpad L to prevent
+	/// accidentally closing the menu
+	void block_open_close_action() { open_close_action.reset(); }
+
 	f32 glyph_width;
 	f32 glyph_height;
 	f32 start_offset_x;
@@ -193,7 +223,7 @@ private:
 	void increase_text_size();
 	void decrease_text_size();
 
-	DoublePress openCloseAction;
+	DoublePress open_close_action;
 	ListMenu* root_layer;
 
 	// menu state
