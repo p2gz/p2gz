@@ -2095,6 +2095,7 @@ config.libs = [
             Object(Matching, "p2gz/navitools.cpp"),
             Object(Matching, "p2gz/timer.cpp"),
             Object(Matching, "p2gz/waypointViewer.cpp"),
+            Object(Matching, "p2gz/collisionViewer.cpp"),
         ],
     },
 ]
@@ -2117,6 +2118,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/navitools.cpp",
             "p2gz/timer.cpp",
             "p2gz/waypointViewer.cpp",
+            "p2gz/collisionViewer.cpp",
             ]
     return objects
 

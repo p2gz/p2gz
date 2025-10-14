@@ -2,6 +2,7 @@
 #define _P2GZ_H
 
 #include <p2gz/gzmenu.h>
+#include <p2gz/CollisionViewer.h>
 #include <p2gz/FreeCam.h>
 #include <p2gz/NaviTools.h>
 #include <p2gz/timer.h>
@@ -21,6 +22,7 @@ public:
 
 	// gz specifics
 	gz::GZMenu* menu;
+	gz::CollisionViewer* collision_viewer;
 	gz::FreeCam* freecam;
 	gz::NaviTools* navi_tools;
 	gz::Timer* timer;
