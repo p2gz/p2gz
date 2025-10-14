@@ -2,6 +2,7 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/NaviTools.h>
 #include <p2gz/FreeCam.h>
+#include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
@@ -58,6 +59,11 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new OpenSubMenuOption("time controls", (new ListMenu())
+				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
+				->push(new PerformActionMenuOption("+1 hour", new Delegate<DayEditor>(p2gz->day_editor, &DayEditor::jump_forward)))
+				->push(new PerformActionMenuOption("-1 hour", new Delegate<DayEditor>(p2gz->day_editor, &DayEditor::jump_backward)))
+			))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu())
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
