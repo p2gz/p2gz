@@ -5,7 +5,6 @@
 #include <p2gz/gzCollections.h>
 #include <p2gz/DoublePress.h>
 #include <JSystem/JUtility/TColor.h>
-#include <JSystem/JUtility/JUTGamePad.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
@@ -118,7 +117,7 @@ struct MenuLayer {
 public:
 	MenuLayer() { }
 
-	virtual void update(JUTGamePad* controller)    = 0;
+	virtual void update(Controller* controller)    = 0;
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
 	virtual void navigate_to(const char* path) { }
@@ -131,7 +130,7 @@ struct ListMenu : public MenuLayer {
 public:
 	ListMenu() { }
 
-	virtual void update(JUTGamePad* controller);
+	virtual void update(Controller* controller);
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
