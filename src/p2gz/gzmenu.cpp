@@ -4,7 +4,6 @@
 #include <p2gz/FreeCam.h>
 #include <p2gz/WaypointViewer.h>
 #include <JSystem/J2D/J2DPrint.h>
-#include <JSystem/JUtility/JUTGamePad.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
 #include <Controller.h>
@@ -15,7 +14,7 @@
 using namespace gz;
 
 GZMenu::GZMenu()
-    : openCloseAction(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
+    : open_close_action(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
     , enabled(false)
     , lock(false)
     , eat_inputs(true)
@@ -83,11 +82,11 @@ void GZMenu::update()
 		// If we ever press A the double press to open/close the menu should be ignored
 		// so we don't do it accidentally when switching pikmin or something
 		if (!enabled && controller->getButton() & Controller::PRESS_A) {
-			openCloseAction.reset();
+			open_close_action.reset();
 		}
 
 		// Open/close the menu
-		if (openCloseAction.check(controller)) {
+		if (open_close_action.check(controller)) {
 			if (enabled)
 				close();
 			else
@@ -96,7 +95,7 @@ void GZMenu::update()
 	}
 
 	if (enabled && layer && controller) {
-		layer->update(controller);
+		layer->update();
 	}
 }
 
@@ -265,9 +264,9 @@ void ListMenu::navigate_to(const char* path)
 	}
 }
 
-void ListMenu::update(Controller* controller)
+void ListMenu::update()
 {
-	u32 btn = controller->getButtonDown();
+	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_UP && selected > 0) {
 		selected -= 1;
 	}
@@ -281,7 +280,7 @@ void ListMenu::update(Controller* controller)
 		p2gz->menu->pop_layer();
 	}
 
-	options[selected]->update(controller);
+	options[selected]->update();
 }
 
 void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
@@ -318,10 +317,12 @@ void OpenSubMenuOption::select()
 	p2gz->menu->push_layer(sub_menu);
 }
 
-void RadioMenuOption::update(JUTGamePad* controller)
+void RadioMenuOption::update()
 {
+	p2gz->menu->block_open_close_action();
+
 	size_t init_selected_idx = selected_idx;
-	u32 btn                  = controller->getButtonDown();
+	u32 btn                  = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_LEFT) {
 		selected_idx = (((int)selected_idx) - 1) % options.len();
 	}
@@ -349,15 +350,17 @@ f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
 
 	j2d.mCharColor.set(p2gz->menu->color_highlight);
 	j2d.mGradientColor.set(p2gz->menu->color_highlight);
-	x += j2d.print(x, z, ">");
+	x += j2d.print(x, z, " >");
 
 	return x;
 }
 
-void RangeMenuOption::update(JUTGamePad* controller)
+void RangeMenuOption::update()
 {
+	p2gz->menu->block_open_close_action();
+
 	size_t init_selected_val = selected_val;
-	u32 btn                  = controller->getButtonDown();
+	u32 btn                  = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_LEFT) {
 		selected_val -= 1;
 	}
@@ -403,12 +406,12 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
 
 	j2d.mCharColor.set(p2gz->menu->color_std);
 	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, "%s", selected_val);
+	x += j2d.print(x, z, "%d", selected_val);
 
 	j2d.mCharColor.set(p2gz->menu->color_highlight);
 	j2d.mGradientColor.set(p2gz->menu->color_highlight);
 	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
-		x += j2d.print(x, z, ">");
+		x += j2d.print(x, z, " >");
 	}
 
 	return x;

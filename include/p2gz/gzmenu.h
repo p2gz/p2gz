@@ -33,7 +33,7 @@ public:
 			return j2d.print(x, z, title);
 		return 0.0f;
 	}
-	virtual void update(JUTGamePad* controller) { }
+	virtual void update() { }
 	virtual void select() = 0;
 
 	const char* title;
@@ -107,7 +107,7 @@ public:
 	}
 
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z);
-	virtual void update(JUTGamePad* controller);
+	virtual void update();
 	virtual void select();
 
 	void set_selection(size_t idx) { selected_idx = idx; }
@@ -135,7 +135,7 @@ public:
 	}
 
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z);
-	virtual void update(JUTGamePad* controller);
+	virtual void update();
 	virtual void select();
 
 	void set_selection(s32 val) { selected_val = val; }
@@ -156,7 +156,7 @@ struct MenuLayer {
 public:
 	MenuLayer() { }
 
-	virtual void update(Controller* controller)    = 0;
+	virtual void update()                          = 0;
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
 	virtual void navigate_to(const char* path) { }
@@ -169,7 +169,7 @@ struct ListMenu : public MenuLayer {
 public:
 	ListMenu() { }
 
-	virtual void update(Controller* controller);
+	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
@@ -217,6 +217,10 @@ public:
 	/// Opens the menu to the specified absolute path.
 	void navigate_to(const char* path);
 
+	/// Call in `update()` in menu options that use Dpad L to prevent
+	/// accidentally closing the menu
+	void block_open_close_action() { open_close_action.reset(); }
+
 	f32 glyph_width;
 	f32 glyph_height;
 	f32 start_offset_x;
@@ -232,7 +236,7 @@ private:
 	void increase_text_size();
 	void decrease_text_size();
 
-	DoublePress openCloseAction;
+	DoublePress open_close_action;
 	ListMenu* root_layer;
 
 	// menu state
