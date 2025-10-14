@@ -20,7 +20,6 @@ struct MenuOption {
 	virtual MenuLayer* get_sub_menu() { return nullptr; }
 
 public:
-	MenuOption() { }
 	MenuOption(const char* title_)
 	    : title(title_)
 	    , visible(true)
@@ -46,7 +45,6 @@ struct OpenSubMenuOption : public MenuOption {
 	MenuLayer* sub_menu;
 
 public:
-	OpenSubMenuOption() { }
 	OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_);
 
 	virtual void select();
@@ -54,7 +52,6 @@ public:
 
 struct PerformActionMenuOption : public MenuOption {
 public:
-	PerformActionMenuOption() { }
 	PerformActionMenuOption(const char* title_, IDelegate* on_selected_)
 	    : MenuOption(title_)
 	    , on_selected(on_selected_)
@@ -73,7 +70,6 @@ private:
 
 struct ToggleMenuOption : public MenuOption {
 public:
-	ToggleMenuOption() { }
 	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_)
 	    : MenuOption(title_)
 	    , on(on_)
@@ -98,7 +94,6 @@ private:
 
 struct RadioMenuOption : public MenuOption {
 public:
-	RadioMenuOption() { }
 	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_)
 	    : MenuOption(title_)
 	    , on_selected(on_selected_)
@@ -123,7 +118,6 @@ struct RangeMenuOption : public MenuOption {
 public:
 	enum OverflowBehavior { CAP, WRAP };
 
-	RangeMenuOption() { }
 	RangeMenuOption(const char* title_, s32 min_, s32 max_, s32 initial, OverflowBehavior overflow_behavior_, IDelegate1<s32>* on_selected_)
 	    : MenuOption(title_)
 	    , on_selected(on_selected_)
@@ -154,8 +148,6 @@ private:
 /// Base class for different types of menus
 struct MenuLayer {
 public:
-	MenuLayer() { }
-
 	virtual void update()                          = 0;
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
@@ -167,8 +159,6 @@ public:
 
 struct ListMenu : public MenuLayer {
 public:
-	ListMenu() { }
-
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
