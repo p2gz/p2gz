@@ -12,11 +12,12 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	controller      = new Controller(JUTGamePad::PORT_0);
 	menu            = new GZMenu();
 	freecam         = new FreeCam();
 	navi_tools      = new NaviTools();
 	waypoint_viewer = new WaypointViewer();
-  timer           = new Timer();
+	timer           = new Timer();
 }
 
 void P2GZ::update()

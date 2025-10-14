@@ -71,7 +71,7 @@ void GZMenu::update()
 		return;
 	}
 
-	JUTGamePad* controller = JUTGamePad::getGamePad(0);
+	Controller* controller = p2gz->controller;
 
 	if (controller) {
 		// If we ever press A the double press to open/close the menu should be ignored
@@ -255,7 +255,7 @@ void ListMenu::navigate_to(const char* path)
 	}
 }
 
-void ListMenu::update(JUTGamePad* controller)
+void ListMenu::update(Controller* controller)
 {
 	// Menu navigation
 	u32 btn = controller->getButtonDown();

@@ -16,6 +16,10 @@ public:
 	void update();
 	void draw();
 
+	// our own persistent controller so we don't crash the game on new file starting (don't ask)
+	Controller* controller;
+
+	// gz specifics
 	gz::GZMenu* menu;
 	gz::FreeCam* freecam;
 	gz::NaviTools* navi_tools;
