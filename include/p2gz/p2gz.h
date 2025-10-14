@@ -5,9 +5,9 @@
 #include <p2gz/CollisionViewer.h>
 #include <p2gz/FreeCam.h>
 #include <p2gz/NaviTools.h>
+#include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
 #include <Game/BaseGameSection.h>
-#include <Graphics.h>
 
 struct P2GZ {
 public:
@@ -17,10 +17,15 @@ public:
 	void update();
 	void draw();
 
+	// our own persistent controller so we don't crash the game on new file starting (don't ask)
+	Controller* controller;
+
+	// gz specifics
 	gz::GZMenu* menu;
 	gz::CollisionViewer* collision_viewer;
 	gz::FreeCam* freecam;
 	gz::NaviTools* navi_tools;
+	gz::Timer* timer;
 	gz::WaypointViewer* waypoint_viewer;
 };
 

@@ -1,7 +1,7 @@
 #ifndef _DOUBLEPRESS_H
 #define _DOUBLEPRESS_H
 
-#include <JSystem/JUtility/JUTGamePad.h>
+#include <Controller.h>
 
 namespace gz {
 
@@ -14,7 +14,7 @@ public:
 	{
 	}
 
-	bool check(JUTGamePad* controller)
+	bool check(Controller* controller)
 	{
 		if (frames_left > 0) {
 			frames_left -= 1;

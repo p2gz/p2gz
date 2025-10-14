@@ -27,6 +27,7 @@
 #include "PSSystem/PSMainSide_Scene.h"
 #include "Game/Entities/ItemPikihead.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -564,6 +565,11 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		PSMCancelToPauseOffMainBgm();
 		Screen::gGame2DMgr->open_Save(disp);
 		mDrawSave = true;
+
+		// @P2GZ - timer
+		// Reset sublevel timer right before save box appears (fadeout timing)
+		p2gz->timer->reset_sub_timer();
+
 		return;
 	} else if (config->is("g07_cv_gamestart")) {
 		og::Screen::DispMemberCave disp;
