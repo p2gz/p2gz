@@ -38,7 +38,7 @@
 .endobj lbl_8049AE7C
 .balign 4
 .obj lbl_8049AE94, local
-	.asciz "PIKMIN 2"
+	.asciz "P2GZ"
 .endobj lbl_8049AE94
 .balign 4
 .obj lbl_8049AEA0, local

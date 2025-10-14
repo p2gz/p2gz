@@ -8,15 +8,22 @@ import time
 import itertools
 
 # set paths
-ISO_ASSETS = os.path.join(os.getcwd(), 'root', 'files')
-P2GZ_ASSETS = os.path.join(os.getcwd(), 'files')
 DOL_PATH = os.path.join(os.getcwd(), 'root', 'sys', 'main.dol')
+P2GZ_ASSETS = os.path.join(os.getcwd(), 'assets')
+NEW_ISO_ASSETS = os.path.join(os.getcwd(), 'root')
 
-# add new asset folders here as required
-P2GZ_CUSTOM_ASSETS = [
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_squad'),
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'res_s_menu_warp'),
-    os.path.join(P2GZ_ASSETS, 'new_screen', 'eng', 'hole_in')
+
+# Any asset that is a compressed .szs file; this will point to the UNCOMPRESSED directory
+# i.e. (P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader') -> files\memoryCard\memoryCardHeader\ directory
+# contents within this directory will all be compressed into memoryCardHeader.szs at build time
+P2GZ_CUSTOM_ASSETS_COMPRESSED = [
+    os.path.join(P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader')
+]
+
+# Any asset that is NOT compressed - this is just the file path to the file itself to be replaced
+P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
+    os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
+    os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
 ]
 
 # argument parsing
@@ -53,33 +60,50 @@ if not os.path.exists(os.path.join(os.getcwd(), 'root')):
     shutil.copy2('root/sys/main.dol', 'orig/GPVE01/sys/main.dol')
 
     # remove .thp intro videos to save space
-    for file in glob.glob(os.path.join(ISO_ASSETS, 'thp', '*.thp')):
+    for file in glob.glob(os.path.join(NEW_ISO_ASSETS, 'files', 'thp', '*.thp')):
         os.remove(file)
 
-# patch assets
-for p2gz_path, dirs, _ in os.walk(P2GZ_ASSETS):
-    iso_path = p2gz_path.replace(P2GZ_ASSETS, ISO_ASSETS)
+# patch compressed assets (anything with a .szs file type)
+for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
+    # Creates a directory for the szs file - anything in the directory are the szs file's uncompressed contents
+    iso_dir = compressed_dir.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
+    iso_archive = iso_dir + '.szs'
+    asset_archive = compressed_dir + '.szs'
+    
 
-    for dir in dirs:
-        patch_dir = os.path.join(p2gz_path, dir)
-        iso_dir = os.path.join(iso_path, dir)
-        archive = iso_dir + '.szs'
+    # patching existing asset
+    if os.path.exists(iso_archive):
+        subprocess.run(f'cube extract {iso_archive} -o {iso_dir}', shell=True)
 
-        # patching existing asset
-        if os.path.exists(archive):
-            subprocess.run(f'cube extract {archive} -o {iso_dir}', shell=True)
+        print(f'Copying {asset_archive} to {iso_archive}')
+        shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
 
-            print(f'Copying {patch_dir} to {iso_dir}')
-            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True)
+        subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
 
-            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
+    # adding custom asset
+    else:
+        print(f'Copying {asset_archive} to {iso_archive}')
+        shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
 
-        # adding custom asset
-        elif patch_dir in P2GZ_CUSTOM_ASSETS:
-            print(f'Copying {patch_dir} to {iso_dir}')
-            shutil.copytree(patch_dir, iso_dir, dirs_exist_ok=True)
+        subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
 
-            subprocess.run(f'cube pack -d --arc-extension szs {iso_dir}', shell=True)
+# patch non-compressed assets
+for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
+    iso_path = path.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
+
+    # Copy existing uncompressed file
+    if os.path.exists(iso_path):
+        print(f'Copying {path} to {iso_path}')
+        shutil.copy(path, iso_path)
+
+    # Add new directory + file
+    else:
+        path_dir = os.path.dirname(path)
+        iso_new_dir = os.path.dirname(iso_path)
+        print(f'Creating new directory {path_dir} in {iso_new_dir}')
+        shutil.copytree(path_dir, iso_new_dir)
+        print(f'Adding {path} to {iso_path}')
+        shutil.copy(path, iso_path)
 
 
 # patch dol

@@ -87,9 +87,16 @@ To add new source code files to the DOL:
 - Add any new files along with their paths as `Object(Matching, folder/file.cpp)` where indicated.
 - Within the `link_order_callback` function below the object configuration, uncomment and add each new file with its path within `src`, as indicated.
 
-To add or replace asset files:
+To add or replace compressed asset files (anything with a .szs extension):
 
-- Save the new file(s) in `files/path/to/asset`.
-- Add `files/path/to/asset` to `build.py`.
+- uncompresses your szs asset (preferabbly with cube)
+- Save all of the uncompressed elements inside the directory `assets/path/to/asset/`.
+  - `asset/` is another directory that is the name of your asset, i.e. `sheargrub.szs` will become `assets/path/to/sheargrub/`
+- Add `assets/path/to/asset` to the `P2GZ_CUSTOM_ASSETS_COMPRESSED` array in `build.py`.
+
+To add or replace uncompressed asset files:
+
+- Save the new file(s) in `assets/path/to/asset`.
+- Add `assets/path/to/asset` to the `P2GZ_CUSTOM_ASSETS_UNCOMPRESSED` array in `build.py`.
 
 Once built, the new DOL will exist at `root/sys/main.dol`, along with a Dolphin-readable directory of all game files.

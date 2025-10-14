@@ -3,7 +3,6 @@
 *.bat
 *.ctx
 *.d
-*.dat
 *.dll
 *.dol
 *.dump
