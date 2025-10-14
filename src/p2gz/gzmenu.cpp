@@ -13,6 +13,10 @@
 
 using namespace gz;
 
+namespace {
+static const char* menu_image_names[] = { "timg/blp_b64.bti", "timg/blp_f64.bti" };
+} // namespace
+
 GZMenu::GZMenu()
     : open_close_action(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
     , enabled(false)
@@ -48,7 +52,6 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
-			->push(new ToggleMenuOption("collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 		))
         ->push(new OpenSubMenuOption("settings", (new ListMenu())
@@ -67,6 +70,8 @@ void GZMenu::init_menu()
 	// clang-format on
 
 	layer = root_layer;
+
+	load_images();
 }
 
 void GZMenu::update()
@@ -156,6 +161,33 @@ void GZMenu::close()
 	enabled = false;
 }
 
+void GZMenu::load_images()
+{
+	// TODO: this is ugly - ideally each menu option would load and set its own images
+	images.push(new Image("new_screen/eng/res_cave.szs", "timg/blp_l64.bti"));
+	images[0]->set(200.0f, 200.0f, 80.0f, 80.0f);
+
+	images.push(new Image("new_screen/eng/res_cave.szs", "timg/blp_b64.bti"));
+	images[1]->set(280.0f, 200.0f, 80.0f, 80.0f);
+
+	images.push(new Image("new_screen/eng/res_cave.szs", "timg/blp_f64.bti"));
+	images[2]->set(360.0f, 200.0f, 80.0f, 80.0f);
+}
+
+void GZMenu::draw_images(Graphics& gfx)
+{
+	j3dSys.drawInit();
+	GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
+	gfx.mOrthoGraph.setPort();
+	GXSetAlphaUpdate(GX_TRUE);
+	GXSetColorUpdate(GX_TRUE);
+
+	// draw all images
+	for (int i = 0; i < images.len(); i++) {
+		images[i]->draw();
+	}
+}
+
 void GZMenu::draw()
 {
 	if (!enabled || !layer) {
@@ -185,6 +217,11 @@ void GZMenu::draw()
 
 	x = start_offset_x; // reset x to the left
 	layer->draw(j2d, x, z);
+
+	// draw images
+	// TODO: this should really be within a menu draw function, not here.
+	Graphics* gfx = sys->getGfx();
+	draw_images(*gfx);
 }
 
 MenuOption* GZMenu::get_option(const char* path)

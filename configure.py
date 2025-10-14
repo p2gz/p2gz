@@ -2098,6 +2098,7 @@ config.libs = [
             Object(Matching, "p2gz/collisionViewer.cpp"),
             Object(Matching, "p2gz/warp.cpp"),
             Object(Matching, "p2gz/skippableCS.cpp"),
+            Object(Matching, "p2gz/imageDrawing.cpp"),
         ],
     },
 ]
@@ -2123,6 +2124,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/collisionViewer.cpp",
             "p2gz/warp.cpp",
             "p2gz/skippableCS.cpp",
+            "p2gz/imageDrawing.cpp"
             ]
     return objects
 

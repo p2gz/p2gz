@@ -4,10 +4,12 @@
 #include <types.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/DoublePress.h>
+#include <p2gz/ImageDrawing.h>
 #include <JSystem/JUtility/TColor.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
+#include <Graphics.h>
 
 namespace gz {
 
@@ -232,6 +234,10 @@ private:
 	Vec<const char*> breadcrumbs;
 	bool eat_inputs;
 	bool lock;
+
+	// TODO: this is here as a test - images should probably
+	// live within their menu class.
+	Vec<Image*> images;
 };
 
 } // namespace gz
