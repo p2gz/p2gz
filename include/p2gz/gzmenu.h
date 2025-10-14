@@ -26,12 +26,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z)
-	{
-		if (title)
-			return j2d.print(x, z, title);
-		return 0.0f;
-	}
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update() { }
 	virtual void select() = 0;
 
@@ -77,9 +72,9 @@ public:
 	{
 	}
 
-	f32 draw(J2DPrint& j2d, f32 x, f32 z) { return j2d.print(x, z, "%s: %s", title, on ? "true" : "false"); }
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 
-	void select()
+	virtual void select()
 	{
 		on = !on;
 		if (on_selected) {
@@ -101,7 +96,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
 
@@ -128,7 +123,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
 
@@ -150,6 +145,7 @@ struct MenuLayer {
 public:
 	virtual void update()                          = 0;
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
+	virtual void reset_selection()                 = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
 	virtual void navigate_to(const char* path) { }
 
@@ -163,6 +159,7 @@ public:
 	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
+	virtual void reset_selection() { selected = 0; }
 
 	MenuOption* cur_option() { return options[selected]; }
 

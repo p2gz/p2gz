@@ -40,6 +40,8 @@ void GZMenu::init_menu()
 			->push(new RadioMenuOption("area", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_area)))
 			->push(new RadioMenuOption("cave", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_cave)))
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
+			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
         ->push(new OpenSubMenuOption("captain", (new ListMenu())
             ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
@@ -117,6 +119,7 @@ void GZMenu::push_layer(MenuLayer* layer_)
 {
 	if (layer_) {
 		layer = layer_;
+		layer->reset_selection();
 		if (layer->title) {
 			breadcrumbs.push(layer->title);
 		}
@@ -139,6 +142,7 @@ void GZMenu::open()
 		return;
 
 	layer = root_layer;
+	layer->reset_selection();
 	breadcrumbs.clear();
 	enabled = true;
 	lock    = true;
@@ -268,10 +272,14 @@ void ListMenu::update()
 {
 	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_UP && selected > 0) {
-		selected -= 1;
+		do {
+			selected -= 1;
+		} while (!options[selected]->visible);
 	}
 	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected < options.len() - 1) {
-		selected += 1;
+		do {
+			selected += 1;
+		} while (!options[selected]->visible);
 	}
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
@@ -290,7 +298,9 @@ void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 			continue;
 		}
 
-		if (i == selected) {
+		bool is_selected = i == selected;
+
+		if (is_selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		} else {
@@ -298,9 +308,23 @@ void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 			j2d.mGradientColor.set(p2gz->menu->color_std);
 		}
 
-		options[i]->draw(j2d, x, z);
+		options[i]->draw(j2d, x, z, i == selected);
 		z += p2gz->menu->line_height;
 	}
+}
+
+f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	if (title) {
+		return j2d.print(x, z, title);
+	}
+
+	return 0.0f;
+}
+
+f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	return j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
@@ -340,7 +364,7 @@ void RadioMenuOption::select()
 	on_selected->invoke(selected_idx);
 }
 
-f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
 	x += j2d.print(x, z, "%s: < ", title);
 
@@ -348,8 +372,10 @@ f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
 	j2d.mGradientColor.set(p2gz->menu->color_std);
 	x += j2d.print(x, z, options[selected_idx]);
 
-	j2d.mCharColor.set(p2gz->menu->color_highlight);
-	j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	if (selected) {
+		j2d.mCharColor.set(p2gz->menu->color_highlight);
+		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	}
 	x += j2d.print(x, z, " >");
 
 	return x;
@@ -396,7 +422,7 @@ void RangeMenuOption::check_overflow()
 	}
 }
 
-f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
 	x += j2d.print(x, z, "%s: ", title);
 
@@ -408,8 +434,10 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
 	j2d.mGradientColor.set(p2gz->menu->color_std);
 	x += j2d.print(x, z, "%d", selected_val);
 
-	j2d.mCharColor.set(p2gz->menu->color_highlight);
-	j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	if (selected) {
+		j2d.mCharColor.set(p2gz->menu->color_highlight);
+		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	}
 	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
 		x += j2d.print(x, z, " >");
 	}
