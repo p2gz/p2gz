@@ -173,6 +173,7 @@ bool PlayCommonData::isChallengeGamePlayable()
 {
 	// @P2GZ perma-unlock-ch-mode: just make this always true so ch mode is always unlocked
 	return true;
+	// 	return mChallengeData.mFlags.isSet(PlayChallengeGameData::PCGDF_IsPlayable);
 }
 
 /**
@@ -270,6 +271,7 @@ bool PlayCommonData::challenge_checkOpen(int index)
 {
 	// @P2GZ perma-unlock-ch-mode: just make this always true so all levels are unlocked by default
 	return true;
+	// 	return challenge_get_CourseState(index)->mFlags.isSet(PlayChallengeGameData::CourseState::CSF_IsOpen);
 }
 
 /**
