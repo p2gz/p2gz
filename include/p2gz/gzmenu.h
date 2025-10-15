@@ -200,6 +200,17 @@ public:
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection() { selected = 0; }
 
+	MenuOption* cur_option()
+	{
+		{
+			if (options.len() > 0)
+				return options[selected];
+			else {
+				return nullptr;
+			}
+		}
+	}
+
 	ListMenu* push(MenuOption* option)
 	{
 		options.push(option);
@@ -208,6 +219,14 @@ public:
 			sub_menu->parent = this;
 		}
 		return this;
+	}
+
+	void clear()
+	{
+		while (options.len() > 0) {
+			MenuOption* opt = options.pop();
+			delete opt;
+		}
 	}
 
 	Vec<MenuOption*> options;

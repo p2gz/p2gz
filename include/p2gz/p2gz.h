@@ -13,6 +13,7 @@
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
+#include <p2gz/StructureEditor.h>
 
 struct P2GZ {
 public:
@@ -40,6 +41,7 @@ public:
 	gz::HeapBarToggle* heap_bar_toggle;
 	gz::ImageMgr* images;
 	gz::SkipSave* skip_save;
+	gz::StructureEditor* structure_editor;
 };
 
 // global instance
