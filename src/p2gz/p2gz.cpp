@@ -4,6 +4,7 @@
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
 #include <p2gz/warp.h>
+#include <p2gz/DayEditor.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -22,6 +23,7 @@ P2GZ::P2GZ()
 	waypoint_viewer              = new WaypointViewer();
 	warp                         = new Warp();
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
+	day_editor                   = new DayEditor();
 }
 
 void P2GZ::init()
@@ -30,6 +32,7 @@ void P2GZ::init()
 	menu->init_menu();
 
 	warp->init();
+	day_editor->init();
 }
 
 void P2GZ::update()

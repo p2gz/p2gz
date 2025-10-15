@@ -3,17 +3,21 @@
 
 #include <Game/TimeMgr.h>
 #include <Game/GameSystem.h>
+#include <p2gz/gzmenu.h>
 
 namespace gz {
 
 struct DayEditor {
 public:
+	void init();
+	void update();
+
 	void set_time_paused(bool paused);
-	void jump_forward();
-	void jump_backward();
+	void set_time(f32 time);
 
 private:
-	Game::TimeMgr* get_time_mgr() { return Game::gameSystem->mTimeMgr; }
+	Game::TimeMgr* time_mgr;
+	FloatRangeMenuOption* set_time_opt;
 };
 
 }; // namespace gz
