@@ -221,7 +221,7 @@ void GZMenu::navigate_to(const char* path)
 	root_layer->navigate_to(path);
 }
 
-f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
 	f32 cursor = 0.0f;
 	if (image_title) {
@@ -237,7 +237,7 @@ f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
 	return cursor;
 }
 
-f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
 	f32 cursor = 0.0f;
 	if (image_title) {
@@ -357,20 +357,6 @@ void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 		options[i]->draw(j2d, x, z, i == selected);
 		z += p2gz->menu->line_height;
 	}
-}
-
-f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
-{
-	if (title) {
-		return j2d.print(x, z, title);
-	}
-
-	return 0.0f;
-}
-
-f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
-{
-	return j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
