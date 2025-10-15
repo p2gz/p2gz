@@ -34,6 +34,7 @@ public:
 	gz::Warp* warp;
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
 	gz::DayEditor* day_editor;
+	gz::SquadEditor* squad_editor;
 };
 
 // global instance
