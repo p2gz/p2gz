@@ -8,6 +8,7 @@
 #include "Game/MoviePlayer.h"
 #include "SysShape/Model.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 static const int unusedArray[] = { 0, 0, 0 };
 static const char name[]       = "gameSystem";
@@ -237,6 +238,13 @@ int GameSystem::startPause(bool isPausedSoft, int pauseID, char* str)
 	mIsPaused     = pauseID;
 	int prev      = mIsPausedSoft;
 	mIsPausedSoft = isPausedSoft;
+
+	// @P2GZ: intercept pause reason
+	// (for skippable treasure cutscenes among other things)
+	if (p2gz) {
+		p2gz->skippable_treasure_cutscenes->record_start_press(str);
+	}
+
 	return prev;
 }
 

@@ -427,6 +427,10 @@ void GameState::exec(SingleGameSection* game)
 		return;
 	}
 
+	// @P2GZ: skippable treasure cutscenes
+	// force collect treasure during cutscene if conditions are met
+	p2gz->skippable_treasure_cutscenes->force_collect(game->mDraw2DCreature);
+
 	// when you enter a cave from above ground, this state is still technically active until after the game saves
 	if (mInSaveScreen) {
 		particle2dMgr->update();
@@ -628,6 +632,10 @@ void GameState::onMovieCommand(SingleGameSection*, int)
  */
 void GameState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, u32 naviID)
 {
+	// @P2GZ: skippable treasure cutscenes
+	// make treasure cutscenes skippable
+	p2gz->skippable_treasure_cutscenes->prime_skip(game->mDraw2DCreature, config);
+
 	Screen::gGame2DMgr->startFadeBG_CourseName();
 	Screen::gGame2DMgr->startCount_CourseName();
 
