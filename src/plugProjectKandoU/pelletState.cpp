@@ -584,9 +584,12 @@ void PelletGoalState::exec(Pellet* pelt)
 					PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
 					PSSystem::validateSceneMgr(mgr);
 					// @P2GZ: fix linker errors around PSM::Scene_Cave::isCave appearing too early
+					// PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
 					PSM::Scene_Game* scene = static_cast<PSM::Scene_Game*>(mgr->getChildScene());
 					PSSystem::checkGameScene(scene);
 					if (scene->isCave()) {
+						// @P2GZ: fix linker errors around PSM::Scene_Cave::isCave appearing too early
+						// scene->startPollutUpSe();
 						static_cast<PSM::Scene_Cave*>(scene)->startPollutUpSe();
 					}
 				}
@@ -1735,9 +1738,15 @@ void PelletReturnState::flick(Pellet* pelt)
 	Iterator<Creature> it(&stick);
 
 	// @P2GZ: fix equivalency issue with file
-	f32 dmg   = 0.0f;
-	f32 ang   = FLICK_BACKWARD_ANGLE;
+	// f32 dmg = 100.0f;
+	f32 dmg = 0.0f;
+
+	f32 ang = FLICK_BACKWARD_ANGLE;
+
+	// @P2GZ: fix equivalency issue with file
+	// f32 intes = 0.0f;
 	f32 intes = 100.0f;
+
 	CI_LOOP(it)
 	{
 		Creature* obj = *it;
