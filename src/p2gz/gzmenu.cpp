@@ -2,6 +2,7 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/NaviTools.h>
 #include <p2gz/FreeCam.h>
+#include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
@@ -58,6 +59,10 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new OpenSubMenuOption("time controls", (new ListMenu())
+				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
+				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
+			))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu())
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
@@ -439,6 +444,63 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 		j2d.mGradientColor.set(p2gz->menu->color_highlight);
 	}
 	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
+		x += j2d.print(x, z, " >");
+	}
+
+	return x;
+}
+
+void FloatRangeMenuOption::update()
+{
+	p2gz->menu->block_open_close_action();
+
+	size_t init_selected_val = selected_val;
+	u32 btn                  = p2gz->controller->getButton();
+	f32 delta_per_frame      = (max - min) / 90.0f; // takes 3 seconds to go from one side to the other
+	if (btn & Controller::PRESS_DPAD_LEFT) {
+		selected_val -= delta_per_frame;
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT) {
+		selected_val += delta_per_frame;
+	}
+	check_overflow();
+
+	if (init_selected_val != selected_val) {
+		on_selected->invoke(selected_val);
+	}
+}
+
+void FloatRangeMenuOption::select()
+{
+	on_selected->invoke(selected_val);
+}
+
+void FloatRangeMenuOption::check_overflow()
+{
+	if (selected_val > max) {
+		selected_val = max;
+	} else if (selected_val < min) {
+		selected_val = min;
+	}
+}
+
+f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	x += j2d.print(x, z, "%s: ", title);
+
+	if (selected_val > min) {
+		x += j2d.print(x, z, "< ");
+	}
+
+	j2d.mCharColor.set(p2gz->menu->color_std);
+	j2d.mGradientColor.set(p2gz->menu->color_std);
+	x += j2d.print(x, z, "%.2f", selected_val);
+
+	if (selected) {
+		j2d.mCharColor.set(p2gz->menu->color_highlight);
+		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	}
+	if (selected_val < max) {
 		x += j2d.print(x, z, " >");
 	}
 

@@ -140,6 +140,33 @@ private:
 	OverflowBehavior overflow_behavior;
 };
 
+struct FloatRangeMenuOption : public MenuOption {
+public:
+	FloatRangeMenuOption(const char* title_, f32 min_, f32 max_, f32 initial, IDelegate1<f32>* on_selected_)
+	    : MenuOption(title_)
+	    , on_selected(on_selected_)
+	    , selected_val(initial)
+	    , min(min_)
+	    , max(max_)
+	{
+	}
+
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update();
+	virtual void select();
+
+	void set_selection(f32 val) { selected_val = val; }
+
+	f32 min;
+	f32 max;
+
+private:
+	void check_overflow();
+
+	IDelegate1<f32>* on_selected;
+	f32 selected_val;
+};
+
 /// Base class for different types of menus
 struct MenuLayer {
 public:

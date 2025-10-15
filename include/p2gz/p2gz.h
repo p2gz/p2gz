@@ -10,6 +10,7 @@
 #include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
+#include <p2gz/DayEditor.h>
 
 struct P2GZ {
 public:
@@ -32,6 +33,7 @@ public:
 	gz::WaypointViewer* waypoint_viewer;
 	gz::Warp* warp;
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
+	gz::DayEditor* day_editor;
 };
 
 // global instance
