@@ -56,6 +56,11 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
             ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
+			->push(new OpenSubMenuOption("grid menu demo", (new GridMenu(24.0))
+				->push_to_row(new OpenSubMenuOption("1", nullptr))->push_to_row(new OpenSubMenuOption("2", nullptr))->push_to_row(new OpenSubMenuOption("3", nullptr))->end_row()
+				->push_to_row(new OpenSubMenuOption("4", nullptr))->push_to_row(new OpenSubMenuOption("5", nullptr))->push_to_row(new OpenSubMenuOption("6", nullptr))->end_row()
+				->push_to_row(new OpenSubMenuOption("7", nullptr))->push_to_row(new OpenSubMenuOption("8", nullptr))->push_to_row(new OpenSubMenuOption("9", nullptr))
+			))
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
@@ -315,6 +320,136 @@ void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 
 		options[i]->draw(j2d, x, z, i == selected);
 		z += p2gz->menu->line_height;
+	}
+}
+
+void GridMenu::update()
+{
+	p2gz->menu->block_open_close_action();
+
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0) {
+		do {
+			selected_row -= 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1) {
+		do {
+			selected_row += 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0) {
+		do {
+			selected_col -= 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1) {
+		do {
+			selected_col += 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_A) {
+		cur_option()->select();
+	}
+	if (btn & Controller::PRESS_B) {
+		p2gz->menu->pop_layer();
+	}
+
+	cur_option()->update();
+}
+
+void GridMenu::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	f32 start_x = x;
+	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
+		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
+			MenuOption* option = (*options[row_idx])[col_idx];
+			if (!option || !option->visible) {
+				continue;
+			}
+			bool is_selected = col_idx == selected_col && row_idx == selected_row;
+
+			if (is_selected) {
+				j2d.mCharColor.set(p2gz->menu->color_highlight);
+				j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			} else {
+				j2d.mCharColor.set(p2gz->menu->color_std);
+				j2d.mGradientColor.set(p2gz->menu->color_std);
+			}
+
+			option->draw(j2d, x, z, is_selected);
+			x += column_width;
+		}
+		x = start_x;
+		z += p2gz->menu->line_height;
+	}
+}
+
+MenuOption* GridMenu::get_option(const char* path)
+{
+	if (!path) {
+		return nullptr;
+	}
+
+	const char* name_end         = strchr(path, '/');
+	bool is_final_path_component = false;
+	int name_len;
+	if (name_end == nullptr) {
+		name_len                = strlen(path);
+		is_final_path_component = true;
+	} else {
+		name_len = name_end - path;
+	}
+
+	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
+		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
+			MenuOption* option = (*options[row_idx])[col_idx];
+			if (strncmp(option->title, path, name_len) == 0) {
+				if (is_final_path_component) {
+					return option;
+				} else {
+					MenuLayer* sub_menu = option->get_sub_menu();
+					if (sub_menu) {
+						return sub_menu->get_option(name_end + 1);
+					} else {
+						return nullptr;
+					}
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+void GridMenu::navigate_to(const char* path)
+{
+	const char* name_end         = strchr(path, '/');
+	bool is_final_path_component = false;
+	int name_len;
+	if (name_end == nullptr) {
+		name_len                = strlen(path);
+		is_final_path_component = true;
+	} else {
+		name_len = name_end - path;
+	}
+
+	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
+		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
+			MenuOption* option = (*options[row_idx])[col_idx];
+			if (strncmp(option->title, path, name_len) == 0) {
+				selected_col = col_idx;
+				selected_row = row_idx;
+				if (!is_final_path_component) {
+					MenuLayer* sub_menu = option->get_sub_menu();
+					if (sub_menu) {
+						p2gz->menu->push_layer(sub_menu);
+						sub_menu->navigate_to(name_end + 1);
+					}
+				}
+				return;
+			}
+		}
 	}
 }
 
