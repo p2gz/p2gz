@@ -10,6 +10,7 @@
 #include <Dolphin/os.h>
 #include <string.h>
 #include <IDelegate.h>
+#include <Graphics.h>
 
 using namespace gz;
 
@@ -161,6 +162,11 @@ void GZMenu::draw()
 	if (!enabled || !layer) {
 		return;
 	}
+
+	// Graphics* gfx = sys->mGfx;
+	// if (gfx && gfx->mCurrentViewport) {
+	// 	gfx->initPerspPrintf(gfx->mCurrentViewport);
+	// }
 
 	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
 	j2d.initiate();
