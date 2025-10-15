@@ -348,7 +348,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					BaseGameSection* section = gameSystem->mSection;
 					MoviePlayArg moviearg("s10_suck_treasure", const_cast<char*>(section->getCurrentCourseInfo()->mName),
 					                      section->mMovieFinishCallback, 0);
-					moviearg.mPelletName    = pelt->mConfig->mParams.mName.mData;
+					moviearg.mPelletName = pelt->mConfig->mParams.mName.mData;
+					// @P2GZ: skippable treasure cutscenes
+					// force overworld treasure collection to use the movie callback
+					// so we can actually make the cutscene skippable
 					moviearg.mDelegateStart = gameSystem->mSection->mMovieStartCallback;
 					moviePlayer->play(moviearg);
 					doPlay = true;
@@ -360,7 +363,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					BaseGameSection* section = gameSystem->mSection;
 					MoviePlayArg moviearg("s17_suck_equipment", const_cast<char*>(section->getCurrentCourseInfo()->mName),
 					                      section->mMovieFinishCallback, 0);
-					moviearg.mPelletName    = pelt->mConfig->mParams.mName.mData;
+					moviearg.mPelletName = pelt->mConfig->mParams.mName.mData;
+					// @P2GZ: skippable treasure cutscenes
+					// force overworld treasure (explorer's kit) collection to use the movie callback
+					// so we can actually make the cutscene skippable
 					moviearg.mDelegateStart = gameSystem->mSection->mMovieStartCallback;
 					moviearg.mStreamID      = P2_STREAM_SOUND_ID(PSSTR_EQUIP_GET);
 					if (pelt->mConfig->mParams.mIndex >= 8) {
