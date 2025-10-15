@@ -171,7 +171,9 @@ void PlayCommonData::entryHighscores_common(Game::Highscore** highscores, int ne
  */
 bool PlayCommonData::isChallengeGamePlayable()
 {
-	return mChallengeData.mFlags.isSet(PlayChallengeGameData::PCGDF_IsPlayable);
+	// @P2GZ perma-unlock-ch-mode: just make this always true so ch mode is always unlocked
+	return true;
+	// 	return mChallengeData.mFlags.isSet(PlayChallengeGameData::PCGDF_IsPlayable);
 }
 
 /**
@@ -267,7 +269,9 @@ int PlayCommonData::challenge_get_coursenum()
  */
 bool PlayCommonData::challenge_checkOpen(int index)
 {
-	return challenge_get_CourseState(index)->mFlags.isSet(PlayChallengeGameData::CourseState::CSF_IsOpen);
+	// @P2GZ perma-unlock-ch-mode: just make this always true so all levels are unlocked by default
+	return true;
+	// 	return challenge_get_CourseState(index)->mFlags.isSet(PlayChallengeGameData::CourseState::CSF_IsOpen);
 }
 
 /**
