@@ -21,6 +21,7 @@ P2GZ::P2GZ()
 	timer            = new Timer();
 	waypoint_viewer  = new WaypointViewer();
 	warp             = new Warp();
+	structure_editor = new StructureEditor();
 }
 
 void P2GZ::init()
@@ -28,6 +29,7 @@ void P2GZ::init()
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
+	structure_editor->init();
 	warp->init();
 }
 

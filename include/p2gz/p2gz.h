@@ -9,6 +9,7 @@
 #include <p2gz/WaypointViewer.h>
 #include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
+#include <p2gz/StructureEditor.h>
 
 struct P2GZ {
 public:
@@ -30,6 +31,7 @@ public:
 	gz::Timer* timer;
 	gz::WaypointViewer* waypoint_viewer;
 	gz::Warp* warp;
+	gz::StructureEditor* structure_editor;
 };
 
 // global instance

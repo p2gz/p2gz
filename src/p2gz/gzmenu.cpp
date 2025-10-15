@@ -48,22 +48,25 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
-			->push(new ToggleMenuOption("collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
-			->push(new ToggleMenuOption("waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+			->push(new OpenSubMenuOption("structures", (new ListMenu())
+				->push(new OpenSubMenuOption("gates", (new ListMenu()))) // Will be populated dynamically by StructureEditor
+			))
 		))
-        ->push(new OpenSubMenuOption("settings", (new ListMenu())
-            ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
-            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
-            ->push(new ToggleMenuOption("toggle demo", true, nullptr))
-        ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
+			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu())
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
-		));
+		))
+		->push(new OpenSubMenuOption("settings", (new ListMenu())
+            ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
+            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
+            ->push(new ToggleMenuOption("toggle demo", true, nullptr))
+        ));
 	// clang-format on
 
 	layer = root_layer;
@@ -338,7 +341,9 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 
 void OpenSubMenuOption::select()
 {
-	p2gz->menu->push_layer(sub_menu);
+	if (sub_menu) {
+		p2gz->menu->push_layer(sub_menu);
+	}
 }
 
 void RadioMenuOption::update()

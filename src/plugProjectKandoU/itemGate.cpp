@@ -12,6 +12,7 @@
 #include "Game/MoviePlayer.h"
 #include "PSSystem/PSSystemIF.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 
@@ -155,6 +156,12 @@ void ItemGate::doLoad(Stream& stream)
 		if (mWayPoint)
 			mWayPoint->setOpen(false);
 	}
+
+	// @P2GZ - Structure editor
+	// Register created gate with structure editor.
+	// Done in onSetPosition because StructureEditor uses
+	// coords to determine the name for the gate.
+	p2gz->structure_editor->add_gate(this);
 }
 
 /**
@@ -1108,7 +1115,12 @@ void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& k
 	gate->mCurrentSegmentHealth = gate->mMaxSegmentHealth;
 	if (gate->mSegmentsDown == gate->mMaxSegments) {
 		gate->mCentrePlatInstance->setCollision(false);
-		platMgr->delInstance(gate->mCentrePlatInstance);
+
+		// @P2GZ - Structure editor
+		// Don't delete top platform when gate goes down so gate can be put
+		// back up using gate edit menu.
+		// platMgr->delInstance(gate->mCentrePlatInstance);
+
 		gate->setAlive(false);
 		gate->mWayPoint->setOpen(true);
 		if (gate->mIsElectric) {
