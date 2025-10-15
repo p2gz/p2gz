@@ -22,8 +22,10 @@ struct MenuOption {
 	virtual MenuLayer* get_sub_menu() { return nullptr; }
 
 public:
-	MenuOption(const char* title_)
+	MenuOption(const char* title_, const char* image_title_ = nullptr, bool image_only_ = false)
 	    : title(title_)
+	    , image_title(image_title_)
+	    , image_only(image_only_)
 	    , visible(true)
 	{
 	}
@@ -34,6 +36,8 @@ public:
 
 	const char* title;
 	bool visible;
+	const char* image_title;
+	bool image_only;
 };
 
 struct OpenSubMenuOption : public MenuOption {
@@ -49,8 +53,8 @@ public:
 
 struct PerformActionMenuOption : public MenuOption {
 public:
-	PerformActionMenuOption(const char* title_, IDelegate* on_selected_)
-	    : MenuOption(title_)
+	PerformActionMenuOption(const char* title_, IDelegate* on_selected_, const char* image_title_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_title_, image_only_)
 	    , on_selected(on_selected_)
 	{
 	}
@@ -67,8 +71,9 @@ private:
 
 struct ToggleMenuOption : public MenuOption {
 public:
-	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_)
-	    : MenuOption(title_)
+	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_, const char* image_title_ = nullptr,
+	                 bool image_only_ = false)
+	    : MenuOption(title_, image_title_, image_only_)
 	    , on(on_)
 	    , on_selected(on_selected_)
 	{
@@ -234,10 +239,6 @@ private:
 	Vec<const char*> breadcrumbs;
 	bool eat_inputs;
 	bool lock;
-
-	// TODO: this is here as a test - images should probably
-	// live within their menu class.
-	Vec<Image*> images;
 };
 
 } // namespace gz

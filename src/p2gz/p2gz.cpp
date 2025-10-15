@@ -22,6 +22,7 @@ P2GZ::P2GZ()
 	waypoint_viewer              = new WaypointViewer();
 	warp                         = new Warp();
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
+	imageMgr                     = new ImageMgr();
 }
 
 void P2GZ::init()
@@ -30,6 +31,7 @@ void P2GZ::init()
 	menu->init_menu();
 
 	warp->init();
+	imageMgr->init();
 }
 
 void P2GZ::update()

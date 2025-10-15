@@ -66,12 +66,14 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+		))
+		-> push(new OpenSubMenuOption("test", (new ListMenu())
+			->push(new ToggleMenuOption("test toggle", true, nullptr, "red_leaf"))
+			->push(new ToggleMenuOption("test action", true, nullptr, "red_flower", true))
 		));
 	// clang-format on
 
 	layer = root_layer;
-
-	load_images();
 }
 
 void GZMenu::update()
@@ -111,6 +113,8 @@ void GZMenu::increase_text_size()
 	glyph_width += 2.0;
 	glyph_height += 2.0;
 	line_height += 2.0;
+
+	p2gz->imageMgr->bump_menu_image_size(2.0f, 2.0f);
 }
 
 void GZMenu::decrease_text_size()
@@ -118,6 +122,8 @@ void GZMenu::decrease_text_size()
 	glyph_width -= 2.0;
 	glyph_height -= 2.0;
 	line_height -= 2.0;
+
+	p2gz->imageMgr->bump_menu_image_size(-2.0f, -2.0f);
 }
 
 void GZMenu::push_layer(MenuLayer* layer_)
@@ -159,33 +165,9 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
-}
 
-void GZMenu::load_images()
-{
-	// TODO: this is ugly - ideally each menu option would load and set its own images
-	images.push(new Image("new_screen/eng/res_cave.szs", "timg/blp_l64.bti"));
-	images[0]->set(200.0f, 200.0f, 80.0f, 80.0f);
-
-	images.push(new Image("new_screen/eng/res_cave.szs", "timg/blp_b64.bti"));
-	images[1]->set(280.0f, 200.0f, 80.0f, 80.0f);
-
-	images.push(new Image("new_screen/eng/res_cave.szs", "timg/blp_f64.bti"));
-	images[2]->set(360.0f, 200.0f, 80.0f, 80.0f);
-}
-
-void GZMenu::draw_images(Graphics& gfx)
-{
-	j3dSys.drawInit();
-	GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
-	gfx.mOrthoGraph.setPort();
-	GXSetAlphaUpdate(GX_TRUE);
-	GXSetColorUpdate(GX_TRUE);
-
-	// draw all images
-	for (int i = 0; i < images.len(); i++) {
-		images[i]->draw();
-	}
+	// deload all menu images on close
+	p2gz->imageMgr->deload_all();
 }
 
 void GZMenu::draw()
@@ -217,11 +199,6 @@ void GZMenu::draw()
 
 	x = start_offset_x; // reset x to the left
 	layer->draw(j2d, x, z);
-
-	// draw images
-	// TODO: this should really be within a menu draw function, not here.
-	Graphics* gfx = sys->getGfx();
-	draw_images(*gfx);
 }
 
 MenuOption* GZMenu::get_option(const char* path)
@@ -242,6 +219,38 @@ void GZMenu::navigate_to(const char* path)
 	close();
 	open();
 	root_layer->navigate_to(path);
+}
+
+f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			image->load();
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
+	}
+	if (!image_only && title)
+		cursor += j2d.print(x + cursor, z, title);
+	return cursor;
+}
+
+f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			image->load();
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
+	}
+	if (!image_only && title)
+		cursor += j2d.print(x + cursor, z, "%s: %s", title, on ? "true" : "false");
+	return cursor;
 }
 
 MenuOption* ListMenu::get_option(const char* path)
