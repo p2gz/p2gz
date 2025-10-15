@@ -13,14 +13,15 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
-	collision_viewer = new CollisionViewer();
-	controller       = new Controller(JUTGamePad::PORT_0);
-	freecam          = new FreeCam();
-	menu             = new GZMenu();
-	navi_tools       = new NaviTools();
-	timer            = new Timer();
-	waypoint_viewer  = new WaypointViewer();
-	warp             = new Warp();
+	collision_viewer             = new CollisionViewer();
+	controller                   = new Controller(JUTGamePad::PORT_0);
+	freecam                      = new FreeCam();
+	menu                         = new GZMenu();
+	navi_tools                   = new NaviTools();
+	timer                        = new Timer();
+	waypoint_viewer              = new WaypointViewer();
+	warp                         = new Warp();
+	skippable_treasure_cutscenes = new SkippableTreasureCS();
 }
 
 void P2GZ::init()

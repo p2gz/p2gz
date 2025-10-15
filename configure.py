@@ -1289,7 +1289,7 @@ config.libs = [
             Object(Matching, "plugProjectKandoU/aiTransport.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiEnter.cpp"),
             Object(NonMatching, "plugProjectKandoU/pathfinder.cpp"),
-            Object(NonMatching, "plugProjectKandoU/pelletState.cpp"),
+            Object(Equivalent, "plugProjectKandoU/pelletState.cpp"),
             Object(NonMatching, "plugProjectKandoU/dynCreature.cpp"),
             Object(Matching, "plugProjectKandoU/gameGenerator.cpp"),
             Object(Matching, "plugProjectKandoU/genPiki.cpp"),
@@ -2097,6 +2097,7 @@ config.libs = [
             Object(Matching, "p2gz/waypointViewer.cpp"),
             Object(Matching, "p2gz/collisionViewer.cpp"),
             Object(Matching, "p2gz/warp.cpp"),
+            Object(Matching, "p2gz/skippableCS.cpp"),
         ],
     },
 ]
@@ -2121,6 +2122,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/waypointViewer.cpp",
             "p2gz/collisionViewer.cpp",
             "p2gz/warp.cpp",
+            "p2gz/skippableCS.cpp",
             ]
     return objects
 

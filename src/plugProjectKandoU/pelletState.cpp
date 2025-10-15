@@ -18,6 +18,7 @@
 #include "efx/TEnemyDownSmoke.h"
 #include "Radar.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 
@@ -348,6 +349,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					MoviePlayArg moviearg("s10_suck_treasure", const_cast<char*>(section->getCurrentCourseInfo()->mName),
 					                      section->mMovieFinishCallback, 0);
 					moviearg.mPelletName = pelt->mConfig->mParams.mName.mData;
+					// @P2GZ: skippable treasure cutscenes
+					// force overworld treasure collection to use the movie callback
+					// so we can actually make the cutscene skippable
+					moviearg.mDelegateStart = gameSystem->mSection->mMovieStartCallback;
 					moviePlayer->play(moviearg);
 					doPlay = true;
 
@@ -359,7 +364,11 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					MoviePlayArg moviearg("s17_suck_equipment", const_cast<char*>(section->getCurrentCourseInfo()->mName),
 					                      section->mMovieFinishCallback, 0);
 					moviearg.mPelletName = pelt->mConfig->mParams.mName.mData;
-					moviearg.mStreamID   = P2_STREAM_SOUND_ID(PSSTR_EQUIP_GET);
+					// @P2GZ: skippable treasure cutscenes
+					// force overworld treasure (explorer's kit) collection to use the movie callback
+					// so we can actually make the cutscene skippable
+					moviearg.mDelegateStart = gameSystem->mSection->mMovieStartCallback;
+					moviearg.mStreamID      = P2_STREAM_SOUND_ID(PSSTR_EQUIP_GET);
 					if (pelt->mConfig->mParams.mIndex >= 8) {
 						moviearg.mStreamID = P2_STREAM_SOUND_ID(PSSTR_POWERUP_GET);
 					}
@@ -549,6 +558,10 @@ void PelletGoalState::exec(Pellet* pelt)
 	InteractSuckDone suckDone(pelt, 0);
 	mOnyon->stimulate(suckDone);
 
+	// @P2GZ: skippable treasure cutscenes
+	// make sure we don't collect the treasure twice if we skip it after it hits the ship
+	p2gz->skippable_treasure_cutscenes->set_collected();
+
 	if (Radar::mgr) {
 		Radar::Mgr::getNumOtakaraItems();
 		Radar::Mgr::getNumOtakaraItems();
@@ -570,10 +583,14 @@ void PelletGoalState::exec(Pellet* pelt)
 				if (strcmp(pelt->mConfig->mParams.mName.mData, "key")) {
 					PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
 					PSSystem::validateSceneMgr(mgr);
-					PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
+					// @P2GZ: fix linker errors around PSM::Scene_Cave::isCave appearing too early
+					// PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
+					PSM::Scene_Game* scene = static_cast<PSM::Scene_Game*>(mgr->getChildScene());
 					PSSystem::checkGameScene(scene);
 					if (scene->isCave()) {
-						scene->startPollutUpSe();
+						// @P2GZ: fix linker errors around PSM::Scene_Cave::isCave appearing too early
+						// scene->startPollutUpSe();
+						static_cast<PSM::Scene_Cave*>(scene)->startPollutUpSe();
 					}
 				}
 			}
@@ -1719,9 +1736,17 @@ void PelletReturnState::flick(Pellet* pelt)
 {
 	Stickers stick(pelt);
 	Iterator<Creature> it(&stick);
-	f32 dmg   = 100.0f;
-	f32 ang   = FLICK_BACKWARD_ANGLE;
-	f32 intes = 0.0f;
+
+	// @P2GZ: fix equivalency issue with file
+	// f32 dmg = 100.0f;
+	f32 dmg = 0.0f;
+
+	f32 ang = FLICK_BACKWARD_ANGLE;
+
+	// @P2GZ: fix equivalency issue with file
+	// f32 intes = 0.0f;
+	f32 intes = 100.0f;
+
 	CI_LOOP(it)
 	{
 		Creature* obj = *it;
