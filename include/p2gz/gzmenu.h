@@ -8,6 +8,7 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
+#include <Game/Piki.h>
 
 namespace gz {
 
@@ -165,6 +166,48 @@ private:
 
 	IDelegate1<f32>* on_selected;
 	f32 selected_val;
+};
+
+struct PikminCountMenuOption : public MenuOption {
+public:
+	enum OverflowBehavior { CAP, WRAP };
+
+	PikminCountMenuOption(const char* title_, Game::EPikiKind color_, Game::EPikiHappa stage_, s32 min_, s32 max_, s32 initial,
+	                      OverflowBehavior overflow_behavior_, IDelegate3<Game::EPikiKind, Game::EPikiHappa, s32>* on_selected_)
+	    : MenuOption(title_)
+	    , on_selected(on_selected_)
+	    , selected_val(initial)
+	    , min(min_)
+	    , max(max_)
+	    , overflow_behavior(overflow_behavior_)
+	    , color(color_)
+	    , stage(stage_)
+	{
+	}
+
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update();
+	virtual void select()
+	{
+		if (on_selected) {
+			on_selected->invoke(color, stage, selected_val);
+		}
+	}
+
+	void set_selection(s32 val) { selected_val = val; }
+
+	s32 min;
+	s32 max;
+
+	Game::EPikiKind color;
+	Game::EPikiHappa stage;
+
+private:
+	void check_overflow();
+
+	IDelegate3<Game::EPikiKind, Game::EPikiHappa, s32>* on_selected;
+	s32 selected_val;
+	OverflowBehavior overflow_behavior;
 };
 
 /// Base class for different types of menus

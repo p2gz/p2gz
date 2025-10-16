@@ -4,6 +4,7 @@
 #include <p2gz/FreeCam.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/SquadEditor.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -11,6 +12,7 @@
 #include <Dolphin/os.h>
 #include <string.h>
 #include <IDelegate.h>
+#include <Game/Piki.h>
 
 using namespace gz;
 
@@ -43,6 +45,31 @@ void GZMenu::init_menu()
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
 			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
+		))
+		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
+			->push(new OpenSubMenuOption("squad", (new GridMenu(128.0))
+				->push_to_row(new PikminCountMenuOption("red flowers", Game::Red, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("red leaves", Game::Red, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("red buds", Game::Red, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->end_row()
+				->push_to_row(new PikminCountMenuOption("yellow flowers", Game::Yellow, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("yellow leaves", Game::Yellow, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("yellow buds", Game::Yellow, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->end_row()
+				->push_to_row(new PikminCountMenuOption("blue flowers", Game::Blue, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("blue leaves", Game::Blue, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("blue buds", Game::Blue, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->end_row()
+				->push_to_row(new PikminCountMenuOption("purple flowers", Game::Purple, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("purple leaves", Game::Purple, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("purple buds", Game::Purple, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->end_row()
+				->push_to_row(new PikminCountMenuOption("white flowers", Game::White, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("white leaves", Game::White, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new PikminCountMenuOption("white buds", Game::White, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->end_row()
+				->push_to_row(new PerformActionMenuOption("confirm", new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::set_squad)))
+			))
 		))
         ->push(new OpenSubMenuOption("captain", (new ListMenu())
             ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))

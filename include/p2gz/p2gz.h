@@ -11,6 +11,7 @@
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
 #include <p2gz/DayEditor.h>
+#include <p2gz/SquadEditor.h>
 
 struct P2GZ {
 public:

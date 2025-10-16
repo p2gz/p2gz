@@ -9,9 +9,14 @@ public:
 	SquadEditor() { }
 	~SquadEditor() { }
 
+	void set_count(Game::EPikiKind, Game::EPikiHappa, s32);
+	void set_squad();
+
 private:
 	void birth_piki(Game::EPikiKind, Game::EPikiHappa);
-	void kill_piki(Game::EPikiKind color, Game::EPikiHappa stage);
+	void kill_piki(Game::EPikiKind, Game::EPikiHappa);
+
+	s32 counts[Game::PikiColorCount * Game::PikiHappaCount];
 };
 } // namespace gz
 #endif
