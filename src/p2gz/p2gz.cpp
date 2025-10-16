@@ -35,6 +35,8 @@ void P2GZ::init()
 	warp->init();
 	day_editor->init();
 	imageMgr->init();
+
+	imageMgr->load_all();
 }
 
 void P2GZ::update()

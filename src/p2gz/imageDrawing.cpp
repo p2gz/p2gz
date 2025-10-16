@@ -1,4 +1,5 @@
 #include <p2gz/ImageDrawing.h>
+#include <p2gz/p2gz.h>
 #include <JSystem/JKernel/JKRArchive.h>
 #include <JSystem/J3D/J3DSys.h>
 #include <System.h>
@@ -24,6 +25,7 @@ void Image::load()
 		GZASSERTLINE(img);
 
 		image = new J2DPictureEx(img, 0x20000);
+		image->resize(p2gz->imageMgr->width(), p2gz->imageMgr->height());
 	}
 }
 
@@ -58,22 +60,6 @@ void ImageMgr::init()
 	push(new Image("red_leaf", "new_screen/eng/res_cave.szs", "timg/rp_l64.bti"));
 	push(new Image("red_bud", "new_screen/eng/res_cave.szs", "timg/rp_b64.bti"));
 	push(new Image("red_flower", "new_screen/eng/res_cave.szs", "timg/rp_f64.bti"));
-
-	push(new Image("yellow_leaf", "new_screen/eng/res_cave.szs", "timg/yp_l64.bti"));
-	push(new Image("yellow_bud", "new_screen/eng/res_cave.szs", "timg/yp_b64.bti"));
-	push(new Image("yellow_flower", "new_screen/eng/res_cave.szs", "timg/yp_f64.bti"));
-
-	push(new Image("blue_leaf", "new_screen/eng/res_cave.szs", "timg/bp_l64.bti"));
-	push(new Image("blue_bud", "new_screen/eng/res_cave.szs", "timg/bp_b64.bti"));
-	push(new Image("blue_flower", "new_screen/eng/res_cave.szs", "timg/bp_f64.bti"));
-
-	push(new Image("purple_leaf", "new_screen/eng/res_cave.szs", "timg/blp_l64.bti"));
-	push(new Image("purple_bud", "new_screen/eng/res_cave.szs", "timg/blp_b64.bti"));
-	push(new Image("purple_flower", "new_screen/eng/res_cave.szs", "timg/blp_f64.bti"));
-
-	push(new Image("white_leaf", "new_screen/eng/res_cave.szs", "timg/wp_l64.bti"));
-	push(new Image("white_bud", "new_screen/eng/res_cave.szs", "timg/wp_b64.bti"));
-	push(new Image("white_flower", "new_screen/eng/res_cave.szs", "timg/wp_f64.bti"));
 }
 
 Image* ImageMgr::get(const char* title_)
@@ -92,6 +78,8 @@ void ImageMgr::remove(const char* title_)
 	for (size_t i = 0; i < menu_images.len(); i++) {
 		Image* img = menu_images[i];
 		if (img && (strcmp(menu_images[i]->title, title_) == 0)) {
+			// removeAt doesn't delete the object, so manually delete it first
+			delete img;
 			menu_images.removeAt(i);
 			return;
 		}

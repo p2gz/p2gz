@@ -96,8 +96,8 @@ private:
 
 struct RadioMenuOption : public MenuOption {
 public:
-	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_)
-	    : MenuOption(title_)
+	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_, const char* image_title_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_title_, image_only_)
 	    , on_selected(on_selected_)
 	    , selected_idx(0)
 	{
@@ -120,8 +120,9 @@ struct RangeMenuOption : public MenuOption {
 public:
 	enum OverflowBehavior { CAP, WRAP };
 
-	RangeMenuOption(const char* title_, s32 min_, s32 max_, s32 initial, OverflowBehavior overflow_behavior_, IDelegate1<s32>* on_selected_)
-	    : MenuOption(title_)
+	RangeMenuOption(const char* title_, s32 min_, s32 max_, s32 initial, OverflowBehavior overflow_behavior_, IDelegate1<s32>* on_selected_,
+	                const char* image_title_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_title_, image_only_)
 	    , on_selected(on_selected_)
 	    , selected_val(initial)
 	    , min(min_)
@@ -149,8 +150,9 @@ private:
 
 struct FloatRangeMenuOption : public MenuOption {
 public:
-	FloatRangeMenuOption(const char* title_, f32 min_, f32 max_, f32 initial, IDelegate1<f32>* on_selected_)
-	    : MenuOption(title_)
+	FloatRangeMenuOption(const char* title_, f32 min_, f32 max_, f32 initial, IDelegate1<f32>* on_selected_,
+	                     const char* image_title_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_title_, image_only_)
 	    , on_selected(on_selected_)
 	    , selected_val(initial)
 	    , min(min_)

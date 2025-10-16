@@ -53,6 +53,7 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
+			->push(new ToggleMenuOption("collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 		))
         ->push(new OpenSubMenuOption("settings", (new ListMenu())
@@ -175,9 +176,6 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
-
-	// deload all menu images on close
-	p2gz->imageMgr->deload_all();
 }
 
 void GZMenu::draw()
@@ -229,38 +227,6 @@ void GZMenu::navigate_to(const char* path)
 	close();
 	open();
 	root_layer->navigate_to(path);
-}
-
-f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
-{
-	f32 cursor = 0.0f;
-	if (image_title) {
-		Image* image = p2gz->imageMgr->get(image_title);
-		if (image) {
-			image->load();
-			cursor += image->draw(x, z);
-			cursor += p2gz->imageMgr->spacing();
-		}
-	}
-	if (!image_only && title)
-		cursor += j2d.print(x + cursor, z, title);
-	return cursor;
-}
-
-f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
-{
-	f32 cursor = 0.0f;
-	if (image_title) {
-		Image* image = p2gz->imageMgr->get(image_title);
-		if (image) {
-			image->load();
-			cursor += image->draw(x, z);
-			cursor += p2gz->imageMgr->spacing();
-		}
-	}
-	if (!image_only && title)
-		cursor += j2d.print(x + cursor, z, "%s: %s", title, on ? "true" : "false");
-	return cursor;
 }
 
 MenuOption* ListMenu::get_option(const char* path)
@@ -501,16 +467,32 @@ void GridMenu::navigate_to(const char* path)
 
 f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	if (title) {
-		return j2d.print(x, z, title);
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
 	}
-
-	return 0.0f;
+	if (!image_only && title)
+		cursor += j2d.print(x + cursor, z, title);
+	return cursor;
 }
 
 f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	return j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
+	}
+	if (!image_only && title)
+		cursor += j2d.print(x + cursor, z, "%s: %s", title, on ? "true" : "false");
+	return cursor;
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
@@ -552,19 +534,28 @@ void RadioMenuOption::select()
 
 f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	x += j2d.print(x, z, "%s: < ", title);
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
+	}
+
+	cursor += j2d.print(x + cursor, z, "%s: < ", title);
 
 	j2d.mCharColor.set(p2gz->menu->color_std);
 	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, options[selected_idx]);
+	cursor += j2d.print(x + cursor, z, options[selected_idx]);
 
 	if (selected) {
 		j2d.mCharColor.set(p2gz->menu->color_highlight);
 		j2d.mGradientColor.set(p2gz->menu->color_highlight);
 	}
-	x += j2d.print(x, z, " >");
+	cursor += j2d.print(x + cursor, z, " >");
 
-	return x;
+	return cursor;
 }
 
 void RangeMenuOption::update()
@@ -610,25 +601,34 @@ void RangeMenuOption::check_overflow()
 
 f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	x += j2d.print(x, z, "%s: ", title);
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
+	}
+
+	cursor += j2d.print(x + cursor, z, "%s: ", title);
 
 	if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
-		x += j2d.print(x, z, "< ");
+		cursor += j2d.print(x + cursor, z, "< ");
 	}
 
 	j2d.mCharColor.set(p2gz->menu->color_std);
 	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, "%d", selected_val);
+	cursor += j2d.print(x + cursor, z, "%d", selected_val);
 
 	if (selected) {
 		j2d.mCharColor.set(p2gz->menu->color_highlight);
 		j2d.mGradientColor.set(p2gz->menu->color_highlight);
 	}
 	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
-		x += j2d.print(x, z, " >");
+		cursor += j2d.print(x + cursor, z, " >");
 	}
 
-	return x;
+	return cursor;
 }
 
 void FloatRangeMenuOption::update()
@@ -667,23 +667,32 @@ void FloatRangeMenuOption::check_overflow()
 
 f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	x += j2d.print(x, z, "%s: ", title);
+	f32 cursor = 0.0f;
+	if (image_title) {
+		Image* image = p2gz->imageMgr->get(image_title);
+		if (image) {
+			cursor += image->draw(x, z);
+			cursor += p2gz->imageMgr->spacing();
+		}
+	}
+
+	cursor += j2d.print(x + cursor, z, "%s: ", title);
 
 	if (selected_val > min) {
-		x += j2d.print(x, z, "< ");
+		cursor += j2d.print(x + cursor, z, "< ");
 	}
 
 	j2d.mCharColor.set(p2gz->menu->color_std);
 	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, "%.2f", selected_val);
+	cursor += j2d.print(x + cursor, z, "%.2f", selected_val);
 
 	if (selected) {
 		j2d.mCharColor.set(p2gz->menu->color_highlight);
 		j2d.mGradientColor.set(p2gz->menu->color_highlight);
 	}
 	if (selected_val < max) {
-		x += j2d.print(x, z, " >");
+		cursor += j2d.print(x + cursor, z, " >");
 	}
 
-	return x;
+	return cursor;
 }
