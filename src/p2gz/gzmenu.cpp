@@ -527,11 +527,19 @@ void RangeMenuOption::update()
 
 	size_t init_selected_val = selected_val;
 	u32 btn                  = p2gz->controller->getButtonDown();
+	s32 delta                = 1;
+
+	// If holding X, change in increments of 10. Just like how
+	// onions in P1 Switch work.
+	if (p2gz->controller->getButton() & Controller::PRESS_X) {
+		delta = 10;
+	}
+
 	if (btn & Controller::PRESS_DPAD_LEFT) {
-		selected_val -= 1;
+		selected_val -= delta;
 	}
 	if (btn & Controller::PRESS_DPAD_RIGHT) {
-		selected_val += 1;
+		selected_val += delta;
 	}
 	check_overflow();
 
@@ -592,6 +600,12 @@ void FloatRangeMenuOption::update()
 	size_t init_selected_val = selected_val;
 	u32 btn                  = p2gz->controller->getButton();
 	f32 delta_per_frame      = (max - min) / 90.0f; // takes 3 seconds to go from one side to the other
+
+	// If holding X, move the selection faster
+	if (p2gz->controller->getButton() & Controller::PRESS_X) {
+		delta_per_frame *= 3.0f;
+	}
+
 	if (btn & Controller::PRESS_DPAD_LEFT) {
 		selected_val -= delta_per_frame;
 	}
