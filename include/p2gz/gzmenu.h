@@ -8,6 +8,7 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
+#include <p2gz/gzConstants.h>
 
 namespace gz {
 
@@ -165,6 +166,39 @@ private:
 
 	IDelegate1<f32>* on_selected;
 	f32 selected_val;
+};
+
+struct CutsceneToggleMenuOption : public MenuOption {
+public:
+	CutsceneToggleMenuOption(const char* title_, P2GZ_CUTSCENE_TOGGLE_ID id_, IDelegate2<bool, P2GZ_CUTSCENE_TOGGLE_ID>* on_selected_)
+	    : MenuOption(title_)
+	    , cutscene_id(id_)
+	    , on_selected(on_selected_)
+	{
+	}
+	// Handles what to show on the screen (draw the physical text)
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	// Runs every frame; use this to update demo flags, and track if any cutscenes have played on their own
+	virtual void update();
+
+	// Set/Clear cutscene flag to update whether it played or not without needing to actually play it
+	virtual void select()
+	{
+		cutscene_played = !cutscene_played;
+		if (on_selected) {
+			on_selected->invoke(cutscene_played, cutscene_id);
+		}
+	}
+
+private:
+	// what to show on-screen; for this, represents whether a cutscene was played or not (true if cutscene already
+	// played)
+	bool cutscene_played;
+	// function to run when we select this option - for this specifically, we pass both the value and cutscene we are working with so we
+	// know which flag to set/unset
+	IDelegate2<bool, P2GZ_CUTSCENE_TOGGLE_ID>* on_selected;
+	// for this specifically - which cutscene this option is tracking
+	P2GZ_CUTSCENE_TOGGLE_ID cutscene_id;
 };
 
 /// Base class for different types of menus
