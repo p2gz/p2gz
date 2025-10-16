@@ -147,6 +147,33 @@ private:
 	OverflowBehavior overflow_behavior;
 };
 
+struct FloatRangeMenuOption : public MenuOption {
+public:
+	FloatRangeMenuOption(const char* title_, f32 min_, f32 max_, f32 initial, IDelegate1<f32>* on_selected_)
+	    : MenuOption(title_)
+	    , on_selected(on_selected_)
+	    , selected_val(initial)
+	    , min(min_)
+	    , max(max_)
+	{
+	}
+
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update();
+	virtual void select();
+
+	void set_selection(f32 val) { selected_val = val; }
+
+	f32 min;
+	f32 max;
+
+private:
+	void check_overflow();
+
+	IDelegate1<f32>* on_selected;
+	f32 selected_val;
+};
+
 /// Base class for different types of menus
 struct MenuLayer {
 public:
@@ -157,6 +184,8 @@ public:
 	virtual void navigate_to(const char* path) { }
 
 	const char* title;
+	/// Menu to return to when backing out of this menu.
+	/// Root menu should leave as null.
 	MenuLayer* parent;
 };
 
@@ -168,8 +197,6 @@ public:
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection() { selected = 0; }
 
-	MenuOption* cur_option() { return options[selected]; }
-
 	ListMenu* push(MenuOption* option)
 	{
 		options.push(option);
@@ -180,11 +207,51 @@ public:
 		return this;
 	}
 
-	/// Menu to return to when backing out of this menu.
-	/// Root menu should leave as null.
-	MenuLayer* parent;
 	Vec<MenuOption*> options;
 	size_t selected;
+};
+
+struct GridMenu : public MenuLayer {
+public:
+	GridMenu(f32 column_width_)
+	    : column_width(column_width_)
+	{
+		options.push(new Vec<MenuOption*>);
+	}
+
+	virtual void update();
+	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual MenuOption* get_option(const char* path);
+	virtual void navigate_to(const char* path);
+	virtual void reset_selection()
+	{
+		selected_row = 0;
+		selected_col = 0;
+	}
+
+	MenuOption* cur_option() { return (*options[selected_row])[selected_col]; }
+
+	GridMenu* push_to_row(MenuOption* option)
+	{
+		options[selected_row]->push(option);
+		MenuLayer* sub_menu = option->get_sub_menu();
+		if (sub_menu) {
+			sub_menu->parent = this;
+		}
+		return this;
+	}
+
+	GridMenu* end_row()
+	{
+		selected_row += 1;
+		options.push(new Vec<MenuOption*>);
+		return this;
+	}
+
+	Vec<Vec<MenuOption*>*> options;
+	size_t selected_row;
+	size_t selected_col;
+	f32 column_width;
 };
 
 struct GZMenu {

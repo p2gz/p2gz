@@ -2,6 +2,7 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/NaviTools.h>
 #include <p2gz/FreeCam.h>
+#include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
@@ -58,9 +59,18 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
             ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
+			->push(new OpenSubMenuOption("grid menu demo", (new GridMenu(24.0))
+				->push_to_row(new OpenSubMenuOption("1", nullptr))->push_to_row(new OpenSubMenuOption("2", nullptr))->push_to_row(new OpenSubMenuOption("3", nullptr))->end_row()
+				->push_to_row(new OpenSubMenuOption("4", nullptr))->push_to_row(new OpenSubMenuOption("5", nullptr))->push_to_row(new OpenSubMenuOption("6", nullptr))->end_row()
+				->push_to_row(new OpenSubMenuOption("7", nullptr))->push_to_row(new OpenSubMenuOption("8", nullptr))->push_to_row(new OpenSubMenuOption("9", nullptr))
+			))
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new OpenSubMenuOption("time controls", (new ListMenu())
+				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
+				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
+			))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu())
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
@@ -359,6 +369,150 @@ void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 	}
 }
 
+void GridMenu::update()
+{
+	p2gz->menu->block_open_close_action();
+
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0) {
+		do {
+			selected_row -= 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1) {
+		do {
+			selected_row += 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0) {
+		do {
+			selected_col -= 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1) {
+		do {
+			selected_col += 1;
+		} while (!cur_option()->visible);
+	}
+	if (btn & Controller::PRESS_A) {
+		cur_option()->select();
+	}
+	if (btn & Controller::PRESS_B) {
+		p2gz->menu->pop_layer();
+	}
+
+	cur_option()->update();
+}
+
+void GridMenu::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	f32 start_x = x;
+	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
+		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
+			MenuOption* option = (*options[row_idx])[col_idx];
+			if (!option || !option->visible) {
+				continue;
+			}
+			bool is_selected = col_idx == selected_col && row_idx == selected_row;
+
+			if (is_selected) {
+				j2d.mCharColor.set(p2gz->menu->color_highlight);
+				j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			} else {
+				j2d.mCharColor.set(p2gz->menu->color_std);
+				j2d.mGradientColor.set(p2gz->menu->color_std);
+			}
+
+			option->draw(j2d, x, z, is_selected);
+			x += column_width;
+		}
+		x = start_x;
+		z += p2gz->menu->line_height;
+	}
+}
+
+MenuOption* GridMenu::get_option(const char* path)
+{
+	if (!path) {
+		return nullptr;
+	}
+
+	const char* name_end         = strchr(path, '/');
+	bool is_final_path_component = false;
+	int name_len;
+	if (name_end == nullptr) {
+		name_len                = strlen(path);
+		is_final_path_component = true;
+	} else {
+		name_len = name_end - path;
+	}
+
+	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
+		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
+			MenuOption* option = (*options[row_idx])[col_idx];
+			if (strncmp(option->title, path, name_len) == 0) {
+				if (is_final_path_component) {
+					return option;
+				} else {
+					MenuLayer* sub_menu = option->get_sub_menu();
+					if (sub_menu) {
+						return sub_menu->get_option(name_end + 1);
+					} else {
+						return nullptr;
+					}
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+void GridMenu::navigate_to(const char* path)
+{
+	const char* name_end         = strchr(path, '/');
+	bool is_final_path_component = false;
+	int name_len;
+	if (name_end == nullptr) {
+		name_len                = strlen(path);
+		is_final_path_component = true;
+	} else {
+		name_len = name_end - path;
+	}
+
+	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
+		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
+			MenuOption* option = (*options[row_idx])[col_idx];
+			if (strncmp(option->title, path, name_len) == 0) {
+				selected_col = col_idx;
+				selected_row = row_idx;
+				if (!is_final_path_component) {
+					MenuLayer* sub_menu = option->get_sub_menu();
+					if (sub_menu) {
+						p2gz->menu->push_layer(sub_menu);
+						sub_menu->navigate_to(name_end + 1);
+					}
+				}
+				return;
+			}
+		}
+	}
+}
+
+f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	if (title) {
+		return j2d.print(x, z, title);
+	}
+
+	return 0.0f;
+}
+
+f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	return j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
+}
+
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
     : MenuOption(title_)
     , sub_menu(sub_menu_)
@@ -471,6 +625,63 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 		j2d.mGradientColor.set(p2gz->menu->color_highlight);
 	}
 	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
+		x += j2d.print(x, z, " >");
+	}
+
+	return x;
+}
+
+void FloatRangeMenuOption::update()
+{
+	p2gz->menu->block_open_close_action();
+
+	size_t init_selected_val = selected_val;
+	u32 btn                  = p2gz->controller->getButton();
+	f32 delta_per_frame      = (max - min) / 90.0f; // takes 3 seconds to go from one side to the other
+	if (btn & Controller::PRESS_DPAD_LEFT) {
+		selected_val -= delta_per_frame;
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT) {
+		selected_val += delta_per_frame;
+	}
+	check_overflow();
+
+	if (init_selected_val != selected_val) {
+		on_selected->invoke(selected_val);
+	}
+}
+
+void FloatRangeMenuOption::select()
+{
+	on_selected->invoke(selected_val);
+}
+
+void FloatRangeMenuOption::check_overflow()
+{
+	if (selected_val > max) {
+		selected_val = max;
+	} else if (selected_val < min) {
+		selected_val = min;
+	}
+}
+
+f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	x += j2d.print(x, z, "%s: ", title);
+
+	if (selected_val > min) {
+		x += j2d.print(x, z, "< ");
+	}
+
+	j2d.mCharColor.set(p2gz->menu->color_std);
+	j2d.mGradientColor.set(p2gz->menu->color_std);
+	x += j2d.print(x, z, "%.2f", selected_val);
+
+	if (selected) {
+		j2d.mCharColor.set(p2gz->menu->color_highlight);
+		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	}
+	if (selected_val < max) {
 		x += j2d.print(x, z, " >");
 	}
 
