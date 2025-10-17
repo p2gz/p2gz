@@ -4,6 +4,7 @@
 #include <p2gz/FreeCam.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/EnemyDebugInfo.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -49,11 +50,34 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
             ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
-		->push(new OpenSubMenuOption("map", (new ListMenu())
-			->push(new ToggleMenuOption("collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
-			->push(new ToggleMenuOption("waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+		->push(new OpenSubMenuOption("tools", (new ListMenu())
+			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new OpenSubMenuOption("enemy debug info", (new ListMenu())
+				->push(new ToggleMenuOption("enable", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_enabled)))
+				->push(new OpenSubMenuOption("display settings", (new ListMenu())
+					->push(new FloatRangeMenuOption("max display distance", 100.0f, 2048.0f, 512.0f, new Delegate1<EnemyDebugInfo, f32>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_max_display_dist)))
+					->push(new RangeMenuOption("text size", 1, 20, 10, RangeMenuOption::CAP, new Delegate1<EnemyDebugInfo, s32>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_size)))
+				))
+				->push(new ToggleMenuOption("draw enemy name", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_enemy_name_enabled)))
+				->push(new ToggleMenuOption("draw current state", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_cur_state_enabled)))
+				->push(new ToggleMenuOption("draw flick count", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_flick_count_enabled)))
+				->push(new ToggleMenuOption("draw position", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_position_enabled)))
+			))
+			->push(new OpenSubMenuOption("time controls", (new ListMenu())
+				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
+				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
+			))
 		))
-        ->push(new OpenSubMenuOption("settings", (new ListMenu())
+		->push(new OpenSubMenuOption("map", (new ListMenu())
+			->push(new ToggleMenuOption("show collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
+			->push(new ToggleMenuOption("show waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+		))
+		->push(new OpenSubMenuOption("timer", (new ListMenu())
+			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
+			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
+			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+		))
+		->push(new OpenSubMenuOption("settings", (new ListMenu())
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
             ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
@@ -62,19 +86,7 @@ void GZMenu::init_menu()
 				->push_to_row(new OpenSubMenuOption("4", nullptr))->push_to_row(new OpenSubMenuOption("5", nullptr))->push_to_row(new OpenSubMenuOption("6", nullptr))->end_row()
 				->push_to_row(new OpenSubMenuOption("7", nullptr))->push_to_row(new OpenSubMenuOption("8", nullptr))->push_to_row(new OpenSubMenuOption("9", nullptr))
 			))
-        ))
-		->push(new OpenSubMenuOption("tools", (new ListMenu())
-			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
-			->push(new OpenSubMenuOption("time controls", (new ListMenu())
-				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
-				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
-			))
-		))
-		->push(new OpenSubMenuOption("timer", (new ListMenu())
-			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
-			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
-			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
-		));
+        ));
 	// clang-format on
 
 	layer = root_layer;
@@ -178,11 +190,6 @@ void GZMenu::draw()
 	if (!enabled || !layer) {
 		return;
 	}
-
-	// Graphics* gfx = sys->mGfx;
-	// if (gfx && gfx->mCurrentViewport) {
-	// 	gfx->initPerspPrintf(gfx->mCurrentViewport);
-	// }
 
 	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
 	j2d.initiate();

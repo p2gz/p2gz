@@ -25,6 +25,7 @@ public:
 	void enable();
 	void switch_captains();
 	void update();
+	void draw();
 	void warp_to_current_position();
 
 private:

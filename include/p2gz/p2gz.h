@@ -10,7 +10,7 @@
 #include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
-// #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/DayEditor.h>
 
 struct P2GZ {
@@ -20,6 +20,7 @@ public:
 
 	void init();
 	void update();
+	void draw_2d();
 	void draw();
 
 	// our own persistent controller so we don't crash the game on new file starting (don't ask)
@@ -34,7 +35,7 @@ public:
 	gz::WaypointViewer* waypoint_viewer;
 	gz::Warp* warp;
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
-	// gz::EnemyDebugInfo* enemy_debug_info;
+	gz::EnemyDebugInfo* enemy_debug_info;
 	gz::DayEditor* day_editor;
 };
 

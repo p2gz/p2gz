@@ -73,7 +73,6 @@ void FreeCam::update()
 
 	update_position();
 	update_zoom();
-	draw_current_position();
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
 		warp_to_current_position();
@@ -226,11 +225,17 @@ void FreeCam::update_zoom()
 	}
 }
 
+void FreeCam::draw()
+{
+	if (!enabled) {
+		return;
+	}
+	draw_current_position();
+}
+
 // Draw a circle on the ground indicating the freecam's current position.
 void FreeCam::draw_current_position()
 {
-	GZASSERTLINE(enabled);
-
 	Graphics* gfx = sys->getGfx();
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 
