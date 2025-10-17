@@ -11,6 +11,7 @@
 #include <Dolphin/os.h>
 #include <string.h>
 #include <IDelegate.h>
+#include <p2gz/gzConstants.h>
 
 using namespace gz;
 
@@ -73,6 +74,11 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+		))
+		// Cutscene re-enable menu
+		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
+			->push(new CutsceneToggleMenuOption("Meet Red Pikmin", P2GZ_CT_MET_RED_PIKI,
+				new Delegate2<CutsceneToggle, bool, P2GZ_CUTSCENE_TOGGLE_ID>(p2gz->cutscene_toggle, &CutsceneToggle::set_cutscene_flag)))
 		));
 	// clang-format on
 
@@ -661,4 +667,22 @@ f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 	}
 
 	return x;
+}
+
+void CutsceneToggleMenuOption::update()
+{
+	// p2gz->menu->block_open_close_action();
+
+	switch (cutscene_id) {
+	// Depending on which cutscene this option belongs to, check different points to see if the cutscene was already played or not
+	// Update cutscene_played flag with this value so it's up-to-date in case a cutscene played recently
+	case P2GZ_CT_MET_RED_PIKI: {
+		cutscene_played = Game::playData->isDemoFlag(Game::DEMO_Meet_Red_Pikmin);
+	} break;
+	}
+}
+
+f32 CutsceneToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	return j2d.print(x, z, "%s: %s", title, cutscene_played ? "already played" : "not played yet");
 }

@@ -14,6 +14,7 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	// Setup all our P2GZ menus/features here
 	collision_viewer             = new CollisionViewer();
 	controller                   = new Controller(JUTGamePad::PORT_0);
 	freecam                      = new FreeCam();
@@ -24,6 +25,7 @@ P2GZ::P2GZ()
 	warp                         = new Warp();
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
 	day_editor                   = new DayEditor();
+	cutscene_toggle              = new CutsceneToggle();
 }
 
 void P2GZ::init()
