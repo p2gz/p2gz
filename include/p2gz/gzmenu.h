@@ -259,6 +259,11 @@ public:
 	void open();
 	void close();
 	bool is_open() { return enabled; }
+	bool is_lock() { return lock; }
+
+	// Called when navigating to a new page to disable inputs for 1 frame to prevent accidentally activating other stuff in submenus
+	// immediately
+	void set_lock() { lock = true; }
 
 	/// Returns a reference to the option, or creates it if
 	/// it doesn't exist. Use slashes to indicate heirarchy,

@@ -104,6 +104,12 @@ void GZMenu::update()
 			else
 				open();
 		}
+
+		// If A or B button was pressed, set the lock for one frame (disable accidental inputs for other submenus as we navigate between
+		// menus)
+		if (enabled && ((controller->getButton() & Controller::PRESS_A) || (controller->getButton() & Controller::PRESS_B))) {
+			set_lock();
+		}
 	}
 
 	if (enabled && layer && controller) {
@@ -214,6 +220,7 @@ void GZMenu::navigate_to(const char* path)
 {
 	close();
 	open();
+	set_lock();
 	root_layer->navigate_to(path);
 }
 
