@@ -37,13 +37,11 @@ void P2GZ::init()
 
 void P2GZ::update()
 {
-	collision_viewer->update();
-	freecam->update();
-	waypoint_viewer->update();
 	day_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
+	// NEW - we use the menu lock to prevent this issue for update calls outside of this function (such as graphical updates)
 	menu->update();
 }
 

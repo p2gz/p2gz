@@ -14,6 +14,9 @@
 #include "Light.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 const char* message = "drct-post";
 
 namespace Game {
@@ -58,6 +61,19 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		gfx.mCurrentViewport = vp;
 		directDrawPost(gfx, vp);
 	}
+
+	// @P2GZ fix-graphics-text-corruption: CALL ANY P2GZ UPDATES INVOLVING GRAPHICS HERE
+	// Any p2gz menu that performs graphics stuff must be called here, as running it earlier in the frame before other graphics stuff gets
+	// drawn causes corruption issues with JD2Print for unknown reasons
+
+	p2gz->collision_viewer->update();
+	// When we initially enter freecam menu, the input from P2GZ menu is still active since it's still the same frame (just called way
+	// later). Check the lock here so we don't process that same input for freecam (otherwise we will warp frame 1 and instantly close the
+	// menu).
+	if (!p2gz->menu->is_lock()) {
+		p2gz->freecam->update();
+	}
+	p2gz->waypoint_viewer->update();
 
 	sys->mTimers->_stop("drct-post");
 }
