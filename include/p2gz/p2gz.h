@@ -11,6 +11,7 @@
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
 // #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/DayEditor.h>
 
 struct P2GZ {
 public:
@@ -34,6 +35,7 @@ public:
 	gz::Warp* warp;
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
 	// gz::EnemyDebugInfo* enemy_debug_info;
+	gz::DayEditor* day_editor;
 };
 
 // global instance
