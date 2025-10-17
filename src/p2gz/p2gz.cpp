@@ -43,6 +43,7 @@ void P2GZ::update()
 	freecam->update();
 	waypoint_viewer->update();
 	day_editor->update();
+	squad_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

@@ -48,25 +48,25 @@ void GZMenu::init_menu()
 		))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
 			->push(new OpenSubMenuOption("squad", (new GridMenu(128.0))
-				->push_to_row(new PikminCountMenuOption("red flowers", Game::Red, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("red leaves", Game::Red, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("red buds", Game::Red, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
 				->end_row()
-				->push_to_row(new PikminCountMenuOption("yellow flowers", Game::Yellow, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("yellow leaves", Game::Yellow, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("yellow buds", Game::Yellow, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
 				->end_row()
-				->push_to_row(new PikminCountMenuOption("blue flowers", Game::Blue, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("blue leaves", Game::Blue, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("blue buds", Game::Blue, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
 				->end_row()
-				->push_to_row(new PikminCountMenuOption("purple flowers", Game::Purple, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("purple leaves", Game::Purple, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("purple buds", Game::Purple, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
 				->end_row()
-				->push_to_row(new PikminCountMenuOption("white flowers", Game::White, Game::Flower, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("white leaves", Game::White, Game::Leaf, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
-				->push_to_row(new PikminCountMenuOption("white buds", Game::White, Game::Bud, 0, 100, 0, PikminCountMenuOption::WRAP, new Delegate3<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_count)))
+				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
 				->end_row()
 				->push_to_row(new PerformActionMenuOption("confirm", new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::set_squad)))
 			))
@@ -355,33 +355,53 @@ void GridMenu::update()
 	p2gz->menu->block_open_close_action();
 
 	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0) {
+	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0 && !editing_range) {
 		do {
 			selected_row -= 1;
+			if (options[selected_row]->len() <= selected_col) {
+				selected_col = options[selected_row]->len() - 1;
+			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1) {
+	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
 		do {
 			selected_row += 1;
+			if (options[selected_row]->len() <= selected_col) {
+				selected_col = options[selected_row]->len() - 1;
+			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0) {
+	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0 && !editing_range) {
 		do {
 			selected_col -= 1;
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1) {
+	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
+	    && !editing_range) {
 		do {
 			selected_col += 1;
 		} while (!cur_option()->visible);
 	}
 	if (btn & Controller::PRESS_A) {
+		if (cur_option()->is_range_option()) {
+			editing_range = !editing_range;
+			return;
+		}
 		cur_option()->select();
 	}
 	if (btn & Controller::PRESS_B) {
+		if (cur_option()->is_range_option()) {
+			if (editing_range) {
+				editing_range = false;
+				return;
+			}
+		}
 		p2gz->menu->pop_layer();
 	}
 
+	if (cur_option()->is_range_option() && !editing_range) {
+		return;
+	}
 	cur_option()->update();
 }
 
@@ -522,13 +542,17 @@ void RadioMenuOption::update()
 	}
 
 	if (init_selected_idx != selected_idx) {
-		on_selected->invoke(selected_idx);
+		if (on_selected) {
+			on_selected->invoke(selected_idx);
+		}
 	}
 }
 
 void RadioMenuOption::select()
 {
-	on_selected->invoke(selected_idx);
+	if (on_selected) {
+		on_selected->invoke(selected_idx);
+	}
 }
 
 f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
@@ -563,13 +587,17 @@ void RangeMenuOption::update()
 	check_overflow();
 
 	if (init_selected_val != selected_val) {
-		on_selected->invoke(selected_val);
+		if (on_selected) {
+			on_selected->invoke(selected_val);
+		}
 	}
 }
 
 void RangeMenuOption::select()
 {
-	on_selected->invoke(selected_val);
+	if (on_selected) {
+		on_selected->invoke(selected_val);
+	}
 }
 
 void RangeMenuOption::check_overflow()
@@ -628,13 +656,17 @@ void FloatRangeMenuOption::update()
 	check_overflow();
 
 	if (init_selected_val != selected_val) {
-		on_selected->invoke(selected_val);
+		if (on_selected) {
+			on_selected->invoke(selected_val);
+		}
 	}
 }
 
 void FloatRangeMenuOption::select()
 {
-	on_selected->invoke(selected_val);
+	if (on_selected) {
+		on_selected->invoke(selected_val);
+	}
 }
 
 void FloatRangeMenuOption::check_overflow()
