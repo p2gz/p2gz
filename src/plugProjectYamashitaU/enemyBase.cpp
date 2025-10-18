@@ -42,6 +42,8 @@
 #include "Dolphin/rand.h"
 #include "nans.h"
 
+#include <p2gz/p2gz.h>
+
 // Archives
 JKRArchive* Game::gParmArc;
 PSSystem::ArcMgr<PSGame::BASARC>* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
@@ -1270,6 +1272,10 @@ void EnemyBase::deathMethod()
  */
 void EnemyBase::onKill(CreatureKillArg* inputArg)
 {
+	// @P2GZ - enemy debug info
+	// Remove this enemy from the list for debug drawing
+	p2gz->enemy_debug_info->remove_enemy(this);
+
 	getCreatureName();
 	getCreatureID();
 
@@ -1496,6 +1502,10 @@ void EnemyBase::birth(Vector3f& pos, f32 faceDir)
 	mExistDuration = 0.0f;
 	mExistTimer    = 0.0f;
 	mStunAnimTimer = 0.0f;
+
+	// @P2GZ - enemy debug info
+	// Register this enemy to be debug drawn
+	p2gz->enemy_debug_info->push_enemy(this);
 }
 
 /**

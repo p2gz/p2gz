@@ -82,7 +82,7 @@ struct Vec {
 			return pop();
 		}
 		T val = mBuf[idx];
-		memcpy(mBuf[mBuf[idx], mBuf[idx + 1], mLen - idx - 1]);
+		memcpy(&mBuf[idx], &mBuf[idx + 1], (mLen - idx - 1) * sizeof(T));
 		mLen--;
 		return val;
 	}
