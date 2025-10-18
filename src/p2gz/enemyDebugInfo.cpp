@@ -25,7 +25,7 @@ EnemyDebugInfo::EnemyDebugInfo()
 	draw_enemy_name  = true;
 	draw_cur_state   = true;
 	draw_flick_count = true;
-	draw_position    = true;
+	draw_position    = false;
 }
 
 void EnemyDebugInfo::set_size(s32 size)
@@ -67,9 +67,7 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		return;
 	}
 
-	const char* lifecycle = enemy->mCurrentLifecycleState->mName;
-	if (strcmp(lifecycle, "dead") == 0 || strcmp(lifecycle, "appear") == 0 || strcmp(lifecycle, "stay") == 0
-	    || strcmp(lifecycle, "wait_big") == 0) {
+	if (enemy->mHealth <= 0.0f || !enemy->isLivingThing() || enemy->isUnderground()) {
 		return;
 	}
 
