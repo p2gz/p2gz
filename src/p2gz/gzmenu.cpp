@@ -48,27 +48,26 @@ void GZMenu::init_menu()
 		))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
 			->push(new OpenSubMenuOption("squad", (new GridMenu(128.0))
-				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
 				->end_row()
-				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
 				->end_row()
-				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
 				->end_row()
-				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
 				->end_row()
-				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
-				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, nullptr))
+				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
 				->end_row()
-				->push_to_row(new PerformActionMenuOption("confirm", new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::set_squad)))
 			))
 		))
         ->push(new OpenSubMenuOption("captain", (new ListMenu())
@@ -183,6 +182,8 @@ void GZMenu::open()
 	breadcrumbs.clear();
 	enabled = true;
 	lock    = true;
+
+	Game::gameSystem->setPause(true, "gzmenu", 3);
 }
 
 void GZMenu::close()
@@ -191,6 +192,7 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
+	Game::gameSystem->setPause(false, "gzmenu", 3);
 }
 
 void GZMenu::draw()
@@ -385,6 +387,7 @@ void GridMenu::update()
 	if (btn & Controller::PRESS_A) {
 		if (cur_option()->is_range_option()) {
 			editing_range = !editing_range;
+			cur_option()->set_editing_in_grid(editing_range);
 			return;
 		}
 		cur_option()->select();
@@ -393,6 +396,7 @@ void GridMenu::update()
 		if (cur_option()->is_range_option()) {
 			if (editing_range) {
 				editing_range = false;
+				cur_option()->set_editing_in_grid(editing_range);
 				return;
 			}
 		}
@@ -625,8 +629,11 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 		x += j2d.print(x, z, "< ");
 	}
 
-	j2d.mCharColor.set(p2gz->menu->color_std);
-	j2d.mGradientColor.set(p2gz->menu->color_std);
+	if (!editing_in_grid) {
+		j2d.mCharColor.set(p2gz->menu->color_std);
+		j2d.mGradientColor.set(p2gz->menu->color_std);
+	}
+
 	x += j2d.print(x, z, "%d", selected_val);
 
 	if (selected) {
@@ -686,8 +693,10 @@ f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 		x += j2d.print(x, z, "< ");
 	}
 
-	j2d.mCharColor.set(p2gz->menu->color_std);
-	j2d.mGradientColor.set(p2gz->menu->color_std);
+	if (!editing_in_grid) {
+		j2d.mCharColor.set(p2gz->menu->color_std);
+		j2d.mGradientColor.set(p2gz->menu->color_std);
+	}
 	x += j2d.print(x, z, "%.2f", selected_val);
 
 	if (selected) {

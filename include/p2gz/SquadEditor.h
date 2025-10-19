@@ -11,11 +11,11 @@ public:
 	~SquadEditor() { }
 
 	void update();
-	void set_squad();
+	void set_squad(s32);
 
 private:
-	void birth_piki(Game::EPikiKind, Game::EPikiHappa);
-	void kill_piki(Game::EPikiKind, Game::EPikiHappa);
+	void birth_piki(Game::EPikiKind, Game::EPikiHappa, int);
+	void kill_piki(Game::EPikiKind, Game::EPikiHappa, int);
 	gz::Vec<s32> get_squad();
 
 	gz::Vec<s32> counts;

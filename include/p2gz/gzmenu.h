@@ -31,9 +31,11 @@ public:
 	virtual void update() { }
 	virtual void select() = 0;
 	virtual bool is_range_option() { return false; }
+	void set_editing_in_grid(bool editing) { editing_in_grid = editing; }
 
 	const char* title;
 	bool visible;
+	bool editing_in_grid;
 };
 
 struct OpenSubMenuOption : public MenuOption {
@@ -170,6 +172,7 @@ private:
 
 	IDelegate1<f32>* on_selected;
 	f32 selected_val;
+	bool in_grid_menu;
 };
 
 /// Base class for different types of menus
