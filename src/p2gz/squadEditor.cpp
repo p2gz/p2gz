@@ -120,10 +120,10 @@ void SquadEditor::update()
 
 	gz::Vec<s32> squad = get_squad();
 	GridMenu* editor   = static_cast<GridMenu*>(p2gz->menu->get_option("pikmin/squad")->get_sub_menu());
-	for (int i = 0; i < 5; i++) {
-		Vec<MenuOption*>* row = editor->options[i];
-		for (int j = 0; j < 3; j++) {
-			static_cast<RangeMenuOption*>((*row)[j])->set_selection(squad[i * 3 + j]);
+	for (int color = 0; color < 5; color++) {
+		Vec<MenuOption*>* row = editor->options[color];
+		for (int stage = 0; stage < 3; stage++) {
+			static_cast<RangeMenuOption*>((*row)[stage])->set_selection(squad[color * 3 + stage]);
 		}
 	}
 }
