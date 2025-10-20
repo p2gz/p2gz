@@ -1,4 +1,3 @@
-
 #ifndef _SPRAY_EDITOR_H
 #define _SPRAY_EDITOR_H
 
