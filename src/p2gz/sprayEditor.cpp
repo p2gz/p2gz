@@ -65,7 +65,7 @@ void SprayEditor::update()
 	}
 
 	static_cast<ToggleMenuOption*>(spray_menu->get_option("bitters unlocked"))
-	    ->set_selection(Game::playData->isDemoFlag(Game::DEMO_SPICY_ENABLED));
+	    ->set_selection(Game::playData->isDemoFlag(Game::DEMO_BITTER_ENABLED));
 	static_cast<ToggleMenuOption*>(spray_menu->get_option("spicies unlocked"))
 	    ->set_selection(Game::playData->isDemoFlag(Game::DEMO_SPICY_ENABLED));
 }
