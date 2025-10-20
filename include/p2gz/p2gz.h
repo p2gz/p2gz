@@ -7,6 +7,7 @@
 #include <p2gz/NaviTools.h>
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/SprayEditor.h>
 #include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
@@ -34,6 +35,7 @@ public:
 	gz::Warp* warp;
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
 	gz::DayEditor* day_editor;
+	gz::SprayEditor* spray_editor;
 };
 
 // global instance

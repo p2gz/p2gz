@@ -82,6 +82,8 @@ public:
 		}
 	}
 
+	void set_selection(bool selected) { on = selected; }
+
 private:
 	bool on;
 	IDelegate1<bool>* on_selected;
@@ -279,6 +281,8 @@ public:
 	/// Call in `update()` in menu options that use Dpad L to prevent
 	/// accidentally closing the menu
 	void block_open_close_action() { open_close_action.reset(); }
+
+	MenuLayer* get_active_layer() { return layer; }
 
 	f32 glyph_width;
 	f32 glyph_height;
