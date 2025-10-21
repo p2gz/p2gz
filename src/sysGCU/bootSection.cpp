@@ -619,32 +619,34 @@ void BootSection::drawScreenProgre(Graphics& gfx)
  */
 void BootSection::doDraw(Graphics& gfx)
 {
-	switch (mStateID) {
-	case SID_LoadResourceFirst:
-	case SID_LoadMemoryCard:
-	case SID_InitNintendoLogo:
-	case SID_FadeInNintendoLogo:
-		drawEpilepsy(gfx); // drawNintendoLogo in USA Demo 1
-		break;
-	case SID_NintendoLogo:
-		drawNintendoLogo(gfx);
-		break;
-	case SID_WaitProgressive:
-		drawProgressive(gfx);
-		drawScreenProgre(gfx);
-		break;
-	case SID_SetInterlace:
-		drawSetInterlace(gfx);
-		drawScreenProgre(gfx);
-		break;
-	case SID_UpdateSetInterlace:
-		drawSetProgressive(gfx);
-		drawScreenProgre(gfx);
-		break;
-	case SID_DolbyLogo:
-	case SID_EndState:
-		drawDolbyLogo(gfx);
-	}
+	// @P2GZ: skip bootup screens
+	// don't draw any of them.
+	// switch (mStateID) {
+	// case SID_LoadResourceFirst:
+	// case SID_LoadMemoryCard:
+	// case SID_InitNintendoLogo:
+	// case SID_FadeInNintendoLogo:
+	// 	drawEpilepsy(gfx); // drawNintendoLogo in USA Demo 1
+	// 	break;
+	// case SID_NintendoLogo:
+	// 	drawNintendoLogo(gfx);
+	// 	break;
+	// case SID_WaitProgressive:
+	// 	drawProgressive(gfx);
+	// 	drawScreenProgre(gfx);
+	// 	break;
+	// case SID_SetInterlace:
+	// 	drawSetInterlace(gfx);
+	// 	drawScreenProgre(gfx);
+	// 	break;
+	// case SID_UpdateSetInterlace:
+	// 	drawSetProgressive(gfx);
+	// 	drawScreenProgre(gfx);
+	// 	break;
+	// case SID_DolbyLogo:
+	// case SID_EndState:
+	// 	drawDolbyLogo(gfx);
+	// }
 }
 
 /**
@@ -831,33 +833,35 @@ bool BootSection::doUpdate()
 		}
 		break;
 	case SID_InitNintendoLogo:
-		if ((mController->getButton() & Controller::PRESS_B) && VIGetDTVStatus() == 1) {
-			mDoOpenProgressive = true;
-		}
-		fader = mDisplay->mFader;
-		switch (fader->mStatus) {
-		case JUTFader::Status_Out:
-			fader->startFadeIn(0.5f / sys->getDeltaTime());
-			mFadeTimer = 0.0f;
-			break;
-		case JUTFader::Status_In:
-			bool dofadeout = false;
-			mFadeTimer += sys->mDeltaTime;
-			// @P2GZ: make bootSection.cpp equivalent
-			// if (mController->getButtonDown() && mFadeTimer > 1.5f) {
-			if ((mController->isButtonDown(~Controller::False)) && mFadeTimer > 1.5f) {
-				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
-				dofadeout = true;
-			} else if (mFadeTimer > 60.0f) {
-				dofadeout = true;
-			}
-
-			if (dofadeout) {
-				mDisplay->mFader->startFadeOut(getFadeSpeed());
-				setMode(SID_FadeInNintendoLogo);
-			}
-			break;
-		}
+		/// @P2GZ: skip bootup screens
+		// skip straight to logo mode
+		// if ((mController->getButton() & Controller::PRESS_B) && VIGetDTVStatus() == 1) {
+		// 	mDoOpenProgressive = true;
+		// }
+		// fader = mDisplay->mFader;
+		// switch (fader->mStatus) {
+		// case JUTFader::Status_Out:
+		// 	fader->startFadeIn(0.5f / sys->getDeltaTime());
+		// 	mFadeTimer = 0.0f;
+		// 	break;
+		// case JUTFader::Status_In:
+		// 	bool dofadeout = false;
+		// 	mFadeTimer += sys->mDeltaTime;
+		// 	// @P2GZ: make bootSection.cpp equivalent
+		// 	// if (mController->getButtonDown() && mFadeTimer > 1.5f) {
+		// 	if ((mController->isButtonDown(~Controller::False)) && mFadeTimer > 1.5f) {
+		// 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
+		// 		dofadeout = true;
+		// 	} else if (mFadeTimer > 60.0f) {
+		// 		dofadeout = true;
+		// 	}
+		// 	if (dofadeout) {
+		// 		mDisplay->mFader->startFadeOut(getFadeSpeed());
+		// 		setMode(SID_FadeInNintendoLogo);
+		// 	}
+		// 	break;
+		// }
+		setMode(SID_NintendoLogo);
 		break;
 	case SID_FadeInNintendoLogo:
 		if (mDisplay->mFader->mStatus == 0) {
@@ -870,19 +874,22 @@ bool BootSection::doUpdate()
 		}
 		break;
 	case SID_DolbyLogo:
-		fader = mDisplay->mFader;
-		switch (fader->mStatus) {
-		case JUTFader::Status_Out:
-			fader->startFadeIn(0.5f / sys->mDeltaTime);
-			mFadeTimer = 0.0f;
-			break;
-		case JUTFader::Status_In:
-			mFadeTimer += sys->mDeltaTime;
-			if (mFadeTimer > 1.0f) {
-				setMode(SID_EndState);
-			}
-			break;
-		}
+		// @P2GZ: skip bootup screens
+		// skip straight to end state
+		// fader = mDisplay->mFader;
+		// switch (fader->mStatus) {
+		// case JUTFader::Status_Out:
+		// 	fader->startFadeIn(0.5f / sys->mDeltaTime);
+		// 	mFadeTimer = 0.0f;
+		// 	break;
+		// case JUTFader::Status_In:
+		// 	mFadeTimer += sys->mDeltaTime;
+		// 	if (mFadeTimer > 1.0f) {
+		// 		setMode(SID_EndState);
+		// 	}
+		// 	break;
+		// }
+		setMode(SID_EndState);
 		break;
 	case SID_EndState:
 		mIsMainActive = false;
@@ -958,7 +965,9 @@ void BootSection::updateNintendoLogo()
 	int lastMode = mStateID;
 	if (!Game::gGameConfig.mParms.mNintendoVersion.mData && sys->mRenderMode != System::RM_NTSC_Progressive) {
 		if ((OSGetProgressiveMode() == OS_PROGRESSIVE_MODE_ON || mController->getButton() & Controller::PRESS_B) && VIGetDTVStatus() == 1) {
-			mDoOpenProgressive = true;
+			// @P2GZ: skip bootup screens
+			// mDoOpenProgressive = true;
+			mDoOpenProgressive = false;
 		} else if (VIGetDTVStatus() != 1) {
 			OSSetProgressiveMode(OS_PROGRESSIVE_MODE_OFF);
 		}
@@ -969,30 +978,35 @@ void BootSection::updateNintendoLogo()
 		sys->dvdLoadUseCallBack(&mThreadCommand, new Delegate<BootSection>(this, &BootSection::load2DResource));
 	}
 
-	mFadeTimer += sys->mDeltaTime;
-	if (mFadeTimer > 1.5f && !waitLoadResource()) {
-		if (!mProgressiveActive) {
-			mProgressiveActive = true;
-		}
+	// @P2GZ: skip bootup screens
+	// mFadeTimer += sys->mDeltaTime;
+	// if (mFadeTimer > 1.5f && !waitLoadResource()) {
+	// 	if (!mProgressiveActive) {
+	// 		mProgressiveActive = true;
+	// 	}
 
-		if (mChangeStateID != SID_WaitProgressive) {
-			mChangeStateID  = SID_DolbyLogo;
-			JUTFader* fader = mDisplay->mFader;
+	// 	if (mChangeStateID != SID_WaitProgressive) {
+	// 		mChangeStateID  = SID_DolbyLogo;
+	// 		JUTFader* fader = mDisplay->mFader;
 
-			if (fader->mStatus == JUTFader::Status_In) {
-				fader->startFadeOut(getFadeSpeed());
-			}
+	// 		if (fader->mStatus == JUTFader::Status_In) {
+	// 			fader->startFadeOut(getFadeSpeed());
+	// 		}
 
-			if (mDisplay->mFader->mStatus == JUTFader::Status_Out) {
-				setMode(mChangeStateID);
-				mFadeTimer = 0.0f;
-			}
-		} else {
-			setMode(mChangeStateID);
-			mFadeTimer = 0.0f;
-			mProgressiveScreen->startScreen(0, getFadeSpeed());
-			mProgressiveScreen->mSelect = 1;
-		}
+	// 		if (mDisplay->mFader->mStatus == JUTFader::Status_Out) {
+	// 			setMode(mChangeStateID);
+	// 			mFadeTimer = 0.0f;
+	// 		}
+	// 	} else {
+	// 		setMode(mChangeStateID);
+	// 		mFadeTimer = 0.0f;
+	// 		mProgressiveScreen->startScreen(0, getFadeSpeed());
+	// 		mProgressiveScreen->mSelect = 1;
+	// 	}
+	// }
+	// once we're done loading, just skip straight to the next state
+	if (!waitLoadResource()) {
+		setMode(SID_DolbyLogo);
 	}
 
 	if (mStateID != lastMode) {
