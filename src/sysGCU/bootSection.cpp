@@ -972,6 +972,9 @@ void BootSection::updateNintendoLogo()
 			OSSetProgressiveMode(OS_PROGRESSIVE_MODE_OFF);
 		}
 	}
+	// @P2GZ: skip bootup screens
+	// just in case of any weird presets, always force progressive
+	OSSetProgressiveMode(OS_PROGRESSIVE_MODE_ON);
 
 	if (mDoOpenProgressive && mChangeStateID != SID_WaitProgressive && !mProgressiveActive) {
 		mChangeStateID = SID_WaitProgressive;
