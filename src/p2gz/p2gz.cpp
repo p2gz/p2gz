@@ -35,6 +35,7 @@ void P2GZ::init()
 
 	warp->init();
 	day_editor->init();
+	cutscene_toggle->init();
 }
 
 void P2GZ::update()
@@ -43,6 +44,7 @@ void P2GZ::update()
 	freecam->update();
 	waypoint_viewer->update();
 	day_editor->update();
+	cutscene_toggle->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

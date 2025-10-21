@@ -9,6 +9,7 @@
 #include "Game/Entities/PelletItem.h"
 #include "Game/gameStat.h"
 #include "Game/enemyInfo.h"
+#include <p2gz/p2gz.h>
 
 /**
  * @note Address: N/A
@@ -666,6 +667,10 @@ void PlayData::setDemoFlag(int flag)
 {
 	mDemoFlags.setFlag(flag);
 	mDemoFlags.dump();
+	// // @P2GZ cutscene-demoflag-reeanable-menu: update the relavent option in the menu to reflect the fact this cutscene has now been
+	// played
+	// // (Prevent descyn between P2GZ option and actual cutscene flags)
+	// p2gz->cutscene_toggle->playdata_update_setting(static_cast<DemoFlags>(flag));
 }
 
 /**

@@ -82,6 +82,7 @@ enum DemoFlags {
 	DEMO_RADAR_ENABLED           = 54, // these arent even for cutscenes, they're specifically for hud stuff
 	DEMO_SPICY_ENABLED           = 55,
 	DEMO_BITTER_ENABLED          = 56,
+	DEMO_FLAG_COUNT, // @P2GZ cutscene-demo-flag-reenable-menu: add this so we can get the number of flags for iteration purposes
 };
 
 // What to load into after file select, i.e. where did we last save?
