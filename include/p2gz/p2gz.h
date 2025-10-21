@@ -12,6 +12,7 @@
 #include <p2gz/SkippableCS.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
+#include <p2gz/SkipSave.h>
 
 struct P2GZ {
 public:
@@ -38,6 +39,7 @@ public:
 	gz::DayEditor* day_editor;
 	gz::HeapBarToggle* heap_bar_toggle;
 	gz::ImageMgr* images;
+	gz::SkipSave* skip_save;
 };
 
 // global instance

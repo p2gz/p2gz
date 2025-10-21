@@ -27,6 +27,7 @@ P2GZ::P2GZ()
 	day_editor                   = new DayEditor();
 	heap_bar_toggle              = new HeapBarToggle();
 	images                       = new ImageMgr();
+	skip_save                    = new SkipSave();
 }
 
 void P2GZ::init()
