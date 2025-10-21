@@ -52,6 +52,8 @@ struct Vec {
 		mBuf      = new T[capacity];
 	}
 
+	~Vec() { delete[] mBuf; }
+
 	size_t len() { return mLen; }
 
 	size_t capacity() { return mCapacity; }
@@ -78,11 +80,10 @@ struct Vec {
 	T removeAt(size_t idx)
 	{
 		GZASSERTLINE(idx < mLen);
-		if (idx == mLen - 1) {
-			return pop();
-		}
 		T val = mBuf[idx];
-		memcpy(mBuf[mBuf[idx], mBuf[idx + 1], mLen - idx - 1]);
+		if (idx < mLen - 1) {
+			memmove(&mBuf[idx], &mBuf[idx + 1], sizeof(T) * (mLen - idx - 1));
+		}
 		mLen--;
 		return val;
 	}
@@ -120,12 +121,11 @@ struct Vec {
 private:
 	void _grow(size_t newCapacity)
 	{
-		size_t oldCapacity = mCapacity;
-		mCapacity *= newCapacity;
-		T* newBuf = new T[mCapacity];
-		memcpy(newBuf, mBuf, oldCapacity);
-		delete mBuf;
-		mBuf = newBuf;
+		T* newBuf = new T[newCapacity];
+		memcpy(newBuf, mBuf, sizeof(T) * mLen);
+		delete[] mBuf;
+		mBuf      = newBuf;
+		mCapacity = newCapacity;
 	}
 
 	size_t mCapacity;

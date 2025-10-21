@@ -24,6 +24,7 @@ P2GZ::P2GZ()
 	warp                         = new Warp();
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
 	day_editor                   = new DayEditor();
+	images                       = new ImageMgr();
 }
 
 void P2GZ::init()
@@ -33,6 +34,7 @@ void P2GZ::init()
 
 	warp->init();
 	day_editor->init();
+	images->init();
 }
 
 void P2GZ::update()

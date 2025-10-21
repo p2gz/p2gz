@@ -201,6 +201,10 @@ void GZMenu::draw()
 
 	x = start_offset_x; // reset x to the left
 	layer->draw(j2d, x, z);
+
+	p2gz->images->draw("red_leaf", 300, 300, 32, 32);
+	p2gz->images->draw("red_bud", 340, 300, 32, 32);
+	p2gz->images->draw("red_flower", 380, 300, 32, 32);
 }
 
 MenuOption* GZMenu::get_option(const char* path)
