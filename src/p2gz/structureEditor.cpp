@@ -51,6 +51,7 @@ void StructureEditor::add_gate(Game::ItemGate* gate)
 	// clang-format off
 	gate_menu->push(new OpenSubMenuOption(gate_name, (new ListMenu())
 	    ->push(new RangeMenuOption("segments remaining", 0, 3, 3 - gate->mSegmentsDown, RangeMenuOption::CAP, new Delegate1<GateWrapper, s32>(&gates[gates.len()-1], &GateWrapper::set_gate_segments)))
+		->push(new FloatRangeMenuOption("segment health", 0.0f, gate->mMaxSegmentHealth, gate->mCurrentSegmentHealth, new Delegate1<GateWrapper, f32>(&gates[gates.len()-1], &GateWrapper::set_gate_segment_health)))
     ));
 	// clang-format on
 }
