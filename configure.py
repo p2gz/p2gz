@@ -2035,7 +2035,7 @@ config.libs = [
             Object(NonMatching, "sysGCU/memoryCard.cpp"),
             Object(NonMatching, "sysGCU/pikmin2MemoryCardMgr.cpp"),
             Object(Matching, "sysGCU/commonSaveData.cpp"),
-            Object(NonMatching, "sysGCU/bootSection.cpp"),
+            Object(Equivalent, "sysGCU/bootSection.cpp"),
             Object(NonMatching, "sysGCU/titleSection.cpp"),
             Object(Matching, "sysGCU/loadResource.cpp"),
             Object(Matching, "sysGCU/rootMenuSection.cpp"),
