@@ -19,6 +19,7 @@
 #include <Game/Entities/ItemCave.h>
 #include <Game/generalEnemyMgr.h>
 #include <Game/MapMgr.h>
+#include <Dolphin/rand.h>
 
 using namespace gz;
 
@@ -42,8 +43,12 @@ static const char* CAVE_NAMES[4][4] = {
 static const size_t NUM_FLOORS[4][4] = {
 	{ 2, 9, 8, 0 },
 	{ 5, 5, 7, 7 },
-	{ 5, 6, 5, 7 },
+	{ 5, 6, 7, 5 },
 	{ 10, 15, 14, 0 },
+};
+static const char* ENTER_KINDS[2] = {
+	"from cave",
+	"from map screen",
 };
 
 Warp::Warp()
@@ -51,16 +56,21 @@ Warp::Warp()
     , warp_cave(0)
     , warp_sublevel(1)
     , warp_day(2)
+    , allow_zero_pikmin_in_caves(true)
 {
 }
 
 void Warp::init()
 {
-	RadioMenuOption* area_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
-	RangeMenuOption* sublevel_opt = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
-	RangeMenuOption* day_opt      = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
+	RadioMenuOption* area_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
+	RangeMenuOption* sublevel_opt        = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
+	RangeMenuOption* day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
+	RadioMenuOption* enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
 	for (size_t i = 0; i < 4; i++) {
 		area_opt->options.push(AREA_NAMES[i]);
+	}
+	for (size_t i = 0; i < 2; i++) {
+		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
 
 	day_opt->set_selection(warp_day + 1);
@@ -71,7 +81,7 @@ void Warp::init()
 
 void Warp::set_warp_area(size_t area)
 {
-	warp_area = area;
+	warp_area     = area;
 	warp_cave     = 0;
 	warp_sublevel = 0;
 
@@ -81,10 +91,12 @@ void Warp::set_warp_area(size_t area)
 
 void Warp::set_warp_cave(size_t cave)
 {
-	warp_cave = cave;
+	warp_cave     = cave;
 	warp_sublevel = 0;
 
 	update_sublevel_opt();
+
+	p2gz->menu->get_option("warp/enter method")->visible = warp_cave == 0;
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
@@ -138,23 +150,33 @@ void Warp::do_warp()
 	}
 }
 
-void Warp::warp_to_cave(Game::SingleGameSection* game)
+void Warp::save_pikmin()
 {
 	// Save pikmin currently in squad so they come with us into the warp destination
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->isAlive() && piki->getCurrActionID() == PikiAI::ACT_Formation) {
-			int state = piki->getStateID();
-			if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop
-			    && piki->mNavi
-			    //    Check if we're in SmC
-			    && (!(warp_area == 2 && warp_cave != 4) || piki->getKind() == Game::Blue)) {
+		// kill all bulbmin to keep pikmin counts correct
+		if (piki->getKind() == Game::Bulbmin) {
+			Game::PikiKillArg killArg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&killArg);
+		}
+		//                      vvvvvvvvvvvvvvvv <- make sure we don't bring wild pikmin
+		if (piki->isAlive() && !piki->isZikatu() && piki->isPikmin()) {
+			// Don't bring non-blues into SmC
+			if (!(warp_area == 2 && warp_cave == 4) || piki->getKind() == Game::Blue) {
 				Game::playData->mCaveSaveData.mCavePikis(piki)++;
+				Game::PikiKillArg arg(Game::CKILL_DontCountAsDeath);
+				piki->kill(&arg);
 			}
 		}
 	}
+}
+
+void Warp::warp_to_cave(Game::SingleGameSection* game)
+{
+	save_pikmin();
 
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(warp_area);
@@ -193,6 +215,8 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 
 void Warp::warp_to_area(Game::SingleGameSection* game)
 {
+	save_pikmin();
+
 	// TODO: Probably not all of this is necessary - copy-paste from DayEndState::exec()
 	Game::gameSystem->resetFlag(Game::GAMESYS_IsGameWorldActive);
 	Game::gameSystem->setFlag(Game::GAMESYS_DisableDeathCounter);
@@ -268,6 +292,15 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	game->mIsGameStarted     = false;
 	game->mCurrentCourseInfo = Game::stageList->getCourseInfo(warp_area);
 
-	Game::SingleGame::LoadArg arg(0, false, false, false);
+	int map_enter_status;
+	switch (enter_area_type) {
+	case 0:
+		map_enter_status = Game::SingleGame::MapEnter_CaveGeyser;
+		break;
+	case 1:
+	default:
+		map_enter_status = Game::SingleGame::MapEnter_NewDay;
+	}
+	Game::SingleGame::LoadArg arg(map_enter_status, false, false, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 }
