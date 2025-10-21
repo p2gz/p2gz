@@ -67,7 +67,7 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		return;
 	}
 
-	if (enemy->mHealth <= 0.0f || !enemy->isLivingThing() || enemy->isUnderground()) {
+	if (enemy->mHealth <= 0.0f || !enemy->isLivingThing()) {
 		return;
 	}
 
