@@ -5,6 +5,7 @@
 #include <p2gz/WaypointViewer.h>
 #include <p2gz/warp.h>
 #include <p2gz/DayEditor.h>
+#include <p2gz/HeapBarToggle.h>
 #include <p2gz/SquadEditor.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
@@ -25,6 +26,9 @@ P2GZ::P2GZ()
 	warp                         = new Warp();
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
 	day_editor                   = new DayEditor();
+	heap_bar_toggle              = new HeapBarToggle();
+	images                       = new ImageMgr();
+	skip_save                    = new SkipSave();
 	squad_editor                 = new SquadEditor();
 }
 
@@ -35,18 +39,17 @@ void P2GZ::init()
 
 	warp->init();
 	day_editor->init();
+	images->init();
 }
 
 void P2GZ::update()
 {
-	collision_viewer->update();
-	freecam->update();
-	waypoint_viewer->update();
 	day_editor->update();
 	squad_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
+	// NEW - we use the menu lock to prevent this issue for update calls outside of this function (such as graphical updates)
 	menu->update();
 }
 

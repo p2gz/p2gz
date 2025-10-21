@@ -11,6 +11,8 @@
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
 #include <p2gz/DayEditor.h>
+#include <p2gz/HeapBarToggle.h>
+#include <p2gz/SkipSave.h>
 #include <p2gz/SquadEditor.h>
 
 struct P2GZ {
@@ -21,6 +23,7 @@ public:
 	void init();
 	void update();
 	void draw();
+	void draw_images();
 
 	// our own persistent controller so we don't crash the game on new file starting (don't ask)
 	Controller* controller;
@@ -35,6 +38,9 @@ public:
 	gz::Warp* warp;
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
 	gz::DayEditor* day_editor;
+	gz::HeapBarToggle* heap_bar_toggle;
+	gz::ImageMgr* images;
+	gz::SkipSave* skip_save;
 	gz::SquadEditor* squad_editor;
 };
 

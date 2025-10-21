@@ -17,7 +17,8 @@ NEW_ISO_ASSETS = os.path.join(os.getcwd(), 'root')
 # i.e. (P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader') -> files\memoryCard\memoryCardHeader\ directory
 # contents within this directory will all be compressed into memoryCardHeader.szs at build time
 P2GZ_CUSTOM_ASSETS_COMPRESSED = [
-    os.path.join(P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader')
+    os.path.join(P2GZ_ASSETS, 'files', 'memoryCard', 'memoryCardHeader'),
+    os.path.join(P2GZ_ASSETS, 'files', 'menu_images'),
 ]
 
 # Any asset that is NOT compressed - this is just the file path to the file itself to be replaced
