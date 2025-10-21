@@ -132,6 +132,12 @@ void ItemGate::onSetPosition()
 		efx::ArgRotY arg(mPosition, mFaceDir);
 		mEgateEfxBC->create(&arg);
 	}
+
+	// @P2GZ - Structure editor
+	// Register created gate with structure editor.
+	// Done in onSetPosition because StructureEditor uses
+	// coords to determine the name for the gate.
+	p2gz->structure_editor->add_gate(this);
 }
 
 /**
@@ -157,12 +163,6 @@ void ItemGate::doLoad(Stream& stream)
 		if (mWayPoint)
 			mWayPoint->setOpen(false);
 	}
-
-	// @P2GZ - Structure editor
-	// Register created gate with structure editor.
-	// Done in onSetPosition because StructureEditor uses
-	// coords to determine the name for the gate.
-	p2gz->structure_editor->add_gate(this);
 }
 
 /**
