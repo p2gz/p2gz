@@ -34,6 +34,10 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 		Radar::mgr->clear();
 	}
 
+	// @P2GZ - enemy debug info
+	// Clear the list of enemies to draw whenever we're transiting map
+	p2gz->enemy_debug_info->clear_enemies();
+
 	P2ASSERTLINE(33, arg != nullptr);
 
 	LoadArg* a     = static_cast<LoadArg*>(arg);

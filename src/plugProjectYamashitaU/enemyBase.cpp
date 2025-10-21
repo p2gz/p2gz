@@ -1273,7 +1273,7 @@ void EnemyBase::deathMethod()
 void EnemyBase::onKill(CreatureKillArg* inputArg)
 {
 	// @P2GZ - enemy debug info
-	// Remove this enemy from the list for debug drawing
+	// Remove this enemy from the list for debug drawing when killed
 	p2gz->enemy_debug_info->remove_enemy(this);
 
 	getCreatureName();

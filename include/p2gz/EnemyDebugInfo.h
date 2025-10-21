@@ -18,6 +18,7 @@ struct EnemyDebugInfo {
 	void set_enabled(bool enabled_) { enabled = enabled_; }
 	void push_enemy(Game::EnemyBase* enemy) { enemies.push(enemy); }
 	void remove_enemy(Game::EnemyBase* enemy);
+	void clear_enemies() { enemies.clear(); }
 
 	void set_max_display_dist(f32 dist) { max_dist = dist; }
 	void set_size(s32 size);
