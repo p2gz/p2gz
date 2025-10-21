@@ -14,11 +14,21 @@ Image::~Image()
 	image = nullptr;
 }
 
-void Image::draw(f32 x, f32 y, f32 width, f32 height)
+f32 Image::draw(f32 x, f32 z, f32 width, f32 height)
 {
-	if (image) {
-		image->draw(x, y, width, height, false, false, false);
+	if (!image) {
+		return 0.0f;
 	}
+
+	image->draw(x, z, width, height, false, false, false);
+	return width;
+}
+
+ImageMgr::ImageMgr()
+    : menu_width(20.0f)
+    , menu_height(20.0f)
+    , menu_spacing(5.0f)
+{
 }
 
 void ImageMgr::init()
@@ -37,4 +47,20 @@ const ResTIMG* ImageMgr::getImageFile(JKRArchive* arc, const char* file_path)
 	GZASSERTLINE(img);
 
 	return img;
+}
+
+f32 ImageMgr::draw(const char* name, f32 x, f32 z)
+{
+	Image* img = get(name);
+
+	if (!img) {
+		return 0.0f;
+	}
+	j3dSys.drawInit();
+	GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
+	sys->mGfx->mOrthoGraph.setPort();
+	GXSetAlphaUpdate(GX_TRUE);
+	GXSetColorUpdate(GX_TRUE);
+
+	return img->draw(x, z, menu_width, menu_height);
 }

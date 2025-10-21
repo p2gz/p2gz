@@ -17,7 +17,7 @@ struct Image {
 
 	~Image();
 
-	void draw(f32 x, f32 y, f32 width, f32 height);
+	f32 draw(f32 x, f32 z, f32 width, f32 height);
 
 	bool is(const char* other_name) { return strcmp(name, other_name) == 0; }
 
@@ -27,7 +27,8 @@ private:
 };
 
 struct ImageMgr {
-	ImageMgr() { }
+	ImageMgr();
+
 	~ImageMgr() { }
 
 	/// To add a new image, add it to this function with an appropriate name.
@@ -44,26 +45,22 @@ struct ImageMgr {
 		return nullptr;
 	}
 
+	f32 height() { return menu_height; }
+	f32 spacing() { return menu_spacing; }
+
 	void push(Image* new_image) { images.push(new_image); }
 
-	void draw(const char* name, f32 x, f32 y, f32 width, f32 height)
-	{
-		Image* img = get(name);
-
-		j3dSys.drawInit();
-		GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
-		sys->mGfx->mOrthoGraph.setPort();
-		GXSetAlphaUpdate(GX_TRUE);
-		GXSetColorUpdate(GX_TRUE);
-
-		img->draw(x, y, width, height);
-	}
+	f32 draw(const char* name, f32 x, f32 z);
 
 	/// Get ResTIMG image out of menu_images archive, once loaded
 	static const ResTIMG* getImageFile(JKRArchive* arc, const char* file_path);
 
 private:
 	Vec<Image*> images;
+	// consistent widths and heights for images in the menu
+	f32 menu_width;
+	f32 menu_height;
+	f32 menu_spacing;
 };
 
 } // namespace gz
