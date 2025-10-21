@@ -41,8 +41,6 @@ void StructureEditor::init()
 
 void StructureEditor::add_gate(Game::ItemGate* gate)
 {
-	OSReport("%f, %f\n", gate->mPosition.x, gate->mPosition.z);
-
 	GateWrapper gate_wrapper;
 	gate_wrapper.gate = gate;
 	gates.push(gate_wrapper);
