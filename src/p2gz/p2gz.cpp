@@ -5,6 +5,7 @@
 #include <p2gz/WaypointViewer.h>
 #include <p2gz/warp.h>
 #include <p2gz/DayEditor.h>
+#include <p2gz/HeapBarToggle.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -24,6 +25,7 @@ P2GZ::P2GZ()
 	warp                         = new Warp();
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
 	day_editor                   = new DayEditor();
+	heap_bar_toggle              = new HeapBarToggle();
 	images                       = new ImageMgr();
 }
 
