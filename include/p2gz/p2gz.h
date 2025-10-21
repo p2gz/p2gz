@@ -21,6 +21,7 @@ public:
 	void init();
 	void update();
 	void draw();
+	void draw_images();
 
 	// our own persistent controller so we don't crash the game on new file starting (don't ask)
 	Controller* controller;
@@ -36,6 +37,7 @@ public:
 	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
 	gz::DayEditor* day_editor;
 	gz::HeapBarToggle* heap_bar_toggle;
+	gz::ImageMgr* images;
 };
 
 // global instance
