@@ -3,6 +3,8 @@
 #include "Game/Cave/RandMapMgr.h"
 #include "Game/mapParts.h"
 #include "types.h"
+#include <p2gz/p2gz.h>
+#include <PowerPC_EABI_Support/MSL_C/MSL_Common/rand.h>
 
 namespace Game {
 namespace Cave {
@@ -19,6 +21,11 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	bool isVersusHiba = false;
 	if (gameSystem && gameSystem->isVersusMode() && gGameConfig.mParms.mVsHiba.mData) {
 		isVersusHiba = true;
+	}
+
+	// @P2GZ - set seed
+	if (p2gz->warp->use_set_seed) {
+		srand(p2gz->warp->set_seed);
 	}
 
 	Cave::randMapMgr = new Cave::RandMapMgr(isVersusHiba);

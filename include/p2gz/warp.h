@@ -20,6 +20,9 @@ public:
 
 	void do_warp();
 
+	u32 set_seed;
+	bool use_set_seed;
+
 private:
 	void update_cave_opt();
 	void update_sublevel_opt();
