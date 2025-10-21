@@ -1399,7 +1399,7 @@ config.libs = [
         "progress_category" : "game",
         "host": True,
         "objects": [
-            Object(Equivalent, "plugProjectNishimuraU/nslibmath.cpp"),
+            Object(NonMatching, "plugProjectNishimuraU/nslibmath.cpp"),
             Object(Matching, "plugProjectNishimuraU/ShadowCylinder.cpp"),
             Object(Equivalent, "plugProjectNishimuraU/playCamera.cpp"),
             Object(Matching, "plugProjectNishimuraU/shadowMgr.cpp"),
