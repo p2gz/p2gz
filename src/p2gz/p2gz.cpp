@@ -26,6 +26,7 @@ P2GZ::P2GZ()
 	skippable_treasure_cutscenes = new SkippableTreasureCS();
 	day_editor                   = new DayEditor();
 	heap_bar_toggle              = new HeapBarToggle();
+	skip_save                    = new SkipSave();
 }
 
 void P2GZ::init()
