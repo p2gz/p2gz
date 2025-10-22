@@ -16,6 +16,7 @@ namespace gz {
 
 // predeclarations
 struct MenuLayer;
+struct HexKeypad;
 
 /// Base class for selectable menu options. Override `on_selected` in subclasses
 /// to give them unique behavior.
@@ -179,6 +180,23 @@ private:
 	f32 selected_val;
 };
 
+struct HexInputOption : public MenuOption {
+public:
+	HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_ = nullptr, bool image_only_ = false);
+
+	virtual MenuLayer* get_sub_menu();
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void update() { }
+	virtual void select();
+
+	bool is_selected();
+	u32 get_selected_val();
+
+private:
+	HexKeypad* keypad;
+	const char* value_if_unselected;
+};
+
 /// Base class for different types of menus
 struct MenuLayer {
 public:
@@ -276,6 +294,32 @@ public:
 	size_t selected_row;
 	size_t selected_col;
 	f32 column_width;
+};
+
+struct HexKeypad : public MenuLayer {
+public:
+	HexKeypad(const char* title_);
+
+	virtual void update();
+	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual void reset_selection()
+	{
+		keypad->reset_selection();
+		cur_digit = 0;
+	}
+
+	u32 get_value() { return value; }
+
+	bool is_unselected;
+
+private:
+	void select_digit(u32);
+	void submit();
+	void set_unselected();
+
+	GridMenu* keypad;
+	u32 value;
+	u8 cur_digit;
 };
 
 struct GZMenu {

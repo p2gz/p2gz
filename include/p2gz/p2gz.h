@@ -15,6 +15,7 @@
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
 #include <p2gz/StructureEditor.h>
+#include <p2gz/SegmentHistory.h>
 
 struct P2GZ {
 public:
@@ -44,6 +45,7 @@ public:
 	gz::SkipSave* skip_save;
 	gz::StructureEditor* structure_editor;
 	gz::SprayEditor* spray_editor;
+	gz::SegmentHistory* segment_history;
 };
 
 // global instance

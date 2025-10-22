@@ -5,6 +5,7 @@
 #include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
 #include <p2gz/SprayEditor.h>
+#include <p2gz/BoundDelegate.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -42,6 +43,7 @@ void GZMenu::init_menu()
 			->push(new RadioMenuOption("area", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_area)))
 			->push(new RadioMenuOption("cave", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_cave)))
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
+			->push(new HexInputOption("seed", "random"))
 			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
@@ -353,11 +355,17 @@ void GridMenu::update()
 	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0) {
 		do {
 			selected_row -= 1;
+			if (options[selected_row]->len() <= selected_col) {
+				selected_col = options[selected_row]->len() - 1;
+			}
 		} while (!cur_option()->visible);
 	}
 	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1) {
 		do {
 			selected_row += 1;
+			if (options[selected_row]->len() <= selected_col) {
+				selected_col = options[selected_row]->len() - 1;
+			}
 		} while (!cur_option()->visible);
 	}
 	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0) {
@@ -475,18 +483,119 @@ void GridMenu::navigate_to(const char* path)
 	}
 }
 
+HexKeypad::HexKeypad(const char* title_)
+{
+	title         = title_;
+	value         = 0;
+	cur_digit     = 0;
+	is_unselected = true;
+
+	// clang-format off
+	keypad = (new GridMenu(16.0f))
+		->push_to_row(new PerformActionMenuOption("0", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x0)))
+		->push_to_row(new PerformActionMenuOption("1", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x1)))
+		->push_to_row(new PerformActionMenuOption("2", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x2)))
+		->push_to_row(new PerformActionMenuOption("3", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x3)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("4", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x4)))
+		->push_to_row(new PerformActionMenuOption("5", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x5)))
+		->push_to_row(new PerformActionMenuOption("6", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x6)))
+		->push_to_row(new PerformActionMenuOption("7", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x7)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("8", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x8)))
+		->push_to_row(new PerformActionMenuOption("9", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x9)))
+		->push_to_row(new PerformActionMenuOption("A", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0xA)))
+		->push_to_row(new PerformActionMenuOption("B", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0xB)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("C", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0xC)))
+		->push_to_row(new PerformActionMenuOption("D", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0xD)))
+		->push_to_row(new PerformActionMenuOption("E", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0xE)))
+		->push_to_row(new PerformActionMenuOption("F", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0xF)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("submit", new Delegate<HexKeypad>(this, &submit)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("use random seed", new Delegate<HexKeypad>(this, &set_unselected)));
+	// clang-format on
+}
+
+void HexKeypad::select_digit(u32 digit)
+{
+	is_unselected = false;
+	value |= digit << ((7 - cur_digit) * 4);
+	if (cur_digit < 7) {
+		cur_digit += 1;
+	}
+}
+
+void HexKeypad::set_unselected()
+{
+	is_unselected = true;
+	p2gz->menu->pop_layer();
+}
+
+void HexKeypad::submit()
+{
+	is_unselected = false;
+	p2gz->menu->pop_layer();
+}
+
+void HexKeypad::update()
+{
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_R) {
+		if (cur_digit >= 7) {
+			cur_digit = 0;
+		} else {
+			cur_digit += 1;
+		}
+	}
+	if (btn & Controller::PRESS_L) {
+		if (cur_digit == 0) {
+			cur_digit = 7;
+		} else {
+			cur_digit -= 1;
+		}
+	}
+
+	keypad->update();
+}
+
+void HexKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	static const char* hex_digits = "0123456789ABCDEF";
+	f32 initial_x                 = x;
+
+	for (u8 i = 0; i < 8; i++) {
+		bool is_selected = i == cur_digit;
+		if (is_selected) {
+			j2d.mCharColor.set(p2gz->menu->color_highlight);
+			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		} else {
+			j2d.mCharColor.set(p2gz->menu->color_std);
+			j2d.mGradientColor.set(p2gz->menu->color_std);
+		}
+
+		u8 digit = (value >> ((7 - i) * 4)) & 0xF;
+		x += j2d.print(x, z, "%c", hex_digits[digit]);
+	}
+
+	z += p2gz->menu->line_height;
+	keypad->column_width = p2gz->menu->line_height;
+	keypad->draw(j2d, initial_x, z);
+}
+
 f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor + x, z, title);
+		cursor += j2d.print(cursor, z, title);
 	}
 
 	return cursor;
@@ -494,16 +603,16 @@ f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 
 f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: %s", title, on ? "true" : "false");
+		cursor += j2d.print(cursor, z, "%s: %s", title, on ? "true" : "false");
 	}
 	return cursor;
 }
@@ -549,26 +658,26 @@ void RadioMenuOption::select()
 
 f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: < ", title);
+		cursor += j2d.print(cursor, z, "%s: < ", title);
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(x + cursor, z, options[selected_idx]);
+		cursor += j2d.print(cursor, z, options[selected_idx]);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
-		cursor += j2d.print(x + cursor, z, " >");
+		cursor += j2d.print(cursor, z, " >");
 	}
 	return cursor;
 }
@@ -624,31 +733,31 @@ void RangeMenuOption::check_overflow()
 
 f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: ", title);
+		cursor += j2d.print(cursor, z, "%s: ", title);
 
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
-			cursor += j2d.print(x + cursor, z, "< ");
+			cursor += j2d.print(cursor, z, "< ");
 		}
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(x + cursor, z, "%d", selected_val);
+		cursor += j2d.print(cursor, z, "%d", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
-			cursor += j2d.print(x + cursor, z, " >");
+			cursor += j2d.print(cursor, z, " >");
 		}
 	}
 	return cursor;
@@ -696,32 +805,68 @@ void FloatRangeMenuOption::check_overflow()
 
 f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: ", title);
+		cursor += j2d.print(cursor, z, "%s: ", title);
 
 		if (selected_val > min) {
-			cursor += j2d.print(x + cursor, z, "< ");
+			cursor += j2d.print(cursor, z, "< ");
 		}
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(x + cursor, z, "%.2f", selected_val);
+		cursor += j2d.print(cursor, z, "%.2f", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
 		if (selected_val < max) {
-			cursor += j2d.print(x + cursor, z, " >");
+			cursor += j2d.print(cursor, z, " >");
 		}
 	}
 	return cursor;
+}
+
+HexInputOption::HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_, bool image_only_)
+    : MenuOption(title_, image_name_, image_only_)
+{
+	keypad              = new HexKeypad(title_);
+	value_if_unselected = value_if_unselected_;
+}
+
+MenuLayer* HexInputOption::get_sub_menu()
+{
+	return keypad;
+}
+
+void HexInputOption::select()
+{
+	p2gz->menu->push_layer(keypad);
+}
+
+f32 HexInputOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	x = MenuOption::draw(j2d, x, z, selected);
+	if (keypad->is_unselected) {
+		return x + j2d.print(x, z, ": %s", value_if_unselected);
+	}
+	return x + j2d.print(x, z, ": %08X", keypad->get_value());
+}
+
+bool HexInputOption::is_selected()
+{
+	return !keypad->is_unselected;
+}
+
+u32 HexInputOption::get_selected_val()
+{
+	return keypad->get_value();
 }

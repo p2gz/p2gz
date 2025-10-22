@@ -114,15 +114,17 @@ void Warp::update_sublevel_opt()
 	GZASSERTLINE(warp_area < 4);
 	GZASSERTLINE(warp_cave < 5); // 5th is AG
 	RangeMenuOption* sublevel_opt = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
+	HexInputOption* seed_opt      = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
 
-	// If destination is above ground, hide sublevel option
-	sublevel_opt->visible = warp_cave > 0;
-	if (!sublevel_opt->visible) {
-		return;
+	// If destination is above ground, hide cave-related options
+	bool selection_is_cave = warp_cave > 0;
+	sublevel_opt->visible  = selection_is_cave;
+	seed_opt->visible      = selection_is_cave;
+
+	if (selection_is_cave) {
+		sublevel_opt->max = NUM_FLOORS[warp_area][warp_cave - 1];
+		sublevel_opt->set_selection(warp_sublevel + 1);
 	}
-
-	sublevel_opt->max = NUM_FLOORS[warp_area][warp_cave - 1];
-	sublevel_opt->set_selection(warp_sublevel + 1);
 }
 
 void Warp::do_warp()
@@ -170,6 +172,12 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	// TODO: do we want to do this? Should it be a setting?
 	if (!Game::gameSystem->mIsInCave) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
+	}
+
+	HexInputOption* seed_opt = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
+	use_set_seed             = seed_opt->is_selected();
+	if (use_set_seed) {
+		set_seed = seed_opt->get_selected_val();
 	}
 
 	game->mCurrentCourseInfo = dst_course_info;
