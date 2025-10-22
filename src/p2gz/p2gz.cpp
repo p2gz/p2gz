@@ -40,6 +40,7 @@ void P2GZ::init()
 	warp->init();
 	day_editor->init();
 	images->init();
+	squad_editor->init();
 }
 
 void P2GZ::update()

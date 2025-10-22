@@ -228,6 +228,7 @@ public:
 	    : column_width(column_width_)
 	{
 		options.push(new Vec<MenuOption*>);
+		editing_range = false;
 	}
 
 	virtual void update();

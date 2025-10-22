@@ -5,9 +5,15 @@
 #include <Game/Navi.h>
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
+#include <Game/gamePlayData.h>
 #include <og/Sound.h>
 
 using namespace gz;
+
+void SquadEditor::init()
+{
+	squad_menu = static_cast<GridMenu*>(p2gz->menu->get_option("pikmin/squad")->get_sub_menu());
+}
 
 // Add a Pikmin to the active captain's squad if there are fewer than 100 Pikmin in the field.
 void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int count)
@@ -15,6 +21,38 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 	Game::Navi* navi = Game::naviMgr->getActiveNavi();
 	if (!navi) {
 		return;
+	}
+
+	if (!Game::playData) {
+		return;
+	}
+
+	if (color != Game::Purple && color != Game::White) {
+		Game::playData->setBootContainer(color);
+	}
+	Game::playData->setContainer(color);
+	Game::playData->setMeetPikmin(color);
+
+	switch (color) {
+	case Game::Blue:
+		Game::playData->setDemoFlag(Game::DEMO_Find_Blue_Onion);
+		break;
+	case Game::Red:
+		Game::playData->setDemoFlag(Game::DEMO_Meet_Red_Pikmin);
+		Game::playData->setDemoFlag(Game::DEMO_Louie_Finds_Red_Onion);
+		break;
+	case Game::Yellow:
+		Game::playData->setDemoFlag(Game::DEMO_Find_Yellow_Onion);
+		break;
+	case Game::Purple:
+		Game::playData->setDemoFlag(Game::DEMO_Purple_Candypop);
+		Game::playData->setDemoFlag(Game::DEMO_Purples_In_Ship);
+		Game::playData->setDemoFlag(Game::DEMO_Reds_Purples_Tutorial);
+		break;
+	case Game::White:
+		Game::playData->setDemoFlag(Game::DEMO_White_Candypop);
+		Game::playData->setDemoFlag(Game::DEMO_Whites_In_Ship);
+		break;
 	}
 
 	for (int i = 0; i < count; i++) {
@@ -73,24 +111,39 @@ gz::Vec<s32> SquadEditor::get_squad()
 void SquadEditor::set_squad(s32 _)
 {
 	gz::Vec<s32> squad = get_squad();
-	GridMenu* editor   = static_cast<GridMenu*>(p2gz->menu->get_option("pikmin/squad")->get_sub_menu());
 
+	// If the player increments an option by 10 and exceeds 100 total Pikmin, we need to identify the offending option
+	// and clamp it so the total Pikmin count is 100.
+	RangeMenuOption* changed = nullptr;
+	int previous             = 0;
+	int total                = 0;
 	for (int color = 0; color < 5; color++) {
-		Vec<MenuOption*>* row = editor->options[color];
+		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
 			s32 target           = opt->get_selection();
 			s32 current          = squad[color * 3 + stage];
-			if (target == MAX_PIKI_COUNT) {
-				int clamp = MAX_PIKI_COUNT - Game::pikiMgr->mActiveCount - Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
-				opt->set_selection(clamp);
-				target = clamp;
+			if (target != current) {
+				changed  = opt;
+				previous = current;
 			}
-			if (target > current
-			    && Game::pikiMgr->mActiveCount + Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount + 1 > MAX_PIKI_COUNT) {
-				opt->set_selection(0);
-				target = 0;
-			}
+			total += target;
+		}
+	}
+	if (total > MAX_PIKI_COUNT) {
+		int clamp = changed->get_selection() - total + MAX_PIKI_COUNT;
+		if (clamp <= previous || clamp < 0) {
+			clamp = 0;
+		}
+		changed->set_selection(clamp);
+	}
+
+	for (int color = 0; color < 5; color++) {
+		Vec<MenuOption*>* row = squad_menu->options[color];
+		for (int stage = 0; stage < 3; stage++) {
+			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
+			s32 target           = opt->get_selection();
+			s32 current          = squad[color * 3 + stage];
 
 			if (target < current) {
 				kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), current - target);
@@ -119,9 +172,8 @@ void SquadEditor::update()
 	}
 
 	gz::Vec<s32> squad = get_squad();
-	GridMenu* editor   = static_cast<GridMenu*>(p2gz->menu->get_option("pikmin/squad")->get_sub_menu());
 	for (int color = 0; color < 5; color++) {
-		Vec<MenuOption*>* row = editor->options[color];
+		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
 			static_cast<RangeMenuOption*>((*row)[stage])->set_selection(squad[color * 3 + stage]);
 		}

@@ -3,6 +3,7 @@
 
 #include <Game/Piki.h>
 #include <p2gz/gzCollections.h>
+#include <p2gz/gzmenu.h>
 
 namespace gz {
 struct SquadEditor {
@@ -10,6 +11,7 @@ public:
 	SquadEditor() { }
 	~SquadEditor() { }
 
+	void init();
 	void update();
 	void set_squad(s32);
 
@@ -19,6 +21,7 @@ private:
 	gz::Vec<s32> get_squad();
 
 	gz::Vec<s32> counts;
+	gz::GridMenu* squad_menu;
 };
 } // namespace gz
 #endif
