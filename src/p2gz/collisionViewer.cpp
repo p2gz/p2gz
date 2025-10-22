@@ -90,7 +90,7 @@ void CollisionViewer::toggle(bool enabled_)
 		{
 			Game::MapRoom* room = *iterator;
 			if (enabled_) {
-				room->mRoomVisibilitySphere = Sys::Sphere();
+				room->mModel->hide();
 			} else {
 				room->mModel->show();
 			}
