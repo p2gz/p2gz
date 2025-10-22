@@ -305,7 +305,6 @@ public:
 		options.push(new Vec<MenuOption*>);
 		editing_option = false;
 	}
-
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual MenuOption* get_option(const char* path);
