@@ -176,7 +176,8 @@ void CaveState::exec(SingleGameSection* game)
 	game->updateCaveScreen();
 
 	// check pikmin extinction cutscene
-	if (!(moviePlayer->isFlag(MVP_IsActive))) {
+	// @P2GZ squad editor: don't check for Pikmin extinction while editing squad
+	if (!(moviePlayer->isFlag(MVP_IsActive)) && !p2gz->squad_editor->is_open()) {
 		if (GameStat::getMapPikmins(AllPikminCalcs) == 0) {
 			gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 			MoviePlayArg moviearg("s05_pikminzero", nullptr, game->mMovieFinishCallback, 0);

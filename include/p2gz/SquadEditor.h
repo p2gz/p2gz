@@ -15,6 +15,8 @@ public:
 	void update();
 	void set_squad(s32);
 
+	bool is_open() { return open; }
+
 private:
 	void birth_piki(Game::EPikiKind, Game::EPikiHappa, int);
 	void kill_piki(Game::EPikiKind, Game::EPikiHappa, int);
@@ -22,6 +24,7 @@ private:
 
 	gz::Vec<s32> counts;
 	gz::GridMenu* squad_menu;
+	bool open;
 };
 } // namespace gz
 #endif

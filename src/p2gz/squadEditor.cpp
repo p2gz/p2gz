@@ -27,11 +27,13 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		return;
 	}
 
-	if (color != Game::Purple && color != Game::White) {
-		Game::playData->setBootContainer(color);
+	if (color != Game::Bulbmin) {
+		if (color != Game::Purple && color != Game::White) {
+			Game::playData->setBootContainer(color);
+		}
+		Game::playData->setContainer(color);
+		Game::playData->setMeetPikmin(color);
 	}
-	Game::playData->setContainer(color);
-	Game::playData->setMeetPikmin(color);
 
 	switch (color) {
 	case Game::Blue:
@@ -52,6 +54,9 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 	case Game::White:
 		Game::playData->setDemoFlag(Game::DEMO_White_Candypop);
 		Game::playData->setDemoFlag(Game::DEMO_Whites_In_Ship);
+		break;
+	case Game::Bulbmin:
+		Game::playData->setDemoFlag(Game::DEMO_Discover_Bulbmin);
 		break;
 	}
 
@@ -92,8 +97,8 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 // Returns a vector of { blue_leaves, blue_buds, blue_flowers, red_*, yellow_*, purple_*, white_* }.
 gz::Vec<s32> SquadEditor::get_squad()
 {
-	gz::Vec<s32> squad(15);
-	for (int i = 0; i < 15; i++) {
+	gz::Vec<s32> squad(18);
+	for (int i = 0; i < 18; i++) {
 		squad.push(0);
 	}
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
@@ -112,12 +117,12 @@ void SquadEditor::set_squad(s32 _)
 {
 	gz::Vec<s32> squad = get_squad();
 
-	// If the player increments an option by 10 and exceeds 100 total Pikmin, we need to identify the offending option
+	// If the player increments an option to exceed 100 total Pikmin, we need to identify the offending option
 	// and clamp it so the total Pikmin count is 100.
 	RangeMenuOption* changed = nullptr;
 	int previous             = 0;
-	int total                = 0;
-	for (int color = 0; color < 5; color++) {
+	int total                = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
+	for (int color = 0; color < 6; color++) {
 		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
@@ -138,7 +143,7 @@ void SquadEditor::set_squad(s32 _)
 		changed->set_selection(clamp);
 	}
 
-	for (int color = 0; color < 5; color++) {
+	for (int color = 0; color < 6; color++) {
 		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
@@ -157,11 +162,19 @@ void SquadEditor::set_squad(s32 _)
 // Update the squad menu with the Pikmin counts from the active captain's squad.
 void SquadEditor::update()
 {
+	if (open) {
+		OSReport("true\n");
+	} else {
+		OSReport("false\n");
+	}
 	// Don't update the live squad count while the squad editor is open.
 	if (p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
 	    && strcmp(p2gz->menu->get_active_layer()->title, "squad") == 0) {
+		open = true;
 		return;
 	}
+
+	open = false;
 
 	if (!Game::pikiMgr) {
 		return;
@@ -172,7 +185,7 @@ void SquadEditor::update()
 	}
 
 	gz::Vec<s32> squad = get_squad();
-	for (int color = 0; color < 5; color++) {
+	for (int color = 0; color < 6; color++) {
 		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
 			static_cast<RangeMenuOption*>((*row)[stage])->set_selection(squad[color * 3 + stage]);
