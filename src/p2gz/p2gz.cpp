@@ -6,6 +6,7 @@
 #include <p2gz/warp.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
+#include <p2gz/SprayEditor.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -29,6 +30,7 @@ P2GZ::P2GZ()
 	images                       = new ImageMgr();
 	skip_save                    = new SkipSave();
 	structure_editor             = new StructureEditor();
+	spray_editor                 = new SprayEditor();
 }
 
 void P2GZ::init()
@@ -40,11 +42,13 @@ void P2GZ::init()
 	warp->init();
 	day_editor->init();
 	images->init();
+	spray_editor->init();
 }
 
 void P2GZ::update()
 {
 	day_editor->update();
+	spray_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

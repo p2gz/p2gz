@@ -2101,6 +2101,7 @@ config.libs = [
             Object(Matching, "p2gz/dayEditor.cpp"),
             Object(Matching, "p2gz/images.cpp"),
             Object(Matching, "p2gz/structureEditor.cpp"),
+            Object(Matching, "p2gz/sprayEditor.cpp"),
         ],
     },
 ]
@@ -2129,6 +2130,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/dayEditor.cpp",
             "p2gz/images.cpp",
             "p2gz/structureEditor.cpp",
+            "p2gz/sprayEditor.cpp",
             ]
     return objects
 

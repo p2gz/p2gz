@@ -7,6 +7,7 @@
 #include <p2gz/NaviTools.h>
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/SprayEditor.h>
 #include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
@@ -42,6 +43,7 @@ public:
 	gz::ImageMgr* images;
 	gz::SkipSave* skip_save;
 	gz::StructureEditor* structure_editor;
+	gz::SprayEditor* spray_editor;
 };
 
 // global instance
