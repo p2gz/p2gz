@@ -134,6 +134,10 @@ void GZMenu::init_menu()
 		// Cutscene re-enable menu
 		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
 			// Submenus get added in CutsceneMgr::init
+		))
+		->push(new OpenSubMenuOption("localization", (new ListMenu())
+			->push(new RadioMenuOption("Menu Text", new Delegate1<LanguageSwap, size_t>(p2gz->language_swap, &LanguageSwap::set_language)))
+	
 		));
 	// clang-format on
 

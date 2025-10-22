@@ -275,7 +275,6 @@ public:
 		options.push(new Vec<MenuOption*>);
 		editing_range = false;
 	}
-
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual MenuOption* get_option(const char* path);
@@ -333,8 +332,8 @@ public:
 	u32 get_value() { return value; }
 	u32 set_value(u32 value_)
 	{
-		value         = value_;
-		unselected    = false;
+		value      = value_;
+		unselected = false;
 	}
 	bool is_unselected() { return unselected; }
 

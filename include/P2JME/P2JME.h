@@ -42,6 +42,7 @@ struct Mgr : public JKRDisposer {
 	u32 _2C;                                     // _2C
 	JMessage::TResourceContainer* mResContainer; // _30
 	JMessage::TReference* mMsgRef;               // _34
+	JKRHeap* mLanguageSwapHeap;                  // _38 @P2GZ localization-swap: add new field for temporary heap for swapping languages
 };
 
 void convertU64ToMessageID(u64, u32*, u32*);

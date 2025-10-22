@@ -29,7 +29,7 @@ private:
 struct ImageMgr {
 	ImageMgr();
 
-	~ImageMgr() { }
+	~ImageMgr() { delete &images; }
 
 	/// To add a new image, add it to this function with an appropriate name.
 	void init();
