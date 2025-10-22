@@ -88,6 +88,30 @@ private:
 	IDelegate1<bool>* on_selected;
 };
 
+struct CutsceneMenuOption : public MenuOption {
+public:
+	CutsceneMenuOption(const char* title_, bool played_, IDelegate1<bool>* on_selected_)
+	    : MenuOption(title_)
+	    , played(played_)
+	    , on_selected(on_selected_)
+	{
+	}
+
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+
+	virtual void select()
+	{
+		played = !played;
+		if (on_selected) {
+			on_selected->invoke(played);
+		}
+	}
+
+private:
+	bool played;
+	IDelegate1<bool>* on_selected;
+};
+
 struct RadioMenuOption : public MenuOption {
 public:
 	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_)
