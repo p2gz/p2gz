@@ -6,12 +6,13 @@
 #include <Graphics.h>
 #include <stl/math.h>
 #include <Game/MapMgr.h>
+#include <Game/mapParts.h>
 
 using namespace gz;
 
 const int RENDER_DISTANCE = 16;
 
-bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable& vertTable)
+bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable* vertTable)
 {
 	Game::Navi* navi = Game::naviMgr->getActiveNavi();
 	if (navi == nullptr || tri == nullptr) {
@@ -24,8 +25,8 @@ bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable& 
 	}
 
 	for (int i = 0; i < 3; i++) {
-		Vector3f naviVertex = *vertTable.getVertex(naviTriangle->mVertices[i]);
-		Vector3f triVertex  = *vertTable.getVertex(tri->mVertices[i]);
+		Vector3f naviVertex = *vertTable->getVertex(naviTriangle->mVertices[i]);
+		Vector3f triVertex  = *vertTable->getVertex(tri->mVertices[i]);
 		if (naviVertex != triVertex) {
 			return false;
 		}
@@ -35,17 +36,27 @@ bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable& 
 
 void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 {
-	Game::ShapeMapMgr* shapeMapMgr = static_cast<Game::ShapeMapMgr*>(Game::mapMgr);
-	Sys::TriIndexList* triLists    = shapeMapMgr->mMapCollision.mDivider->findTriLists(sphere);
-	Sys::VertexTable& vertTable    = *shapeMapMgr->mMapCollision.mDivider->mVertexTable;
-	Sys::TriangleTable& triTable   = *shapeMapMgr->mMapCollision.mDivider->mTriangleTable;
+	Sys::TriIndexList* triLists;
+	Sys::VertexTable* vertTable;
+	Sys::TriangleTable* triTable;
+	if (Game::gameSystem->mIsInCave) {
+		Game::RoomMapMgr* roomMapMgr = static_cast<Game::RoomMapMgr*>(Game::mapMgr);
+		triLists                     = roomMapMgr->mMapCollision->mDivider->findTriLists(sphere);
+		vertTable                    = roomMapMgr->mMapCollision->mDivider->mVertexTable;
+		triTable                     = roomMapMgr->mMapCollision->mDivider->mTriangleTable;
+	} else {
+		Game::ShapeMapMgr* shapeMapMgr = static_cast<Game::ShapeMapMgr*>(Game::mapMgr);
+		triLists                       = shapeMapMgr->mMapCollision.mDivider->findTriLists(sphere);
+		vertTable                      = shapeMapMgr->mMapCollision.mDivider->mVertexTable;
+		triTable                       = shapeMapMgr->mMapCollision.mDivider->mTriangleTable;
+	}
 
 	if (triLists == nullptr) {
 		return;
 	}
 
 	for (int i = 0; i < triLists->mCount; i++) {
-		Sys::Triangle* tri = triTable.getTriangle(triLists->mObjects[i]);
+		Sys::Triangle* tri = triTable->getTriangle(triLists->mObjects[i]);
 		Color4 color       = Color4(200, 200, 200, 128);
 		if (!is_navi_on_triangle(tri, vertTable)) {
 			switch (tri->mCode.getSlipCode()) {
@@ -63,12 +74,37 @@ void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 
 		GXBegin(GX_TRIANGLES, GX_VTXFMT0, 3);
 		for (int i = 0; i < 3; i++) {
-			Vector3f vertex = *vertTable.getVertex(tri->mVertices[i]);
+			Vector3f vertex = *vertTable->getVertex(tri->mVertices[i]);
 			GXPosition3f32(vertex.x, vertex.y, vertex.z);
 			GXColor4u8(color.r, color.g, color.b, color.a);
 		}
 		GXEnd();
 	}
+}
+
+void CollisionViewer::toggle(bool enabled_)
+{
+	if (Game::gameSystem->mIsInCave) {
+		Iterator<Game::MapRoom> iterator(&static_cast<Game::RoomMapMgr*>(Game::mapMgr)->mRoomMgr);
+		CI_LOOP(iterator)
+		{
+			Game::MapRoom* room = *iterator;
+			if (enabled_) {
+				room->mRoomVisibilitySphere = Sys::Sphere();
+			} else {
+				room->mModel->show();
+			}
+		}
+	} else {
+		SysShape::Model* mapModel = static_cast<Game::ShapeMapMgr*>(Game::mapMgr)->mMapModel;
+		if (enabled_) {
+			mapModel->hide();
+		} else {
+			mapModel->show();
+		}
+	}
+
+	enabled = enabled_;
 }
 
 void CollisionViewer::update()
