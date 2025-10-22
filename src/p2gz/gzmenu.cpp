@@ -535,6 +535,7 @@ void HexKeypad::set_unselected()
 
 void HexKeypad::submit()
 {
+	is_unselected = false;
 	p2gz->menu->pop_layer();
 }
 
