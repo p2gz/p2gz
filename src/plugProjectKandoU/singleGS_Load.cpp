@@ -7,7 +7,6 @@
 #include "Screen/Game2DMgr.h"
 #include "Game/GameSystem.h"
 #include "Radar.h"
-#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace SingleGame {

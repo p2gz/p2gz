@@ -71,7 +71,7 @@ void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 	}
 }
 
-void CollisionViewer::update()
+void CollisionViewer::draw()
 {
 	if (!enabled) {
 		return;
