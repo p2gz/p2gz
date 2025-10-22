@@ -92,6 +92,23 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	info.mColorB = color;
 	Vector3f pos = enemyPos + Vector3f(0, static_cast<Game::EnemyParmsBase*>(enemy->mParms)->mGeneral.mLifeMeterHeight, 0);
 
+	// manually adjust offsets for certain enemies with weird lifegauge offsets
+	// may need to add to these later as a QoL update, especially bosses
+	switch (enemy->getEnemyTypeID()) {
+	case Game::EnemyTypeID::EnemyID_RedPom:
+	case Game::EnemyTypeID::EnemyID_BluePom:
+	case Game::EnemyTypeID::EnemyID_YellowPom:
+	case Game::EnemyTypeID::EnemyID_WhitePom:
+	case Game::EnemyTypeID::EnemyID_BlackPom:
+	case Game::EnemyTypeID::EnemyID_RandPom:
+		pos.y += 50.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Queen:
+		pos.y += 160.0f;
+		break;
+	}
+
 	// Debug prints
 	if (draw_enemy_name) {
 		gfx->perspPrintf(info, pos, "%s", enemy->getCreatureName());
