@@ -6,6 +6,8 @@
 #include <Game/EnemyParmsBase.h>
 #include <Dolphin/os.h>
 #include <P2JME/P2JME.h>
+#include <Game/MoviePlayer.h>
+#include <Game/generalEnemyMgr.h>
 
 using namespace gz;
 
@@ -34,17 +36,13 @@ void EnemyDebugInfo::set_size(s32 size)
 	line_height = 12 + size;
 }
 
-void EnemyDebugInfo::remove_enemy(Game::EnemyBase* enemy)
-{
-	int idx = enemies.find(enemy);
-	if (idx != -1) {
-		enemies.removeAt(idx);
-	}
-}
-
 void EnemyDebugInfo::draw()
 {
 	if (!enabled) {
+		return;
+	}
+
+	if (!Game::generalEnemyMgr) {
 		return;
 	}
 
@@ -55,9 +53,13 @@ void EnemyDebugInfo::draw()
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 
 	cur_color = 0;
-	for (size_t i = 0; i < enemies.len(); i++) {
-		Game::EnemyBase* enemy = enemies[i];
-		draw_enemy_dbg(enemy, gfx);
+	GeneralMgrIterator<Game::EnemyBase> iEnemyMgr(Game::generalEnemyMgr);
+	CI_LOOP(iEnemyMgr)
+	{
+		Game::EnemyBase* enemy = iEnemyMgr.getObject();
+		if (enemy) {
+			draw_enemy_dbg(enemy, gfx);
+		}
 	}
 }
 
@@ -67,12 +69,12 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		return;
 	}
 
-	if (enemy->mHealth <= 0.0f || !enemy->isLivingThing()) {
+	if (enemy->mHealth <= 0.0f || !enemy->mLod.isFlag(AILOD_IsVisible)) {
 		return;
 	}
 
 	Vector3f naviPos  = Game::naviMgr->getActiveNavi()->getPosition();
-	Vector3f enemyPos = enemy->getPosition();
+	Vector3f enemyPos = enemy->mPosition;
 	if (sqrDistanceXZ(naviPos, enemyPos) > SQUARE(max_dist)) {
 		return;
 	}
@@ -99,7 +101,7 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		gfx->perspPrintf(info, pos, "(%.2f, %.2f, %.2f)", enemy->mPosition.x, enemy->mPosition.y, enemy->mPosition.z);
 		info.mPerspectiveOffsetY += line_height;
 	}
-	if (draw_cur_state) {
+	if (draw_cur_state && enemy->mCurrentLifecycleState->mName) {
 		gfx->perspPrintf(info, pos, "state: %s", enemy->mCurrentLifecycleState->mName);
 		info.mPerspectiveOffsetY += line_height;
 	}

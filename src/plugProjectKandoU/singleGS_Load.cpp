@@ -7,7 +7,6 @@
 #include "Screen/Game2DMgr.h"
 #include "Game/GameSystem.h"
 #include "Radar.h"
-#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace SingleGame {
@@ -33,10 +32,6 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	if (Radar::mgr) {
 		Radar::mgr->clear();
 	}
-
-	// @P2GZ - enemy debug info
-	// Clear the list of enemies to draw whenever we're transiting map
-	p2gz->enemy_debug_info->clear_enemies();
 
 	P2ASSERTLINE(33, arg != nullptr);
 
