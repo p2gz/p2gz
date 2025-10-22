@@ -585,16 +585,16 @@ void HexKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
 
 f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor + x, z, title);
+		cursor += j2d.print(cursor, z, title);
 	}
 
 	return cursor;
@@ -602,16 +602,16 @@ f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 
 f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: %s", title, on ? "true" : "false");
+		cursor += j2d.print(cursor, z, "%s: %s", title, on ? "true" : "false");
 	}
 	return cursor;
 }
@@ -657,26 +657,26 @@ void RadioMenuOption::select()
 
 f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: < ", title);
+		cursor += j2d.print(cursor, z, "%s: < ", title);
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(x + cursor, z, options[selected_idx]);
+		cursor += j2d.print(cursor, z, options[selected_idx]);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
-		cursor += j2d.print(x + cursor, z, " >");
+		cursor += j2d.print(cursor, z, " >");
 	}
 	return cursor;
 }
@@ -732,31 +732,31 @@ void RangeMenuOption::check_overflow()
 
 f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: ", title);
+		cursor += j2d.print(cursor, z, "%s: ", title);
 
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
-			cursor += j2d.print(x + cursor, z, "< ");
+			cursor += j2d.print(cursor, z, "< ");
 		}
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(x + cursor, z, "%d", selected_val);
+		cursor += j2d.print(cursor, z, "%d", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
-			cursor += j2d.print(x + cursor, z, " >");
+			cursor += j2d.print(cursor, z, " >");
 		}
 	}
 	return cursor;
@@ -804,42 +804,46 @@ void FloatRangeMenuOption::check_overflow()
 
 f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	f32 cursor = 0.0f;
+	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
 		cursor += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(x + cursor, z, "%s: ", title);
+		cursor += j2d.print(cursor, z, "%s: ", title);
 
 		if (selected_val > min) {
-			cursor += j2d.print(x + cursor, z, "< ");
+			cursor += j2d.print(cursor, z, "< ");
 		}
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(x + cursor, z, "%.2f", selected_val);
+		cursor += j2d.print(cursor, z, "%.2f", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
 		if (selected_val < max) {
-			cursor += j2d.print(x + cursor, z, " >");
+			cursor += j2d.print(cursor, z, " >");
 		}
 	}
 	return cursor;
 }
 
-HexInputOption::HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_ = nullptr,
-                               bool image_only_ = false)
+HexInputOption::HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_, bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
 	keypad              = new HexKeypad(title_);
 	value_if_unselected = value_if_unselected_;
+}
+
+MenuLayer* HexInputOption::get_sub_menu()
+{
+	return keypad;
 }
 
 void HexInputOption::select()
@@ -854,4 +858,14 @@ f32 HexInputOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 		return x + j2d.print(x, z, ": %s", value_if_unselected);
 	}
 	return x + j2d.print(x, z, ": %8X", keypad->get_value());
+}
+
+bool HexInputOption::is_selected()
+{
+	return !keypad->is_unselected;
+}
+
+u32 HexInputOption::get_selected_val()
+{
+	return keypad->get_value();
 }

@@ -184,10 +184,13 @@ struct HexInputOption : public MenuOption {
 public:
 	HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_ = nullptr, bool image_only_ = false);
 
-	virtual MenuLayer* get_sub_menu() { return keypad; }
+	virtual MenuLayer* get_sub_menu();
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update() { }
 	virtual void select();
+
+	bool is_selected();
+	u32 get_selected_val();
 
 private:
 	HexKeypad* keypad;
