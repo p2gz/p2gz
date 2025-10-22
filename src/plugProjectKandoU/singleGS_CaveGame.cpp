@@ -147,7 +147,9 @@ void CaveState::exec(SingleGameSection* game)
 	if (mDrawSave) {
 		particle2dMgr->update();
 		Screen::gGame2DMgr->update();
-		if ((u8)Screen::gGame2DMgr->check_Save()) {
+		// @P2GZ: skip save prompts in caves
+		// we skip the save prompt further down, so we also need to avoid the check_Save check
+		if (p2gz->skip_save->get_save_skip_status() || (u8)Screen::gGame2DMgr->check_Save()) {
 			// MapEnter type isnt used when loading into caves
 			LoadArg arg(MapEnter_CaveGeyser, false, false, game->mInCave);
 			transit(game, SGS_Load, &arg);
@@ -571,7 +573,11 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		og::Screen::DispMemberSave disp;
 		disp.mDoSound = true;
 		PSMCancelToPauseOffMainBgm();
-		Screen::gGame2DMgr->open_Save(disp);
+		// @P2GZ: skip save prompts in caves
+		// only open the save screen if we don't have "skip save" toggled on
+		if (!p2gz->skip_save->get_save_skip_status()) {
+			Screen::gGame2DMgr->open_Save(disp);
+		}
 		mDrawSave = true;
 
 		// @P2GZ - timer

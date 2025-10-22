@@ -58,13 +58,18 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
-			->push(new ToggleMenuOption("collision", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
-			->push(new ToggleMenuOption("waypoints", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+			->push(new OpenSubMenuOption("structures", (new ListMenu())
+				->push(new OpenSubMenuOption("gates", (new ListMenu()))) // Will be populated dynamically by StructureEditor
+			))
+			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
+			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 		))
         ->push(new OpenSubMenuOption("settings", (new ListMenu())
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
             ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
+            ->push(new ToggleMenuOption("skip save prompts", false, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
+			->push(new ToggleMenuOption("image test", true, nullptr, "red_leaf", false))
 			->push(new OpenSubMenuOption("grid menu demo", (new GridMenu(24.0))
 				->push_to_row(new OpenSubMenuOption("1", nullptr))->push_to_row(new OpenSubMenuOption("2", nullptr))->push_to_row(new OpenSubMenuOption("3", nullptr))->end_row()
 				->push_to_row(new OpenSubMenuOption("4", nullptr))->push_to_row(new OpenSubMenuOption("5", nullptr))->push_to_row(new OpenSubMenuOption("6", nullptr))->end_row()
@@ -73,6 +78,7 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new ToggleMenuOption("toggle heap bar", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 			->push(new OpenSubMenuOption("time controls", (new ListMenu())
 				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
 				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
@@ -471,16 +477,35 @@ void GridMenu::navigate_to(const char* path)
 
 f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	if (title) {
-		return j2d.print(x, z, title);
+	f32 cursor = 0.0f;
+	if (image_name) {
+		// image drawing is from top-left, font is bottom-left, so need to shift image up
+		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->spacing();
+		// re-initialise the text printer to prevent the GPU dying
+		j2d.initiate();
+	}
+	if (title && !image_only) {
+		cursor += j2d.print(cursor + x, z, title);
 	}
 
-	return 0.0f;
+	return cursor;
 }
 
 f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	return j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
+	f32 cursor = 0.0f;
+	if (image_name) {
+		// image drawing is from top-left, font is bottom-left, so need to shift image up
+		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->spacing();
+		// re-initialise the text printer to prevent the GPU dying
+		j2d.initiate();
+	}
+	if (title && !image_only) {
+		cursor += j2d.print(x + cursor, z, "%s: %s", title, on ? "true" : "false");
+	}
+	return cursor;
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
@@ -494,7 +519,9 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 
 void OpenSubMenuOption::select()
 {
-	p2gz->menu->push_layer(sub_menu);
+	if (sub_menu) {
+		p2gz->menu->push_layer(sub_menu);
+	}
 }
 
 void RadioMenuOption::update()
@@ -522,19 +549,28 @@ void RadioMenuOption::select()
 
 f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	x += j2d.print(x, z, "%s: < ", title);
-
-	j2d.mCharColor.set(p2gz->menu->color_std);
-	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, options[selected_idx]);
-
-	if (selected) {
-		j2d.mCharColor.set(p2gz->menu->color_highlight);
-		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+	f32 cursor = 0.0f;
+	if (image_name) {
+		// image drawing is from top-left, font is bottom-left, so need to shift image up
+		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->spacing();
+		// re-initialise the text printer to prevent the GPU dying
+		j2d.initiate();
 	}
-	x += j2d.print(x, z, " >");
+	if (title && !image_only) {
+		cursor += j2d.print(x + cursor, z, "%s: < ", title);
 
-	return x;
+		j2d.mCharColor.set(p2gz->menu->color_std);
+		j2d.mGradientColor.set(p2gz->menu->color_std);
+		cursor += j2d.print(x + cursor, z, options[selected_idx]);
+
+		if (selected) {
+			j2d.mCharColor.set(p2gz->menu->color_highlight);
+			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		}
+		cursor += j2d.print(x + cursor, z, " >");
+	}
+	return cursor;
 }
 
 void RangeMenuOption::update()
@@ -588,25 +624,34 @@ void RangeMenuOption::check_overflow()
 
 f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	x += j2d.print(x, z, "%s: ", title);
-
-	if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
-		x += j2d.print(x, z, "< ");
+	f32 cursor = 0.0f;
+	if (image_name) {
+		// image drawing is from top-left, font is bottom-left, so need to shift image up
+		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->spacing();
+		// re-initialise the text printer to prevent the GPU dying
+		j2d.initiate();
 	}
+	if (title && !image_only) {
+		cursor += j2d.print(x + cursor, z, "%s: ", title);
 
-	j2d.mCharColor.set(p2gz->menu->color_std);
-	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, "%d", selected_val);
+		if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
+			cursor += j2d.print(x + cursor, z, "< ");
+		}
 
-	if (selected) {
-		j2d.mCharColor.set(p2gz->menu->color_highlight);
-		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		j2d.mCharColor.set(p2gz->menu->color_std);
+		j2d.mGradientColor.set(p2gz->menu->color_std);
+		cursor += j2d.print(x + cursor, z, "%d", selected_val);
+
+		if (selected) {
+			j2d.mCharColor.set(p2gz->menu->color_highlight);
+			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		}
+		if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
+			cursor += j2d.print(x + cursor, z, " >");
+		}
 	}
-	if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
-		x += j2d.print(x, z, " >");
-	}
-
-	return x;
+	return cursor;
 }
 
 void FloatRangeMenuOption::update()
@@ -651,23 +696,32 @@ void FloatRangeMenuOption::check_overflow()
 
 f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
-	x += j2d.print(x, z, "%s: ", title);
-
-	if (selected_val > min) {
-		x += j2d.print(x, z, "< ");
+	f32 cursor = 0.0f;
+	if (image_name) {
+		// image drawing is from top-left, font is bottom-left, so need to shift image up
+		cursor += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		cursor += p2gz->images->spacing();
+		// re-initialise the text printer to prevent the GPU dying
+		j2d.initiate();
 	}
+	if (title && !image_only) {
+		cursor += j2d.print(x + cursor, z, "%s: ", title);
 
-	j2d.mCharColor.set(p2gz->menu->color_std);
-	j2d.mGradientColor.set(p2gz->menu->color_std);
-	x += j2d.print(x, z, "%.2f", selected_val);
+		if (selected_val > min) {
+			cursor += j2d.print(x + cursor, z, "< ");
+		}
 
-	if (selected) {
-		j2d.mCharColor.set(p2gz->menu->color_highlight);
-		j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		j2d.mCharColor.set(p2gz->menu->color_std);
+		j2d.mGradientColor.set(p2gz->menu->color_std);
+		cursor += j2d.print(x + cursor, z, "%.2f", selected_val);
+
+		if (selected) {
+			j2d.mCharColor.set(p2gz->menu->color_highlight);
+			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		}
+		if (selected_val < max) {
+			cursor += j2d.print(x + cursor, z, " >");
+		}
 	}
-	if (selected_val < max) {
-		x += j2d.print(x, z, " >");
-	}
-
-	return x;
+	return cursor;
 }
