@@ -10,7 +10,10 @@ struct TEgateA : public TChaseMtx {
 	    : TChaseMtx(PID_EgateA, nullptr)
 	{
 	}
-	virtual ~TEgateA(); // _48 (weak)
+
+	// @P2GZ: make itemGate.cpp equivalent
+	// virtual ~TEgateA(); // _48 (weak)
+	virtual ~TEgateA() { } // _48 (weak)
 
 	// _00      = VTBL
 	// _00-_14  = TChaseMtx

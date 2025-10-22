@@ -33,6 +33,7 @@
 #include "Game/Entities/PelletCarcass.h"
 #include "PikiAI.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 
@@ -101,6 +102,12 @@ void SingleGame::FSM::draw(SingleGameSection* game, Graphics& gfx)
  */
 void SingleGame::FSM::transit(SingleGameSection* game, int sceneNum, Game::StateArg* arg)
 {
+	// @P2GZ - Structure editor
+	// Clear structures currently in menu whenever we load a new area/sublevel
+	if (sceneNum == SGS_Load) {
+		p2gz->structure_editor->clear_gates();
+	}
+
 	StateMachine<SingleGameSection>::transit(game, sceneNum, arg);
 }
 

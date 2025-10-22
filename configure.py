@@ -1305,7 +1305,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/gameMapParts.cpp"),
             Object(Matching, "plugProjectKandoU/vsGameSection.cpp"),
             Object(Matching, "plugProjectKandoU/gamePlatMgr.cpp"),
-            Object(NonMatching, "plugProjectKandoU/itemGate.cpp"),
+            Object(Equivalent, "plugProjectKandoU/itemGate.cpp"),
             Object(Matching, "plugProjectKandoU/itemMgr.cpp"),
             Object(Equivalent, "plugProjectKandoU/aiBreakGate.cpp"),
             Object(Matching, "plugProjectKandoU/gameStat.cpp"),
@@ -2100,6 +2100,8 @@ config.libs = [
             Object(Matching, "p2gz/skippableCS.cpp"),
             Object(Matching, "p2gz/dayEditor.cpp"),
             Object(Matching, "p2gz/images.cpp"),
+            Object(Matching, "p2gz/structureEditor.cpp"),
+            Object(Matching, "p2gz/sprayEditor.cpp"),
             Object(Matching, "p2gz/squadEditor.cpp"),
         ],
     },
@@ -2128,6 +2130,8 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/skippableCS.cpp",
             "p2gz/dayEditor.cpp",
             "p2gz/images.cpp",
+            "p2gz/structureEditor.cpp",
+            "p2gz/sprayEditor.cpp",
             "p2gz/squadEditor.cpp",
             ]
     return objects
