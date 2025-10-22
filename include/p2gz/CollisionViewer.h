@@ -15,7 +15,7 @@ public:
 	~CollisionViewer() { }
 
 	void toggle(bool);
-	void update();
+	void draw();
 
 	bool is_enabled() { return enabled; }
 

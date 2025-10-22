@@ -107,7 +107,7 @@ void CollisionViewer::toggle(bool enabled_)
 	enabled = enabled_;
 }
 
-void CollisionViewer::update()
+void CollisionViewer::draw()
 {
 	if (!enabled) {
 		return;
