@@ -857,7 +857,7 @@ f32 HexInputOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 	if (keypad->is_unselected) {
 		return x + j2d.print(x, z, ": %s", value_if_unselected);
 	}
-	return x + j2d.print(x, z, ": %8X", keypad->get_value());
+	return x + j2d.print(x, z, ": %08X", keypad->get_value());
 }
 
 bool HexInputOption::is_selected()

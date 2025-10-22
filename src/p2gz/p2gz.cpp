@@ -31,6 +31,7 @@ P2GZ::P2GZ()
 	skip_save                    = new SkipSave();
 	structure_editor             = new StructureEditor();
 	spray_editor                 = new SprayEditor();
+	segment_history              = new SegmentHistory();
 }
 
 void P2GZ::init()
@@ -60,4 +61,5 @@ void P2GZ::draw()
 {
 	timer->draw();
 	menu->draw();
+	segment_history->draw_2d(); // TODO: this should be in draw_2d when enemy debug info gets merged
 }

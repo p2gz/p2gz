@@ -28,6 +28,10 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 		srand(p2gz->warp->set_seed);
 	}
 
+	// @P2GZ - record seed for this sublevel
+	p2gz->segment_history->last_seed            = get_rng_seed();
+	p2gz->segment_history->started_creating_map = true;
+
 	Cave::randMapMgr = new Cave::RandMapMgr(isVersusHiba);
 	Cave::randMapMgr->loadResource(muiArray, p2, floorInfo, lastFloor, unit);
 	Cave::randMapMgr->create();
