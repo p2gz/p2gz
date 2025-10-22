@@ -1399,7 +1399,7 @@ config.libs = [
         "progress_category" : "game",
         "host": True,
         "objects": [
-            Object(Equivalent, "plugProjectNishimuraU/nslibmath.cpp"),
+            Object(NonMatching, "plugProjectNishimuraU/nslibmath.cpp"),
             Object(Matching, "plugProjectNishimuraU/ShadowCylinder.cpp"),
             Object(Equivalent, "plugProjectNishimuraU/playCamera.cpp"),
             Object(Matching, "plugProjectNishimuraU/shadowMgr.cpp"),
@@ -2035,7 +2035,7 @@ config.libs = [
             Object(NonMatching, "sysGCU/memoryCard.cpp"),
             Object(NonMatching, "sysGCU/pikmin2MemoryCardMgr.cpp"),
             Object(Matching, "sysGCU/commonSaveData.cpp"),
-            Object(NonMatching, "sysGCU/bootSection.cpp"),
+            Object(Equivalent, "sysGCU/bootSection.cpp"),
             Object(NonMatching, "sysGCU/titleSection.cpp"),
             Object(Matching, "sysGCU/loadResource.cpp"),
             Object(Matching, "sysGCU/rootMenuSection.cpp"),
@@ -2099,6 +2099,7 @@ config.libs = [
             Object(Matching, "p2gz/warp.cpp"),
             Object(Matching, "p2gz/skippableCS.cpp"),
             Object(Matching, "p2gz/dayEditor.cpp"),
+            Object(Matching, "p2gz/images.cpp"),
             Object(Matching, "p2gz/cutsceneToggle.cpp"),
         ],
     },
@@ -2126,6 +2127,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/warp.cpp",
             "p2gz/skippableCS.cpp",
             "p2gz/dayEditor.cpp",
+            "p2gz/images.cpp",
             "p2gz/cutsceneToggle.cpp"
             ]
     return objects

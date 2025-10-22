@@ -4,8 +4,11 @@
 #include <types.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/DoublePress.h>
+#include <p2gz/images.h>
 #include <JSystem/JUtility/TColor.h>
 #include <JSystem/J2D/J2DPrint.h>
+#include <JSystem/J2D/J2DPicture.h>
+#include <JSystem/JKernel/JKRArchive.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
 #include <p2gz/gzConstants.h>
@@ -21,8 +24,10 @@ struct MenuOption {
 	virtual MenuLayer* get_sub_menu() { return nullptr; }
 
 public:
-	MenuOption(const char* title_)
+	MenuOption(const char* title_, const char* image_name_ = nullptr, bool image_only_ = false)
 	    : title(title_)
+	    , image_name(image_name_)
+	    , image_only(image_only_)
 	    , visible(true)
 	{
 	}
@@ -33,6 +38,8 @@ public:
 
 	const char* title;
 	bool visible;
+	const char* image_name;
+	bool image_only;
 };
 
 struct OpenSubMenuOption : public MenuOption {
@@ -48,8 +55,8 @@ public:
 
 struct PerformActionMenuOption : public MenuOption {
 public:
-	PerformActionMenuOption(const char* title_, IDelegate* on_selected_)
-	    : MenuOption(title_)
+	PerformActionMenuOption(const char* title_, IDelegate* on_selected_, const char* image_name_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_name_, image_only_)
 	    , on_selected(on_selected_)
 	{
 	}
@@ -66,8 +73,9 @@ private:
 
 struct ToggleMenuOption : public MenuOption {
 public:
-	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_)
-	    : MenuOption(title_)
+	ToggleMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_, const char* image_name_ = nullptr,
+	                 bool image_only_ = false)
+	    : MenuOption(title_, image_name_, image_only_)
 	    , on(on_)
 	    , on_selected(on_selected_)
 	{
@@ -114,8 +122,8 @@ private:
 
 struct RadioMenuOption : public MenuOption {
 public:
-	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_)
-	    : MenuOption(title_)
+	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_, const char* image_name_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_name_, image_only_)
 	    , on_selected(on_selected_)
 	    , selected_idx(0)
 	{
@@ -138,8 +146,9 @@ struct RangeMenuOption : public MenuOption {
 public:
 	enum OverflowBehavior { CAP, WRAP };
 
-	RangeMenuOption(const char* title_, s32 min_, s32 max_, s32 initial, OverflowBehavior overflow_behavior_, IDelegate1<s32>* on_selected_)
-	    : MenuOption(title_)
+	RangeMenuOption(const char* title_, s32 min_, s32 max_, s32 initial, OverflowBehavior overflow_behavior_, IDelegate1<s32>* on_selected_,
+	                const char* image_name_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_name_, image_only_)
 	    , on_selected(on_selected_)
 	    , selected_val(initial)
 	    , min(min_)
@@ -167,8 +176,9 @@ private:
 
 struct FloatRangeMenuOption : public MenuOption {
 public:
-	FloatRangeMenuOption(const char* title_, f32 min_, f32 max_, f32 initial, IDelegate1<f32>* on_selected_)
-	    : MenuOption(title_)
+	FloatRangeMenuOption(const char* title_, f32 min_, f32 max_, f32 initial, IDelegate1<f32>* on_selected_,
+	                     const char* image_name_ = nullptr, bool image_only_ = false)
+	    : MenuOption(title_, image_name_, image_only_)
 	    , on_selected(on_selected_)
 	    , selected_val(initial)
 	    , min(min_)
@@ -284,6 +294,11 @@ public:
 	void open();
 	void close();
 	bool is_open() { return enabled; }
+	bool is_lock() { return lock; }
+
+	// Called when navigating to a new page to disable inputs for 1 frame to prevent accidentally activating other stuff in submenus
+	// immediately
+	void set_lock() { lock = true; }
 
 	/// Returns a reference to the option, or creates it if
 	/// it doesn't exist. Use slashes to indicate heirarchy,
