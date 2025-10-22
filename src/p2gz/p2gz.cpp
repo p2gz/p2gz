@@ -6,11 +6,8 @@
 #include <p2gz/warp.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
-<<<<<<< HEAD
-#include <p2gz/SquadEditor.h>
-=======
 #include <p2gz/SprayEditor.h>
->>>>>>> origin/main
+#include <p2gz/SquadEditor.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -33,12 +30,9 @@ P2GZ::P2GZ()
 	heap_bar_toggle              = new HeapBarToggle();
 	images                       = new ImageMgr();
 	skip_save                    = new SkipSave();
-<<<<<<< HEAD
-	squad_editor                 = new SquadEditor();
-=======
 	structure_editor             = new StructureEditor();
 	spray_editor                 = new SprayEditor();
->>>>>>> origin/main
+	squad_editor                 = new SquadEditor();
 }
 
 void P2GZ::init()
@@ -50,21 +44,15 @@ void P2GZ::init()
 	warp->init();
 	day_editor->init();
 	images->init();
-<<<<<<< HEAD
-	squad_editor->init();
-=======
 	spray_editor->init();
->>>>>>> origin/main
+	squad_editor->init();
 }
 
 void P2GZ::update()
 {
 	day_editor->update();
-<<<<<<< HEAD
-	squad_editor->update();
-=======
 	spray_editor->update();
->>>>>>> origin/main
+	squad_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
