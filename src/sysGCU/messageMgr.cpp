@@ -6,6 +6,7 @@
 #include "JSystem/JUtility/JUTTexture.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JMessage/TParse.h"
+#include "og/ogLib2D.h"
 
 static const u32 padding[3] = { 0, 0, 0 };
 
@@ -63,6 +64,7 @@ Mgr::Mgr(JKRExpHeap* heap)
     , _2C(0)
     , mResContainer(nullptr)
     , mMsgRef(nullptr)
+    , mLanguageSwapHeap(nullptr)
 {
 	P2ASSERTLINE(194, !gP2JMEMgr);
 	gP2JMEMgr = this;
@@ -89,12 +91,31 @@ Mgr::Mgr(JKRExpHeap* heap)
 
 	sys->heapStatusEnd("MessageMgr");
 
-	JKRHeap* heap2 = JKRGetCurrentHeap();
-	_2C            = 0;
+	JKRHeap* currHeap = JKRGetCurrentHeap();
+	mLanguageSwapHeap = makeExpHeap(0x40000, currHeap, false);
+	_2C               = 0;
+	mLanguageSwapHeap->becomeCurrentHeap();
 	setupMessage();
-	heap2->becomeCurrentHeap();
+	currHeap->becomeCurrentHeap();
 	mIsLoaded = true;
 }
+
+// 	JKRHeap* heap2 = JKRGetCurrentHeap();
+// 	_2C            = 0;
+// 	setupMessage(); // <--- this is the original code; setup the actual message stuff
+// 	// // @P2GZ localization-swap: copy 1^2 code to add support for swapping languages
+// 	// // Notably, initialize our new heap that gets used for language swaps here
+// 	// {
+// 	// 	mLanguageSwapHeap = JKRExpHeap::create(0x20000, sys->mSysHeap, true);
+// 	// 	mLanguageSwapHeap->becomeCurrentHeap();
+// 	// 	setupMessage(); // <--- this is the original code; setup the actual message stuff
+// 	// 	og::gLib2D = nullptr;
+// 	// 	og::Lib2D::create();
+// 	// }
+// 	// End P2GZ edit
+// 	heap2->becomeCurrentHeap();
+// 	mIsLoaded = true;
+// }
 
 /**
  * @note Address: 0x8043805C
@@ -113,6 +134,25 @@ void Mgr::reloadMessageResource()
 {
 	// This is most likely used in the PAL region after changing languages
 	// Entirely removed for US though
+
+	// @P2GZ localization-swap: we now use this funciton to update text
+
+	JKRHeap* currHeap = JKRGetCurrentHeap();
+	mLanguageSwapHeap->becomeCurrentHeap();
+	mLanguageSwapHeap->freeAll();
+	setupMessage();
+	og::gLib2D = nullptr;
+	og::Lib2D::create();
+	currHeap->becomeCurrentHeap();
+
+	// // Copy 1^2 code to swap languages in-game
+	// JKRHeap* mesgheap = mLanguageSwapHeap; // new p2jme heap
+	// mesgheap->freeAll();
+	// JKRHeap* old_heap = mesgheap->becomeCurrentHeap();
+	// setupMessage();
+	// og::gLib2D = nullptr;
+	// og::Lib2D::create();
+	// old_heap->becomeCurrentHeap();
 }
 
 /**

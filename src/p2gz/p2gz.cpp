@@ -12,6 +12,7 @@
 using namespace gz;
 
 P2GZ* p2gz;
+bool p2gz_first_init = true;
 
 P2GZ::P2GZ()
 {
@@ -28,16 +29,24 @@ P2GZ::P2GZ()
 	heap_bar_toggle              = new HeapBarToggle();
 	images                       = new ImageMgr();
 	skip_save                    = new SkipSave();
+	language_swap                = new LanguageSwap();
 }
 
 void P2GZ::init()
 {
-	// Menu must come first since other inits might change menu options
-	menu->init_menu();
+	// Only initialize the menu once per game
+	if (1) { // (p2gz_first_init) {
+		// Menu must come first since other inits might change menu options
+		menu->init_menu();
 
-	warp->init();
-	day_editor->init();
-	images->init();
+		warp->init();
+		day_editor->init();
+		images->init();
+		language_swap->init();
+
+		// Disable flag so next time we exit and enter the main menu, we don't try to init everything again (crashes otherwise)
+		p2gz_first_init = false;
+	}
 }
 
 void P2GZ::update()

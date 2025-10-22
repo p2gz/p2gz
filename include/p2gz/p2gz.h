@@ -13,11 +13,27 @@
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
+#include <p2gz/LanguageSwap.h>
 
 struct P2GZ {
 public:
 	P2GZ();
-	~P2GZ() { }
+	~P2GZ()
+	{
+		delete menu;
+		delete collision_viewer;
+		delete freecam;
+		delete navi_tools;
+		delete timer;
+		delete waypoint_viewer;
+		delete warp;
+		delete skippable_treasure_cutscenes;
+		delete day_editor;
+		delete heap_bar_toggle;
+		delete images;
+		delete skip_save;
+		delete language_swap;
+	}
 
 	void init();
 	void update();
@@ -40,9 +56,12 @@ public:
 	gz::HeapBarToggle* heap_bar_toggle;
 	gz::ImageMgr* images;
 	gz::SkipSave* skip_save;
+	gz::LanguageSwap* language_swap;
 };
 
 // global instance
 extern P2GZ* p2gz;
+// first init flag; only intialize p2gz stuff once per game
+extern bool p2gz_first_init;
 
 #endif

@@ -262,6 +262,10 @@ void BaseGameSection::init()
 	sys->heapStatusEnd("baseGameSection::init");
 	mTreasureGetState = 0;
 
+	// Only initialize p2gz obj once per game (so if we exit and enter the main menu again, don't make a second obj!)
+	// if (!p2gz_first_init) {
+	// 	delete p2gz;
+	// }
 	p2gz = new P2GZ; // @P2GZ
 	p2gz->init();
 }

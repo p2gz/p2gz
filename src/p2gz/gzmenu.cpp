@@ -76,6 +76,10 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+		))
+		->push(new OpenSubMenuOption("localization", (new ListMenu())
+			->push(new RadioMenuOption("Menu Text", new Delegate1<LanguageSwap, size_t>(p2gz->language_swap, &LanguageSwap::set_language)))
+	
 		));
 	// clang-format on
 
