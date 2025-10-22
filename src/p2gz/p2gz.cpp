@@ -28,6 +28,7 @@ P2GZ::P2GZ()
 	heap_bar_toggle              = new HeapBarToggle();
 	images                       = new ImageMgr();
 	skip_save                    = new SkipSave();
+	structure_editor             = new StructureEditor();
 }
 
 void P2GZ::init()
@@ -35,6 +36,7 @@ void P2GZ::init()
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
+	structure_editor->init();
 	warp->init();
 	day_editor->init();
 	images->init();
