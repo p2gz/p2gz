@@ -822,7 +822,7 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 			j2d.mCharColor.set(p2gz->menu->color_std);
 			j2d.mGradientColor.set(p2gz->menu->color_std);
 		}
-		cursor += j2d.print(x + cursor, z, "%d", selected_val);
+		cursor += j2d.print(cursor, z, "%d", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
@@ -900,7 +900,7 @@ f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 			j2d.mCharColor.set(p2gz->menu->color_std);
 			j2d.mGradientColor.set(p2gz->menu->color_std);
 		}
-		cursor += j2d.print(x + cursor, z, "%.2f", selected_val);
+		cursor += j2d.print(cursor, z, "%.2f", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
