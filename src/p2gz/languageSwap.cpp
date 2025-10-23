@@ -14,8 +14,7 @@ void LanguageSwap::init()
 	language_opt->options.push("French");
 	language_opt->options.push("Spanish");
 	language_opt->options.push("Italian");
-	// German file crashes for some reason?? So don't use it for now
-	// language_opt->options.push("German");
+	language_opt->options.push("German");
 	// language_opt->options.push("Dutch (Unused)");
 
 	// Internal region ID is not 1-to-1 with our order above, so convert that here
@@ -39,6 +38,10 @@ void LanguageSwap::init()
 
 	case System::LANG_Italian:
 		language_opt->set_selection(4);
+		break;
+
+	case System::LANG_German:
+		language_opt->set_selection(5);
 		break;
 	}
 
@@ -71,6 +74,10 @@ void LanguageSwap::set_language(size_t new_language_id)
 
 	case 4:
 		language_id = System::LANG_Italian;
+		break;
+
+	case 5:
+		language_id = System::LANG_German;
 		break;
 	}
 }

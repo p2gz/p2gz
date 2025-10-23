@@ -92,7 +92,7 @@ Mgr::Mgr(JKRExpHeap* heap)
 	sys->heapStatusEnd("MessageMgr");
 
 	JKRHeap* currHeap = JKRGetCurrentHeap();
-	mLanguageSwapHeap = makeExpHeap(0x40000, currHeap, false);
+	mLanguageSwapHeap = makeExpHeap(0x60000, currHeap, false);
 	_2C               = 0;
 	mLanguageSwapHeap->becomeCurrentHeap();
 	setupMessage();
@@ -141,8 +141,8 @@ void Mgr::reloadMessageResource()
 	mLanguageSwapHeap->becomeCurrentHeap();
 	mLanguageSwapHeap->freeAll();
 	setupMessage();
-	og::gLib2D = nullptr;
-	og::Lib2D::create();
+	// og::gLib2D = nullptr;
+	// og::Lib2D::create();
 	currHeap->becomeCurrentHeap();
 
 	// // Copy 1^2 code to swap languages in-game
