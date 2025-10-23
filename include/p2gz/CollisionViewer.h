@@ -23,7 +23,8 @@ public:
 		}
 		enabled = enabled_;
 	}
-	void update();
+
+	void draw();
 
 private:
 	bool is_navi_on_triangle(Sys::Triangle*, Sys::VertexTable&);

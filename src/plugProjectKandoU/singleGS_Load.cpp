@@ -8,6 +8,9 @@
 #include "Game/GameSystem.h"
 #include "Radar.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 namespace SingleGame {
 
@@ -65,6 +68,11 @@ void LoadState::exec(SingleGameSection* game)
 		if (!mDontClearHeap) {
 			game->clearHeap();
 		}
+
+		// @P2GZ - show seed
+		// Reset the flag that indicates the seed is for the currently generated floor
+		// If we don't do this, the loading screen will show the previous RNG seed for a moment
+		p2gz->segment_history->started_creating_map = false;
 
 		if (mIsCaveLoad || mIsCaveDeeper) {
 			if (mIsCaveDeeper) {

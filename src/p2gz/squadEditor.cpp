@@ -137,7 +137,7 @@ void SquadEditor::set_squad(s32 _)
 	}
 	if (total > MAX_PIKI_COUNT) {
 		int clamp = changed->get_selection() - total + MAX_PIKI_COUNT;
-		if (clamp <= previous || clamp < 0) {
+		if (clamp <= previous) {
 			clamp = 0;
 		}
 		changed->set_selection(clamp);
@@ -162,11 +162,6 @@ void SquadEditor::set_squad(s32 _)
 // Update the squad menu with the Pikmin counts from the active captain's squad.
 void SquadEditor::update()
 {
-	if (open) {
-		OSReport("true\n");
-	} else {
-		OSReport("false\n");
-	}
 	// Don't update the live squad count while the squad editor is open.
 	if (p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
 	    && strcmp(p2gz->menu->get_active_layer()->title, "squad") == 0) {
