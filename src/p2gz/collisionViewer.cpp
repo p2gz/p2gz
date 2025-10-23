@@ -7,11 +7,11 @@
 #include <stl/math.h>
 #include <Game/MapMgr.h>
 #include <Game/mapParts.h>
-
-using namespace gz;
+#include <p2gz/p2gz.h>
 
 const int RENDER_DISTANCE = 16;
 
+namespace gz {
 bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable* vertTable)
 {
 	Game::Navi* navi = Game::naviMgr->getActiveNavi();
@@ -131,3 +131,62 @@ void CollisionViewer::draw()
 		}
 	}
 }
+} // namespace gz
+
+namespace Game {
+void MapRoom::doEntry()
+{
+	if (p2gz->collision_viewer->is_enabled()) {
+		mModel->hide();
+		mModel->hidePackets();
+		return;
+	}
+
+	if (RoomMapMgr::mUseCylinderViewCulling) {
+		Graphics* gfx  = sys->getGfx();
+		bool isVisible = false;
+		for (int i = 0; i < gfx->mActiveViewports; i++) {
+			Viewport* vp = gfx->getViewport(i);
+			if (vp->viewable() && vp->mCamera->isCylinderVisible(mRoomVisibilityCylinder)) {
+				isVisible = true;
+				break;
+			}
+		}
+		if (isVisible) {
+			mModel->mJ3dModel->entry();
+		}
+	} else {
+		bool isVisible = false;
+		Graphics* gfx  = sys->getGfx();
+
+		for (int i = 0; i < gfx->mActiveViewports; i++) {
+			Viewport* vp = gfx->getViewport(i);
+			if (vp->viewable() && vp->mCamera->isVisible(mRoomVisibilitySphere)) {
+				isVisible = true;
+				break;
+			}
+		}
+
+		if (isVisible) {
+			if (!gameSystem->paused()) {
+				for (int i = 0; i < mAnimationCount; i++) {
+					mAnimators[i].animate(30.0f);
+				}
+			}
+
+			mModel->show();
+		} else {
+			if (BaseHIOParms::sEntryOptMapRoom && !gameSystem->isMultiplayerMode()) {
+				return;
+			}
+
+			mModel->hide();
+		}
+
+		mModel->mJ3dModel->entry();
+	}
+
+	mModel->mJ3dModel->calcMaterial();
+	mModel->mJ3dModel->diff();
+}
+} // namespace Game

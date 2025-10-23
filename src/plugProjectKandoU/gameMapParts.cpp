@@ -15,9 +15,6 @@
 #include "VsOtakaraName.h"
 #include "nans.h"
 
-// @P2GZ
-#include <p2gz/p2gz.h>
-
 namespace Game {
 
 static const int unusedArray[] = { 0, 0, 0 };
@@ -680,10 +677,7 @@ void MapRoom::doEntry()
 				}
 			}
 
-			// @P2GZ: collision viewer
-			if (!p2gz->collision_viewer->is_enabled()) {
-				mModel->show();
-			}
+			mModel->show();
 		} else {
 			if (BaseHIOParms::sEntryOptMapRoom && !gameSystem->isMultiplayerMode()) {
 				return;
