@@ -5,6 +5,7 @@
 #include "og/newScreen/ogUtil.h"
 #include "Game/GameConfig.h"
 #include "Game/Data.h"
+#include <p2gz/p2gz.h>
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "ebiMainTitleMgr";
@@ -60,6 +61,12 @@ void TMainTitleMgr::loadResource()
 {
 	sys->heapStatusStart("TMainTitleMgr::loadResource", nullptr);
 	sys->heapStatusStart("TTitleMenu::loadResource", nullptr);
+
+	// @ P2GZ localization-swap
+	// Load the new language here, on main menu startup (as we load other stuff)
+	if (p2gz && p2gz->language_swap && p2gz->language_swap->need_to_change_lang()) {
+		p2gz->language_swap->swap_language();
+	}
 
 	char buf[PATH_MAX];
 	og::newScreen::makeLanguageResName(buf, "title.szs");
