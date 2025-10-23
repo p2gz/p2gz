@@ -257,6 +257,8 @@ struct GridMenu : public MenuLayer {
 public:
 	GridMenu(f32 column_width_)
 	    : column_width(column_width_)
+	    , selected_row(0)
+	    , selected_col(0)
 	{
 		options.push(new Vec<MenuOption*>);
 	}
