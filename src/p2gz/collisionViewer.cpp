@@ -84,18 +84,7 @@ void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 
 void CollisionViewer::toggle(bool enabled_)
 {
-	if (Game::gameSystem->mIsInCave) {
-		Iterator<Game::MapRoom> iterator(&static_cast<Game::RoomMapMgr*>(Game::mapMgr)->mRoomMgr);
-		CI_LOOP(iterator)
-		{
-			Game::MapRoom* room = *iterator;
-			if (enabled_) {
-				room->mModel->hide();
-			} else {
-				room->mModel->show();
-			}
-		}
-	} else {
+	if (!Game::gameSystem->mIsInCave) {
 		SysShape::Model* mapModel = static_cast<Game::ShapeMapMgr*>(Game::mapMgr)->mMapModel;
 		if (enabled_) {
 			mapModel->hide();
@@ -134,8 +123,11 @@ void CollisionViewer::draw()
 } // namespace gz
 
 namespace Game {
+// @Extracted: gameMapParts.s doEntry__Q24Game7MapRoomFv
 void MapRoom::doEntry()
 {
+	// @P2GZ: collision viewer
+	// hide room model when enabled
 	if (p2gz->collision_viewer->is_enabled()) {
 		mModel->hide();
 		mModel->hidePackets();
@@ -188,5 +180,34 @@ void MapRoom::doEntry()
 
 	mModel->mJ3dModel->calcMaterial();
 	mModel->mJ3dModel->diff();
+}
+
+// @Extracted: gameMapParts.s doEntry__Q24Game10RoomMapMgrFv
+void RoomMapMgr::doEntry()
+{
+	sys->mTimers->_start("ENT-MAP", true);
+
+	if (gameSystem) {
+		BaseGameSection* section = gameSystem->getSection();
+		if (mSeaMgr) {
+			mSeaMgr->doEntry();
+		}
+
+		section->setDrawBuffer(DB_MapLayer);
+		mRoomMgr.doEntry();
+
+		if (mVRBox.mModel) {
+			// @P2GZ: collision viewer
+			// hide VRBox model when enabled
+			if (!p2gz->collision_viewer->is_enabled()) {
+				section->setDrawBuffer(DB_FirstLayer);
+				mVRBox.mModel->mJ3dModel->entry();
+			}
+		}
+
+		section->setDrawBuffer(DB_NormalLayer);
+	}
+
+	sys->mTimers->_stop("ENT-MAP");
 }
 } // namespace Game
