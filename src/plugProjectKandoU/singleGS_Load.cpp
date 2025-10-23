@@ -8,6 +8,9 @@
 #include "Game/GameSystem.h"
 #include "Radar.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 namespace SingleGame {
 

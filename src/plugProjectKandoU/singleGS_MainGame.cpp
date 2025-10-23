@@ -555,7 +555,8 @@ void GameState::exec(SingleGameSection* game)
 	}
 
 	// Check need pikmin extinction to occur
-	if (!mIsPostExtinct && moviePlayer->mDemoState == DEMOSTATE_Inactive) {
+	// @P2GZ squad editor: don't check for Pikmin extinction while editing squad
+	if (!mIsPostExtinct && moviePlayer->mDemoState == DEMOSTATE_Inactive && !p2gz->squad_editor->is_open()) {
 		if (GameStat::getAllPikmins(AllPikminCalcs) - GameStat::getZikatuPikmins(AllPikminCalcs) == 0 && playData->hasBootContainer(Red)) {
 			gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 			MoviePlayArg moviePlayArg("s05_pikminzero", nullptr, game->mMovieFinishCallback, 0);

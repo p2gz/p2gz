@@ -4,6 +4,7 @@
 #include <p2gz/FreeCam.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/SquadEditor.h>
 #include <p2gz/SprayEditor.h>
 #include <p2gz/BoundDelegate.h>
 #include <p2gz/EnemyDebugInfo.h>
@@ -49,6 +50,33 @@ void GZMenu::init_menu()
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
 			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
+		))
+		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
+			->push(new OpenSubMenuOption("squad", (new GridMenu(128.0))
+				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->end_row()
+				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->end_row()
+				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->end_row()
+				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->end_row()
+				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->end_row()
+				->push_to_row(new RangeMenuOption("cl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("cb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+			))
 		))
 		->push(new OpenSubMenuOption("items", (new ListMenu())
 			->push(new OpenSubMenuOption("sprays", (new ListMenu())
@@ -194,6 +222,8 @@ void GZMenu::open()
 	breadcrumbs.clear();
 	enabled = true;
 	lock    = true;
+
+	Game::gameSystem->setPause(true, "gzmenu", 3);
 }
 
 void GZMenu::close()
@@ -202,6 +232,7 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
+	Game::gameSystem->setPause(false, "gzmenu", 3);
 }
 
 void GZMenu::draw()
@@ -367,7 +398,7 @@ void GridMenu::update()
 	p2gz->menu->block_open_close_action();
 
 	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0) {
+	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0 && !editing_range) {
 		do {
 			selected_row -= 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -375,7 +406,7 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1) {
+	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
 		do {
 			selected_row += 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -383,23 +414,39 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0) {
+	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0 && !editing_range) {
 		do {
 			selected_col -= 1;
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1) {
+	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
+	    && !editing_range) {
 		do {
 			selected_col += 1;
 		} while (!cur_option()->visible);
 	}
 	if (btn & Controller::PRESS_A) {
+		if (cur_option()->is_range_option()) {
+			editing_range = !editing_range;
+			cur_option()->set_editing_in_grid(editing_range);
+			return;
+		}
 		cur_option()->select();
 	}
 	if (btn & Controller::PRESS_B) {
+		if (cur_option()->is_range_option()) {
+			if (editing_range) {
+				editing_range = false;
+				cur_option()->set_editing_in_grid(editing_range);
+				return;
+			}
+		}
 		p2gz->menu->pop_layer();
 	}
 
+	if (cur_option()->is_range_option() && !editing_range) {
+		return;
+	}
 	cur_option()->update();
 }
 
@@ -662,13 +709,17 @@ void RadioMenuOption::update()
 	}
 
 	if (init_selected_idx != selected_idx) {
-		on_selected->invoke(selected_idx);
+		if (on_selected) {
+			on_selected->invoke(selected_idx);
+		}
 	}
 }
 
 void RadioMenuOption::select()
 {
-	on_selected->invoke(selected_idx);
+	if (on_selected) {
+		on_selected->invoke(selected_idx);
+	}
 }
 
 f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
@@ -720,13 +771,17 @@ void RangeMenuOption::update()
 	check_overflow();
 
 	if (init_selected_val != selected_val) {
-		on_selected->invoke(selected_val);
+		if (on_selected) {
+			on_selected->invoke(selected_val);
+		}
 	}
 }
 
 void RangeMenuOption::select()
 {
-	on_selected->invoke(selected_val);
+	if (on_selected) {
+		on_selected->invoke(selected_val);
+	}
 }
 
 void RangeMenuOption::check_overflow()
@@ -763,8 +818,10 @@ f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 			cursor += j2d.print(cursor, z, "< ");
 		}
 
-		j2d.mCharColor.set(p2gz->menu->color_std);
-		j2d.mGradientColor.set(p2gz->menu->color_std);
+		if (!editing_in_grid) {
+			j2d.mCharColor.set(p2gz->menu->color_std);
+			j2d.mGradientColor.set(p2gz->menu->color_std);
+		}
 		cursor += j2d.print(cursor, z, "%d", selected_val);
 
 		if (selected) {
@@ -800,13 +857,17 @@ void FloatRangeMenuOption::update()
 	check_overflow();
 
 	if (init_selected_val != selected_val) {
-		on_selected->invoke(selected_val);
+		if (on_selected) {
+			on_selected->invoke(selected_val);
+		}
 	}
 }
 
 void FloatRangeMenuOption::select()
 {
-	on_selected->invoke(selected_val);
+	if (on_selected) {
+		on_selected->invoke(selected_val);
+	}
 }
 
 void FloatRangeMenuOption::check_overflow()
@@ -835,8 +896,10 @@ f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 			cursor += j2d.print(cursor, z, "< ");
 		}
 
-		j2d.mCharColor.set(p2gz->menu->color_std);
-		j2d.mGradientColor.set(p2gz->menu->color_std);
+		if (!editing_in_grid) {
+			j2d.mCharColor.set(p2gz->menu->color_std);
+			j2d.mGradientColor.set(p2gz->menu->color_std);
+		}
 		cursor += j2d.print(cursor, z, "%.2f", selected_val);
 
 		if (selected) {

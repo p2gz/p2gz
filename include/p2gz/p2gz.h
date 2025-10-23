@@ -15,6 +15,7 @@
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
+#include <p2gz/SquadEditor.h>
 #include <p2gz/StructureEditor.h>
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/EnemyDebugInfo.h>
@@ -47,6 +48,7 @@ public:
 	gz::HeapBarToggle* heap_bar_toggle;
 	gz::ImageMgr* images;
 	gz::SkipSave* skip_save;
+	gz::SquadEditor* squad_editor;
 	gz::StructureEditor* structure_editor;
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;

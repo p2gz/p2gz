@@ -2104,6 +2104,7 @@ config.libs = [
             Object(Matching, "p2gz/sprayEditor.cpp"),
             Object(Matching, "p2gz/segmentHistory.cpp"),
             Object(Matching, "p2gz/enemyDebugInfo.cpp"),
+            Object(Matching, "p2gz/squadEditor.cpp"),
         ],
     },
 ]
@@ -2135,6 +2136,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
             "p2gz/sprayEditor.cpp",
             "p2gz/segmentHistory.cpp",
             "p2gz/enemyDebugInfo.cpp",
+            "p2gz/squadEditor.cpp",
             ]
     return objects
 

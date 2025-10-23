@@ -11,6 +11,7 @@
 #include <JSystem/JKernel/JKRArchive.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
+#include <Game/Piki.h>
 
 namespace gz {
 
@@ -35,11 +36,14 @@ public:
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update() { }
 	virtual void select() = 0;
+	virtual bool is_range_option() { return false; }
+	void set_editing_in_grid(bool editing) { editing_in_grid = editing; }
 
 	const char* title;
 	bool visible;
 	const char* image_name;
 	bool image_only;
+	bool editing_in_grid;
 };
 
 struct OpenSubMenuOption : public MenuOption {
@@ -138,7 +142,9 @@ public:
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
+	virtual bool is_range_option() { return true; }
 
+	s32 get_selection() { return selected_val; }
 	void set_selection(s32 val) { selected_val = val; }
 
 	s32 min;
@@ -167,6 +173,7 @@ public:
 	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
+	virtual bool is_range_option() { return true; }
 
 	void set_selection(f32 val) { selected_val = val; }
 
@@ -178,6 +185,7 @@ private:
 
 	IDelegate1<f32>* on_selected;
 	f32 selected_val;
+	bool in_grid_menu;
 };
 
 struct HexInputOption : public MenuOption {
@@ -259,6 +267,7 @@ public:
 	    : column_width(column_width_)
 	{
 		options.push(new Vec<MenuOption*>);
+		editing_range = false;
 	}
 
 	virtual void update();
@@ -294,6 +303,7 @@ public:
 	size_t selected_row;
 	size_t selected_col;
 	f32 column_width;
+	bool editing_range;
 };
 
 struct HexKeypad : public MenuLayer {
