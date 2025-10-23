@@ -2104,7 +2104,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
     if not config.non_matching:
         return objects
     if module_id == 0:  # DOL
-        return objects + [os.path.relpath(file, "src")  
+        return objects + [os.path.relpath(file, "src")
                           for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))]
     return objects
 

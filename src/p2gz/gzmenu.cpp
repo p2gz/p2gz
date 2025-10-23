@@ -8,6 +8,7 @@
 #include <p2gz/SprayEditor.h>
 #include <p2gz/BoundDelegate.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/Preset.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -49,6 +50,7 @@ void GZMenu::init_menu()
 			->push(new HexInputOption("seed", "random"))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
 			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new PresetMenuOption())
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())

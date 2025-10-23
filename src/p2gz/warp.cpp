@@ -2,6 +2,7 @@
 #include <p2gz/warp.h>
 #include <p2gz/gzMacros.h>
 #include <p2gz/gzmenu.h>
+#include <p2gz/Preset.h>
 #include <Game/BaseGameSection.h>
 #include <Game/SingleGameSection.h>
 #include <Game/Entities/PelletCarcass.h>
@@ -143,6 +144,10 @@ void Warp::do_warp()
 {
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
+
+	Preset* preset = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"))->preset;
+	preset->apply();
+
 	if (warp_cave == 0) {
 		warp_to_area(game);
 	} else {
