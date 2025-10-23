@@ -1,6 +1,7 @@
 #include <p2gz/p2gz.h>
 #include <p2gz/gzmenu.h>
 #include <p2gz/Preset.h>
+#include <p2gz/BoundDelegate.h>
 #include <Game/Piki.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
@@ -39,6 +40,7 @@ Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
 
 void Preset::apply()
 {
+	// TODO: is this necessary?
 	// GameStat::mePikis.clear(); // clear sprouts
 
 	// Clear squad
@@ -75,18 +77,37 @@ void Preset::apply()
 PresetMenuOption::PresetMenuOption()
     : MenuOption("preset")
 {
-	// preset = (new Preset("test preset", General))
-	//              ->set_pikmin(Game::Flower, Game::Red, 20)
-	//              ->set_pikmin(Game::Flower, Game::Yellow, 20)
-	//              ->set_pikmin(Game::Flower, Game::Blue, 20)
-	//              ->set_pikmin(Game::Flower, Game::Purple, 20)
-	//              ->set_pikmin(Game::Flower, Game::White, 20)
-	//              ->set_sprays(false, 0, true, 16);
-	preset = (new Preset("BK", PoD))
-	             ->set_pikmin(Game::Flower, Game::White, 20)
-	             ->set_pikmin(Game::Flower, Game::Purple, 20)
-	             ->set_pikmin(Game::Flower, Game::Red, 28)
-	             ->set_pikmin(Game::Leaf, Game::Blue, 32);
+	presets_list        = new ListMenu();
+	presets_list->title = "choose preset";
+	presets_list->push(new PerformActionMenuOption("no preset (use current squad)",
+	                                               new BoundDelegate1<PresetMenuOption, Preset*>(this, &select_preset, nullptr)));
+
+	available_presets.push((new Preset("test preset", General))
+	                           ->set_pikmin(Game::Flower, Game::Red, 20)
+	                           ->set_pikmin(Game::Flower, Game::Yellow, 20)
+	                           ->set_pikmin(Game::Flower, Game::Blue, 20)
+	                           ->set_pikmin(Game::Flower, Game::Purple, 20)
+	                           ->set_pikmin(Game::Flower, Game::White, 20)
+	                           ->set_sprays(false, 0, true, 16));
+	available_presets.push((new Preset("BK", PoD))
+	                           ->set_pikmin(Game::Flower, Game::White, 20)
+	                           ->set_pikmin(Game::Flower, Game::Purple, 20)
+	                           ->set_pikmin(Game::Flower, Game::Red, 28)
+	                           ->set_pikmin(Game::Leaf, Game::Blue, 32));
+
+	for (size_t i = 0; i < available_presets.len(); i++) {
+		Preset* preset = available_presets[i];
+		presets_list->push(
+		    new PerformActionMenuOption(preset->name, new BoundDelegate1<PresetMenuOption, Preset*>(this, &select_preset, preset)));
+		// TODO: use a custom menu option that extends PerformActionMenuOption but displays the
+		// pikmin counts, sprays, etc. like the main PresetMenuOption does
+	}
+}
+
+void PresetMenuOption::select_preset(Preset* preset)
+{
+	current_preset = preset;
+	p2gz->menu->pop_layer();
 }
 
 const char* color_and_stage_to_name(int color, int stage)
@@ -137,10 +158,10 @@ f32 PresetMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
 	x = MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": ");
-	if (preset) {
+	if (current_preset) {
 		for (int color = 0; color < 6; color++) {
 			for (int stage = 0; stage < 3; stage++) {
-				int amount = preset->squad.getCount(color, stage);
+				int amount = current_preset->squad.getCount(color, stage);
 				if (amount == 0) {
 					continue;
 				}
@@ -156,16 +177,17 @@ f32 PresetMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 				j2d.initiate();
 				x += j2d.print(x, z, "%d", amount);
 				x += 5.0; // some padding between pikmin types
+
+				delete img_name;
 			}
 		}
+	} else {
+		x += j2d.print(x, z, "none");
 	}
 	return x;
 }
 
-void PresetMenuOption::update()
-{
-}
-
 void PresetMenuOption::select()
 {
+	p2gz->menu->push_layer(presets_list);
 }
