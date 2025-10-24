@@ -12,6 +12,9 @@
 // @P2GZ
 #include <p2gz/p2gz.h>
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 namespace SingleGame {
 
