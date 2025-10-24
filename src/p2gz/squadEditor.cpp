@@ -117,11 +117,20 @@ void SquadEditor::set_squad(s32 _)
 {
 	gz::Vec<s32> squad = get_squad();
 
+	int total = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		if (piki->mNavi == nullptr) {
+			total++;
+		}
+	}
+
 	// If the player increments an option to exceed 100 total Pikmin, we need to identify the offending option
 	// and clamp it so the total Pikmin count is 100.
 	RangeMenuOption* changed = nullptr;
 	int previous             = 0;
-	int total                = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
 	for (int color = 0; color < 6; color++) {
 		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
