@@ -7,6 +7,7 @@
 #include "Screen/Game2DMgr.h"
 #include "Game/GameSystem.h"
 #include "Radar.h"
+#include <p2gz/p2gz.h>
 
 // @P2GZ
 #include <p2gz/p2gz.h>
