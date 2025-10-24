@@ -19,6 +19,7 @@
 #include <p2gz/StructureEditor.h>
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/PokoEditor.h>
 
 struct P2GZ {
 public:
@@ -52,6 +53,7 @@ public:
 	gz::StructureEditor* structure_editor;
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;
+	gz::PokoEditor* poko_editor;
 };
 
 // global instance

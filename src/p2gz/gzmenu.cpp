@@ -8,6 +8,7 @@
 #include <p2gz/SprayEditor.h>
 #include <p2gz/BoundDelegate.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/PokoEditor.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -79,6 +80,7 @@ void GZMenu::init_menu()
 			))
 		))
 		->push(new OpenSubMenuOption("items", (new ListMenu())
+			->push(new RangeMenuOption("pokos", 0, 99999, 0, RangeMenuOption::WRAP, new Delegate1<PokoEditor, s32>(p2gz->poko_editor, &PokoEditor::set_pokos)))
 			->push(new OpenSubMenuOption("sprays", (new ListMenu())
 				->push(new RangeMenuOption("bitters", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_bitters)))
 				->push(new RangeMenuOption("spicies", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_spicies)))

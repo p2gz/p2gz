@@ -9,6 +9,7 @@
 #include <p2gz/SprayEditor.h>
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/SquadEditor.h>
+#include <p2gz/PokoEditor.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -36,6 +37,7 @@ P2GZ::P2GZ()
 	segment_history              = new SegmentHistory();
 	enemy_debug_info             = new EnemyDebugInfo();
 	squad_editor                 = new SquadEditor();
+	poko_editor                  = new PokoEditor();
 }
 
 void P2GZ::init()
@@ -49,6 +51,7 @@ void P2GZ::init()
 	images->init();
 	spray_editor->init();
 	squad_editor->init();
+	poko_editor->init();
 }
 
 void P2GZ::update()
@@ -57,6 +60,7 @@ void P2GZ::update()
 	spray_editor->update();
 	freecam->update();
 	squad_editor->update();
+	poko_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
