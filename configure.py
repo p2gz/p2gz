@@ -13,6 +13,8 @@
 ###
 
 import argparse
+import glob
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -2087,25 +2089,8 @@ config.libs = [
         "cflags": [*cflags_pikmin],
         "mw_version": "GC/2.6",
         "host": True,
-        "objects": [
-            # p2gz: add new files here...
-            Object(Matching, "p2gz/p2gz.cpp"),
-            Object(Matching, "p2gz/gzmenu.cpp"),
-            Object(Matching, "p2gz/freecam.cpp"),
-            Object(Matching, "p2gz/navitools.cpp"),
-            Object(Matching, "p2gz/timer.cpp"),
-            Object(Matching, "p2gz/waypointViewer.cpp"),
-            Object(Matching, "p2gz/collisionViewer.cpp"),
-            Object(Matching, "p2gz/warp.cpp"),
-            Object(Matching, "p2gz/skippableCS.cpp"),
-            Object(Matching, "p2gz/dayEditor.cpp"),
-            Object(Matching, "p2gz/images.cpp"),
-            Object(Matching, "p2gz/structureEditor.cpp"),
-            Object(Matching, "p2gz/sprayEditor.cpp"),
-            Object(Matching, "p2gz/segmentHistory.cpp"),
-            Object(Matching, "p2gz/enemyDebugInfo.cpp"),
-            Object(Matching, "p2gz/squadEditor.cpp"),
-        ],
+        "objects": [Object(Matching, os.path.relpath(file, "src"))
+                    for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))],
     },
 ]
 
@@ -2119,25 +2104,8 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
     if not config.non_matching:
         return objects
     if module_id == 0:  # DOL
-        return objects + [
-            # p2gz: ... and here
-            "p2gz/p2gz.cpp",
-            "p2gz/gzmenu.cpp",
-            "p2gz/freecam.cpp",
-            "p2gz/navitools.cpp",
-            "p2gz/timer.cpp",
-            "p2gz/waypointViewer.cpp",
-            "p2gz/collisionViewer.cpp",
-            "p2gz/warp.cpp",
-            "p2gz/skippableCS.cpp",
-            "p2gz/dayEditor.cpp",
-            "p2gz/images.cpp",
-            "p2gz/structureEditor.cpp",
-            "p2gz/sprayEditor.cpp",
-            "p2gz/segmentHistory.cpp",
-            "p2gz/enemyDebugInfo.cpp",
-            "p2gz/squadEditor.cpp",
-            ]
+        return objects + [os.path.relpath(file, "src")  
+                          for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))]
     return objects
 
 # Uncomment to enable the link order callback.
