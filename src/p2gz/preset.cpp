@@ -77,12 +77,18 @@ void Preset::apply()
 PresetMenuOption::PresetMenuOption()
     : MenuOption("preset")
 {
-	presets_list        = new ListMenu();
-	presets_list->title = "choose preset";
-	presets_list->push(new PerformActionMenuOption("no preset (use current squad)",
-	                                               new BoundDelegate1<PresetMenuOption, Preset*>(this, &select_preset, nullptr)));
+	ListMenu* pod_presets_menu     = new ListMenu();
+	ListMenu* at_presets_menu      = new ListMenu();
+	ListMenu* general_presets_menu = new ListMenu();
+	preset_category_list           = (new ListMenu())
+	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
+	                           ->push(new OpenSubMenuOption("PoD", pod_presets_menu))
+	                           ->push(new OpenSubMenuOption("AT", at_presets_menu))
+	                           ->push(new OpenSubMenuOption("general", general_presets_menu));
+	preset_category_list->title = "preset categories";
 
-	available_presets.push((new Preset("test preset", General))
+	// TODO: load list of presets from somewhere else
+	available_presets.push((new Preset("everything", General))
 	                           ->set_pikmin(Game::Flower, Game::Red, 20)
 	                           ->set_pikmin(Game::Flower, Game::Yellow, 20)
 	                           ->set_pikmin(Game::Flower, Game::Blue, 20)
@@ -95,99 +101,99 @@ PresetMenuOption::PresetMenuOption()
 	                           ->set_pikmin(Game::Flower, Game::Red, 28)
 	                           ->set_pikmin(Game::Leaf, Game::Blue, 32));
 
+	// Add every preset to its appropriate menu. General presets go in the category menu
 	for (size_t i = 0; i < available_presets.len(); i++) {
 		Preset* preset = available_presets[i];
-		presets_list->push(
-		    new PerformActionMenuOption(preset->name, new BoundDelegate1<PresetMenuOption, Preset*>(this, &select_preset, preset)));
-		// TODO: use a custom menu option that extends PerformActionMenuOption but displays the
-		// pikmin counts, sprays, etc. like the main PresetMenuOption does
+		if (!preset) {
+			continue;
+		}
+
+		PresetPreviewMenuOption* opt = new PresetPreviewMenuOption(preset, this);
+		if (preset->category == PoD) {
+			pod_presets_menu->push(opt);
+		} else if (preset->category == AT) {
+			at_presets_menu->push(opt);
+		} else if (preset->category == General) {
+			general_presets_menu->push(opt);
+		}
 	}
 }
 
-void PresetMenuOption::select_preset(Preset* preset)
-{
-	current_preset = preset;
-	p2gz->menu->pop_layer();
-}
+static const char* IMG_NAMES[15] = {
+	"blue_leaf",     "blue_bud",    "blue_flower", "red_leaf",      "red_bud",    "red_flower", "yellow_leaf",  "yellow_bud",
+	"yellow_flower", "purple_leaf", "purple_bud",  "purple_flower", "white_leaf", "white_bud",  "white_flower",
+};
 
-const char* color_and_stage_to_name(int color, int stage)
+f32 draw_preset_preview(J2DPrint& j2d, f32 x, f32 z, Preset* preset)
 {
-	const char* color_name = nullptr;
-	const char* stage_name = nullptr;
+	for (int color = 0; color < 6; color++) {
+		for (int stage = 0; stage < 3; stage++) {
+			int amount = preset->squad.getCount(color, stage);
+			if (amount == 0) {
+				continue;
+			}
 
-	switch (color) {
-	case 0:
-		color_name = "blue";
-		break;
-	case 1:
-		color_name = "red";
-		break;
-	case 2:
-		color_name = "yellow";
-		break;
-	case 3:
-		color_name = "purple";
-		break;
-	case 4:
-		color_name = "white";
-		break;
-	default:
-		return nullptr; // TODO: bulbmin
+			const char* img_name = IMG_NAMES[color * 3 + stage];
+			if (!img_name) {
+				continue;
+			}
+
+			x += p2gz->images->draw(img_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
+			x += 2.0; // space between the image and the number
+
+			j2d.initiate();
+			x += j2d.print(x, z, "%d", amount);
+			x += 5.0; // some padding between pikmin types
+		}
 	}
 
-	switch (stage) {
-	case 0:
-		stage_name = "leaf";
-		break;
-	case 1:
-		stage_name = "bud";
-		break;
-	case 2:
-		stage_name = "flower";
-		break;
-	default:
-		GZASSERTLINE(false);
-	}
-
-	char* img_name = new char[16];
-	sprintf(img_name, "%s_%s", color_name, stage_name);
-	return const_cast<const char*>(img_name);
+	return x;
 }
 
-f32 PresetMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	x = MenuOption::draw(j2d, x, z, selected);
+	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": ");
 	if (current_preset) {
-		for (int color = 0; color < 6; color++) {
-			for (int stage = 0; stage < 3; stage++) {
-				int amount = current_preset->squad.getCount(color, stage);
-				if (amount == 0) {
-					continue;
-				}
-
-				const char* img_name = color_and_stage_to_name(color, stage);
-				if (!img_name) {
-					continue;
-				}
-
-				x += p2gz->images->draw(img_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
-				x += 2.0; // space between the image and the number
-
-				j2d.initiate();
-				x += j2d.print(x, z, "%d", amount);
-				x += 5.0; // some padding between pikmin types
-
-				delete img_name;
-			}
-		}
+		draw_preset_preview(j2d, x, z, current_preset);
 	} else {
 		x += j2d.print(x, z, "none");
 	}
-	return x;
 }
 
 void PresetMenuOption::select()
 {
-	p2gz->menu->push_layer(presets_list);
+	p2gz->menu->push_layer(preset_category_list);
+}
+
+PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_)
+    : MenuOption(preset_ ? preset_->name : nullptr)
+{
+	GZASSERTLINE(parent_);
+
+	preset = preset_;
+	parent = parent_;
+}
+
+void PresetPreviewMenuOption::select()
+{
+	parent->current_preset = preset;
+	MenuLayer* warp_menu   = p2gz->menu->get_option("warp")->get_sub_menu();
+	while (p2gz->menu->get_active_layer() != warp_menu) {
+		p2gz->menu->pop_layer();
+	}
+}
+
+void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
+{
+	if (preset) {
+		z += 5.0; // some extra vertical space for the images
+		MenuOption::draw(j2d, x, z, selected);
+		x = 140.0f;
+		x += draw_preset_preview(j2d, x, z, preset);
+		z += 5.0;
+
+	} else {
+		x += j2d.print(x, z, "no preset (use current squad)");
+	}
 }

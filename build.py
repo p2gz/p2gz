@@ -70,7 +70,7 @@ for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
     iso_dir = compressed_dir.replace(P2GZ_ASSETS, NEW_ISO_ASSETS)
     iso_archive = iso_dir + '.szs'
     asset_archive = compressed_dir + '.szs'
-    
+
 
     # patching existing asset
     if os.path.exists(iso_archive):
@@ -118,7 +118,7 @@ subprocess.run('ninja', shell=True)
 shutil.copy2('build/GPVE01/main.dol', 'root/sys/main.dol')
 
 if args.map:
-    subprocess.run('rm root/files/pikmin2UP.map')
+    subprocess.run('rm root/files/pikmin2UP.map', shell=True)
     shutil.copy2('build/GPVE01/main.elf.MAP', 'root/files/pikmin2UP.map')
     lines = []
     with open('root/files/pikmin2UP.map', 'r') as f:

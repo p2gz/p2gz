@@ -33,7 +33,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update() { }
 	virtual void select() = 0;
 	virtual bool is_range_option() { return false; }
@@ -85,7 +85,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 
 	virtual void select()
 	{
@@ -111,7 +111,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
 	virtual void select();
 
@@ -139,7 +139,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
 	virtual void select();
 	virtual bool is_range_option() { return true; }
@@ -170,7 +170,7 @@ public:
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
 	virtual void select();
 	virtual bool is_range_option() { return true; }
@@ -193,7 +193,7 @@ public:
 	HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_ = nullptr, bool image_only_ = false);
 
 	virtual MenuLayer* get_sub_menu();
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update() { }
 	virtual void select();
 
@@ -208,9 +208,9 @@ private:
 /// Base class for different types of menus
 struct MenuLayer {
 public:
-	virtual void update()                          = 0;
-	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
-	virtual void reset_selection()                 = 0;
+	virtual void update()                            = 0;
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
+	virtual void reset_selection()                   = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
 	virtual void navigate_to(const char* path) { }
 
@@ -223,7 +223,7 @@ public:
 struct ListMenu : public MenuLayer {
 public:
 	virtual void update();
-	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection() { selected = 0; }
@@ -273,7 +273,7 @@ public:
 	}
 
 	virtual void update();
-	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection()
@@ -313,7 +313,7 @@ public:
 	HexKeypad(const char* title_);
 
 	virtual void update();
-	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual void reset_selection()
 	{
 		keypad->reset_selection();

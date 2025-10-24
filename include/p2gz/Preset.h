@@ -54,17 +54,25 @@ struct PresetMenuOption : public MenuOption {
 public:
 	PresetMenuOption();
 
-	virtual MenuLayer* get_sub_menu() { return presets_list; }
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void select();
 
 	Preset* current_preset;
 
 private:
-	void select_preset(Preset* preset);
-
-	ListMenu* presets_list;
+	ListMenu* preset_category_list;
 	Vec<Preset*> available_presets;
+};
+
+struct PresetPreviewMenuOption : public MenuOption {
+	PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_);
+
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual void select();
+
+	Preset* preset;
+	PresetMenuOption* parent;
 };
 
 }; // namespace gz
