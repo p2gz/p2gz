@@ -176,8 +176,12 @@ void CaveState::exec(SingleGameSection* game)
 	game->updateCaveScreen();
 
 	// check pikmin extinction cutscene
-	if (!(moviePlayer->isFlag(MVP_IsActive))) {
-		if (GameStat::getMapPikmins(AllPikminCalcs) == 0) {
+	// @P2GZ squad editor: don't check for Pikmin extinction while editing squad
+	if (!(moviePlayer->isFlag(MVP_IsActive)) && !p2gz->squad_editor->is_open()) {
+		// @P2GZ - Warp
+		// Allow being in a cave with zero pikmin if enabled in the menu
+		// if (GameStat::getMapPikmins(AllPikminCalcs) == 0) {
+		if (!(p2gz->warp->allow_zero_pikmin_in_caves) && GameStat::getMapPikmins(AllPikminCalcs) == 0) {
 			gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 			MoviePlayArg moviearg("s05_pikminzero", nullptr, game->mMovieFinishCallback, 0);
 			Navi* navi = naviMgr->getActiveNavi();

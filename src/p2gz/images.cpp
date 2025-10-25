@@ -25,8 +25,8 @@ f32 Image::draw(f32 x, f32 z, f32 width, f32 height)
 }
 
 ImageMgr::ImageMgr()
-    : menu_width(20.0f)
-    , menu_height(20.0f)
+    : menu_width(32.0f)
+    , menu_height(32.0f)
     , menu_spacing(5.0f)
 {
 }
@@ -39,6 +39,28 @@ void ImageMgr::init()
 	push(new Image(getImageFile(image_arc, "rp_l64.bti"), "red_leaf"));
 	push(new Image(getImageFile(image_arc, "rp_b64.bti"), "red_bud"));
 	push(new Image(getImageFile(image_arc, "rp_f64.bti"), "red_flower"));
+
+	push(new Image(getImageFile(image_arc, "yp_l64.bti"), "yellow_leaf"));
+	push(new Image(getImageFile(image_arc, "yp_b64.bti"), "yellow_bud"));
+	push(new Image(getImageFile(image_arc, "yp_f64.bti"), "yellow_flower"));
+
+	push(new Image(getImageFile(image_arc, "bp_l64.bti"), "blue_leaf"));
+	push(new Image(getImageFile(image_arc, "bp_b64.bti"), "blue_bud"));
+	push(new Image(getImageFile(image_arc, "bp_f64.bti"), "blue_flower"));
+
+	push(new Image(getImageFile(image_arc, "wp_l64.bti"), "white_leaf"));
+	push(new Image(getImageFile(image_arc, "wp_b64.bti"), "white_bud"));
+	push(new Image(getImageFile(image_arc, "wp_f64.bti"), "white_flower"));
+
+	push(new Image(getImageFile(image_arc, "blp_l64.bti"), "purple_leaf"));
+	push(new Image(getImageFile(image_arc, "blp_b64.bti"), "purple_bud"));
+	push(new Image(getImageFile(image_arc, "blp_f64.bti"), "purple_flower"));
+
+	push(new Image(getImageFile(image_arc, "onion_blue.bti"), "onion_blue"));
+	push(new Image(getImageFile(image_arc, "onion_red.bti"), "onion_red"));
+	push(new Image(getImageFile(image_arc, "onion_yellow.bti"), "onion_yellow"));
+	push(new Image(getImageFile(image_arc, "ship_purple.bti"), "ship_purple"));
+	push(new Image(getImageFile(image_arc, "ship_white.bti"), "ship_white"));
 }
 
 const ResTIMG* ImageMgr::getImageFile(JKRArchive* arc, const char* file_path)
