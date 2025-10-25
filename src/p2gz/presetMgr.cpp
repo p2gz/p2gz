@@ -60,12 +60,12 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 29));
-	presets.push((new Preset("SCx", PoD))
+	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 29));
-	presets.push((new Preset("FC", PoD))
+	presets.push((new Preset("SCx5-FC", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 20)
@@ -169,9 +169,12 @@ Preset* PresetMgr::suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, P
 		case BK:
 			return find("BK", PoD);
 		case SCx:
-			return find("SCx", PoD);
+			if (sublevel < 4)
+				return find("SCx1-3", PoD);
+			else
+				return find("SCx4-FC", PoD);
 		case FC:
-			return find("FC", PoD);
+			return find("SCx4-FC", PoD);
 		case CoS:
 			return find("CoS", PoD);
 		case GK:
