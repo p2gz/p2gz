@@ -13,6 +13,7 @@ public:
 
 	void init();
 
+	void set_from_current();
 	void set_warp_area(size_t area);
 	void set_warp_cave(size_t cave);
 	void set_warp_sublevel(s32 sublevel);

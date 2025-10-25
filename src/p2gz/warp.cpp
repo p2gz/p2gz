@@ -80,6 +80,17 @@ void Warp::init()
 	update_sublevel_opt();
 }
 
+void Warp::set_from_current()
+{
+	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+
+	ID32 cave_id(game->getCaveID());
+	warp_area     = game->mCurrentCourseInfo->mCourseIndex;
+	warp_cave     = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
+	warp_sublevel = game->mCurrentFloor;
+	warp_day      = Game::gameSystem->mTimeMgr->mDayCount;
+}
+
 void Warp::set_warp_area(size_t area)
 {
 	warp_area     = area;
