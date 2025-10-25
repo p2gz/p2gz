@@ -82,7 +82,7 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mNavi != nullptr && piki->mPikiKind == color && piki->mHappaKind == stage) {
+		if (piki->mPikiKind == color && piki->mHappaKind == stage && !piki->isZikatu()) {
 			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
 			piki->kill(&arg);
 			killed++;

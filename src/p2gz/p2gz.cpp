@@ -36,6 +36,7 @@ P2GZ::P2GZ()
 	segment_history              = new SegmentHistory();
 	enemy_debug_info             = new EnemyDebugInfo();
 	squad_editor                 = new SquadEditor();
+	preset_mgr                   = new PresetMgr();
 }
 
 void P2GZ::init()
