@@ -36,7 +36,11 @@ private:
 	Game::PlayCamera* camera;
 	Game::Navi* navi;
 	bool enabled;
+	int originalAngle;
+	int originalZoom;
+	int minZoom;
 	int zoom;
+	int maxZoom;
 	f32 animation_coefficient;
 	bool is_coefficient_positive;
 };
