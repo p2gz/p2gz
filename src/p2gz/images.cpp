@@ -55,6 +55,12 @@ void ImageMgr::init()
 	push(new Image(getImageFile(image_arc, "blp_l64.bti"), "purple_leaf"));
 	push(new Image(getImageFile(image_arc, "blp_b64.bti"), "purple_bud"));
 	push(new Image(getImageFile(image_arc, "blp_f64.bti"), "purple_flower"));
+
+	push(new Image(getImageFile(image_arc, "onion_blue.bti"), "onion_blue"));
+	push(new Image(getImageFile(image_arc, "onion_red.bti"), "onion_red"));
+	push(new Image(getImageFile(image_arc, "onion_yellow.bti"), "onion_yellow"));
+	push(new Image(getImageFile(image_arc, "ship_purple.bti"), "ship_purple"));
+	push(new Image(getImageFile(image_arc, "ship_white.bti"), "ship_white"));
 }
 
 const ResTIMG* ImageMgr::getImageFile(JKRArchive* arc, const char* file_path)

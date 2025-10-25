@@ -50,6 +50,13 @@ public:
 	Vec<int> cutscene_flags;
 };
 
+struct PresetMgr {
+	PresetMgr();
+	Preset* find(const char* name, PresetCategory category);
+
+	Vec<Preset*> presets;
+};
+
 struct PresetMenuOption : public MenuOption {
 public:
 	PresetMenuOption();
@@ -62,7 +69,6 @@ public:
 
 private:
 	ListMenu* preset_category_list;
-	Vec<Preset*> available_presets;
 };
 
 struct PresetPreviewMenuOption : public MenuOption {

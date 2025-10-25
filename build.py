@@ -75,6 +75,7 @@ for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
     # patching existing asset
     if os.path.exists(iso_archive):
         subprocess.run(f'cube extract {iso_archive} -o {iso_dir}', shell=True)
+        subprocess.run(f'rm {iso_archive}', shell=True)
 
         print(f'Copying {asset_archive} to {iso_archive}')
         shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)

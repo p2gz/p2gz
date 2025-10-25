@@ -3,7 +3,7 @@
 
 #include <types.h>
 #include <p2gz/gzCollections.h>
-#include <p2gz/DoublePress.h>
+#include <p2gz/InputHelpers.h>
 #include <p2gz/images.h>
 #include <JSystem/JUtility/TColor.h>
 #include <JSystem/J2D/J2DPrint.h>
@@ -222,6 +222,14 @@ public:
 
 struct ListMenu : public MenuLayer {
 public:
+	ListMenu()
+	    : pah_up(Controller::PRESS_DPAD_UP)
+	    , pah_down(Controller::PRESS_DPAD_DOWN)
+	{
+		selected = 0;
+		scroll   = 0;
+	}
+
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual MenuOption* get_option(const char* path);
@@ -239,26 +247,16 @@ public:
 		}
 	}
 
-	ListMenu* push(MenuOption* option)
-	{
-		options.push(option);
-		MenuLayer* sub_menu = option->get_sub_menu();
-		if (sub_menu) {
-			sub_menu->parent = this;
-		}
-		return this;
-	}
-
-	void clear()
-	{
-		while (options.len() > 0) {
-			MenuOption* opt = options.pop();
-			delete opt;
-		}
-	}
+	ListMenu* push(MenuOption* option);
+	void clear();
 
 	Vec<MenuOption*> options;
 	size_t selected;
+
+private:
+	size_t scroll;
+	PressAndHold pah_up;
+	PressAndHold pah_down;
 };
 
 struct GridMenu : public MenuLayer {
@@ -267,6 +265,10 @@ public:
 	    : column_width(column_width_)
 	    , selected_row(0)
 	    , selected_col(0)
+	    , pah_up(Controller::PRESS_DPAD_UP)
+	    , pah_down(Controller::PRESS_DPAD_DOWN)
+	    , pah_left(Controller::PRESS_DPAD_LEFT)
+	    , pah_right(Controller::PRESS_DPAD_RIGHT)
 	{
 		options.push(new Vec<MenuOption*>);
 		editing_range = false;
@@ -306,6 +308,12 @@ public:
 	size_t selected_col;
 	f32 column_width;
 	bool editing_range;
+
+private:
+	PressAndHold pah_up;
+	PressAndHold pah_down;
+	PressAndHold pah_left;
+	PressAndHold pah_right;
 };
 
 struct HexKeypad : public MenuLayer {

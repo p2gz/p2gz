@@ -8,6 +8,7 @@
 #include <p2gz/SprayEditor.h>
 #include <p2gz/BoundDelegate.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/InputHelpers.h>
 #include <p2gz/Preset.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
@@ -350,25 +351,53 @@ void ListMenu::navigate_to(const char* path)
 	}
 }
 
+ListMenu* ListMenu::push(MenuOption* option)
+{
+	options.push(option);
+	MenuLayer* sub_menu = option->get_sub_menu();
+	if (sub_menu) {
+		sub_menu->parent = this;
+	}
+	return this;
+}
+
+void ListMenu::clear()
+{
+	while (options.len() > 0) {
+		MenuOption* opt = options.pop();
+		delete opt;
+	}
+}
+
 void ListMenu::update()
 {
+	// Make sure the selection starts in bounds in case it was changed from somewhere else
+	if (selected < scroll) {
+		selected = scroll;
+	}
 
-	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_DPAD_UP && selected > 0) {
+	if (pah_up.check(p2gz->controller) && selected > 0) {
 		do {
 			selected -= 1;
 		} while (!options[selected]->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected < options.len() - 1) {
+	if (pah_down.check(p2gz->controller) && options.len() > 0 && selected < options.len() - 1) {
 		do {
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
+
+	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
 	}
 	if (btn & Controller::PRESS_B) {
 		p2gz->menu->pop_layer();
+	}
+
+	// ... but if we scrolled off the edge deliberately, adjust the scroll
+	if (selected < scroll) {
+		scroll = selected;
 	}
 
 	if (options.len() > 0 && selected < options.len()) {
@@ -379,8 +408,9 @@ void ListMenu::update()
 void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 {
 	const f32 start_x = x;
-	for (size_t i = 0; i < options.len(); i++) {
-		if (!options[i]->visible) {
+	const f32 start_z = z;
+	for (size_t i = scroll; i < options.len(); i++) {
+		if (!options[i]->visible || z < start_z) {
 			continue;
 		}
 
@@ -397,6 +427,14 @@ void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 		options[i]->draw(j2d, x, z, i == selected);
 		z += p2gz->menu->line_height;
 		x = start_x;
+
+		// Don't need to draw things too far down on the screen
+		if (z > 400.0f) {
+			if (selected > i) { // Make sure selection stays within visible range
+				scroll += 1;
+			}
+			break;
+		}
 	}
 }
 
@@ -404,8 +442,7 @@ void GridMenu::update()
 {
 	p2gz->menu->block_open_close_action();
 
-	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0 && !editing_range) {
+	if (pah_up.check(p2gz->controller) && selected_row > 0 && !editing_range) {
 		do {
 			selected_row -= 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -413,7 +450,7 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
+	if (pah_down.check(p2gz->controller) && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
 		do {
 			selected_row += 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -421,17 +458,19 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0 && !editing_range) {
+	if (pah_left.check(p2gz->controller) && selected_col > 0 && !editing_range) {
 		do {
 			selected_col -= 1;
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
+	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
 	    && !editing_range) {
 		do {
 			selected_col += 1;
 		} while (!cur_option()->visible);
 	}
+
+	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		if (cur_option()->is_range_option()) {
 			editing_range = !editing_range;

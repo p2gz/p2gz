@@ -7,6 +7,7 @@
 #include <System.h>
 
 using namespace gz;
+using namespace Game;
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
 {
@@ -46,7 +47,7 @@ void Preset::apply()
 	// Clear squad
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
-			p2gz->squad_editor->kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), MAX_PIKI_COUNT);
+			p2gz->squad_editor->kill_piki(static_cast<EPikiKind>(color), static_cast<EPikiHappa>(stage), MAX_PIKI_COUNT);
 		}
 	}
 
@@ -54,12 +55,12 @@ void Preset::apply()
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
 			int amount = squad.getCount(color, stage);
-			p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
+			p2gz->squad_editor->birth_piki(static_cast<EPikiKind>(color), static_cast<EPikiHappa>(stage), amount);
 		}
 	}
 
 	// Apply onion pikmin
-	Game::playData->mPikiContainer = onion_pikis;
+	playData->mPikiContainer = onion_pikis;
 
 	// Apply sprays
 	p2gz->spray_editor->set_bitters(num_bitters);
@@ -70,7 +71,7 @@ void Preset::apply()
 	// Set cutscene flags
 	// TODO: use cutscene flag editor for this
 	// for (size_t i = 0; i < preset.cutscene_flags.len(); i++) {
-	// 	Game::playData->mDemoFlags.setFlag(preset.cutscene_flags[i]);
+	// 	playData->mDemoFlags.setFlag(preset.cutscene_flags[i]);
 	// }
 }
 
@@ -87,23 +88,9 @@ PresetMenuOption::PresetMenuOption()
 	                           ->push(new OpenSubMenuOption("general", general_presets_menu));
 	preset_category_list->title = "preset categories";
 
-	// TODO: load list of presets from somewhere else
-	available_presets.push((new Preset("everything", General))
-	                           ->set_pikmin(Game::Flower, Game::Red, 20)
-	                           ->set_pikmin(Game::Flower, Game::Yellow, 20)
-	                           ->set_pikmin(Game::Flower, Game::Blue, 20)
-	                           ->set_pikmin(Game::Flower, Game::Purple, 20)
-	                           ->set_pikmin(Game::Flower, Game::White, 20)
-	                           ->set_sprays(false, 0, true, 16));
-	available_presets.push((new Preset("BK", PoD))
-	                           ->set_pikmin(Game::Flower, Game::White, 20)
-	                           ->set_pikmin(Game::Flower, Game::Purple, 20)
-	                           ->set_pikmin(Game::Flower, Game::Red, 28)
-	                           ->set_pikmin(Game::Leaf, Game::Blue, 32));
-
-	// Add every preset to its appropriate menu. General presets go in the category menu
-	for (size_t i = 0; i < available_presets.len(); i++) {
-		Preset* preset = available_presets[i];
+	// Add every preset to its appropriate menu
+	for (size_t i = 0; i < p2gz->preset_mgr->presets.len(); i++) {
+		Preset* preset = p2gz->preset_mgr->presets[i];
 		if (!preset) {
 			continue;
 		}
@@ -119,13 +106,21 @@ PresetMenuOption::PresetMenuOption()
 	}
 }
 
-static const char* IMG_NAMES[15] = {
+static const char* PIKI_IMG_NAMES[15] = {
 	"blue_leaf",     "blue_bud",    "blue_flower", "red_leaf",      "red_bud",    "red_flower", "yellow_leaf",  "yellow_bud",
 	"yellow_flower", "purple_leaf", "purple_bud",  "purple_flower", "white_leaf", "white_bud",  "white_flower",
 };
 
+static const char* ONION_IMG_NAMES[5] = {
+	"onion_blue", "onion_red", "onion_yellow", "ship_purple", "ship_white",
+};
+
 f32 draw_preset_preview(J2DPrint& j2d, f32 x, f32 z, Preset* preset)
 {
+	const f32 img_number_margin   = 2.0;
+	const f32 number_right_margin = 5.0;
+
+	// squad pikmin
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
 			int amount = preset->squad.getCount(color, stage);
@@ -133,18 +128,41 @@ f32 draw_preset_preview(J2DPrint& j2d, f32 x, f32 z, Preset* preset)
 				continue;
 			}
 
-			const char* img_name = IMG_NAMES[color * 3 + stage];
+			const char* img_name = PIKI_IMG_NAMES[color * 3 + stage];
 			if (!img_name) {
 				continue;
 			}
 
 			x += p2gz->images->draw(img_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
-			x += 2.0; // space between the image and the number
+			x += img_number_margin;
 
 			j2d.initiate();
 			x += j2d.print(x, z, "%d", amount);
-			x += 5.0; // some padding between pikmin types
+			x += number_right_margin;
 		}
+	}
+
+	// onion pikmin
+	for (int color = 0; color < 5; color++) {
+		int amount = 0;
+		for (int stage = 0; stage < 3; stage++) {
+			amount += preset->onion_pikis.getCount(color, stage);
+		}
+		if (amount == 0) {
+			continue;
+		}
+
+		const char* img_name = ONION_IMG_NAMES[color];
+		if (!img_name) {
+			continue;
+		}
+
+		x += p2gz->images->draw(img_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
+		x += img_number_margin;
+
+		j2d.initiate();
+		x += j2d.print(x, z, "%d", amount);
+		x += number_right_margin;
 	}
 
 	return x;
@@ -187,11 +205,12 @@ void PresetPreviewMenuOption::select()
 void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (preset) {
-		z += 5.0; // some extra vertical space for the images
+		const f32 vmargin = 5.0; // some extra vertical space for the images
+		z += vmargin;
 		MenuOption::draw(j2d, x, z, selected);
-		x = 140.0f;
+		x = 190.0f;
 		x += draw_preset_preview(j2d, x, z, preset);
-		z += 5.0;
+		z += vmargin;
 
 	} else {
 		x += j2d.print(x, z, "no preset (use current squad)");
