@@ -52,6 +52,8 @@ public:
 
 struct PresetMgr {
 	PresetMgr();
+
+	Preset* suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
@@ -69,6 +71,9 @@ public:
 
 private:
 	ListMenu* preset_category_list;
+	ListMenu* pod_presets_menu;
+	ListMenu* at_presets_menu;
+	ListMenu* general_presets_menu;
 };
 
 struct PresetPreviewMenuOption : public MenuOption {

@@ -5,9 +5,9 @@
 #include <Game/Piki.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
+#include <Game/gameGeneratorCache.h>
 
 using namespace gz;
-using namespace Game;
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
 {
@@ -47,20 +47,26 @@ void Preset::apply()
 	// Clear squad
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
-			p2gz->squad_editor->kill_piki(static_cast<EPikiKind>(color), static_cast<EPikiHappa>(stage), MAX_PIKI_COUNT);
+			p2gz->squad_editor->kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), MAX_PIKI_COUNT);
 		}
 	}
+
+	// Reset container flags for onions/ship space unlocks
+	Game::playData->resetContainerFlag();
 
 	// Apply squad
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
-			int amount = squad.getCount(color, stage);
-			p2gz->squad_editor->birth_piki(static_cast<EPikiKind>(color), static_cast<EPikiHappa>(stage), amount);
+			int amount       = squad.getCount(color, stage);
+			int onion_amount = onion_pikis.getCount(color, stage);
+			if (amount > 0 || onion_amount > 0) {
+				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
+			}
 		}
 	}
 
 	// Apply onion pikmin
-	playData->mPikiContainer = onion_pikis;
+	Game::playData->mPikiContainer = onion_pikis;
 
 	// Apply sprays
 	p2gz->spray_editor->set_bitters(num_bitters);
@@ -78,10 +84,10 @@ void Preset::apply()
 PresetMenuOption::PresetMenuOption()
     : MenuOption("preset")
 {
-	ListMenu* pod_presets_menu     = new ListMenu();
-	ListMenu* at_presets_menu      = new ListMenu();
-	ListMenu* general_presets_menu = new ListMenu();
-	preset_category_list           = (new ListMenu())
+	pod_presets_menu     = new ListMenu();
+	at_presets_menu      = new ListMenu();
+	general_presets_menu = new ListMenu();
+	preset_category_list = (new ListMenu())
 	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
 	                           ->push(new OpenSubMenuOption("PoD", pod_presets_menu))
 	                           ->push(new OpenSubMenuOption("AT", at_presets_menu))
@@ -104,6 +110,10 @@ PresetMenuOption::PresetMenuOption()
 			general_presets_menu->push(opt);
 		}
 	}
+
+	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
+	// when changing the warp menu selections
+	current_preset = p2gz->preset_mgr->find("EC", PoD);
 }
 
 static const char* PIKI_IMG_NAMES[15] = {

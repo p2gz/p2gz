@@ -95,3 +95,105 @@ Preset* PresetMgr::find(const char* name, PresetCategory category)
 	}
 	return nullptr;
 }
+
+typedef enum Cave {
+	AG  = 0,
+	EC  = 1,
+	SCx = 2,
+	FC  = 3,
+	HoB = 4,
+	WFG = 5,
+	BK  = 6,
+	SH  = 7,
+	CoS = 8,
+	GK  = 9,
+	SR  = 10,
+	SmC = 11,
+	CoC = 12,
+	HoH = 13,
+	DD  = 14
+} Cave;
+
+Cave which_cave(u32 area, u32 cave)
+{
+	if (cave == 0) {
+		return AG;
+	}
+
+	switch (area) {
+	case 0:
+		GZASSERTLINE(cave < 4);
+		return static_cast<Cave>(EC + cave - 1);
+	case 1:
+		GZASSERTLINE(cave < 5);
+		return static_cast<Cave>(HoB + cave - 1);
+	case 2:
+		GZASSERTLINE(cave < 5);
+		return static_cast<Cave>(CoS + cave - 1);
+	case 3:
+		GZASSERTLINE(cave < 4);
+		return static_cast<Cave>(CoC + cave - 1);
+	}
+
+	GZASSERTLINE(false);
+}
+
+Preset* PresetMgr::suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, PresetCategory category)
+{
+	Cave cave_e = which_cave(area, cave);
+	if (category == General) {
+		return nullptr;
+	}
+
+	if (category == PoD) {
+		switch (cave_e) {
+		case EC:
+			return find("EC", PoD);
+		case HoB:
+			if (sublevel < 2)
+				return find("HoB1-2", PoD);
+			else if (sublevel < 4)
+				return find("HoB3-4", PoD);
+			else
+				return find("HoB5-WFG3", PoD);
+		case WFG:
+			if (sublevel < 3)
+				return find("HoB5-WFG3", PoD);
+			else
+				return find("WFG4-enter SH", PoD);
+		case SH:
+			if (sublevel < 2)
+				return find("SH1-2", PoD);
+			else
+				return find("SH3-7", PoD);
+		case BK:
+			return find("BK", PoD);
+		case SCx:
+			return find("SCx", PoD);
+		case FC:
+			return find("FC", PoD);
+		case CoS:
+			return find("CoS", PoD);
+		case GK:
+			return find("GK", PoD);
+		case AG:
+			if (area == 0) {
+				if (day == 5)
+					return find("day 6 CR", PoD);
+				else
+					return find("enter SCx", PoD);
+			} else if (area == 1) {
+				if (day == 2)
+					return find("enter HoB", PoD);
+				else
+					return find("enter BK (20)", PoD);
+			} else if (area == 2) {
+				return find("CoS", PoD);
+			}
+		}
+	} else if (category == AT) {
+		// TODO: AT presets
+	}
+
+	return nullptr;
+}

@@ -88,6 +88,7 @@ void Warp::set_warp_area(size_t area)
 
 	update_cave_opt();
 	update_sublevel_opt();
+	update_preset_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -96,6 +97,7 @@ void Warp::set_warp_cave(size_t cave)
 	warp_sublevel = 0;
 
 	update_sublevel_opt();
+	update_preset_opt();
 
 	p2gz->menu->get_option("warp/enter method")->visible = warp_cave == 0;
 }
@@ -104,6 +106,8 @@ void Warp::set_warp_sublevel(s32 sublevel)
 {
 	GZASSERTLINE(sublevel >= 1);
 	warp_sublevel = sublevel - 1; // Menu is 1-indexed for nicer visuals
+
+	update_preset_opt();
 }
 
 void Warp::update_cave_opt()
@@ -137,6 +141,25 @@ void Warp::update_sublevel_opt()
 	if (selection_is_cave) {
 		sublevel_opt->max = NUM_FLOORS[warp_area][warp_cave - 1];
 		sublevel_opt->set_selection(warp_sublevel + 1);
+	}
+}
+
+void Warp::update_preset_opt()
+{
+	PresetMenuOption* preset_opt = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
+	Preset* previous_preset      = preset_opt->current_preset;
+
+	// nullptr preset is the "keep current squad" option.
+	// if this is selected or the player is using a General preset we don't want to overwrite it.
+	if (!previous_preset || previous_preset->category == General) {
+		return;
+	}
+
+	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(warp_area, warp_cave, warp_sublevel, warp_day, previous_preset->category);
+	if (suggested_preset) {
+		preset_opt->current_preset = suggested_preset;
+	} else {
+		preset_opt->current_preset = nullptr;
 	}
 }
 

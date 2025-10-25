@@ -745,10 +745,17 @@ void RadioMenuOption::update()
 	size_t init_selected_idx = selected_idx;
 	u32 btn                  = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_LEFT) {
-		selected_idx = (((int)selected_idx) - 1) % options.len();
+		if (selected_idx == 0) {
+			selected_idx = options.len() - 1;
+		} else {
+			selected_idx = selected_idx - 1;
+		}
 	}
 	if (btn & Controller::PRESS_DPAD_RIGHT) {
-		selected_idx = (selected_idx + 1) % options.len();
+		selected_idx = selected_idx + 1;
+		if (selected_idx >= options.len()) {
+			selected_idx = 0;
+		}
 	}
 
 	if (init_selected_idx != selected_idx) {
@@ -972,8 +979,9 @@ void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	MenuOption::draw(j2d, x, z, selected);
 	if (keypad->is_unselected) {
 		x += j2d.print(x, z, ": %s", value_if_unselected);
+	} else {
+		x += j2d.print(x, z, ": %08X", keypad->get_value());
 	}
-	x += j2d.print(x, z, ": %08X", keypad->get_value());
 }
 
 bool HexInputOption::is_selected()
