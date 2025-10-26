@@ -39,11 +39,8 @@ Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
 	return this;
 }
 
-void Preset::apply()
+void Preset::apply_squad(Game::PikiContainer& squad, Game::PikiContainer& onion_pikis)
 {
-	// TODO: is this necessary?
-	// GameStat::mePikis.clear(); // clear sprouts
-
 	// Clear squad
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
@@ -58,7 +55,10 @@ void Preset::apply()
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
 			int amount       = squad.getCount(color, stage);
-			int onion_amount = onion_pikis.getCount(color, stage);
+			int onion_amount = 0;
+			if (color < 5) { // no bulbmin onion
+				onion_amount = onion_pikis.getCount(color, stage);
+			}
 			if (amount > 0 || onion_amount > 0) {
 				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
 			}
@@ -67,6 +67,14 @@ void Preset::apply()
 
 	// Apply onion pikmin
 	Game::playData->mPikiContainer = onion_pikis;
+}
+
+void Preset::apply()
+{
+	// TODO: is this necessary?
+	// GameStat::mePikis.clear(); // clear sprouts
+
+	apply_squad(squad, onion_pikis);
 
 	// Apply sprays
 	p2gz->spray_editor->set_bitters(num_bitters);

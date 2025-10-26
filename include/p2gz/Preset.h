@@ -33,6 +33,7 @@ public:
 	}
 
 	void apply();
+	static void apply_squad(Game::PikiContainer& squad, Game::PikiContainer& onion_pikis);
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);

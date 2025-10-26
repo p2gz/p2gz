@@ -994,3 +994,8 @@ u32 HexInputOption::get_selected_val()
 {
 	return keypad->get_value();
 }
+
+void HexInputOption::set_selected_val(u32 val)
+{
+	keypad->set_value(val);
+}

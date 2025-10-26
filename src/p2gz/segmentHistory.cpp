@@ -36,11 +36,69 @@ void SegmentHistory::draw_2d()
 void SegmentHistory::update()
 {
 	if (entering_next_sublevel) {
+		Segment* segment = cur_segment();
+		GZASSERTLINE(segment);
+
 		const u32 btn = p2gz->controller->getButtonDown();
+		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
 			p2gz->warp->set_from_current();
+			p2gz->warp->set_preset(nullptr);
+			Preset::apply_squad(segment->squad, segment->onion_pikis);
 			p2gz->warp->do_warp();
+
+			entering_next_sublevel = false;
 			return;
+		}
+
+		// Retry same sublevel, same seed
+		if (btn & Controller::PRESS_Y) {
+			p2gz->warp->set_from_current();
+			p2gz->warp->set_seed(segment->seed);
+			p2gz->warp->set_preset(nullptr);
+			Preset::apply_squad(segment->squad, segment->onion_pikis);
+			p2gz->warp->do_warp();
+
+			entering_next_sublevel = false;
+			return;
+		}
+
+		// Restart cave from the beginning
+		if (btn & Controller::PRESS_L) {
+			if (segments.len() == 0) {
+				return;
+			}
+
+			// Find segment for the first floor of the cave, or earliest otherwise
+			Segment* start_segment = nullptr;
+			for (size_t i = segments.len() - 1; i > 0; i--) {
+				Segment* this_segment = segments[i];
+				if (this_segment->cave == segment->cave) {
+					start_segment = this_segment;
+					if (start_segment->sublevel == 0) {
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+
+			if (start_segment) {
+				p2gz->warp->set_warp_area(start_segment->area);
+				p2gz->warp->set_warp_cave(start_segment->cave);
+				p2gz->warp->set_warp_day(start_segment->day);
+				if (start_segment->sublevel == 0) {
+					p2gz->warp->set_warp_sublevel(start_segment->sublevel + 1);
+				} else {
+					p2gz->warp->set_warp_sublevel(1);
+				}
+				p2gz->warp->set_preset(nullptr);
+				Preset::apply_squad(segment->squad, segment->onion_pikis);
+				p2gz->warp->do_warp();
+
+				entering_next_sublevel = false;
+				return;
+			}
 		}
 	}
 }
@@ -100,14 +158,20 @@ void SegmentHistory::draw_reset_controls()
 
 void SegmentHistory::start_segment(u32 seed)
 {
-	Segment* segment = new Segment();
-	segment->seed    = seed;
-
+	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+	ID32 cave_id(game->getCaveID());
 	Game::PikiContainer squad;
 	Game::pikiMgr->saveAllPikmins(squad);
 
+	Segment* segment = new Segment();
+	segment->seed    = seed;
+
 	segment->squad       = squad;
 	segment->onion_pikis = Game::playData->mPikiContainer;
+	segment->area        = game->mCurrentCourseInfo->mCourseIndex;
+	segment->cave        = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
+	segment->sublevel    = game->mCurrentFloor;
+	segment->day         = Game::gameSystem->mTimeMgr->mDayCount;
 
 	segments.push(segment);
 }

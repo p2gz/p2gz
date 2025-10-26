@@ -11,6 +11,10 @@ public:
 	u32 seed;
 	Game::PikiContainer squad;
 	Game::PikiContainer onion_pikis;
+	u32 area;
+	u32 cave;
+	u32 sublevel;
+	u32 day;
 };
 
 struct SegmentHistory {

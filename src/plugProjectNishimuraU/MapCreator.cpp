@@ -24,8 +24,8 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	}
 
 	// @P2GZ - set seed
-	if (p2gz->warp->use_set_seed) {
-		srand(p2gz->warp->set_seed);
+	if (p2gz->warp->using_set_seed()) {
+		srand(p2gz->warp->get_seed());
 	}
 
 	// @P2GZ - record seed for this sublevel

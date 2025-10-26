@@ -63,10 +63,14 @@ Warp::Warp()
 
 void Warp::init()
 {
-	RadioMenuOption* area_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
-	RangeMenuOption* sublevel_opt        = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
-	RangeMenuOption* day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
-	RadioMenuOption* enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
+	area_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
+	sublevel_opt        = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
+	cave_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/cave"));
+	day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
+	enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
+	seed_opt            = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
+	preset_opt          = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
+
 	for (size_t i = 0; i < 4; i++) {
 		area_opt->options.push(AREA_NAMES[i]);
 	}
@@ -78,6 +82,16 @@ void Warp::init()
 
 	update_cave_opt();
 	update_sublevel_opt();
+}
+
+Preset* Warp::get_current_preset()
+{
+	return preset_opt->current_preset;
+}
+
+void Warp::set_preset(Preset* preset)
+{
+	preset_opt->current_preset = preset;
 }
 
 void Warp::set_from_current()
@@ -110,7 +124,7 @@ void Warp::set_warp_cave(size_t cave)
 	update_sublevel_opt();
 	update_preset_opt();
 
-	p2gz->menu->get_option("warp/enter method")->visible = warp_cave == 0;
+	enter_area_type_opt->visible = warp_cave == 0;
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
@@ -121,10 +135,15 @@ void Warp::set_warp_sublevel(s32 sublevel)
 	update_preset_opt();
 }
 
+void Warp::set_seed(u32 seed_)
+{
+	seed_opt->set_selected_val(seed_);
+	use_set_seed = true;
+}
+
 void Warp::update_cave_opt()
 {
 	GZASSERTLINE(warp_area < 4);
-	RadioMenuOption* cave_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/cave"));
 	cave_opt->set_selection(warp_cave);
 
 	cave_opt->options.clear();
@@ -141,8 +160,6 @@ void Warp::update_sublevel_opt()
 {
 	GZASSERTLINE(warp_area < 4);
 	GZASSERTLINE(warp_cave < 5); // 5th is AG
-	RangeMenuOption* sublevel_opt = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
-	HexInputOption* seed_opt      = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
 
 	// If destination is above ground, hide cave-related options
 	bool selection_is_cave = warp_cave > 0;
@@ -157,7 +174,6 @@ void Warp::update_sublevel_opt()
 
 void Warp::update_preset_opt()
 {
-	PresetMenuOption* preset_opt = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
 	Preset* previous_preset      = preset_opt->current_preset;
 
 	// nullptr preset is the "keep current squad" option.
@@ -179,7 +195,6 @@ void Warp::do_warp()
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
-	PresetMenuOption* preset_opt = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
 	if (preset_opt) {
 		Preset* preset = preset_opt->current_preset;
 		if (preset) {
@@ -240,10 +255,9 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
-	HexInputOption* seed_opt = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
 	use_set_seed             = seed_opt->is_selected();
 	if (use_set_seed) {
-		set_seed = seed_opt->get_selected_val();
+		seed = seed_opt->get_selected_val();
 	}
 
 	game->mCurrentCourseInfo = dst_course_info;

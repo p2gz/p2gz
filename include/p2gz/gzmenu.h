@@ -199,6 +199,7 @@ public:
 
 	bool is_selected();
 	u32 get_selected_val();
+	void set_selected_val(u32);
 
 private:
 	HexKeypad* keypad;
@@ -329,6 +330,11 @@ public:
 	}
 
 	u32 get_value() { return value; }
+	u32 set_value(u32 value_)
+	{
+		value         = value_;
+		is_unselected = false;
+	}
 
 	bool is_unselected;
 
