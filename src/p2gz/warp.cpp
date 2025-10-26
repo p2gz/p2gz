@@ -209,6 +209,27 @@ void Warp::do_warp()
 	}
 }
 
+void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
+{
+	Game::PelletCropMemory* mem = Game::playData->getCaveCropMemory();
+	Game::KindCounter& counter  = mem->mOtakara;
+	Game::BasePelletMgr* pelmgr = Game::PelletOtakara::mgr;
+
+	for (int i = 0; i < counter.getNumKinds(); i++) {
+		Game::playData->losePellet(pelmgr, i);
+		(game->mOtakaraCounter(i)) += 1;
+		counter(i) -= 1;
+	}
+
+	pelmgr  = Game::PelletItem::mgr;
+	counter = mem->mItem;
+	for (int i = 0; i < counter.getNumKinds(); i++) {
+		Game::playData->losePellet(pelmgr, i);
+		(game->mItemCounter(i)) += 1;
+		counter(i) -= 1;
+	}
+}
+
 void Warp::save_pikmin()
 {
 	// Save pikmin currently in squad so they come with us into the warp destination
@@ -235,6 +256,7 @@ void Warp::save_pikmin()
 
 void Warp::warp_to_cave(Game::SingleGameSection* game)
 {
+	reset_cave_treasure_collections(game);
 	save_pikmin();
 
 	// Look up destination cave ID from index

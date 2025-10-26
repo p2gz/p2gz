@@ -38,6 +38,7 @@ private:
 	void warp_to_cave(Game::SingleGameSection* game);
 	void warp_to_area(Game::SingleGameSection* game);
 	void save_pikmin();
+	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
 	u32 warp_area;
 	u32 warp_cave;
