@@ -158,6 +158,12 @@ void SegmentHistory::draw_reset_controls()
 
 void SegmentHistory::start_segment(u32 seed)
 {
+	// Make sure the segment list doesn't grow too large
+	while (segments.len() >= 32) {
+		Segment* segment = segments.removeAt(0);
+		delete segment;
+	}
+
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	ID32 cave_id(game->getCaveID());
 	Game::PikiContainer squad;
