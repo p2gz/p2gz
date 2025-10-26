@@ -377,12 +377,18 @@ void ListMenu::update()
 		selected = scroll;
 	}
 
-	if (pah_up.check(p2gz->controller) && selected > 0) {
+	if (pah_up.check(p2gz->controller)) {
+		if (selected == 0) {
+			selected = options.len();
+		}
 		do {
 			selected -= 1;
 		} while (!options[selected]->visible);
 	}
-	if (pah_down.check(p2gz->controller) && options.len() > 0 && selected < options.len() - 1) {
+	if (pah_down.check(p2gz->controller) && options.len() > 0) {
+		if (selected >= options.len() - 1) {
+			selected = -1;
+		}
 		do {
 			selected += 1;
 		} while (!options[selected]->visible);
@@ -443,7 +449,10 @@ void GridMenu::update()
 {
 	p2gz->menu->block_open_close_action();
 
-	if (pah_up.check(p2gz->controller) && selected_row > 0 && !editing_range) {
+	if (pah_up.check(p2gz->controller) && !editing_range) {
+		if (selected_row == 0) {
+			selected_row = options.len();
+		}
 		do {
 			selected_row -= 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -451,7 +460,10 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (pah_down.check(p2gz->controller) && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
+	if (pah_down.check(p2gz->controller) && options.len() > 0 && !editing_range) {
+		if (selected_row >= options.len() - 1) {
+			selected_row = -1;
+		}
 		do {
 			selected_row += 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -459,13 +471,18 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (pah_left.check(p2gz->controller) && selected_col > 0 && !editing_range) {
+	if (pah_left.check(p2gz->controller) && !editing_range) {
+		if (selected_col == 0) {
+			selected_col = options[selected_row]->len();
+		}
 		do {
 			selected_col -= 1;
 		} while (!cur_option()->visible);
 	}
-	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
-	    && !editing_range) {
+	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && !editing_range) {
+		if (selected_col >= options[selected_col]->len() - 1) {
+			selected_col = -1;
+		}
 		do {
 			selected_col += 1;
 		} while (!cur_option()->visible);
