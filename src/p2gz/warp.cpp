@@ -212,21 +212,21 @@ void Warp::do_warp()
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 {
 	Game::PelletCropMemory* mem = Game::playData->getCaveCropMemory();
-	Game::KindCounter& counter  = mem->mOtakara;
+	Game::KindCounter& counter_otakara = mem->mOtakara;
 	Game::BasePelletMgr* pelmgr = Game::PelletOtakara::mgr;
 
-	for (int i = 0; i < counter.getNumKinds(); i++) {
+	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		(game->mOtakaraCounter(i)) += 1;
-		counter(i) -= 1;
+		(game->mOtakaraCounter(i)) = 1;
+		counter_otakara(i)         = 0;
 	}
 
 	pelmgr  = Game::PelletItem::mgr;
-	counter = mem->mItem;
-	for (int i = 0; i < counter.getNumKinds(); i++) {
+	Game::KindCounter& counter_item = mem->mItem;
+	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		(game->mItemCounter(i)) += 1;
-		counter(i) -= 1;
+		(game->mItemCounter(i)) = 1;
+		counter_item(i)         = 0;
 	}
 }
 
