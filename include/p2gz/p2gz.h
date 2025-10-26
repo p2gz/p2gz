@@ -39,7 +39,6 @@ public:
 		delete heap_bar_toggle;
 		delete images;
 		delete skip_save;
-		delete language_swap;
 	}
 
 	void init();
@@ -70,12 +69,10 @@ public:
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;
 	gz::PresetMgr* preset_mgr;
-	gz::LanguageSwap* language_swap;
+	LanguageSwap::LanguageSwapMenuWrapper* language_menu_wrapper;
 };
 
 // global instance
 extern P2GZ* p2gz;
-// first init flag; only intialize p2gz stuff once per game
-extern bool p2gz_first_init;
 
 #endif
