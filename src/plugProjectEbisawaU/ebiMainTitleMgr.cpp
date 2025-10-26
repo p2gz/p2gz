@@ -64,8 +64,8 @@ void TMainTitleMgr::loadResource()
 
 	// @ P2GZ localization-swap
 	// Load the new language here, on main menu startup (as we load other stuff)
-	if (p2gz && p2gz->language_swap && p2gz->language_swap->need_to_change_lang()) {
-		p2gz->language_swap->swap_language();
+	if (global_language_swap && global_language_swap->need_to_change_lang()) {
+		global_language_swap->swap_language();
 	}
 
 	char buf[PATH_MAX];
