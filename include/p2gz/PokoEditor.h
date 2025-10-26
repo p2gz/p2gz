@@ -13,10 +13,11 @@ public:
 	void init();
 	void update();
 
-	void set_pokos(s32);
+	bool is_open() { return open; }
 
 private:
-	gz::RangeMenuOption* pokos;
+	gz::DecimalInputOption* pokos;
+	bool open;
 };
 } // namespace gz
 #endif

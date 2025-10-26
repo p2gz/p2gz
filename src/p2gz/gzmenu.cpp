@@ -80,7 +80,7 @@ void GZMenu::init_menu()
 			))
 		))
 		->push(new OpenSubMenuOption("items", (new ListMenu())
-			->push(new RangeMenuOption("pokos", 0, 99999, 0, RangeMenuOption::WRAP, new Delegate1<PokoEditor, s32>(p2gz->poko_editor, &PokoEditor::set_pokos)))
+			->push(new DecimalInputOption("pokos"))
 			->push(new OpenSubMenuOption("sprays", (new ListMenu())
 				->push(new RangeMenuOption("bitters", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_bitters)))
 				->push(new RangeMenuOption("spicies", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_spicies)))
@@ -648,6 +648,104 @@ void HexKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
 	keypad->draw(j2d, initial_x, z);
 }
 
+DecimalKeypad::DecimalKeypad(const char* title_)
+{
+	title         = title_;
+	value         = 0;
+	cur_digit     = 0;
+	is_unselected = true;
+
+	// clang-format off
+	keypad = (new GridMenu(16.0f))
+		->push_to_row(new PerformActionMenuOption("0", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 0)))
+		->push_to_row(new PerformActionMenuOption("1", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 1)))
+		->push_to_row(new PerformActionMenuOption("2", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 2)))
+		->push_to_row(new PerformActionMenuOption("3", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 3)))
+		->push_to_row(new PerformActionMenuOption("4", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 4)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("5", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 5)))
+		->push_to_row(new PerformActionMenuOption("6", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 6)))
+		->push_to_row(new PerformActionMenuOption("7", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 7)))
+		->push_to_row(new PerformActionMenuOption("8", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 8)))
+		->push_to_row(new PerformActionMenuOption("9", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 9)))
+		->end_row()
+		->push_to_row(new PerformActionMenuOption("submit", new Delegate<DecimalKeypad>(this, &submit)));
+	// clang-format on
+}
+
+void DecimalKeypad::select_digit(u32 digit)
+{
+	is_unselected = false;
+
+	static const u32 pow10[5] = { 10000, 1000, 100, 10, 1 };
+
+	u32 old_digit = (value / pow10[cur_digit]) % 10;
+	value -= old_digit * pow10[cur_digit];
+	value += digit * pow10[cur_digit];
+
+	if (cur_digit < 4) {
+		cur_digit += 1;
+	}
+}
+
+void DecimalKeypad::set_unselected()
+{
+	is_unselected = true;
+	p2gz->menu->pop_layer();
+}
+
+void DecimalKeypad::submit()
+{
+	is_unselected = false;
+	p2gz->menu->pop_layer();
+}
+
+void DecimalKeypad::update()
+{
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_R) {
+		if (cur_digit >= 4) {
+			cur_digit = 0;
+		} else {
+			cur_digit += 1;
+		}
+	}
+	if (btn & Controller::PRESS_L) {
+		if (cur_digit == 0) {
+			cur_digit = 4;
+		} else {
+			cur_digit -= 1;
+		}
+	}
+
+	keypad->update();
+}
+
+void DecimalKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
+{
+	static const char* decimal_digits = "0123456789";
+	static const u32 pow10[5]         = { 10000, 1000, 100, 10, 1 };
+	f32 initial_x                     = x;
+
+	for (u8 i = 0; i < 5; i++) {
+		bool is_selected = i == cur_digit;
+		if (is_selected) {
+			j2d.mCharColor.set(p2gz->menu->color_highlight);
+			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+		} else {
+			j2d.mCharColor.set(p2gz->menu->color_std);
+			j2d.mGradientColor.set(p2gz->menu->color_std);
+		}
+
+		u8 digit = (value % 100000 / pow10[i]) % 10;
+		x += j2d.print(x, z, "%c", decimal_digits[digit]);
+	}
+
+	z += p2gz->menu->line_height;
+	keypad->column_width = p2gz->menu->line_height;
+	keypad->draw(j2d, initial_x, z);
+}
+
 f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
 {
 	f32 cursor = x;
@@ -949,4 +1047,41 @@ bool HexInputOption::is_selected()
 u32 HexInputOption::get_selected_val()
 {
 	return keypad->get_value();
+}
+
+DecimalInputOption::DecimalInputOption(const char* title_, const char* image_name_, bool image_only_)
+    : MenuOption(title_, image_name_, image_only_)
+{
+	keypad = new DecimalKeypad(title_);
+}
+
+MenuLayer* DecimalInputOption::get_sub_menu()
+{
+	return keypad;
+}
+
+void DecimalInputOption::select()
+{
+	p2gz->menu->push_layer(keypad);
+}
+
+f32 DecimalInputOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+{
+	x = MenuOption::draw(j2d, x, z, selected);
+	return x + j2d.print(x, z, ": %05u", keypad->get_value());
+}
+
+bool DecimalInputOption::is_selected()
+{
+	return !keypad->is_unselected;
+}
+
+u32 DecimalInputOption::get_selected_val()
+{
+	return keypad->get_value();
+}
+
+void DecimalInputOption::set_selected_val(u32 val)
+{
+	keypad->set_value(val);
 }

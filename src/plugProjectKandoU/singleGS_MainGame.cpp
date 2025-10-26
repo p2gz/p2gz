@@ -923,6 +923,12 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
  */
 bool GameState::needRepayDemo()
 {
+	// @P2GZ: poko editor
+	// don't play percent cutscenes while editing poko count
+	if (p2gz->poko_editor->is_open()) {
+		return false;
+	}
+
 	if (mCheckRepay) {
 		return false;
 	}
@@ -976,6 +982,10 @@ void GameState::startRepayDemo()
  */
 GameState::RepayDemoState GameState::updateRepayDemo()
 {
+	if (p2gz->poko_editor->is_open()) {
+		mCheckRepay = false;
+	}
+
 	if (mCheckRepay) {
 		if ((u8)Screen::gGame2DMgr->check_PayDept()) {
 			gameSystem->setMoviePause(false, "check-repay");
