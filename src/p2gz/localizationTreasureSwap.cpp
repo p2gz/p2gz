@@ -90,6 +90,135 @@ LocalizationTreasureSwap treasureMap[] = {
 	    167,                            // index in piklopedia
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
+	{
+	    System::LANG_French,            // region
+	    "g_futa_kajiwara",              // internal name
+	    "g_futa_kajiwara.szs",          // archive filename
+	    "pal_kan_hawesta.bmd",          // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    40.0,                           // radius
+	    40.0,                           // pradius
+	    35.0,                           // height
+	    1000.0,                         // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    20,                             // min carry
+	    30,                             // max carry
+	    "lod",                          // dynamics
+	    130,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    172,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    System::LANG_English,           // region
+	    "fire_helmet",                  // internal name
+	    "fire_helmet.szs",              // archive filename
+	    "toy_fire_helmet.bmd",          // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    38.0,                           // radius
+	    38.0,                           // pradius
+	    20.0,                           // height
+	    230.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    15,                             // min carry
+	    25,                             // max carry
+	    "lod",                          // dynamics
+	    80,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    175,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    System::LANG_French,            // region
+	    "fire_helmet",                  // internal name
+	    "fire_helmet.szs",              // archive filename
+	    "us_kan_skippy.bmd",            // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    30.0,                           // radius
+	    30.0,                           // pradius
+	    15.0,                           // height
+	    350.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    15,                             // min carry
+	    25,                             // max carry
+	    "lod",                          // dynamics
+	    130,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    45.0,                           // max depth (for burying stuff)
+	    40.0,                           // depth A (for burying stuff)
+	    40.0,                           // depth B (for burying stuff)
+	    40.0,                           // depth C (for burying stuff)
+	    40.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    183,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    System::LANG_Japanese,          // region
+	    "fire_helmet",                  // internal name
+	    "fire_helmet.szs",              // archive filename
+	    "toy_fire_helmet.bmd",          // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    38.0,                           // radius
+	    38.0,                           // pradius
+	    20.0,                           // height
+	    230.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    15,                             // min carry
+	    25,                             // max carry
+	    "lod",                          // dynamics
+	    80,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    183,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
 };
 
 namespace LocalizationTreasureSwapFunc {
