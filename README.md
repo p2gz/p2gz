@@ -4,6 +4,8 @@
 
 NB: you will need to supply your own copy of a Pikmin 2 USA .iso (GPVE01)
 
+**To open or close the GZ menu, double-press Dpad Left while in game.**
+
 Index
 -----
 
@@ -25,7 +27,7 @@ Pre-requisites:
 
 ### Windows
 
-On Windows, it's **highly recommended** to use native tooling. WSL or msys2 are **not** required.  
+On Windows, it's **highly recommended** to use native tooling. WSL or msys2 are **not** required.
 
 - Install [Python](https://www.python.org/downloads/) and add it to `%PATH%`.
   - Also available from the [Windows Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K).
