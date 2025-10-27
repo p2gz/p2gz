@@ -3,6 +3,7 @@
 #include "ebi/Screen/TNintendoLogo.h"
 #include "Graphics.h"
 #include "System.h"
+#include <p2gz/p2gz.h>
 
 namespace ebi {
 namespace Screen {
@@ -158,7 +159,9 @@ void TNintendoLogo::doDraw()
 	J2DPerspGraph* context = &gfx->mPerspGraph;
 	context->setPort();
 
-	mScreenObj->draw(*gfx, *context);
+	// @P2GZ: remove (C) 2004 Nintendo and draw P2GZ version instead
+	// mScreenObj->draw(*gfx, *context);
+	P2GZ::draw_version();
 }
 } // namespace Screen
 } // namespace ebi
