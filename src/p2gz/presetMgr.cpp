@@ -1,6 +1,9 @@
+#include <p2gz/p2gz.h>
 #include <p2gz/Preset.h>
+#include <p2gz/warp.h>
 #include <Game/Piki.h>
 #include <System.h>
+#include <Game/PikiMgr.h>
 
 using namespace gz;
 using namespace Game;
@@ -83,12 +86,32 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 29));
 }
 
+Preset* PresetMgr::create()
+{
+	Preset* preset           = new Preset(nullptr, Generated);
+	preset->spicies_unlocked = p2gz->spray_editor->get_spicies_unlocked();
+	preset->bitters_unlocked = p2gz->spray_editor->get_bitters_unlocked();
+	preset->num_spicies      = p2gz->spray_editor->get_spicies();
+	preset->num_bitters      = p2gz->spray_editor->get_bitters();
+
+	preset->squad.clear();
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Piki* piki = *iterator;
+		if (piki->isAlive() && !piki->isZikatu()) {
+			preset->squad(piki)++;
+		}
+	}
+
+	return preset;
+}
+
 Preset* PresetMgr::find(const char* name, PresetCategory category)
 {
 	for (size_t i = 0; i < presets.len(); i++) {
 		Preset* preset = presets[i];
 		GZASSERTLINE(preset);
-		GZASSERTLINE(preset->name);
 		if (category == preset->category && strcmp(preset->name, name) == 0) {
 			return preset;
 		}
@@ -96,6 +119,7 @@ Preset* PresetMgr::find(const char* name, PresetCategory category)
 	return nullptr;
 }
 
+namespace gz {
 typedef enum Cave {
 	AG  = 0,
 	EC  = 1,
@@ -113,8 +137,9 @@ typedef enum Cave {
 	HoH = 13,
 	DD  = 14
 } Cave;
+}; // namespace gz
 
-Cave which_cave(u32 area, u32 cave)
+gz::Cave which_cave(u32 area, u32 cave)
 {
 	if (cave == 0) {
 		return AG;
@@ -123,24 +148,24 @@ Cave which_cave(u32 area, u32 cave)
 	switch (area) {
 	case 0:
 		GZASSERTLINE(cave < 4);
-		return static_cast<Cave>(EC + cave - 1);
+		return static_cast<gz::Cave>(EC + cave - 1);
 	case 1:
 		GZASSERTLINE(cave < 5);
-		return static_cast<Cave>(HoB + cave - 1);
+		return static_cast<gz::Cave>(HoB + cave - 1);
 	case 2:
 		GZASSERTLINE(cave < 5);
-		return static_cast<Cave>(CoS + cave - 1);
+		return static_cast<gz::Cave>(CoS + cave - 1);
 	case 3:
 		GZASSERTLINE(cave < 4);
-		return static_cast<Cave>(CoC + cave - 1);
+		return static_cast<gz::Cave>(CoC + cave - 1);
 	}
 
 	GZASSERTLINE(false);
 }
 
-Preset* PresetMgr::suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, PresetCategory category)
+Preset* PresetMgr::suggested_preset(const WarpDestination& dest, PresetCategory category)
 {
-	Cave cave_e = which_cave(area, cave);
+	gz::Cave cave_e = which_cave(dest.area, dest.cave);
 	if (category == General) {
 		return nullptr;
 	}
@@ -150,47 +175,47 @@ Preset* PresetMgr::suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, P
 		case EC:
 			return find("EC", PoD);
 		case HoB:
-			if (sublevel < 2)
+			if (dest.sublevel < 2)
 				return find("HoB1-2", PoD);
-			else if (sublevel < 4)
+			else if (dest.sublevel < 4)
 				return find("HoB3-4", PoD);
 			else
 				return find("HoB5-WFG3", PoD);
 		case WFG:
-			if (sublevel < 3)
+			if (dest.sublevel < 3)
 				return find("HoB5-WFG3", PoD);
 			else
 				return find("WFG4-enter SH", PoD);
 		case SH:
-			if (sublevel < 2)
+			if (dest.sublevel < 2)
 				return find("SH1-2", PoD);
 			else
 				return find("SH3-7", PoD);
 		case BK:
 			return find("BK", PoD);
 		case SCx:
-			if (sublevel < 4)
+			if (dest.sublevel < 4)
 				return find("SCx1-3", PoD);
 			else
-				return find("SCx4-FC", PoD);
+				return find("SCx5-FC", PoD);
 		case FC:
-			return find("SCx4-FC", PoD);
+			return find("SCx5-FC", PoD);
 		case CoS:
 			return find("CoS", PoD);
 		case GK:
 			return find("GK", PoD);
 		case AG:
-			if (area == 0) {
-				if (day == 5)
+			if (dest.area == 0) {
+				if (dest.day == 5)
 					return find("day 6 CR", PoD);
 				else
 					return find("enter SCx", PoD);
-			} else if (area == 1) {
-				if (day == 2)
+			} else if (dest.area == 1) {
+				if (dest.day == 2)
 					return find("enter HoB", PoD);
 				else
 					return find("enter BK (20)", PoD);
-			} else if (area == 2) {
+			} else if (dest.area == 2) {
 				return find("CoS", PoD);
 			}
 		}

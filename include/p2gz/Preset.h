@@ -2,26 +2,23 @@
 #define _GZ_PRESET_H
 
 #include <p2gz/gzCollections.h>
+#include <p2gz/gzmenu.h>
+#include <p2gz/warp.h>
 #include <types.h>
 #include <Game/PikiContainer.h>
-#include <p2gz/gzmenu.h>
 #include <JSystem/J2D/J2DPrint.h>
 
 namespace gz {
 
-typedef enum PresetCategory {
-	PoD,
-	AT,
-	General,
-} PresetCategory;
+struct WarpDestination;
+
+enum PresetCategory { PoD, AT, General, Generated };
 
 struct Preset {
 public:
 	Preset(const char* name_, PresetCategory category_)
-	    : name(name_)
 	{
-		GZASSERTLINE(name_);
-
+		name             = name_;
 		category         = category_;
 		bitters_unlocked = false;
 		spicies_unlocked = false;
@@ -33,7 +30,6 @@ public:
 	}
 
 	void apply();
-	static void apply_squad(Game::PikiContainer& squad, Game::PikiContainer& onion_pikis);
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
@@ -52,9 +48,12 @@ public:
 };
 
 struct PresetMgr {
+public:
 	PresetMgr();
 
-	Preset* suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, PresetCategory category);
+	Preset* create();
+
+	Preset* suggested_preset(const WarpDestination& dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;

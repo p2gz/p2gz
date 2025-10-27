@@ -3,6 +3,7 @@
 #include <p2gz/Preset.h>
 #include <p2gz/BoundDelegate.h>
 #include <Game/Piki.h>
+#include <Game/PikiMgr.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
@@ -39,17 +40,16 @@ Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
 	return this;
 }
 
-void Preset::apply_squad(Game::PikiContainer& squad, Game::PikiContainer& onion_pikis)
+void Preset::apply()
 {
-	// Clear squad
-	for (int color = 0; color < 6; color++) {
-		for (int stage = 0; stage < 3; stage++) {
-			p2gz->squad_editor->kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), MAX_PIKI_COUNT);
-		}
-	}
+	// TODO: is this necessary?
+	// GameStat::mePikis.clear(); // clear sprouts
 
-	// Reset container flags for onions/ship space unlocks
-	Game::playData->resetContainerFlag();
+	// Clear squad
+	Game::playData->mCaveSaveData.mCavePikis.clear();
+	Game::pikiMgr->killAllPikmins();
+
+	Game::playData->resetContainerFlag(); // Reset container flags for onions/ship space unlocks
 
 	// Apply squad
 	for (int color = 0; color < 6; color++) {
@@ -61,20 +61,13 @@ void Preset::apply_squad(Game::PikiContainer& squad, Game::PikiContainer& onion_
 			}
 			if (amount > 0 || onion_amount > 0) {
 				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
+				OSReport("birthed %d\n", amount);
 			}
 		}
 	}
 
 	// Apply onion pikmin
 	Game::playData->mPikiContainer = onion_pikis;
-}
-
-void Preset::apply()
-{
-	// TODO: is this necessary?
-	// GameStat::mePikis.clear(); // clear sprouts
-
-	apply_squad(squad, onion_pikis);
 
 	// Apply sprays
 	p2gz->spray_editor->set_bitters(num_bitters);

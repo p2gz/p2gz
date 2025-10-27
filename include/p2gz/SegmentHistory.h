@@ -3,18 +3,16 @@
 
 #include <types.h>
 #include <Game/PikiContainer.h>
+#include <p2gz/warp.h>
 
 namespace gz {
 
 struct Segment {
 public:
-	u32 seed;
-	Game::PikiContainer squad;
-	Game::PikiContainer onion_pikis;
-	u32 area;
-	u32 cave;
-	u32 sublevel;
-	u32 day;
+	~Segment() { delete preset; }
+
+	Preset* preset;
+	WarpDestination dest;
 };
 
 struct SegmentHistory {

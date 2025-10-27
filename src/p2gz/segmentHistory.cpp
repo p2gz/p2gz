@@ -2,6 +2,7 @@
 #include <P2JME/P2JME.h>
 #include <p2gz/p2gz.h>
 #include <p2gz/SegmentHistory.h>
+#include <p2gz/Preset.h>
 #include <types.h>
 #include <System.h>
 #include <Game/GameSystem.h>
@@ -37,14 +38,16 @@ void SegmentHistory::update()
 {
 	if (entering_next_sublevel) {
 		Segment* segment = cur_segment();
+		WarpDestination dest = segment->dest;
 		GZASSERTLINE(segment);
-
 		const u32 btn = p2gz->controller->getButtonDown();
+
 		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
-			p2gz->warp->set_from_current();
-			p2gz->warp->set_preset(nullptr);
-			Preset::apply_squad(segment->squad, segment->onion_pikis);
+			dest.use_set_seed = false;
+
+			p2gz->warp->set_dest(dest);
+			p2gz->warp->set_preset(segment->preset);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -53,10 +56,10 @@ void SegmentHistory::update()
 
 		// Retry same sublevel, same seed
 		if (btn & Controller::PRESS_Y) {
-			p2gz->warp->set_from_current();
-			p2gz->warp->set_seed(segment->seed);
-			p2gz->warp->set_preset(nullptr);
-			Preset::apply_squad(segment->squad, segment->onion_pikis);
+			dest.use_set_seed = true;
+
+			p2gz->warp->set_dest(dest);
+			p2gz->warp->set_preset(segment->preset);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -69,13 +72,12 @@ void SegmentHistory::update()
 				return;
 			}
 
-			// Find segment for the first floor of the cave, or earliest otherwise
-			Segment* start_segment = nullptr;
+			// Find segment for the first floor of the cave
 			for (size_t i = segments.len() - 1; i > 0; i--) {
 				Segment* this_segment = segments[i];
-				if (this_segment->cave == segment->cave) {
-					start_segment = this_segment;
-					if (start_segment->sublevel == 0) {
+				if (this_segment->dest.cave == segment->dest.cave) {
+					if (this_segment->dest.area == segment->dest.area && this_segment->dest.sublevel == 0) {
+						segment = this_segment;
 						break;
 					}
 				} else {
@@ -83,22 +85,19 @@ void SegmentHistory::update()
 				}
 			}
 
-			if (start_segment) {
-				p2gz->warp->set_warp_area(start_segment->area);
-				p2gz->warp->set_warp_cave(start_segment->cave);
-				p2gz->warp->set_warp_day(start_segment->day);
-				if (start_segment->sublevel == 0) {
-					p2gz->warp->set_warp_sublevel(start_segment->sublevel + 1);
-				} else {
-					p2gz->warp->set_warp_sublevel(1);
-				}
-				p2gz->warp->set_preset(nullptr);
-				Preset::apply_squad(segment->squad, segment->onion_pikis);
-				p2gz->warp->do_warp();
-
-				entering_next_sublevel = false;
-				return;
+			dest              = segment->dest;
+			dest.use_set_seed = false;
+			if (dest.sublevel != 0) {
+				dest.sublevel = 0;
+				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(dest, segment->preset->category));
+			} else {
+				p2gz->warp->set_preset(segment->preset);
 			}
+			p2gz->warp->set_dest(dest);
+			p2gz->warp->do_warp();
+
+			entering_next_sublevel = false;
+			return;
 		}
 	}
 }
@@ -124,7 +123,7 @@ void SegmentHistory::draw_cur_seed()
 	if (!seg) {
 		return;
 	}
-	const u32 seed = seg->seed;
+	const u32 seed = seg->dest.seed;
 
 	J2DPrint j2d = init_j2d();
 
@@ -164,20 +163,12 @@ void SegmentHistory::start_segment(u32 seed)
 		delete segment;
 	}
 
-	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
-	ID32 cave_id(game->getCaveID());
-	Game::PikiContainer squad;
-	Game::pikiMgr->saveAllPikmins(squad);
-
 	Segment* segment = new Segment();
-	segment->seed    = seed;
-
-	segment->squad       = squad;
-	segment->onion_pikis = Game::playData->mPikiContainer;
-	segment->area        = game->mCurrentCourseInfo->mCourseIndex;
-	segment->cave        = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
-	segment->sublevel    = game->mCurrentFloor;
-	segment->day         = Game::gameSystem->mTimeMgr->mDayCount;
+	WarpDestination dest = Warp::current_dest();
+	dest.seed            = seed;
+	dest.use_set_seed    = true;
+	segment->dest        = dest;
+	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
 
 	segments.push(segment);
 }

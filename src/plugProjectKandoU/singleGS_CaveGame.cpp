@@ -119,6 +119,10 @@ void CaveState::gameStart(SingleGameSection* game)
 		PSSystem::checkGameScene(scene);
 		scene->stopPollutionSe();
 	}
+
+	// @P2GZ - save current squad to history when starting a sublevel
+	gz::Segment* seg = p2gz->segment_history->cur_segment();
+	seg->preset      = p2gz->preset_mgr->create();
 }
 
 /**

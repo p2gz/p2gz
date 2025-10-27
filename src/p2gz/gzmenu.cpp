@@ -48,7 +48,7 @@ void GZMenu::init_menu()
 			->push(new RadioMenuOption("area", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_area)))
 			->push(new RadioMenuOption("cave", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_cave)))
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
-			->push(new HexInputOption("seed", "random"))
+			->push(new HexInputOption("seed", "random", new Delegate1<Warp, u32>(p2gz->warp, &Warp::set_seed), new Delegate<Warp>(p2gz->warp, &Warp::set_random_seed)))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
 			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PresetMenuOption())
@@ -105,12 +105,6 @@ void GZMenu::init_menu()
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
             ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
             ->push(new ToggleMenuOption("skip save prompts", false, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
-			->push(new ToggleMenuOption("image test", true, nullptr, "red_leaf", false))
-			->push(new OpenSubMenuOption("grid menu demo", (new GridMenu(24.0))
-				->push_to_row(new OpenSubMenuOption("1", nullptr))->push_to_row(new OpenSubMenuOption("2", nullptr))->push_to_row(new OpenSubMenuOption("3", nullptr))->end_row()
-				->push_to_row(new OpenSubMenuOption("4", nullptr))->push_to_row(new OpenSubMenuOption("5", nullptr))->push_to_row(new OpenSubMenuOption("6", nullptr))->end_row()
-				->push_to_row(new OpenSubMenuOption("7", nullptr))->push_to_row(new OpenSubMenuOption("8", nullptr))->push_to_row(new OpenSubMenuOption("9", nullptr))
-			))
 			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
@@ -610,12 +604,15 @@ void GridMenu::navigate_to(const char* path)
 	}
 }
 
-HexKeypad::HexKeypad(const char* title_)
+HexKeypad::HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u32>* on_selected_, IDelegate* on_unselected_)
 {
 	title         = title_;
 	value         = 0;
 	cur_digit     = 0;
-	is_unselected = true;
+	unselected    = true;
+	cancel_text   = cancel_text_;
+	on_selected   = on_selected_;
+	on_unselected = on_unselected_;
 
 	// clang-format off
 	keypad = (new GridMenu(16.0f))
@@ -641,28 +638,37 @@ HexKeypad::HexKeypad(const char* title_)
 		->end_row()
 		->push_to_row(new PerformActionMenuOption("submit", new Delegate<HexKeypad>(this, &submit)))
 		->end_row()
-		->push_to_row(new PerformActionMenuOption("use random seed", new Delegate<HexKeypad>(this, &set_unselected)));
+		->push_to_row(new PerformActionMenuOption(cancel_text, new Delegate<HexKeypad>(this, &set_unselected)));
 	// clang-format on
 }
 
 void HexKeypad::select_digit(u32 digit)
 {
-	is_unselected = false;
+	unselected = false;
 	value |= digit << ((7 - cur_digit) * 4);
 	if (cur_digit < 7) {
 		cur_digit += 1;
+	}
+	if (on_selected) {
+		on_selected->invoke(value);
 	}
 }
 
 void HexKeypad::set_unselected()
 {
-	is_unselected = true;
+	unselected = true;
+	if (on_unselected) {
+		on_unselected->invoke();
+	}
 	p2gz->menu->pop_layer();
 }
 
 void HexKeypad::submit()
 {
-	is_unselected = false;
+	unselected = false;
+	if (on_selected) {
+		on_selected->invoke(value);
+	}
 	p2gz->menu->pop_layer();
 }
 
@@ -975,10 +981,11 @@ void FloatRangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 }
 
-HexInputOption::HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_, bool image_only_)
+HexInputOption::HexInputOption(const char* title_, const char* value_if_unselected_, IDelegate1<u32>* on_selected, IDelegate* on_unselected,
+                               const char* image_name_, bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad              = new HexKeypad(title_);
+	keypad              = new HexKeypad(title_, value_if_unselected_, on_selected, on_unselected);
 	value_if_unselected = value_if_unselected_;
 }
 
@@ -995,7 +1002,7 @@ void HexInputOption::select()
 void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	MenuOption::draw(j2d, x, z, selected);
-	if (keypad->is_unselected) {
+	if (keypad->is_unselected()) {
 		x += j2d.print(x, z, ": %s", value_if_unselected);
 	} else {
 		x += j2d.print(x, z, ": %08X", keypad->get_value());
@@ -1004,7 +1011,7 @@ void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 bool HexInputOption::is_selected()
 {
-	return !keypad->is_unselected;
+	return !keypad->is_unselected();
 }
 
 u32 HexInputOption::get_selected_val()
