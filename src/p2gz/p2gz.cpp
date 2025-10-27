@@ -10,6 +10,7 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/SquadEditor.h>
 #include <Game/Navi.h>
+#include <P2JME/P2JME.h>
 #include <IDelegate.h>
 
 using namespace gz;
@@ -79,4 +80,21 @@ void P2GZ::draw()
 	collision_viewer->draw();
 	freecam->draw();
 	enemy_debug_info->draw();
+}
+
+// Code to draw the version number on the title screen
+void P2GZ::draw_version()
+{
+	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
+	j2d.initiate();
+
+	j2d.mGlyphWidth  = 20.0f;
+	j2d.mGlyphHeight = 20.0f;
+
+	JUtility::TColor color = JUtility::TColor(255, 255, 255, 255);
+	j2d.mCharColor.set(color);
+	j2d.mGradientColor.set(color);
+
+	// coordinates determined experimentally - will need to re-adjust based on text length
+	j2d.print(250.0f, 424.0f, "v.%s", P2GZ_VERSION);
 }

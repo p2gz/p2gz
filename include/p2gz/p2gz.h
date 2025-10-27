@@ -21,6 +21,9 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/Preset.h>
 
+/*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
+#define P2GZ_VERSION "alpha1"
+
 struct P2GZ {
 public:
 	P2GZ();
@@ -30,7 +33,8 @@ public:
 	void update();
 	void draw_2d();
 	void draw();
-	void draw_images();
+
+	static void draw_version();
 
 	// our own persistent controller so we don't crash the game on new file starting (don't ask)
 	Controller* controller;
