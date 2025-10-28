@@ -22,7 +22,6 @@ struct RingBuffer {
 	{
 		mBufHead       = (mBufHead + 1) % N;
 		mBuf[mBufHead] = val;
-		OSReport("pushed to index %d\n", mBufHead);
 		if (mLen < N) {
 			mLen++;
 		}
@@ -40,7 +39,6 @@ struct RingBuffer {
 	{
 		GZASSERTLINE(mLen > 0);
 		GZASSERTLINE(n < mLen);
-		OSReport("looking at index %d out of %d\n", (mBufHead + N - n) % N, mLen);
 		return mBuf[(mBufHead + N - n - 1) % N];
 	}
 

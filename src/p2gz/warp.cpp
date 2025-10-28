@@ -196,16 +196,26 @@ void Warp::update_sublevel_opt()
 
 void Warp::update_preset_opt()
 {
-	Preset* previous_preset = chosen_preset;
-
-	// nullptr preset is the "keep current squad" option.
-	// if this is selected or the player is using a General preset we don't want to overwrite it.
-	if (!previous_preset || previous_preset->category == General) {
+	if (current_preset == chosen_preset && current_preset == nullptr) {
+		// nullptr preset is the "keep current squad" option. Leave it alone if this is selected
 		return;
 	}
 
-	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, previous_preset->category);
-	set_chosen_preset(suggested_preset);
+	// If the player has chosen a General preset we don't want to override it. These are not suggested
+	// and aren't supposed to be relevant for speedrun practice.
+	if (chosen_preset && chosen_preset->category == General) {
+		return;
+	}
+
+	Preset* effective_preset = get_effective_preset();
+	PresetCategory category  = PoD;
+	if (effective_preset) {
+		category = effective_preset->category;
+	}
+	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
+	if (suggested_preset) {
+		set_chosen_preset(suggested_preset);
+	}
 }
 
 void Warp::do_warp()

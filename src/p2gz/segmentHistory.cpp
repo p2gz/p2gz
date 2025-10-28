@@ -88,13 +88,11 @@ void SegmentHistory::update()
 				if (!this_segment) {
 					break;
 				}
-				OSReport("this segment: %d %d %d\n", this_segment->dest.area, this_segment->dest.cave, this_segment->dest.sublevel);
-				OSReport("cur dest: %d %d %d\n", current_dest.area, current_dest.cave, current_dest.sublevel);
 
 				if (this_segment->dest.cave == current_dest.cave) {
 					if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
 						floor0_segment = this_segment;
-						OSReport("found floor0 segment\n");
+
 						break;
 					}
 				} else {
@@ -191,8 +189,6 @@ void SegmentHistory::start_segment(u32 seed)
 	dest.use_set_seed    = true;
 	segment->dest        = dest;
 	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
-
-	OSReport("new dest: %d %d %d\n", dest.area, dest.cave, dest.sublevel);
 
 	segments.push(const_cast<const Segment*>(segment));
 }
