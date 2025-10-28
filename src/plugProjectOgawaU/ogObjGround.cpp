@@ -155,6 +155,10 @@ void ObjGround::commonUpdate()
 		mDoping->openDopingKey();
 	}
 
+	// @P2GZ: spray editor
+	// make relevant spray display hide if a spray is un-unlocked
+	mDoping->setDopingEnable(mDisp->mUnlockedSpicy, mDisp->mUnlockedBitter);
+
 	mDoping->adjPos(msVal.mDopingX, msVal.mDopingY);
 }
 

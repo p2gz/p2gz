@@ -10,6 +10,9 @@ extern "C" {
 int rand();
 void srand(u32 seed);
 
+// @P2GZ - expose RNG seed
+u32 get_rng_seed();
+
 #ifdef __cplusplus
 };
 #endif // ifdef __cplusplus
