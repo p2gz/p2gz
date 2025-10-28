@@ -24,6 +24,7 @@ P2GZ_CUSTOM_ASSETS_COMPRESSED = [
 # Any asset that is NOT compressed - this is just the file path to the file itself to be replaced
 P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
+    os.path.join(P2GZ_ASSETS, 'files', 'user', 'Ebisawa', 'title', 'title.szs'),
     os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
 ]
 
