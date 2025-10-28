@@ -6,6 +6,7 @@
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
 #include <Game/gamePlayData.h>
+#include <PikiAI.h>
 #include <og/Sound.h>
 
 using namespace gz;
@@ -63,14 +64,15 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 	for (int i = 0; i < count; i++) {
 		Game::Piki* piki = Game::pikiMgr->birth();
 
-		Game::PikiInitArg arg(-1);
-		piki->init(&arg);
+		piki->init(nullptr);
 		piki->changeShape(color);
 		piki->changeHappa(stage);
 
 		Vector3f pos = navi->getPosition();
 		piki->setPosition(pos, false);
 		piki->mNavi = navi;
+		PikiAI::ActFormationInitArg arg(navi);
+		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
 	}
 }
 
