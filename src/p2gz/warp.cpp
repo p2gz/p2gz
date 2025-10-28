@@ -180,7 +180,7 @@ void Warp::update_sublevel_opt()
 
 void Warp::update_preset_opt()
 {
-	Preset* previous_preset      = preset_opt->current_preset;
+	Preset* previous_preset = preset_opt->current_preset;
 
 	// nullptr preset is the "keep current squad" option.
 	// if this is selected or the player is using a General preset we don't want to overwrite it.
@@ -217,9 +217,9 @@ void Warp::do_warp()
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 {
-	Game::PelletCropMemory* mem = Game::playData->getCaveCropMemory();
+	Game::PelletCropMemory* mem        = Game::playData->getCaveCropMemory();
 	Game::KindCounter& counter_otakara = mem->mOtakara;
-	Game::BasePelletMgr* pelmgr = Game::PelletOtakara::mgr;
+	Game::BasePelletMgr* pelmgr        = Game::PelletOtakara::mgr;
 
 	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
@@ -227,7 +227,7 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 		counter_otakara(i)         = 0;
 	}
 
-	pelmgr  = Game::PelletItem::mgr;
+	pelmgr                          = Game::PelletItem::mgr;
 	Game::KindCounter& counter_item = mem->mItem;
 	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
@@ -238,6 +238,9 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 
 void Warp::save_pikmin()
 {
+	// clear cave piki container so we don't double up
+	Game::playData->mCaveSaveData.mCavePikis.clear();
+
 	// Save pikmin currently in squad so they come with us into the warp destination
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
