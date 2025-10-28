@@ -34,20 +34,30 @@ void SegmentHistory::draw_2d()
 	}
 }
 
+Segment* SegmentHistory::cur_segment()
+{
+	if (segments.len() > 0) {
+		return segments.peek();
+	}
+	return nullptr;
+}
+
 void SegmentHistory::update()
 {
 	if (entering_next_sublevel) {
-		Segment* segment     = cur_segment();
-		WarpDestination dest = segment->dest;
-		GZASSERTLINE(segment);
+		Segment* current_segment = cur_segment();
+		GZASSERTLINE(current_segment);
+		WarpDestination* current_dest = current_segment->dest;
+		GZASSERTLINE(current_dest);
+
 		const u32 btn = p2gz->controller->getButtonDown();
 
 		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
-			dest.use_set_seed = false;
+			current_dest->use_set_seed = false;
 
-			p2gz->warp->set_dest(dest);
-			p2gz->warp->set_preset(segment->preset);
+			p2gz->warp->set_dest(current_dest);
+			p2gz->warp->set_preset(current_segment->preset);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -56,10 +66,10 @@ void SegmentHistory::update()
 
 		// Retry same sublevel, same seed
 		if (btn & Controller::PRESS_Y) {
-			dest.use_set_seed = true;
+			current_dest->use_set_seed = true;
 
-			p2gz->warp->set_dest(dest);
-			p2gz->warp->set_preset(segment->preset);
+			p2gz->warp->set_dest(current_dest);
+			p2gz->warp->set_preset(current_segment->preset);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -73,11 +83,20 @@ void SegmentHistory::update()
 			}
 
 			// Find segment for the first floor of the cave
-			for (size_t i = segments.len() - 1; i > 0; i--) {
-				Segment* this_segment = segments[i];
-				if (this_segment->dest.cave == segment->dest.cave) {
-					if (this_segment->dest.area == segment->dest.area && this_segment->dest.sublevel == 0) {
-						segment = this_segment;
+			Segment* floor0_segment = nullptr;
+			for (size_t i = 0; i < segments.len(); i++) {
+				OSReport("ura a\n");
+				Segment* this_segment = segments.peekN(i);
+				if (!this_segment || !this_segment->dest) {
+					break;
+				}
+				OSReport("ura b\n");
+				OSReport("this_segment dest = %d\n", this_segment->dest);
+				OSReport("this_segment cave = %d\n", this_segment->dest->cave);
+				if (this_segment->dest->cave == current_dest->cave) {
+					if (this_segment->dest->area == current_dest->area && this_segment->dest->sublevel == 0) {
+						floor0_segment = this_segment;
+						OSReport("ura c\n");
 						break;
 					}
 				} else {
@@ -85,18 +104,37 @@ void SegmentHistory::update()
 				}
 			}
 
-			dest              = segment->dest;
-			dest.use_set_seed = false;
-			if (dest.sublevel != 0) {
-				dest.sublevel = 0;
-				// if we don't find any history, assume we're doing PoD
-				// TODO: adjust this to somehow detect PoD vs AT when we have AT presets
-				PresetCategory cat = (segment->preset->category != Generated) ? segment->preset->category : PoD;
-				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(dest, cat));
-			} else {
-				p2gz->warp->set_preset(segment->preset);
+			OSReport("a\n");
+			if (!floor0_segment) {
+				floor0_segment = current_segment;
 			}
-			p2gz->warp->set_dest(dest);
+
+			OSReport("b\n");
+			WarpDestination floor0_dest = floor0_segment->dest;
+			OSReport("c\n");
+			floor0_dest.use_set_seed = false;
+			OSReport("d\n");
+			if (floor0_dest.sublevel != 0) {
+				floor0_dest.sublevel = 0;
+				// If we don't find history for floor 0 in this cave, get the recommended preset for it.
+				// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
+				PresetCategory cat = PoD;
+				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
+					OSReport("e\n");
+					cat = floor0_segment->preset->category;
+					OSReport("f\n");
+				}
+				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat));
+				OSReport("g\n");
+
+			} else {
+				OSReport("h\n");
+				p2gz->warp->set_preset(floor0_segment->preset);
+				OSReport("i\n");
+			}
+			OSReport("j\n");
+			p2gz->warp->set_dest(floor0_dest);
+			OSReport("k\n");
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -160,12 +198,6 @@ void SegmentHistory::draw_reset_controls()
 
 void SegmentHistory::start_segment(u32 seed)
 {
-	// Make sure the segment list doesn't grow too large
-	while (segments.len() >= 32) {
-		Segment* segment = segments.removeAt(0);
-		delete segment;
-	}
-
 	Segment* segment     = new Segment();
 	WarpDestination dest = Warp::current_dest();
 	dest.seed            = seed;

@@ -10,6 +10,31 @@
 
 using namespace gz;
 
+Preset::Preset(const char* name_, PresetCategory category_)
+{
+	name             = name_;
+	category         = category_;
+	bitters_unlocked = false;
+	spicies_unlocked = false;
+	num_bitters      = 0;
+	num_spicies      = 0;
+
+	squad.clear();
+	onion_pikis.clear();
+}
+
+Preset::Preset(Preset& other)
+{
+	name             = other.name;
+	category         = other.category;
+	bitters_unlocked = other.bitters_unlocked;
+	spicies_unlocked = other.spicies_unlocked;
+	num_bitters      = other.num_bitters;
+	num_spicies      = other.num_spicies;
+	squad            = other.squad;
+	onion_pikis      = other.onion_pikis;
+}
+
 Preset* Preset::set_pikmin(int stage, int color, int amount)
 {
 	squad.getCount(color, stage) = amount;
@@ -61,7 +86,6 @@ void Preset::apply()
 			}
 			if (amount > 0 || onion_amount > 0) {
 				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
-				OSReport("birthed %d\n", amount);
 			}
 		}
 	}
@@ -82,9 +106,10 @@ void Preset::apply()
 	// }
 }
 
-PresetMenuOption::PresetMenuOption()
+PresetMenuOption::PresetMenuOption(IDelegate1<Preset*>* on_select_)
     : MenuOption("preset")
 {
+	on_select            = on_select_;
 	pod_presets_menu     = new ListMenu();
 	at_presets_menu      = new ListMenu();
 	general_presets_menu = new ListMenu();
@@ -115,6 +140,9 @@ PresetMenuOption::PresetMenuOption()
 	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
 	// when changing the warp menu selections
 	current_preset = p2gz->preset_mgr->find("EC", PoD);
+	if (on_select) {
+		on_select->invoke(current_preset);
+	}
 }
 
 static const char* PIKI_IMG_NAMES[15] = {
@@ -195,6 +223,13 @@ void PresetMenuOption::select()
 	p2gz->menu->push_layer(preset_category_list);
 }
 
+void PresetMenuOption::do_on_preset_selected(Preset* preset)
+{
+	if (on_select) {
+		on_select->invoke(preset);
+	}
+}
+
 PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_)
     : MenuOption(preset_ ? preset_->name : nullptr)
 {
@@ -207,6 +242,7 @@ PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOpti
 void PresetPreviewMenuOption::select()
 {
 	parent->current_preset = preset;
+	parent->do_on_preset_selected(preset);
 	MenuLayer* warp_menu   = p2gz->menu->get_option("warp")->get_sub_menu();
 	while (p2gz->menu->get_active_layer() != warp_menu) {
 		p2gz->menu->pop_layer();

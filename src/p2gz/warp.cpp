@@ -55,11 +55,7 @@ static const char* ENTER_KINDS[2] = {
 Warp::Warp()
     : allow_zero_pikmin_in_caves(true)
 {
-	dest.area         = 0;
-	dest.cave         = 0;
-	dest.sublevel     = 0;
-	dest.day          = 2;
-	dest.use_set_seed = false;
+	dest = new WarpDestination();
 }
 
 void Warp::init()
@@ -79,20 +75,36 @@ void Warp::init()
 		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
 
-	day_opt->set_selection(dest.day + 1);
+	day_opt->set_selection(dest->day + 1);
 
 	update_cave_opt();
 	update_sublevel_opt();
 }
 
-Preset* Warp::get_current_preset()
+Preset* Warp::get_effective_preset()
 {
-	return preset_opt->current_preset;
+	if (current_preset) {
+		return current_preset;
+	}
+	if (chosen_preset) {
+		return chosen_preset;
+	}
+	return nullptr;
+}
+
+void Warp::set_chosen_preset(Preset* preset)
+{
+	chosen_preset  = preset;
+	current_preset = preset;
+	if (preset_opt) {
+		preset_opt->current_preset = preset;
+	}
 }
 
 void Warp::set_preset(Preset* preset)
 {
-	preset_opt->current_preset = preset;
+	current_preset = preset;
+	chosen_preset  = nullptr;
 }
 
 WarpDestination Warp::current_dest()
@@ -110,11 +122,17 @@ WarpDestination Warp::current_dest()
 	return dest;
 }
 
+void Warp::set_dest(WarpDestination* new_dest)
+{
+	GZASSERTLINE(new_dest);
+	*dest = *new_dest;
+}
+
 void Warp::set_warp_area(size_t area)
 {
-	dest.area     = area;
-	dest.cave     = 0;
-	dest.sublevel = 0;
+	dest->area     = area;
+	dest->cave     = 0;
+	dest->sublevel = 0;
 
 	update_cave_opt();
 	update_sublevel_opt();
@@ -123,39 +141,39 @@ void Warp::set_warp_area(size_t area)
 
 void Warp::set_warp_cave(size_t cave)
 {
-	dest.cave     = cave;
-	dest.sublevel = 0;
+	dest->cave     = cave;
+	dest->sublevel = 0;
 
 	update_sublevel_opt();
 	update_preset_opt();
 
-	enter_area_type_opt->visible = dest.cave == 0;
+	enter_area_type_opt->visible = dest->cave == 0;
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
 {
 	GZASSERTLINE(sublevel >= 1);
-	dest.sublevel = sublevel - 1; // Menu is 1-indexed for nicer visuals
+	dest->sublevel = sublevel - 1; // Menu is 1-indexed for nicer visuals
 
 	update_preset_opt();
 }
 
 void Warp::set_seed(u32 seed)
 {
-	dest.use_set_seed = true;
-	dest.seed         = seed;
+	dest->use_set_seed = true;
+	dest->seed         = seed;
 	seed_opt->set_selected_val(seed);
 }
 
 void Warp::update_cave_opt()
 {
-	GZASSERTLINE(dest.area < 4);
-	cave_opt->set_selection(dest.cave);
+	GZASSERTLINE(dest->area < 4);
+	cave_opt->set_selection(dest->cave);
 
 	cave_opt->options.clear();
 	cave_opt->options.push("Above Ground");
 	for (size_t i = 0; i < 4; i++) {
-		const char* cave_name = CAVE_NAMES[dest.area][i];
+		const char* cave_name = CAVE_NAMES[dest->area][i];
 		if (cave_name && strlen(cave_name) > 0) {
 			cave_opt->options.push(cave_name);
 		}
@@ -164,23 +182,23 @@ void Warp::update_cave_opt()
 
 void Warp::update_sublevel_opt()
 {
-	GZASSERTLINE(dest.area < 4);
-	GZASSERTLINE(dest.cave < 5); // 0th is AG
+	GZASSERTLINE(dest->area < 4);
+	GZASSERTLINE(dest->cave < 5); // 0th is AG
 
 	// If destination is above ground, hide cave-related options
-	bool selection_is_cave = dest.cave > 0;
+	bool selection_is_cave = dest->cave > 0;
 	sublevel_opt->visible  = selection_is_cave;
 	seed_opt->visible      = selection_is_cave;
 
 	if (selection_is_cave) {
-		sublevel_opt->max = NUM_FLOORS[dest.area][dest.cave - 1];
-		sublevel_opt->set_selection(dest.sublevel + 1);
+		sublevel_opt->max = NUM_FLOORS[dest->area][dest->cave - 1];
+		sublevel_opt->set_selection(dest->sublevel + 1);
 	}
 }
 
 void Warp::update_preset_opt()
 {
-	Preset* previous_preset = preset_opt->current_preset;
+	Preset* previous_preset = chosen_preset;
 
 	// nullptr preset is the "keep current squad" option.
 	// if this is selected or the player is using a General preset we don't want to overwrite it.
@@ -189,11 +207,7 @@ void Warp::update_preset_opt()
 	}
 
 	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, previous_preset->category);
-	if (suggested_preset) {
-		preset_opt->current_preset = suggested_preset;
-	} else {
-		preset_opt->current_preset = nullptr;
-	}
+	set_chosen_preset(suggested_preset);
 }
 
 void Warp::do_warp()
@@ -201,14 +215,12 @@ void Warp::do_warp()
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
-	if (preset_opt) {
-		Preset* preset = preset_opt->current_preset;
-		if (preset) {
-			preset->apply();
-		}
+	Preset* effective_preset = get_effective_preset();
+	if (effective_preset) {
+		effective_preset->apply();
 	}
 
-	if (dest.cave == 0) {
+	if (dest->cave == 0) {
 		warp_to_area(game);
 	} else {
 		warp_to_cave(game);
@@ -254,7 +266,7 @@ void Warp::save_pikmin()
 		//                      vvvvvvvvvvvvvvvv <- make sure we don't bring wild pikmin
 		if (piki->isAlive() && !piki->isZikatu() && piki->isPikmin()) {
 			// Don't bring non-blues into SmC
-			if (!(dest.area == 2 && dest.cave == 4) || piki->getKind() == Game::Blue) {
+			if (!(dest->area == 2 && dest->cave == 4) || piki->getKind() == Game::Blue) {
 				Game::playData->mCaveSaveData.mCavePikis(piki)++;
 				Game::PikiKillArg arg(Game::CKILL_DontCountAsDeath);
 				piki->kill(&arg);
@@ -269,13 +281,13 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	save_pikmin();
 
 	// Look up destination cave ID from index
-	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
-	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest.cave - 1));
+	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest->area);
+	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest->cave - 1));
 	Game::ItemCave::Item* cave = new Game::ItemCave::Item;
 	cave->mCaveID              = caveID;
 	cave->mCaveFilename        = dst_course_info->getCaveinfoFilename_FromID(caveID);
 
-	Game::gameSystem->mTimeMgr->mDayCount        = dest.day; // set day
+	Game::gameSystem->mTimeMgr->mDayCount        = dest->day; // set day
 	Game::playData->mCaveSaveData.mTime          = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
 	Game::playData->mCaveSaveData.mCourseIdx     = dst_course_info->mCourseIndex;
 	Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
@@ -290,7 +302,7 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	game->mCurrentCave       = cave;
 	game->mCaveID            = caveID;
 	game->mCaveIndex         = caveID.getID();
-	game->mCurrentFloor      = dest.sublevel;
+	game->mCurrentFloor      = dest->sublevel;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 
 	Game::SingleGame::LoadArg arg(100, true, false, false);
@@ -362,22 +374,22 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	Game::pikiMgr->forceEnterPikmins(false);
 	Game::gameSystem->mTimeMgr->setStartTime(); // Restore time of day setting
 
-	if (dest.day % 30 == 0) {
+	if (dest->day % 30 == 0) {
 		for (int i = 0; i < 4; i++) {
 			Game::playData->mLimitGen[i].mLoops.all_zero();
 		}
 	}
 
 	// Look up and apply destination settings
-	Game::gameSystem->mTimeMgr->mDayCount = dest.day;
+	Game::gameSystem->mTimeMgr->mDayCount = dest->day;
 	Game::gameSystem->detachObjectMgr(Game::generalEnemyMgr);
 	Game::gameSystem->detachObjectMgr(Game::mapMgr);
 
 	game->mIsGameStarted     = false;
-	game->mCurrentCourseInfo = Game::stageList->getCourseInfo(dest.area);
+	game->mCurrentCourseInfo = Game::stageList->getCourseInfo(dest->area);
 
 	int map_enter_status;
-	switch (dest.enter_area_type) {
+	switch (dest->enter_area_type) {
 	case 0:
 		map_enter_status = Game::SingleGame::MapEnter_CaveGeyser;
 		break;
