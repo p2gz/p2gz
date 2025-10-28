@@ -37,7 +37,7 @@ void SegmentHistory::draw_2d()
 void SegmentHistory::update()
 {
 	if (entering_next_sublevel) {
-		Segment* segment = cur_segment();
+		Segment* segment     = cur_segment();
 		WarpDestination dest = segment->dest;
 		GZASSERTLINE(segment);
 		const u32 btn = p2gz->controller->getButtonDown();
@@ -89,7 +89,10 @@ void SegmentHistory::update()
 			dest.use_set_seed = false;
 			if (dest.sublevel != 0) {
 				dest.sublevel = 0;
-				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(dest, segment->preset->category));
+				// if we don't find any history, assume we're doing PoD
+				// TODO: adjust this to somehow detect PoD vs AT when we have AT presets
+				PresetCategory cat = (segment->preset->category != Generated) ? segment->preset->category : PoD;
+				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(dest, cat));
 			} else {
 				p2gz->warp->set_preset(segment->preset);
 			}
@@ -163,7 +166,7 @@ void SegmentHistory::start_segment(u32 seed)
 		delete segment;
 	}
 
-	Segment* segment = new Segment();
+	Segment* segment     = new Segment();
 	WarpDestination dest = Warp::current_dest();
 	dest.seed            = seed;
 	dest.use_set_seed    = true;
