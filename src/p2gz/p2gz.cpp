@@ -39,7 +39,7 @@ P2GZ::P2GZ()
 	enemy_debug_info             = new EnemyDebugInfo();
 	squad_editor                 = new SquadEditor();
 	preset_mgr                   = new PresetMgr();
-	cutscene_toggle              = new CutsceneToggle();
+	cutscene_mgr                 = new CutsceneMgr();
 }
 
 void P2GZ::init()
@@ -53,7 +53,7 @@ void P2GZ::init()
 	images->init();
 	spray_editor->init();
 	squad_editor->init();
-	cutscene_toggle->init();
+	cutscene_mgr->init();
 }
 
 void P2GZ::update()
@@ -62,7 +62,7 @@ void P2GZ::update()
 	spray_editor->update();
 	freecam->update();
 	squad_editor->update();
-	cutscene_toggle->update();
+	cutscene_mgr->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

@@ -105,25 +105,28 @@ private:
 
 struct CutsceneMenuOption : public MenuOption {
 public:
-	CutsceneMenuOption(const char* title_, bool played_, IDelegate1<bool>* on_selected_)
-	    : MenuOption(title_)
-	    , played(played_)
+	CutsceneMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_, const char* image_name_ = nullptr,
+	                   bool image_only_ = false)
+	    : MenuOption(title_, image_name_, image_only_)
+	    , on(on_)
 	    , on_selected(on_selected_)
 	{
 	}
 
-	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 
 	virtual void select()
 	{
-		played = !played;
+		on = !on;
 		if (on_selected) {
-			on_selected->invoke(played);
+			on_selected->invoke(on);
 		}
 	}
 
+	void set_selection(bool selected) { on = selected; }
+
 private:
-	bool played;
+	bool on;
 	IDelegate1<bool>* on_selected;
 };
 

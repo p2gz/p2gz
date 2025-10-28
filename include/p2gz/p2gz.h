@@ -59,7 +59,7 @@ public:
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;
 	gz::PresetMgr* preset_mgr;
-	gz::CutsceneToggle* cutscene_toggle;
+	gz::CutsceneMgr* cutscene_mgr;
 };
 
 // global instance
