@@ -20,10 +20,10 @@
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/Preset.h>
+#include <p2gz/PokoEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha1"
-#include <p2gz/PokoEditor.h>
 
 struct P2GZ {
 public:
