@@ -17,9 +17,10 @@ public:
 
 	bool is_open() { return open; }
 
-private:
 	void birth_piki(Game::EPikiKind, Game::EPikiHappa, int);
 	void kill_piki(Game::EPikiKind, Game::EPikiHappa, int);
+
+private:
 	gz::Vec<s32> get_squad();
 
 	gz::Vec<s32> counts;

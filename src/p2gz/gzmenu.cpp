@@ -8,6 +8,8 @@
 #include <p2gz/SprayEditor.h>
 #include <p2gz/BoundDelegate.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/InputHelpers.h>
+#include <p2gz/Preset.h>
 #include <p2gz/PokoEditor.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
@@ -50,6 +52,7 @@ void GZMenu::init_menu()
 			->push(new HexInputOption("seed", "random"))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
 			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new PresetMenuOption())
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
@@ -350,19 +353,43 @@ void ListMenu::navigate_to(const char* path)
 	}
 }
 
+ListMenu* ListMenu::push(MenuOption* option)
+{
+	options.push(option);
+	MenuLayer* sub_menu = option->get_sub_menu();
+	if (sub_menu) {
+		sub_menu->parent = this;
+	}
+	return this;
+}
+
+void ListMenu::clear()
+{
+	while (options.len() > 0) {
+		MenuOption* opt = options.pop();
+		delete opt;
+	}
+}
+
 void ListMenu::update()
 {
-	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_DPAD_UP && selected > 0) {
+	// Make sure the selection starts in bounds in case it was changed from somewhere else
+	if (selected < scroll) {
+		selected = scroll;
+	}
+
+	if (pah_up.check(p2gz->controller) && selected > 0) {
 		do {
 			selected -= 1;
 		} while (!options[selected]->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected < options.len() - 1) {
+	if (pah_down.check(p2gz->controller) && options.len() > 0 && selected < options.len() - 1) {
 		do {
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
+
+	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
 	}
@@ -370,13 +397,22 @@ void ListMenu::update()
 		p2gz->menu->pop_layer();
 	}
 
-	options[selected]->update();
+	// ... but if we scrolled off the edge deliberately, adjust the scroll
+	if (selected < scroll) {
+		scroll = selected;
+	}
+
+	if (options.len() > 0 && selected < options.len()) {
+		options[selected]->update();
+	}
 }
 
-void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
+void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 {
-	for (size_t i = 0; i < options.len(); i++) {
-		if (!options[i]->visible) {
+	const f32 start_x = x;
+	const f32 start_z = z;
+	for (size_t i = scroll; i < options.len(); i++) {
+		if (!options[i]->visible || z < start_z) {
 			continue;
 		}
 
@@ -392,6 +428,15 @@ void ListMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 
 		options[i]->draw(j2d, x, z, i == selected);
 		z += p2gz->menu->line_height;
+		x = start_x;
+
+		// Don't need to draw things too far down on the screen
+		if (z > 400.0f) {
+			if (selected > i) { // Make sure selection stays within visible range
+				scroll += 1;
+			}
+			break;
+		}
 	}
 }
 
@@ -399,8 +444,7 @@ void GridMenu::update()
 {
 	p2gz->menu->block_open_close_action();
 
-	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_DPAD_UP && selected_row > 0 && !editing_range) {
+	if (pah_up.check(p2gz->controller) && selected_row > 0 && !editing_range) {
 		do {
 			selected_row -= 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -408,7 +452,7 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_DOWN && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
+	if (pah_down.check(p2gz->controller) && options.len() > 0 && selected_row < options.len() - 1 && !editing_range) {
 		do {
 			selected_row += 1;
 			if (options[selected_row]->len() <= selected_col) {
@@ -416,17 +460,19 @@ void GridMenu::update()
 			}
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_LEFT && selected_col > 0 && !editing_range) {
+	if (pah_left.check(p2gz->controller) && selected_col > 0 && !editing_range) {
 		do {
 			selected_col -= 1;
 		} while (!cur_option()->visible);
 	}
-	if (btn & Controller::PRESS_DPAD_RIGHT && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
+	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && selected_col < options[selected_row]->len() - 1
 	    && !editing_range) {
 		do {
 			selected_col += 1;
 		} while (!cur_option()->visible);
 	}
+
+	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		if (cur_option()->is_range_option()) {
 			editing_range = !editing_range;
@@ -452,9 +498,9 @@ void GridMenu::update()
 	cur_option()->update();
 }
 
-void GridMenu::draw(J2DPrint& j2d, f32 x, f32 z)
+void GridMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 {
-	f32 start_x = x;
+	const f32 start_x = x;
 	for (size_t row_idx = 0; row_idx < options.len(); row_idx++) {
 		for (size_t col_idx = 0; col_idx < options[row_idx]->len(); col_idx++) {
 			MenuOption* option = (*options[row_idx])[col_idx];
@@ -471,8 +517,9 @@ void GridMenu::draw(J2DPrint& j2d, f32 x, f32 z)
 				j2d.mGradientColor.set(p2gz->menu->color_std);
 			}
 
+			const f32 col_start_x = x;
 			option->draw(j2d, x, z, is_selected);
-			x += column_width;
+			x = col_start_x + column_width;
 		}
 		x = start_x;
 		z += p2gz->menu->line_height;
@@ -624,7 +671,7 @@ void HexKeypad::update()
 	keypad->update();
 }
 
-void HexKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
+void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 {
 	static const char* hex_digits = "0123456789ABCDEF";
 	f32 initial_x                 = x;
@@ -645,7 +692,8 @@ void HexKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
 
 	z += p2gz->menu->line_height;
 	keypad->column_width = p2gz->menu->line_height;
-	keypad->draw(j2d, initial_x, z);
+	x                    = initial_x;
+	keypad->draw(j2d, x, z);
 }
 
 DecimalKeypad::DecimalKeypad(const char* title_)
@@ -721,7 +769,7 @@ void DecimalKeypad::update()
 	keypad->update();
 }
 
-void DecimalKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
+void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 {
 	static const char* decimal_digits = "0123456789";
 	static const u32 pow10[5]         = { 10000, 1000, 100, 10, 1 };
@@ -743,40 +791,36 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32 x, f32 z)
 
 	z += p2gz->menu->line_height;
 	keypad->column_width = p2gz->menu->line_height;
-	keypad->draw(j2d, initial_x, z);
+	x                    = initial_x;
+	keypad->draw(j2d, x, z);
 }
 
-f32 MenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
-		cursor += p2gz->images->spacing();
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor, z, title);
+		x += j2d.print(x, z, title);
 	}
-
-	return cursor;
 }
 
-f32 ToggleMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void ToggleMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
-		cursor += p2gz->images->spacing();
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor, z, "%s: %s", title, on ? "true" : "false");
+		x += j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
 	}
-	return cursor;
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
@@ -802,10 +846,17 @@ void RadioMenuOption::update()
 	size_t init_selected_idx = selected_idx;
 	u32 btn                  = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_DPAD_LEFT) {
-		selected_idx = (((int)selected_idx) - 1) % options.len();
+		if (selected_idx == 0) {
+			selected_idx = options.len() - 1;
+		} else {
+			selected_idx = selected_idx - 1;
+		}
 	}
 	if (btn & Controller::PRESS_DPAD_RIGHT) {
-		selected_idx = (selected_idx + 1) % options.len();
+		selected_idx = selected_idx + 1;
+		if (selected_idx >= options.len()) {
+			selected_idx = 0;
+		}
 	}
 
 	if (init_selected_idx != selected_idx) {
@@ -822,30 +873,28 @@ void RadioMenuOption::select()
 	}
 }
 
-f32 RadioMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
-		cursor += p2gz->images->spacing();
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor, z, "%s: < ", title);
+		x += j2d.print(x, z, "%s: < ", title);
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
-		cursor += j2d.print(cursor, z, options[selected_idx]);
+		x += j2d.print(x, z, options[selected_idx]);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
-		cursor += j2d.print(cursor, z, " >");
+		x += j2d.print(x, z, " >");
 	}
-	return cursor;
 }
 
 void RangeMenuOption::update()
@@ -901,38 +950,36 @@ void RangeMenuOption::check_overflow()
 	}
 }
 
-f32 RangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
-		cursor += p2gz->images->spacing();
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor, z, "%s: ", title);
+		x += j2d.print(x, z, "%s: ", title);
 
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
-			cursor += j2d.print(cursor, z, "< ");
+			x += j2d.print(x, z, "< ");
 		}
 
 		if (!editing_in_grid) {
 			j2d.mCharColor.set(p2gz->menu->color_std);
 			j2d.mGradientColor.set(p2gz->menu->color_std);
 		}
-		cursor += j2d.print(cursor, z, "%d", selected_val);
+		x += j2d.print(x, z, "%d", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
-			cursor += j2d.print(cursor, z, " >");
+			x += j2d.print(x, z, " >");
 		}
 	}
-	return cursor;
 }
 
 void FloatRangeMenuOption::update()
@@ -979,38 +1026,36 @@ void FloatRangeMenuOption::check_overflow()
 	}
 }
 
-f32 FloatRangeMenuOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void FloatRangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	f32 cursor = x;
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		cursor += p2gz->images->draw(image_name, cursor, z - p2gz->images->height());
-		cursor += p2gz->images->spacing();
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
 	if (title && !image_only) {
-		cursor += j2d.print(cursor, z, "%s: ", title);
+		x += j2d.print(x, z, "%s: ", title);
 
 		if (selected_val > min) {
-			cursor += j2d.print(cursor, z, "< ");
+			x += j2d.print(x, z, "< ");
 		}
 
 		if (!editing_in_grid) {
 			j2d.mCharColor.set(p2gz->menu->color_std);
 			j2d.mGradientColor.set(p2gz->menu->color_std);
 		}
-		cursor += j2d.print(cursor, z, "%.2f", selected_val);
+		x += j2d.print(x, z, "%.2f", selected_val);
 
 		if (selected) {
 			j2d.mCharColor.set(p2gz->menu->color_highlight);
 			j2d.mGradientColor.set(p2gz->menu->color_highlight);
 		}
 		if (selected_val < max) {
-			cursor += j2d.print(cursor, z, " >");
+			x += j2d.print(x, z, " >");
 		}
 	}
-	return cursor;
 }
 
 HexInputOption::HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_, bool image_only_)
@@ -1030,13 +1075,14 @@ void HexInputOption::select()
 	p2gz->menu->push_layer(keypad);
 }
 
-f32 HexInputOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	x = MenuOption::draw(j2d, x, z, selected);
+	MenuOption::draw(j2d, x, z, selected);
 	if (keypad->is_unselected) {
-		return x + j2d.print(x, z, ": %s", value_if_unselected);
+		x += j2d.print(x, z, ": %s", value_if_unselected);
+	} else {
+		x += j2d.print(x, z, ": %08X", keypad->get_value());
 	}
-	return x + j2d.print(x, z, ": %08X", keypad->get_value());
 }
 
 bool HexInputOption::is_selected()
@@ -1065,10 +1111,10 @@ void DecimalInputOption::select()
 	p2gz->menu->push_layer(keypad);
 }
 
-f32 DecimalInputOption::draw(J2DPrint& j2d, f32 x, f32 z, bool selected)
+void DecimalInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	x = MenuOption::draw(j2d, x, z, selected);
-	return x + j2d.print(x, z, ": %05u", keypad->get_value());
+	MenuOption::draw(j2d, x, z, selected);
+	x += j2d.print(x, z, ": %05u", keypad->get_value());
 }
 
 bool DecimalInputOption::is_selected()

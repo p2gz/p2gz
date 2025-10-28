@@ -6,6 +6,7 @@
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
 #include <Game/gamePlayData.h>
+#include <PikiAI.h>
 #include <og/Sound.h>
 
 using namespace gz;
@@ -63,14 +64,15 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 	for (int i = 0; i < count; i++) {
 		Game::Piki* piki = Game::pikiMgr->birth();
 
-		Game::PikiInitArg arg(-1);
-		piki->init(&arg);
+		piki->init(nullptr);
 		piki->changeShape(color);
 		piki->changeHappa(stage);
 
 		Vector3f pos = navi->getPosition();
 		piki->setPosition(pos, false);
 		piki->mNavi = navi;
+		PikiAI::ActFormationInitArg arg(navi);
+		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
 	}
 }
 
@@ -82,7 +84,7 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mNavi != nullptr && piki->mPikiKind == color && piki->mHappaKind == stage) {
+		if (piki->mPikiKind == color && piki->mHappaKind == stage && !piki->isZikatu()) {
 			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
 			piki->kill(&arg);
 			killed++;
@@ -117,11 +119,20 @@ void SquadEditor::set_squad(s32 _)
 {
 	gz::Vec<s32> squad = get_squad();
 
+	int total = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		if (piki->mNavi == nullptr) {
+			total++;
+		}
+	}
+
 	// If the player increments an option to exceed 100 total Pikmin, we need to identify the offending option
 	// and clamp it so the total Pikmin count is 100.
 	RangeMenuOption* changed = nullptr;
 	int previous             = 0;
-	int total                = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
 	for (int color = 0; color < 6; color++) {
 		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {

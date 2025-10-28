@@ -19,6 +19,10 @@
 #include <p2gz/StructureEditor.h>
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/Preset.h>
+
+/*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
+#define P2GZ_VERSION "alpha1"
 #include <p2gz/PokoEditor.h>
 
 struct P2GZ {
@@ -30,7 +34,8 @@ public:
 	void update();
 	void draw_2d();
 	void draw();
-	void draw_images();
+
+	static void draw_version();
 
 	// our own persistent controller so we don't crash the game on new file starting (don't ask)
 	Controller* controller;
@@ -53,6 +58,7 @@ public:
 	gz::StructureEditor* structure_editor;
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;
+	gz::PresetMgr* preset_mgr;
 	gz::PokoEditor* poko_editor;
 };
 
