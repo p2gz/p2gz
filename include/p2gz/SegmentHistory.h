@@ -27,7 +27,8 @@ public:
 	void update();
 
 	void start_segment(u32 seed);
-	Segment* cur_segment();
+	const Segment* cur_segment();
+	Segment* cur_segment_mut() { return const_cast<Segment*>(cur_segment()); }
 
 	bool started_creating_map;
 	bool entering_next_sublevel;
@@ -36,7 +37,7 @@ private:
 	void draw_cur_seed();
 	void draw_reset_controls();
 
-	RingBuffer<32, Segment*> segments;
+	RingBuffer<32, const Segment*> segments;
 };
 
 }; // namespace gz

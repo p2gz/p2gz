@@ -18,17 +18,6 @@ public:
 		use_set_seed = false;
 	}
 
-	// copy ctor
-	// WarpDestination(WarpDestination& other)
-	// {
-	// 	area         = other.area;
-	// 	cave         = other.cave;
-	// 	sublevel     = other.sublevel;
-	// 	day          = other.day;
-	// 	seed         = other.seed;
-	// 	use_set_seed = other.use_set_seed;
-	// }
-
 	~WarpDestination() { }
 
 	u32 area;
@@ -50,23 +39,23 @@ public:
 	void init();
 
 	static WarpDestination current_dest();
-	void set_dest(WarpDestination* new_dest);
+	void set_dest(WarpDestination new_dest);
 
 	void set_warp_area(size_t area);
 	void set_warp_cave(size_t cave);
 	void set_warp_sublevel(s32 sublevel);
-	void set_warp_day(s32 day) { dest->day = day - 1; }
+	void set_warp_day(s32 day) { dest.day = day - 1; }
 	void set_allow_zero_piki_in_caves(bool allow) { allow_zero_pikmin_in_caves = allow; }
-	void set_enter_area_type(size_t type) { dest->enter_area_type = type == 1; }
+	void set_enter_area_type(size_t type) { dest.enter_area_type = type == 1; }
 	void set_seed(u32);
-	void set_random_seed() { dest->use_set_seed = false; }
+	void set_random_seed() { dest.use_set_seed = false; }
 
 	void set_preset(Preset* preset);
 	void set_chosen_preset(Preset* preset);
 	Preset* get_effective_preset();
 
-	bool using_set_seed() { return dest->use_set_seed; }
-	u32 get_seed() { return dest->seed; }
+	bool using_set_seed() { return dest.use_set_seed; }
+	u32 get_seed() { return dest.seed; }
 
 	void do_warp();
 
@@ -81,7 +70,7 @@ private:
 	void save_pikmin();
 	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
-	WarpDestination* dest;
+	WarpDestination dest;
 
 	/// The preset chosen in the menu.
 	Preset* chosen_preset;

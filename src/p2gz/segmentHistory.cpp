@@ -34,7 +34,7 @@ void SegmentHistory::draw_2d()
 	}
 }
 
-Segment* SegmentHistory::cur_segment()
+const Segment* SegmentHistory::cur_segment()
 {
 	if (segments.len() > 0) {
 		return segments.peek();
@@ -45,16 +45,15 @@ Segment* SegmentHistory::cur_segment()
 void SegmentHistory::update()
 {
 	if (entering_next_sublevel) {
-		Segment* current_segment = cur_segment();
+		const Segment* current_segment = cur_segment();
 		GZASSERTLINE(current_segment);
-		WarpDestination* current_dest = current_segment->dest;
-		GZASSERTLINE(current_dest);
+		WarpDestination current_dest = current_segment->dest;
 
 		const u32 btn = p2gz->controller->getButtonDown();
 
 		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
-			current_dest->use_set_seed = false;
+			current_dest.use_set_seed = false;
 
 			p2gz->warp->set_dest(current_dest);
 			p2gz->warp->set_preset(current_segment->preset);
@@ -66,7 +65,7 @@ void SegmentHistory::update()
 
 		// Retry same sublevel, same seed
 		if (btn & Controller::PRESS_Y) {
-			current_dest->use_set_seed = true;
+			current_dest.use_set_seed = true;
 
 			p2gz->warp->set_dest(current_dest);
 			p2gz->warp->set_preset(current_segment->preset);
@@ -83,20 +82,19 @@ void SegmentHistory::update()
 			}
 
 			// Find segment for the first floor of the cave
-			Segment* floor0_segment = nullptr;
+			const Segment* floor0_segment = nullptr;
 			for (size_t i = 0; i < segments.len(); i++) {
-				OSReport("ura a\n");
-				Segment* this_segment = segments.peekN(i);
-				if (!this_segment || !this_segment->dest) {
+				const Segment* this_segment = segments.peekN(i);
+				if (!this_segment) {
 					break;
 				}
-				OSReport("ura b\n");
-				OSReport("this_segment dest = %d\n", this_segment->dest);
-				OSReport("this_segment cave = %d\n", this_segment->dest->cave);
-				if (this_segment->dest->cave == current_dest->cave) {
-					if (this_segment->dest->area == current_dest->area && this_segment->dest->sublevel == 0) {
+				OSReport("this segment: %d %d %d\n", this_segment->dest.area, this_segment->dest.cave, this_segment->dest.sublevel);
+				OSReport("cur dest: %d %d %d\n", current_dest.area, current_dest.cave, current_dest.sublevel);
+
+				if (this_segment->dest.cave == current_dest.cave) {
+					if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
 						floor0_segment = this_segment;
-						OSReport("ura c\n");
+						OSReport("found floor0 segment\n");
 						break;
 					}
 				} else {
@@ -104,37 +102,26 @@ void SegmentHistory::update()
 				}
 			}
 
-			OSReport("a\n");
 			if (!floor0_segment) {
 				floor0_segment = current_segment;
 			}
 
-			OSReport("b\n");
 			WarpDestination floor0_dest = floor0_segment->dest;
-			OSReport("c\n");
-			floor0_dest.use_set_seed = false;
-			OSReport("d\n");
+			floor0_dest.use_set_seed    = false;
 			if (floor0_dest.sublevel != 0) {
 				floor0_dest.sublevel = 0;
 				// If we don't find history for floor 0 in this cave, get the recommended preset for it.
 				// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
 				PresetCategory cat = PoD;
 				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
-					OSReport("e\n");
 					cat = floor0_segment->preset->category;
-					OSReport("f\n");
 				}
 				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat));
-				OSReport("g\n");
 
 			} else {
-				OSReport("h\n");
 				p2gz->warp->set_preset(floor0_segment->preset);
-				OSReport("i\n");
 			}
-			OSReport("j\n");
 			p2gz->warp->set_dest(floor0_dest);
-			OSReport("k\n");
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -160,7 +147,7 @@ J2DPrint init_j2d(f32 glyph_size = 24.0)
 
 void SegmentHistory::draw_cur_seed()
 {
-	Segment* seg = cur_segment();
+	const Segment* seg = cur_segment();
 	if (!seg) {
 		return;
 	}
@@ -205,5 +192,7 @@ void SegmentHistory::start_segment(u32 seed)
 	segment->dest        = dest;
 	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
 
-	segments.push(segment);
+	OSReport("new dest: %d %d %d\n", dest.area, dest.cave, dest.sublevel);
+
+	segments.push(const_cast<const Segment*>(segment));
 }

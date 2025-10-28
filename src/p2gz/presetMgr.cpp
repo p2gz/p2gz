@@ -163,9 +163,9 @@ gz::Cave which_cave(u32 area, u32 cave)
 	GZASSERTLINE(false);
 }
 
-Preset* PresetMgr::suggested_preset(WarpDestination* dest, PresetCategory category)
+Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
 {
-	gz::Cave cave_e = which_cave(dest->area, dest->cave);
+	gz::Cave cave_e = which_cave(dest.area, dest.cave);
 	if (category == General) {
 		return nullptr;
 	}
@@ -175,26 +175,26 @@ Preset* PresetMgr::suggested_preset(WarpDestination* dest, PresetCategory catego
 		case EC:
 			return find("EC", PoD);
 		case HoB:
-			if (dest->sublevel < 2)
+			if (dest.sublevel < 2)
 				return find("HoB1-2", PoD);
-			else if (dest->sublevel < 4)
+			else if (dest.sublevel < 4)
 				return find("HoB3-4", PoD);
 			else
 				return find("HoB5-WFG3", PoD);
 		case WFG:
-			if (dest->sublevel < 3)
+			if (dest.sublevel < 3)
 				return find("HoB5-WFG3", PoD);
 			else
 				return find("WFG4-enter SH", PoD);
 		case SH:
-			if (dest->sublevel < 2)
+			if (dest.sublevel < 2)
 				return find("SH1-2", PoD);
 			else
 				return find("SH3-7", PoD);
 		case BK:
 			return find("BK", PoD);
 		case SCx:
-			if (dest->sublevel < 4)
+			if (dest.sublevel < 4)
 				return find("SCx1-3", PoD);
 			else
 				return find("SCx5-FC", PoD);
@@ -205,17 +205,17 @@ Preset* PresetMgr::suggested_preset(WarpDestination* dest, PresetCategory catego
 		case GK:
 			return find("GK", PoD);
 		case AG:
-			if (dest->area == 0) {
-				if (dest->day == 5)
+			if (dest.area == 0) {
+				if (dest.day == 5)
 					return find("day 6 CR", PoD);
 				else
 					return find("enter SCx", PoD);
-			} else if (dest->area == 1) {
-				if (dest->day == 2)
+			} else if (dest.area == 1) {
+				if (dest.day == 2)
 					return find("enter HoB", PoD);
 				else
 					return find("enter BK (20)", PoD);
-			} else if (dest->area == 2) {
+			} else if (dest.area == 2) {
 				return find("CoS", PoD);
 			}
 		}

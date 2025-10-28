@@ -44,7 +44,7 @@ public:
 
 	Preset* create();
 
-	Preset* suggested_preset(WarpDestination* dest, PresetCategory category);
+	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
