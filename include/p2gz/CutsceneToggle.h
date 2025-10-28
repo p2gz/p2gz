@@ -7,7 +7,6 @@
 #include <Dolphin/os.h>
 #include <Game/gamePlayData.h>
 #include <p2gz/gzmenu.h>
-#include <p2gz/gzConstants.h>
 
 #define TUTORIAL_MENU_TITLE     "tutorials and firsts"
 #define AREA_ENTER_MENU_TITLE   "area enters"
@@ -30,8 +29,6 @@ struct CutsceneMap {
 
 	static const char* get_name_from_idx(Game::DemoFlags idx_);
 	static const char* get_menu_from_idx(Game::DemoFlags idx_);
-
-	static Game::DemoFlags get_idx_from_name(const char* name_);
 
 	bool is(const char* name_) { return strcmp(name, name_) == 0; }
 

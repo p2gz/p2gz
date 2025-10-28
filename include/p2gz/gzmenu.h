@@ -12,7 +12,6 @@
 #include <Dolphin/os.h>
 #include <IDelegate.h>
 #include <Game/Piki.h>
-#include <p2gz/gzConstants.h>
 
 namespace gz {
 

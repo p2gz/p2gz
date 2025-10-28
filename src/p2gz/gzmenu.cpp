@@ -18,7 +18,6 @@
 #include <string.h>
 #include <IDelegate.h>
 #include <Graphics.h>
-#include <p2gz/gzConstants.h>
 
 using namespace gz;
 

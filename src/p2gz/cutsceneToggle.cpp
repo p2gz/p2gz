@@ -1,7 +1,6 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <p2gz/CutsceneToggle.h>
-#include <p2gz/gzConstants.h>
 #include <p2gz/p2gz.h>
 #include <Game/gamePlayData.h>
 
@@ -91,7 +90,6 @@ void CutsceneMgr::init()
 		Game::DemoFlags id     = toggle->get_cutscene_id();
 		char option_path[PATH_MAX];
 		sprintf(option_path, "cutscenes/%s/%s", CutsceneMap::get_menu_from_idx(id), CutsceneMap::get_name_from_idx(id));
-		OSReport("Initialising %s\n", option_path);
 		toggle->init(static_cast<CutsceneMenuOption*>(p2gz->menu->get_option(option_path)));
 	}
 }
@@ -109,8 +107,7 @@ void CutsceneMgr::update()
 	}
 
 	// only update if we don't have a cutscene submenu open
-	if (p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->parent && p2gz->menu->get_active_layer()->parent->title
-	    && strcmp(p2gz->menu->get_active_layer()->parent->title, "cutscenes") == 0) {
+	if (p2gz->menu->is_within_menu("cutscenes")) {
 		return;
 	}
 
@@ -141,17 +138,6 @@ void CutsceneToggle::set_cutscene_flag(bool played)
 		// game now thinks cutscene has NOT been played
 		Game::playData->mDemoFlags.resetFlag(cutscene_id);
 	}
-}
-
-Game::DemoFlags CutsceneMap::get_idx_from_name(const char* name_)
-{
-	for (size_t i = 0; i < NUM_CUTSCENES; i++) {
-		CutsceneMap& map = CUTSCENE_NAME_MAP[i];
-		if (map.is(name_)) {
-			return map.idx;
-		}
-	}
-	return (Game::DemoFlags)-1;
 }
 
 const char* CutsceneMap::get_name_from_idx(Game::DemoFlags idx_)
