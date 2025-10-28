@@ -12,18 +12,33 @@ void PokoEditor::init()
 
 void PokoEditor::update()
 {
-	if (p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
-	    && strcmp(p2gz->menu->get_active_layer()->title, "pokos") == 0) {
-		open = true;
-		if (Game::playData->mPokoCount >= 10000 && pokos->get_selected_val() < 10000) {
-			Game::playData->mStoryFlags &= ~Game::STORY_DebtPaid;
-		} else if (Game::playData->mPokoCount < 10000 && pokos->get_selected_val() >= 10000) {
-			Game::playData->mStoryFlags |= Game::STORY_DebtPaid;
-		}
-		Game::playData->mPokoCount = pokos->get_selected_val();
-
+	if (!(p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
+	      && strcmp(p2gz->menu->get_active_layer()->title, "pokos") == 0)) {
+		pokos->set_selected_val(Game::playData->mPokoCount);
 		return;
 	}
 
-	pokos->set_selected_val(Game::playData->mPokoCount);
+	int previous               = Game::playData->mPokoCount;
+	Game::playData->mPokoCount = pokos->get_selected_val();
+
+	// Clear flags above current repay level to reenable percent cutscenes.
+	if (pokos->get_selected_val() / 1000 < previous / 1000) {
+		// Game::playData->mDebtProgressFlags.clear() doesn't work, but this does!
+		for (int i = 0; i < 16; i++) {
+			int byte = i >> 3;
+			Game::playData->getDebtProgressFlags(1 - byte) &= ~(1 << (i - (byte << 3)));
+		}
+		Game::playData->experienceRepayLevelFirstClear();
+	}
+
+	// Set flags up to current repay level to avoid percent cutscenes.
+	if (previous / 1000 < pokos->get_selected_val() / 1000) {
+		Game::playData->experienceRepayLevelFirstClear();
+	}
+
+	if (previous >= 10000 && pokos->get_selected_val() < 10000) {
+		Game::playData->mStoryFlags &= ~Game::STORY_DebtPaid;
+	} else if (previous < 10000 && pokos->get_selected_val() >= 10000) {
+		Game::playData->mStoryFlags |= Game::STORY_DebtPaid;
+	}
 }
