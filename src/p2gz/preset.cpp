@@ -78,7 +78,8 @@ void Preset::apply()
 	}
 
 	p2gz->squad_editor->clear_all_pikmin();
-	Game::playData->resetContainerFlag(); // Reset container flags for onions/ship space unlocks
+	Game::playData->resetContainerFlag();                     // Reset container flags for onions/ship space unlocks
+	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected
 
 	// Apply squad
 	for (int color = 0; color < 6; color++) {
@@ -247,7 +248,7 @@ void PresetPreviewMenuOption::select()
 {
 	parent->current_preset = preset;
 	parent->do_on_preset_selected(preset);
-	MenuLayer* warp_menu   = p2gz->menu->get_option("warp")->get_sub_menu();
+	MenuLayer* warp_menu = p2gz->menu->get_option("warp")->get_sub_menu();
 	while (p2gz->menu->get_active_layer() != warp_menu) {
 		p2gz->menu->pop_layer();
 	}

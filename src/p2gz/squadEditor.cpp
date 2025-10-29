@@ -102,6 +102,7 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 
 void SquadEditor::clear_all_pikmin()
 {
+	Game::playData->mPikiContainer.clear();
 	Game::playData->mCaveSaveData.mCavePikis.clear(); // clear saved cave pikmin
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)

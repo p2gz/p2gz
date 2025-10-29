@@ -104,6 +104,9 @@ Preset* PresetMgr::create()
 		}
 	}
 
+	preset->onion_pikis.clear();
+	preset->onion_pikis = Game::playData->mPikiContainer;
+
 	return preset;
 }
 
