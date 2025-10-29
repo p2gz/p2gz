@@ -363,10 +363,7 @@ ListMenu* ListMenu::push(MenuOption* option)
 
 void ListMenu::clear()
 {
-	while (options.len() > 0) {
-		MenuOption* opt = options.pop();
-		delete opt;
-	}
+	options.clear();
 }
 
 void ListMenu::update()
