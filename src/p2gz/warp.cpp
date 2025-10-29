@@ -243,7 +243,6 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 
 	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		(game->mOtakaraCounter(i)) = 1;
 		counter_otakara(i)         = 0;
 	}
 
@@ -251,7 +250,6 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 	Game::KindCounter& counter_item = mem->mItem;
 	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		(game->mItemCounter(i)) = 1;
 		counter_item(i)         = 0;
 	}
 }
