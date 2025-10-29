@@ -53,7 +53,6 @@ sheet.tsv
 tools/mwcc_compiler/
 tools/powerpc/
 compile_commands.json
-references/
 
 *.exe
 *.iso
