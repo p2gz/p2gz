@@ -21,6 +21,7 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/Preset.h>
 #include <p2gz/DismissPositions.h>
+#include <p2gz/TreasureEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha1"
@@ -62,6 +63,7 @@ public:
 	gz::PresetMgr* preset_mgr;
 	gz::CutsceneMgr* cutscene_mgr;
 	gz::DismissPositions* dismiss_positions;
+	gz::TreasureEditor* treasure_editor;
 };
 
 // global instance

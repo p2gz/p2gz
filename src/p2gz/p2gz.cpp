@@ -10,6 +10,7 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/SquadEditor.h>
 #include <p2gz/DismissPositions.h>
+#include <p2gz/TreasureEditor.h>
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
 #include <IDelegate.h>
@@ -42,6 +43,7 @@ P2GZ::P2GZ()
 	preset_mgr                   = new PresetMgr();
 	cutscene_mgr                 = new CutsceneMgr();
 	dismiss_positions            = new DismissPositions();
+	treasure_editor              = new TreasureEditor();
 }
 
 void P2GZ::init()
@@ -67,6 +69,7 @@ void P2GZ::update()
 	cutscene_mgr->update();
 	segment_history->update();
 	dismiss_positions->update();
+	treasure_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

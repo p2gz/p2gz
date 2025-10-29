@@ -98,6 +98,7 @@ void GZMenu::init_menu()
 			->push(new OpenSubMenuOption("structures", (new ListMenu())
 				->push(new OpenSubMenuOption("gates", (new ListMenu()))) // Will be populated dynamically by StructureEditor
 			))
+			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 		))
