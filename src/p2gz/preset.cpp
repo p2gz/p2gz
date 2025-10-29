@@ -70,10 +70,14 @@ void Preset::apply()
 	// TODO: is this necessary?
 	// GameStat::mePikis.clear(); // clear sprouts
 
-	// Clear squad
-	Game::playData->mCaveSaveData.mCavePikis.clear();
-	Game::pikiMgr->killAllPikmins();
+	for (int i = 0; i < 2; i++) {
+		Game::Navi* navi = Game::naviMgr->getAt(i);
+		if (navi && navi->isAlive() && navi->isStickTo()) {
+			navi->endStick();
+		}
+	}
 
+	p2gz->squad_editor->clear_all_pikmin();
 	Game::playData->resetContainerFlag(); // Reset container flags for onions/ship space unlocks
 
 	// Apply squad

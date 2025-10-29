@@ -5,6 +5,7 @@
 #include <Game/Navi.h>
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
+#include <Game/PikiState.h>
 #include <Game/gamePlayData.h>
 #include <PikiAI.h>
 #include <og/Sound.h>
@@ -63,6 +64,7 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 
 	for (int i = 0; i < count; i++) {
 		Game::Piki* piki = Game::pikiMgr->birth();
+		GZASSERTLINE(piki);
 
 		piki->init(nullptr);
 		piki->changeShape(color);
@@ -85,12 +87,27 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 	{
 		Game::Piki* piki = *iterator;
 		if (piki->mPikiKind == color && piki->mHappaKind == stage && !piki->isZikatu()) {
+			piki->endStick();
 			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
 			piki->kill(&arg);
 			killed++;
 			if (killed == count) {
 				break;
 			}
+		}
+	}
+}
+
+void SquadEditor::clear_all_pikmin()
+{
+	Game::playData->mCaveSaveData.mCavePikis.clear(); // clear saved cave pikmin
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		if (!piki->isZikatu()) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
 		}
 	}
 }

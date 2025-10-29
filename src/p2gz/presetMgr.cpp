@@ -77,12 +77,12 @@ PresetMgr::PresetMgr()
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Blue, 45)
+	                 ->set_pikmin(Flower, Blue, 40)
 	                 ->set_onion_pikmin(Flower, Red, 29));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Blue, 39)
+	                 ->set_pikmin(Flower, Blue, 34)
 	                 ->set_onion_pikmin(Flower, Red, 29));
 }
 
