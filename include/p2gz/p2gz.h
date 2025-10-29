@@ -80,5 +80,7 @@ public:
 
 // global instance
 extern P2GZ* p2gz;
+// first init flag; only intialize p2gz stuff once per game
+extern bool p2gz_first_init;
 
 #endif

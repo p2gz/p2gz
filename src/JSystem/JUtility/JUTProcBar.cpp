@@ -424,7 +424,7 @@ void JUTProcBar::drawHeapBar()
 {
 	// barWidth * 2 / 2 is a workaround, if height / 2 is used and barWidth * 2 gets replaced with height then there will be regswaps
 	// @P2GZ heap-bar-toggle: uses P2GZ setting to view heap bar instead of vanilla setting
-	if (p2gz && p2gz->heap_bar_toggle && p2gz->heap_bar_toggle->get_heapbar_status()) {
+	if (1) { // (p2gz && p2gz->heap_bar_toggle && p2gz->heap_bar_toggle->get_heapbar_status()) {
 		int barHeight      = mParams.mBarHeight;
 		int barPosX        = mParams.mPosX;
 		int barPosY        = mParams.mPosY;

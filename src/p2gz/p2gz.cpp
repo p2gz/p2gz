@@ -16,6 +16,7 @@
 using namespace gz;
 
 P2GZ* p2gz;
+bool p2gz_first_init = true;
 
 P2GZ::P2GZ()
 {
