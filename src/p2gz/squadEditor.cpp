@@ -62,6 +62,7 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		break;
 	}
 
+	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Replace;
 	for (int i = 0; i < count; i++) {
 		Game::Piki* piki = Game::pikiMgr->birth();
 		GZASSERTLINE(piki);
@@ -76,6 +77,7 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		PikiAI::ActFormationInitArg arg(navi);
 		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
 	}
+	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Normal;
 }
 
 // Remove a Pikmin from the active captain's squad.
@@ -105,10 +107,8 @@ void SquadEditor::clear_all_pikmin()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (!piki->isZikatu()) {
-			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-			piki->kill(&arg);
-		}
+		Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+		piki->kill(&arg);
 	}
 }
 
