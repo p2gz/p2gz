@@ -211,6 +211,15 @@ bool InteractFue::actPiki(Game::Piki* piki)
 				moviePlayer->mTargetObject = piki;
 				moviePlayer->play(bulbminArg);
 			}
+			// @P2GZ cutscene crash fix
+			// @P2GZ cutscene-demo-flag-reenable-menu
+			// if we whistle a non-wild red after resetting this flag, we get a cutscene timer crash
+			// - need to manually set up the timer to give it something to end
+			if (piki->getKind() == Red && !playData->isDemoFlag(DEMO_Meet_Red_Pikmin)) {
+				if (gameSystem->mSection->getTimerType() != DEMOTIMER_Meet_Red_Pikmin) {
+					gameSystem->mSection->enableTimer(1.2f, DEMOTIMER_Meet_Red_Pikmin);
+				}
+			}
 			return true;
 		}
 	}

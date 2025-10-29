@@ -11,7 +11,8 @@ struct RingBuffer {
 	RingBuffer()
 	{
 		GZASSERTLINE(N > 0);
-		mBufHead = 0;
+		mBuf     = new T[N];
+		mBufHead = N;
 		mLen     = 0;
 	}
 
@@ -19,28 +20,32 @@ struct RingBuffer {
 
 	void push(T val)
 	{
-		mBuf[mBufHead] = val;
 		mBufHead       = (mBufHead + 1) % N;
-		if (mLen < N)
+		mBuf[mBufHead] = val;
+		if (mLen < N) {
 			mLen++;
+		}
 	}
 
 	/// @brief Returns a copy of the entry without removing it
 	/// @return The latest entry in the history
-	T* peek() { return peekN(0); }
-
-	/// @brief Peek the Nth to last entry, if present. peekN(0) is equivalent to peek().
-	T* peekN(size_t n)
+	T peek()
 	{
-		if (n >= mLen)
-			return nullptr;
-		return &mBuf[(mBufHead - (n + 1) + N) % N];
+		GZASSERTLINE(mLen > 0);
+		return mBuf[mBufHead];
+	}
+
+	T peekN(const size_t n)
+	{
+		GZASSERTLINE(mLen > 0);
+		GZASSERTLINE(n < mLen);
+		return mBuf[(mBufHead + N - n - 1) % N];
 	}
 
 private:
 	size_t mLen;
 	size_t mBufHead;
-	T mBuf[N];
+	T* mBuf;
 };
 
 template <typename T>

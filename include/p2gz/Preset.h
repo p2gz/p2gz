@@ -2,35 +2,23 @@
 #define _GZ_PRESET_H
 
 #include <p2gz/gzCollections.h>
+#include <p2gz/gzmenu.h>
+#include <p2gz/warp.h>
 #include <types.h>
 #include <Game/PikiContainer.h>
-#include <p2gz/gzmenu.h>
 #include <JSystem/J2D/J2DPrint.h>
 
 namespace gz {
 
-typedef enum PresetCategory {
-	PoD,
-	AT,
-	General,
-} PresetCategory;
+struct WarpDestination;
+
+enum PresetCategory { PoD, AT, General, Generated };
 
 struct Preset {
 public:
-	Preset(const char* name_, PresetCategory category_)
-	    : name(name_)
-	{
-		GZASSERTLINE(name_);
-
-		category         = category_;
-		bitters_unlocked = false;
-		spicies_unlocked = false;
-		num_bitters      = 0;
-		num_spicies      = 0;
-
-		squad.clear();
-		onion_pikis.clear();
-	}
+	Preset(const char* name_, PresetCategory category_);
+	Preset(Preset& other);
+	~Preset() { }
 
 	void apply();
 
@@ -51,9 +39,12 @@ public:
 };
 
 struct PresetMgr {
+public:
 	PresetMgr();
 
-	Preset* suggested_preset(u32 area, u32 cave, u32 sublevel, u32 day, PresetCategory category);
+	Preset* create();
+
+	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
@@ -61,11 +52,12 @@ struct PresetMgr {
 
 struct PresetMenuOption : public MenuOption {
 public:
-	PresetMenuOption();
+	PresetMenuOption(IDelegate1<Preset*>* on_select_);
 
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void select();
+	void do_on_preset_selected(Preset*);
 
 	Preset* current_preset;
 
@@ -74,6 +66,8 @@ private:
 	ListMenu* pod_presets_menu;
 	ListMenu* at_presets_menu;
 	ListMenu* general_presets_menu;
+
+	IDelegate1<Preset*>* on_select;
 };
 
 struct PresetPreviewMenuOption : public MenuOption {
