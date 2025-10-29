@@ -10,6 +10,7 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/InputHelpers.h>
 #include <p2gz/Preset.h>
+#include <p2gz/DismissPositions.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -109,6 +110,7 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("tools", (new ListMenu())
 			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+			->push(new ToggleMenuOption("dismiss positions", false, new Delegate1<DismissPositions, bool>(p2gz->dismiss_positions, &DismissPositions::toggle)))
 			->push(new ToggleMenuOption("toggle heap bar", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 			->push(new OpenSubMenuOption("enemy debug info", (new ListMenu())
 				->push(new ToggleMenuOption("enable", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_enabled)))
