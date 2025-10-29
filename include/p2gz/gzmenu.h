@@ -409,39 +409,7 @@ public:
 			return layer;
 		}
 		// Safety check failed, return nothing
-		return 0;
-	}
-
-	const char* get_active_layer_title()
-	{
-		// Safety checks
-		if (enabled && layer && layer->title) {
-			return layer->title;
-		}
-		// Safety check failed, return nothing
 		return nullptr;
-	}
-
-	// Checks if we currently in the provided menu (or any of it's sub-menu's)
-	// i.e. return true if we are in tools->time controls->pause time, and we are checking if we are in "tools"
-	bool is_within_menu(char* search_title)
-	{
-		// Check current layer, and all it's parents to see if what we want is somewhere in the menu tree
-		MenuLayer* iter_layer = layer;
-		while (iter_layer && iter_layer->parent) {
-			// Also perform a safety check if the current layer even has a title (can be false during intialization)
-			if (iter_layer->title && !strcmp(iter_layer->title, search_title)) {
-				return true;
-			}
-			iter_layer = layer->parent;
-		}
-		// one last check, maybe this root layer is what we want?
-		// Also can get here if iter_layer has been null this whole time (will fail the safety check)
-		if (iter_layer && iter_layer->title && !strcmp(iter_layer->title, search_title)) {
-			return true;
-		}
-		// Nowhere in this menu tree is what we want, so we're not in the desired menu
-		return false;
 	}
 
 	f32 glyph_width;

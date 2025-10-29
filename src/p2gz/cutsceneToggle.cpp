@@ -107,7 +107,8 @@ void CutsceneMgr::update()
 	}
 
 	// only update if we don't have a cutscene submenu open
-	if (p2gz->menu->is_within_menu("cutscenes")) {
+	if (p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->parent && p2gz->menu->get_active_layer()->parent->title
+	    && strcmp(p2gz->menu->get_active_layer()->parent->title, "cutscenes") == 0) {
 		return;
 	}
 
