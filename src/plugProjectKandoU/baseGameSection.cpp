@@ -36,7 +36,6 @@
 
 #include <p2gz/p2gz.h>
 #include <p2gz/gzmenu.h>
-#include <p2gz/LanguageSwap.h>
 
 namespace og {
 namespace Screen {
@@ -263,20 +262,12 @@ void BaseGameSection::init()
 	sys->heapStatusEnd("baseGameSection::init");
 	mTreasureGetState = 0;
 
+	// Only initialize p2gz obj once per game (so if we exit and enter the main menu again, don't make a second obj!)
+	// if (!p2gz_first_init) {
+	// 	delete p2gz;
+	// }
 	p2gz = new P2GZ; // @P2GZ
 	p2gz->init();
-
-	// @P2GZ localization-swap: we separated the language swap obj from p2gz since it needs to init'd differently
-	// Notably, global_language_swap can only be created once per game, so don't create a new instnace if one already exists
-	if (!global_language_swap) {
-		// Becuase of the way the the current heap is setup, everything created in this function will be free'd once we re-enter the main
-		// menu We don't want our global variable to be considered "free" when we do this, so we move it to the system heap that is never
-		// free'd throughout the entire game's lifecycle and thus should keep our variable safe from memory overwriting shanigans
-		JKRHeap* preSectionHeap = JKRGetCurrentHeap();
-		sys->mSysHeap->becomeCurrentHeap();
-		global_language_swap = new LanguageSwap;
-		preSectionHeap->becomeCurrentHeap();
-	}
 }
 
 /**

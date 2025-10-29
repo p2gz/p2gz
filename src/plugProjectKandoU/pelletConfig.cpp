@@ -2,8 +2,6 @@
 #include "P2Macros.h"
 #include "string.h"
 #include "TagParm.h"
-#include <p2gz/p2gz.h>
-#include <p2gz/LocalizationTreasureSwap.h>
 
 const char* className = "pelletConfig";
 
@@ -97,8 +95,6 @@ PelletConfig* PelletConfigList::getPelletConfig(char* str)
 		u32 len               = strlen(str);
 
 		if (IS_SAME_STRING_N(pConfig->mParams.mName.mData, str, len)) {
-			// @P2GZ localization swap: update the specific config with the current version if-needed
-			LocalizationTreasureSwapFunc::updatePelletConfig(pConfig);
 			return pConfig;
 		}
 	}

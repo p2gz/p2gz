@@ -138,10 +138,8 @@ void GZMenu::init_menu()
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
 		))
 		->push(new OpenSubMenuOption("localization", (new ListMenu())
-			->push(new RadioMenuOption("menu text", new Delegate1<LanguageSwap::LanguageSwapMenuWrapper, size_t>
-				(p2gz->language_menu_wrapper, &LanguageSwap::LanguageSwapMenuWrapper:: set_language)))
-			->push(new RadioMenuOption("treasure region", new Delegate1<LanguageSwap::LanguageSwapMenuWrapper, size_t>
-				(p2gz->language_menu_wrapper, &LanguageSwap::LanguageSwapMenuWrapper::set_treasure_region)))
+			->push(new RadioMenuOption("menu text", new Delegate1<LanguageSwap, size_t>(p2gz->language_swap, &LanguageSwap::set_language)))
+	
 		));
 	// clang-format on
 
