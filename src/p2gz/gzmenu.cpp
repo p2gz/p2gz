@@ -476,7 +476,7 @@ void GridMenu::update()
 		} while (!cur_option()->visible);
 	}
 	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && !editing_range) {
-		if (selected_col >= options[selected_col]->len() - 1) {
+		if (selected_col >= options[selected_row]->len() - 1) {
 			selected_col = -1;
 		}
 		do {
