@@ -20,6 +20,7 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	// Setup all our P2GZ menus/features here
 	collision_viewer             = new CollisionViewer();
 	controller                   = new Controller(JUTGamePad::PORT_0);
 	freecam                      = new FreeCam();
@@ -39,6 +40,7 @@ P2GZ::P2GZ()
 	enemy_debug_info             = new EnemyDebugInfo();
 	squad_editor                 = new SquadEditor();
 	preset_mgr                   = new PresetMgr();
+	cutscene_mgr                 = new CutsceneMgr();
 	dismiss_positions            = new DismissPositions();
 }
 
@@ -53,6 +55,7 @@ void P2GZ::init()
 	images->init();
 	spray_editor->init();
 	squad_editor->init();
+	cutscene_mgr->init();
 }
 
 void P2GZ::update()
@@ -61,6 +64,8 @@ void P2GZ::update()
 	spray_editor->update();
 	freecam->update();
 	squad_editor->update();
+	cutscene_mgr->update();
+	segment_history->update();
 	dismiss_positions->update();
 
 	// Menu must update last so button presses for menu interactions don't

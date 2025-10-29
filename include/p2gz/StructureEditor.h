@@ -39,7 +39,7 @@ public:
 private:
 	const char* get_gate_name(f32 x, f32 z);
 
-	Vec<GateWrapper> gates;
+	Vec<GateWrapper*> gates;
 	ListMenu* gate_menu;
 };
 

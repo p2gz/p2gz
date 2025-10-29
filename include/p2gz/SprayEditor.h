@@ -12,6 +12,11 @@ public:
 	void init();
 	void update();
 
+	bool get_bitters_unlocked();
+	bool get_spicies_unlocked();
+	s32 get_bitters();
+	s32 get_spicies();
+
 	void set_bitters(s32);
 	void set_spicies(s32);
 	void toggle_bitters(bool);

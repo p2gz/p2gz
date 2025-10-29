@@ -2,16 +2,42 @@
 #define _GZ_SEGMENT_HISTORY_H
 
 #include <types.h>
+#include <Game/PikiContainer.h>
+#include <p2gz/warp.h>
 
 namespace gz {
+
+struct Segment {
+public:
+	Segment()
+	{
+		preset = nullptr;
+		dest   = WarpDestination();
+	}
+
+	~Segment() { delete preset; }
+
+	Preset* preset;
+	WarpDestination dest;
+};
 
 struct SegmentHistory {
 public:
 	void draw_2d();
-	void draw_cur_seed();
+	void update();
+
+	void start_segment(u32 seed);
+	const Segment* cur_segment();
+	Segment* cur_segment_mut() { return const_cast<Segment*>(cur_segment()); }
 
 	bool started_creating_map;
-	u32 last_seed;
+	bool entering_next_sublevel;
+
+private:
+	void draw_cur_seed();
+	void draw_reset_controls();
+
+	RingBuffer<32, const Segment*> segments;
 };
 
 }; // namespace gz
