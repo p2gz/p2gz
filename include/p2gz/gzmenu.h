@@ -375,7 +375,15 @@ public:
 	/// accidentally closing the menu
 	void block_open_close_action() { open_close_action.reset(); }
 
-	MenuLayer* get_active_layer() { return layer; }
+	MenuLayer* get_active_layer()
+	{
+		// Safety checks
+		if (enabled && layer) {
+			return layer;
+		}
+		// Safety check failed, return nothing
+		return nullptr;
+	}
 
 	f32 glyph_width;
 	f32 glyph_height;

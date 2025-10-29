@@ -23,6 +23,7 @@
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha1"
+#include <p2gz/CutsceneToggle.h>
 
 struct P2GZ {
 public:
@@ -58,6 +59,7 @@ public:
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;
 	gz::PresetMgr* preset_mgr;
+	gz::CutsceneMgr* cutscene_mgr;
 };
 
 // global instance

@@ -136,6 +136,10 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+		))
+		// Cutscene re-enable menu
+		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
+			// Submenus get added in CutsceneMgr::init
 		));
 	// clang-format on
 
