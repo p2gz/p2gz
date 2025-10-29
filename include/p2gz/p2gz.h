@@ -20,6 +20,7 @@
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/Preset.h>
+#include <p2gz/DismissPositions.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha1"
@@ -58,6 +59,7 @@ public:
 	gz::SprayEditor* spray_editor;
 	gz::SegmentHistory* segment_history;
 	gz::PresetMgr* preset_mgr;
+	gz::DismissPositions* dismiss_positions;
 };
 
 // global instance

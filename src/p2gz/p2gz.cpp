@@ -9,6 +9,7 @@
 #include <p2gz/SprayEditor.h>
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/SquadEditor.h>
+#include <p2gz/DismissPositions.h>
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
 #include <IDelegate.h>
@@ -38,6 +39,7 @@ P2GZ::P2GZ()
 	enemy_debug_info             = new EnemyDebugInfo();
 	squad_editor                 = new SquadEditor();
 	preset_mgr                   = new PresetMgr();
+	dismiss_positions            = new DismissPositions();
 }
 
 void P2GZ::init()
@@ -59,6 +61,7 @@ void P2GZ::update()
 	spray_editor->update();
 	freecam->update();
 	squad_editor->update();
+	dismiss_positions->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
@@ -80,6 +83,7 @@ void P2GZ::draw()
 	collision_viewer->draw();
 	freecam->draw();
 	enemy_debug_info->draw();
+	dismiss_positions->draw();
 }
 
 // Code to draw the version number on the title screen
