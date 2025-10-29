@@ -9,8 +9,9 @@
 
 using namespace gz;
 
-const int INITIAL_ZOOM_OFFSET    = 100;
-const int MAX_ZOOM_OFFSET        = 1000;
+const int MIN_FREECAM_ZOOM       = 0;
+const int DEFAULT_FREECAM_ZOOM   = 768;
+const int MAX_FREECAM_ZOOM       = 1700;
 const int OUT_OF_BOUNDS_MIN_Y    = -1000;
 const f32 C_STICK_X_AXIS_SCALING = 0.05f;
 const f32 C_STICK_Y_AXIS_SCALING = 25.0f;
@@ -32,16 +33,9 @@ void FreeCam::enable()
 	camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
 	Game::gameSystem->setPause(true, FREECAM_PAUSE_IDENTIFIER, 3);
 
-	originalAngle = camera->mCameraSelAngle;
-	originalZoom  = camera->mCameraZoomLevel;
-
-	minZoom = navi->mPosition.y;
-	zoom    = minZoom + INITIAL_ZOOM_OFFSET;
-	maxZoom = zoom + MAX_ZOOM_OFFSET;
-
-	camera->mGoalPosition.y    = zoom;
+	zoom = DEFAULT_FREECAM_ZOOM;
+	camera->mGoalPosition += Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle = PI / 2;
-	camera->mCameraSelAngle    = Game::CAMANGLE_Behind;
 
 	og::ogSound->setOpen();
 }
@@ -58,10 +52,6 @@ void FreeCam::disable()
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle                       = PI / 8;
 	camera->mCameraParms->mSettingChangeSpeed.mValue = 0.1f;
-
-	camera->mCameraSelAngle  = originalAngle;
-	camera->mCameraZoomLevel = originalZoom;
-	camera->setTargetParms();
 
 	navi   = nullptr;
 	camera = nullptr;
@@ -83,6 +73,7 @@ void FreeCam::update()
 
 	update_position();
 	update_zoom();
+	draw_current_position();
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
 		warp_to_current_position();
@@ -224,7 +215,7 @@ void FreeCam::update_zoom()
 	f32 cStickY = navi->mController1->getSubStickY() * C_STICK_Y_AXIS_SCALING;
 
 	camera->mCameraAngleTarget -= cStickX;
-	if (zoom > minZoom && zoom - cStickY > minZoom && zoom < maxZoom && zoom - cStickY < maxZoom) {
+	if (zoom > MIN_FREECAM_ZOOM && zoom - cStickY > MIN_FREECAM_ZOOM && zoom < MAX_FREECAM_ZOOM && zoom - cStickY < MAX_FREECAM_ZOOM) {
 		zoom -= cStickY;
 		camera->mGoalPosition -= Vector3f(0, cStickY, 0);
 		if (cStickY > 0) {
@@ -235,17 +226,11 @@ void FreeCam::update_zoom()
 	}
 }
 
-void FreeCam::draw()
-{
-	if (!enabled) {
-		return;
-	}
-	draw_current_position();
-}
-
 // Draw a circle on the ground indicating the freecam's current position.
 void FreeCam::draw_current_position()
 {
+	GZASSERTLINE(enabled);
+
 	Graphics* gfx = sys->getGfx();
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 

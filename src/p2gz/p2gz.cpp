@@ -6,9 +6,6 @@
 #include <p2gz/warp.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
-#include <p2gz/SprayEditor.h>
-#include <p2gz/EnemyDebugInfo.h>
-#include <p2gz/SquadEditor.h>
 #include <Game/Navi.h>
 #include <IDelegate.h>
 
@@ -32,12 +29,6 @@ P2GZ::P2GZ()
 	heap_bar_toggle              = new HeapBarToggle();
 	images                       = new ImageMgr();
 	skip_save                    = new SkipSave();
-	structure_editor             = new StructureEditor();
-	spray_editor                 = new SprayEditor();
-	segment_history              = new SegmentHistory();
-	enemy_debug_info             = new EnemyDebugInfo();
-	squad_editor                 = new SquadEditor();
-	preset_mgr                   = new PresetMgr();
 	language_swap                = new LanguageSwap();
 }
 
@@ -48,12 +39,9 @@ void P2GZ::init()
 		// Menu must come first since other inits might change menu options
 		menu->init_menu();
 
-		structure_editor->init();
 		warp->init();
 		day_editor->init();
 		images->init();
-		spray_editor->init();
-		squad_editor->init();
 		language_swap->init();
 
 		// Disable flag so next time we exit and enter the main menu, we don't try to init everything again (crashes otherwise)
@@ -64,9 +52,6 @@ void P2GZ::init()
 void P2GZ::update()
 {
 	day_editor->update();
-	spray_editor->update();
-	freecam->update();
-	squad_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
@@ -74,18 +59,8 @@ void P2GZ::update()
 	menu->update();
 }
 
-// Anything that needs to appear on the screen in clip space should be drawn here.
-void P2GZ::draw_2d()
-{
-	menu->draw();
-	timer->draw();
-	segment_history->draw_2d();
-}
-
-// Anything that needs to be drawn in 3D space should be drawn here.
 void P2GZ::draw()
 {
-	collision_viewer->draw();
-	freecam->draw();
-	enemy_debug_info->draw();
+	timer->draw();
+	menu->draw();
 }

@@ -3,8 +3,6 @@
 #include "Game/Cave/RandMapMgr.h"
 #include "Game/mapParts.h"
 #include "types.h"
-#include <p2gz/p2gz.h>
-#include <PowerPC_EABI_Support/MSL_C/MSL_Common/rand.h>
 
 namespace Game {
 namespace Cave {
@@ -22,15 +20,6 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	if (gameSystem && gameSystem->isVersusMode() && gGameConfig.mParms.mVsHiba.mData) {
 		isVersusHiba = true;
 	}
-
-	// @P2GZ - set seed
-	if (p2gz->warp->use_set_seed) {
-		srand(p2gz->warp->set_seed);
-	}
-
-	// @P2GZ - record seed for this sublevel
-	p2gz->segment_history->last_seed            = get_rng_seed();
-	p2gz->segment_history->started_creating_map = true;
 
 	Cave::randMapMgr = new Cave::RandMapMgr(isVersusHiba);
 	Cave::randMapMgr->loadResource(muiArray, p2, floorInfo, lastFloor, unit);

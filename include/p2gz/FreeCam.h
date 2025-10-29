@@ -25,7 +25,6 @@ public:
 	void enable();
 	void switch_captains();
 	void update();
-	void draw();
 	void warp_to_current_position();
 
 private:
@@ -36,11 +35,7 @@ private:
 	Game::PlayCamera* camera;
 	Game::Navi* navi;
 	bool enabled;
-	int originalAngle;
-	int originalZoom;
-	int minZoom;
 	int zoom;
-	int maxZoom;
 	f32 animation_coefficient;
 	bool is_coefficient_positive;
 };

@@ -3,7 +3,7 @@
 
 #include <types.h>
 #include <p2gz/gzCollections.h>
-#include <p2gz/InputHelpers.h>
+#include <p2gz/DoublePress.h>
 #include <p2gz/images.h>
 #include <JSystem/JUtility/TColor.h>
 #include <JSystem/J2D/J2DPrint.h>
@@ -11,13 +11,11 @@
 #include <JSystem/JKernel/JKRArchive.h>
 #include <Dolphin/os.h>
 #include <IDelegate.h>
-#include <Game/Piki.h>
 
 namespace gz {
 
 // predeclarations
 struct MenuLayer;
-struct HexKeypad;
 
 /// Base class for selectable menu options. Override `on_selected` in subclasses
 /// to give them unique behavior.
@@ -33,17 +31,14 @@ public:
 	{
 	}
 
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update() { }
 	virtual void select() = 0;
-	virtual bool is_range_option() { return false; }
-	void set_editing_in_grid(bool editing) { editing_in_grid = editing; }
 
 	const char* title;
 	bool visible;
 	const char* image_name;
 	bool image_only;
-	bool editing_in_grid;
 };
 
 struct OpenSubMenuOption : public MenuOption {
@@ -85,7 +80,7 @@ public:
 	{
 	}
 
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 
 	virtual void select()
 	{
@@ -94,8 +89,6 @@ public:
 			on_selected->invoke(on);
 		}
 	}
-
-	void set_selection(bool selected) { on = selected; }
 
 private:
 	bool on;
@@ -111,7 +104,7 @@ public:
 	{
 	}
 
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
 
@@ -139,12 +132,10 @@ public:
 	{
 	}
 
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
-	virtual bool is_range_option() { return true; }
 
-	s32 get_selection() { return selected_val; }
 	void set_selection(s32 val) { selected_val = val; }
 
 	s32 min;
@@ -170,10 +161,9 @@ public:
 	{
 	}
 
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual f32 draw(J2DPrint& j2d, f32 x, f32 z, bool selected);
 	virtual void update();
 	virtual void select();
-	virtual bool is_range_option() { return true; }
 
 	void set_selection(f32 val) { selected_val = val; }
 
@@ -185,32 +175,14 @@ private:
 
 	IDelegate1<f32>* on_selected;
 	f32 selected_val;
-	bool in_grid_menu;
-};
-
-struct HexInputOption : public MenuOption {
-public:
-	HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_ = nullptr, bool image_only_ = false);
-
-	virtual MenuLayer* get_sub_menu();
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
-	virtual void update() { }
-	virtual void select();
-
-	bool is_selected();
-	u32 get_selected_val();
-
-private:
-	HexKeypad* keypad;
-	const char* value_if_unselected;
 };
 
 /// Base class for different types of menus
 struct MenuLayer {
 public:
-	virtual void update()                            = 0;
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
-	virtual void reset_selection()                   = 0;
+	virtual void update()                          = 0;
+	virtual void draw(J2DPrint& j2d, f32 x, f32 z) = 0;
+	virtual void reset_selection()                 = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
 	virtual void navigate_to(const char* path) { }
 
@@ -222,41 +194,24 @@ public:
 
 struct ListMenu : public MenuLayer {
 public:
-	ListMenu()
-	    : pah_up(Controller::PRESS_DPAD_UP)
-	    , pah_down(Controller::PRESS_DPAD_DOWN)
-	{
-		selected = 0;
-		scroll   = 0;
-	}
-
 	virtual void update();
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
+	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection() { selected = 0; }
 
-	MenuOption* cur_option()
+	ListMenu* push(MenuOption* option)
 	{
-		{
-			if (options.len() > 0)
-				return options[selected];
-			else {
-				return nullptr;
-			}
+		options.push(option);
+		MenuLayer* sub_menu = option->get_sub_menu();
+		if (sub_menu) {
+			sub_menu->parent = this;
 		}
+		return this;
 	}
-
-	ListMenu* push(MenuOption* option);
-	void clear();
 
 	Vec<MenuOption*> options;
 	size_t selected;
-
-private:
-	size_t scroll;
-	PressAndHold pah_up;
-	PressAndHold pah_down;
 };
 
 struct GridMenu : public MenuLayer {
@@ -265,16 +220,11 @@ public:
 	    : column_width(column_width_)
 	    , selected_row(0)
 	    , selected_col(0)
-	    , pah_up(Controller::PRESS_DPAD_UP)
-	    , pah_down(Controller::PRESS_DPAD_DOWN)
-	    , pah_left(Controller::PRESS_DPAD_LEFT)
-	    , pah_right(Controller::PRESS_DPAD_RIGHT)
 	{
 		options.push(new Vec<MenuOption*>);
-		editing_range = false;
 	}
 	virtual void update();
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
+	virtual void draw(J2DPrint& j2d, f32 x, f32 z);
 	virtual MenuOption* get_option(const char* path);
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection()
@@ -306,39 +256,6 @@ public:
 	size_t selected_row;
 	size_t selected_col;
 	f32 column_width;
-	bool editing_range;
-
-private:
-	PressAndHold pah_up;
-	PressAndHold pah_down;
-	PressAndHold pah_left;
-	PressAndHold pah_right;
-};
-
-struct HexKeypad : public MenuLayer {
-public:
-	HexKeypad(const char* title_);
-
-	virtual void update();
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
-	virtual void reset_selection()
-	{
-		keypad->reset_selection();
-		cur_digit = 0;
-	}
-
-	u32 get_value() { return value; }
-
-	bool is_unselected;
-
-private:
-	void select_digit(u32);
-	void submit();
-	void set_unselected();
-
-	GridMenu* keypad;
-	u32 value;
-	u8 cur_digit;
 };
 
 struct GZMenu {
@@ -373,8 +290,6 @@ public:
 	/// Call in `update()` in menu options that use Dpad L to prevent
 	/// accidentally closing the menu
 	void block_open_close_action() { open_close_action.reset(); }
-
-	MenuLayer* get_active_layer() { return layer; }
 
 	f32 glyph_width;
 	f32 glyph_height;

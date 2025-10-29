@@ -2,7 +2,6 @@
 #include <p2gz/warp.h>
 #include <p2gz/gzMacros.h>
 #include <p2gz/gzmenu.h>
-#include <p2gz/Preset.h>
 #include <Game/BaseGameSection.h>
 #include <Game/SingleGameSection.h>
 #include <Game/Entities/PelletCarcass.h>
@@ -20,7 +19,6 @@
 #include <Game/Entities/ItemCave.h>
 #include <Game/generalEnemyMgr.h>
 #include <Game/MapMgr.h>
-#include <Dolphin/rand.h>
 
 using namespace gz;
 
@@ -44,12 +42,8 @@ static const char* CAVE_NAMES[4][4] = {
 static const size_t NUM_FLOORS[4][4] = {
 	{ 2, 9, 8, 0 },
 	{ 5, 5, 7, 7 },
-	{ 5, 6, 7, 5 },
+	{ 5, 6, 5, 7 },
 	{ 10, 15, 14, 0 },
-};
-static const char* ENTER_KINDS[2] = {
-	"from cave",
-	"from map screen",
 };
 
 Warp::Warp()
@@ -57,21 +51,16 @@ Warp::Warp()
     , warp_cave(0)
     , warp_sublevel(1)
     , warp_day(2)
-    , allow_zero_pikmin_in_caves(true)
 {
 }
 
 void Warp::init()
 {
-	RadioMenuOption* area_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
-	RangeMenuOption* sublevel_opt        = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
-	RangeMenuOption* day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
-	RadioMenuOption* enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
+	RadioMenuOption* area_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
+	RangeMenuOption* sublevel_opt = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
+	RangeMenuOption* day_opt      = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
 	for (size_t i = 0; i < 4; i++) {
 		area_opt->options.push(AREA_NAMES[i]);
-	}
-	for (size_t i = 0; i < 2; i++) {
-		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
 
 	day_opt->set_selection(warp_day + 1);
@@ -82,32 +71,26 @@ void Warp::init()
 
 void Warp::set_warp_area(size_t area)
 {
-	warp_area     = area;
+	warp_area = area;
 	warp_cave     = 0;
 	warp_sublevel = 0;
 
 	update_cave_opt();
 	update_sublevel_opt();
-	update_preset_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
 {
-	warp_cave     = cave;
+	warp_cave = cave;
 	warp_sublevel = 0;
 
 	update_sublevel_opt();
-	update_preset_opt();
-
-	p2gz->menu->get_option("warp/enter method")->visible = warp_cave == 0;
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
 {
 	GZASSERTLINE(sublevel >= 1);
 	warp_sublevel = sublevel - 1; // Menu is 1-indexed for nicer visuals
-
-	update_preset_opt();
 }
 
 void Warp::update_cave_opt()
@@ -131,51 +114,21 @@ void Warp::update_sublevel_opt()
 	GZASSERTLINE(warp_area < 4);
 	GZASSERTLINE(warp_cave < 5); // 5th is AG
 	RangeMenuOption* sublevel_opt = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
-	HexInputOption* seed_opt      = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
 
-	// If destination is above ground, hide cave-related options
-	bool selection_is_cave = warp_cave > 0;
-	sublevel_opt->visible  = selection_is_cave;
-	seed_opt->visible      = selection_is_cave;
-
-	if (selection_is_cave) {
-		sublevel_opt->max = NUM_FLOORS[warp_area][warp_cave - 1];
-		sublevel_opt->set_selection(warp_sublevel + 1);
-	}
-}
-
-void Warp::update_preset_opt()
-{
-	PresetMenuOption* preset_opt = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
-	Preset* previous_preset      = preset_opt->current_preset;
-
-	// nullptr preset is the "keep current squad" option.
-	// if this is selected or the player is using a General preset we don't want to overwrite it.
-	if (!previous_preset || previous_preset->category == General) {
+	// If destination is above ground, hide sublevel option
+	sublevel_opt->visible = warp_cave > 0;
+	if (!sublevel_opt->visible) {
 		return;
 	}
 
-	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(warp_area, warp_cave, warp_sublevel, warp_day, previous_preset->category);
-	if (suggested_preset) {
-		preset_opt->current_preset = suggested_preset;
-	} else {
-		preset_opt->current_preset = nullptr;
-	}
+	sublevel_opt->max = NUM_FLOORS[warp_area][warp_cave - 1];
+	sublevel_opt->set_selection(warp_sublevel + 1);
 }
 
 void Warp::do_warp()
 {
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
-
-	PresetMenuOption* preset_opt = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
-	if (preset_opt) {
-		Preset* preset = preset_opt->current_preset;
-		if (preset) {
-			preset->apply();
-		}
-	}
-
 	if (warp_cave == 0) {
 		warp_to_area(game);
 	} else {
@@ -183,33 +136,23 @@ void Warp::do_warp()
 	}
 }
 
-void Warp::save_pikmin()
+void Warp::warp_to_cave(Game::SingleGameSection* game)
 {
 	// Save pikmin currently in squad so they come with us into the warp destination
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		// kill all bulbmin to keep pikmin counts correct
-		if (piki->getKind() == Game::Bulbmin) {
-			Game::PikiKillArg killArg(Game::CKILL_DontCountAsDeath);
-			piki->kill(&killArg);
-		}
-		//                      vvvvvvvvvvvvvvvv <- make sure we don't bring wild pikmin
-		if (piki->isAlive() && !piki->isZikatu() && piki->isPikmin()) {
-			// Don't bring non-blues into SmC
-			if (!(warp_area == 2 && warp_cave == 4) || piki->getKind() == Game::Blue) {
+		if (piki->isAlive() && piki->getCurrActionID() == PikiAI::ACT_Formation) {
+			int state = piki->getStateID();
+			if (state != Game::PIKISTATE_Flying && state != Game::PIKISTATE_HipDrop
+			    && piki->mNavi
+			    //    Check if we're in SmC
+			    && (!(warp_area == 2 && warp_cave != 4) || piki->getKind() == Game::Blue)) {
 				Game::playData->mCaveSaveData.mCavePikis(piki)++;
-				Game::PikiKillArg arg(Game::CKILL_DontCountAsDeath);
-				piki->kill(&arg);
 			}
 		}
 	}
-}
-
-void Warp::warp_to_cave(Game::SingleGameSection* game)
-{
-	save_pikmin();
 
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(warp_area);
@@ -229,12 +172,6 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
-	HexInputOption* seed_opt = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
-	use_set_seed             = seed_opt->is_selected();
-	if (use_set_seed) {
-		set_seed = seed_opt->get_selected_val();
-	}
-
 	game->mCurrentCourseInfo = dst_course_info;
 	game->mCurrentCave       = cave;
 	game->mCaveID            = caveID;
@@ -248,8 +185,6 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 
 void Warp::warp_to_area(Game::SingleGameSection* game)
 {
-	save_pikmin();
-
 	// TODO: Probably not all of this is necessary - copy-paste from DayEndState::exec()
 	Game::gameSystem->resetFlag(Game::GAMESYS_IsGameWorldActive);
 	Game::gameSystem->setFlag(Game::GAMESYS_DisableDeathCounter);
@@ -325,15 +260,6 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	game->mIsGameStarted     = false;
 	game->mCurrentCourseInfo = Game::stageList->getCourseInfo(warp_area);
 
-	int map_enter_status;
-	switch (enter_area_type) {
-	case 0:
-		map_enter_status = Game::SingleGame::MapEnter_CaveGeyser;
-		break;
-	case 1:
-	default:
-		map_enter_status = Game::SingleGame::MapEnter_NewDay;
-	}
-	Game::SingleGame::LoadArg arg(map_enter_status, false, false, false);
+	Game::SingleGame::LoadArg arg(0, false, false, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 }

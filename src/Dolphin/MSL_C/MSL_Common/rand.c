@@ -20,8 +20,3 @@ void srand(u32 seed)
 {
 	next = seed;
 }
-
-u32 get_rng_seed()
-{
-	return next;
-}
