@@ -20,6 +20,7 @@
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/Preset.h>
+#include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
@@ -61,6 +62,7 @@ public:
 	gz::SegmentHistory* segment_history;
 	gz::PresetMgr* preset_mgr;
 	gz::CutsceneMgr* cutscene_mgr;
+	gz::DismissPositions* dismiss_positions;
 	gz::PokoEditor* poko_editor;
 };
 
