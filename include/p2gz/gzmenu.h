@@ -102,33 +102,6 @@ private:
 	IDelegate1<bool>* on_selected;
 };
 
-struct CutsceneMenuOption : public MenuOption {
-public:
-	CutsceneMenuOption(const char* title_, bool on_, IDelegate1<bool>* on_selected_, const char* image_name_ = nullptr,
-	                   bool image_only_ = false)
-	    : MenuOption(title_, image_name_, image_only_)
-	    , on(on_)
-	    , on_selected(on_selected_)
-	{
-	}
-
-	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
-
-	virtual void select()
-	{
-		on = !on;
-		if (on_selected) {
-			on_selected->invoke(on);
-		}
-	}
-
-	void set_selection(bool selected) { on = selected; }
-
-private:
-	bool on;
-	IDelegate1<bool>* on_selected;
-};
-
 struct RadioMenuOption : public MenuOption {
 public:
 	RadioMenuOption(const char* title_, IDelegate1<size_t>* on_selected_, const char* image_name_ = nullptr, bool image_only_ = false)

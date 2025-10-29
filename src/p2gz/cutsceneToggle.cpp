@@ -8,9 +8,8 @@ using namespace gz;
 
 static CutsceneMap CUTSCENE_NAME_MAP[] = {
 	// Tutorials and "First X" cutscenes
-	CutsceneMap(Game::DEMO_Unlock_Captain_Switch, "unlock captain switching (kill bulborb)", TUTORIAL_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Unlock_Captain_Switch, "kill first bulborb", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_First_Use_Louie, "first switch to louie", TUTORIAL_MENU_TITLE),
-	CutsceneMap(Game::DEMO_Pluck_First_Pikmin, "pluck first pikmin", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_First_Number_Pellet, "first pellet to onion", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Reunite_Captains, "reunite captains (crush bag)", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_You_Appear_Lost, "you appear lost", TUTORIAL_MENU_TITLE),
@@ -20,7 +19,7 @@ static CutsceneMap CUTSCENE_NAME_MAP[] = {
 	CutsceneMap(Game::DEMO_First_Nectar_Use, "first nectar flowering", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_First_Sunset_Warning, "first sunset warning", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Whites_Digging, "white pikmin digging", TUTORIAL_MENU_TITLE),
-	CutsceneMap(Game::DEMO_Find_Spiderwort_Mold, "find mold", TUTORIAL_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Find_Spiderwort_Mold, "find spiderwort mold", TUTORIAL_MENU_TITLE),
 	CutsceneMap(Game::DEMO_President_Start, "start as president", TUTORIAL_MENU_TITLE),
 
 	// Area enters + crash landing
@@ -41,6 +40,7 @@ static CutsceneMap CUTSCENE_NAME_MAP[] = {
 
 	// Pikmin, Candypop and Onion color unlocks
 	CutsceneMap(Game::DEMO_Louie_Finds_Red_Onion, "louie find red onion (louie skip)", PIKMIN_COLOR_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Pluck_First_Pikmin, "pluck first pikmin", PIKMIN_COLOR_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Meet_Red_Pikmin, "meet red pikmin", PIKMIN_COLOR_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Find_Yellow_Onion, "find yellow onion", PIKMIN_COLOR_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Find_Blue_Onion, "find blue onion", PIKMIN_COLOR_MENU_TITLE),
@@ -56,20 +56,20 @@ static CutsceneMap CUTSCENE_NAME_MAP[] = {
 	CutsceneMap(Game::DEMO_Max_Pikmin_On_Field, "max pikmin on field", PIKMIN_GROUP_MENU_TITLE),
 
 	// Hazard-related cutscenes
-	CutsceneMap(Game::DEMO_Pikmin_In_Danger_Fire, "hazard: on fire", HAZARD_MENU_TITLE),
-	CutsceneMap(Game::DEMO_Pikmin_In_Danger_Water, "hazard: bubbled-drowning", HAZARD_MENU_TITLE),
-	CutsceneMap(Game::DEMO_Pikmin_In_Danger_Poison, "hazard: poisoned", HAZARD_MENU_TITLE),
-	CutsceneMap(Game::DEMO_Eat_White_Pikmin, "first white eaten", HAZARD_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Pikmin_In_Danger_Fire, "pikmin on fire", HAZARD_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Pikmin_In_Danger_Water, "pikmin bubbled", HAZARD_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Pikmin_In_Danger_Poison, "pikmin poisoned", HAZARD_MENU_TITLE),
+	CutsceneMap(Game::DEMO_Eat_White_Pikmin, "enemy eating white pikmin", HAZARD_MENU_TITLE),
 
 	// Spicy and bitter spray cutscenes
-	CutsceneMap(Game::DEMO_First_Spicy_Berry, "first spicy berry collected", SPRAYS_MENU_TITLE),
-	CutsceneMap(Game::DEMO_First_Spicy_Spray_Made, "first spicy spray made", SPRAYS_MENU_TITLE),
+	CutsceneMap(Game::DEMO_First_Spicy_Berry, "spicy berry collected", SPRAYS_MENU_TITLE),
+	CutsceneMap(Game::DEMO_First_Spicy_Spray_Made, "spicy spray made", SPRAYS_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Find_Spicy_Drop, "find spicy drop", SPRAYS_MENU_TITLE),
-	CutsceneMap(Game::DEMO_First_Spicy_Use, "first spicy use", SPRAYS_MENU_TITLE),
-	CutsceneMap(Game::DEMO_First_Bitter_Berry, "first bitter berry collected", SPRAYS_MENU_TITLE),
-	CutsceneMap(Game::DEMO_First_Bitter_Spray_Made, "first bitter spray made", SPRAYS_MENU_TITLE),
+	CutsceneMap(Game::DEMO_First_Spicy_Use, "spicy use", SPRAYS_MENU_TITLE),
+	CutsceneMap(Game::DEMO_First_Bitter_Berry, "bitter berry collected", SPRAYS_MENU_TITLE),
+	CutsceneMap(Game::DEMO_First_Bitter_Spray_Made, "bitter spray made", SPRAYS_MENU_TITLE),
 	CutsceneMap(Game::DEMO_Find_Bitter_Drop, "find bitter drop", SPRAYS_MENU_TITLE),
-	CutsceneMap(Game::DEMO_First_Bitter_Use, "first bitter use", SPRAYS_MENU_TITLE),
+	CutsceneMap(Game::DEMO_First_Bitter_Use, "bitter use", SPRAYS_MENU_TITLE),
 };
 
 static const size_t NUM_CUTSCENES = ARRAY_SIZE(CUTSCENE_NAME_MAP);
@@ -85,6 +85,74 @@ CutsceneMgr::CutsceneMgr()
 
 void CutsceneMgr::init()
 {
+	// clang-format off
+	static_cast<ListMenu*>(p2gz->menu->get_option("cutscenes")->get_sub_menu())
+		->push(new OpenSubMenuOption(TUTORIAL_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_Unlock_Captain_Switch))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Use_Louie))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Number_Pellet))
+			->push(CutsceneMgr::create_option(Game::DEMO_Reunite_Captains))
+			->push(CutsceneMgr::create_option(Game::DEMO_You_Appear_Lost))
+			->push(CutsceneMgr::create_option(Game::DEMO_Discover_Treasure))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Gate_Down))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Globe_Day_End))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Nectar_Use))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Sunset_Warning))
+			->push(CutsceneMgr::create_option(Game::DEMO_Whites_Digging))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Spiderwort_Mold))
+			->push(CutsceneMgr::create_option(Game::DEMO_President_Start))
+		))
+		->push(new OpenSubMenuOption(AREA_ENTER_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_Day_One_Start))
+			->push(CutsceneMgr::create_option(Game::DEMO_Enter_Awakening_Wood))
+			->push(CutsceneMgr::create_option(Game::DEMO_Enter_Perplexing_Pool))
+			->push(CutsceneMgr::create_option(Game::DEMO_Enter_Wistful_Wild))
+		))
+		->push(new OpenSubMenuOption(CAVE_RELATED_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Cave_Enter))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Corpse_In_Cave))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Cave_Deeper_Hole))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Cave_Geyser))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Cave_Return))
+			->push(CutsceneMgr::create_option(Game::DEMO_Waterwraith_Appears))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Titan_Dweevil))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Loozy_Treasure))
+		))
+		->push(new OpenSubMenuOption(PIKMIN_COLOR_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_Louie_Finds_Red_Onion))
+			->push(CutsceneMgr::create_option(Game::DEMO_Pluck_First_Pikmin))
+			->push(CutsceneMgr::create_option(Game::DEMO_Meet_Red_Pikmin))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Yellow_Onion))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Blue_Onion))
+			->push(CutsceneMgr::create_option(Game::DEMO_Purple_Candypop))
+			->push(CutsceneMgr::create_option(Game::DEMO_White_Candypop))
+			->push(CutsceneMgr::create_option(Game::DEMO_Discover_Bulbmin))
+		))
+		->push(new OpenSubMenuOption(PIKMIN_GROUP_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_Reds_In_Onion))
+			->push(CutsceneMgr::create_option(Game::DEMO_Purples_In_Ship))
+			->push(CutsceneMgr::create_option(Game::DEMO_Reds_Purples_Tutorial))
+			->push(CutsceneMgr::create_option(Game::DEMO_Whites_In_Ship))
+			->push(CutsceneMgr::create_option(Game::DEMO_Max_Pikmin_On_Field))
+		))
+		->push(new OpenSubMenuOption(HAZARD_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_Pikmin_In_Danger_Fire))
+			->push(CutsceneMgr::create_option(Game::DEMO_Pikmin_In_Danger_Water))
+			->push(CutsceneMgr::create_option(Game::DEMO_Pikmin_In_Danger_Poison))
+			->push(CutsceneMgr::create_option(Game::DEMO_Eat_White_Pikmin))
+		))
+		->push(new OpenSubMenuOption(SPRAYS_MENU_TITLE, (new ListMenu())
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Spicy_Berry))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Spicy_Spray_Made))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Spicy_Drop))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Spicy_Use))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Bitter_Berry))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Bitter_Spray_Made))
+			->push(CutsceneMgr::create_option(Game::DEMO_Find_Bitter_Drop))
+			->push(CutsceneMgr::create_option(Game::DEMO_First_Bitter_Use))
+		));
+	// clang-format on
+
 	for (size_t i = 0; i < cutscene_list.len(); i++) {
 		CutsceneToggle* toggle = cutscene_list[i];
 		Game::DemoFlags id     = toggle->get_cutscene_id();
@@ -127,6 +195,20 @@ CutsceneToggle* CutsceneMgr::get_toggle(Game::DemoFlags id)
 		}
 	}
 	return nullptr;
+}
+
+void CutsceneMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
+{
+	if (image_name) {
+		// image drawing is from top-left, font is bottom-left, so need to shift image up
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->spacing();
+		// re-initialise the text printer to prevent the GPU dying
+		j2d.initiate();
+	}
+	if (title && !image_only) {
+		x += j2d.print(x, z, "%s: %s", title, on ? "already played" : "not yet played");
+	}
 }
 
 void CutsceneToggle::set_cutscene_flag(bool played)

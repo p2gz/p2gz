@@ -139,70 +139,7 @@ void GZMenu::init_menu()
 		))
 		// Cutscene re-enable menu
 		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
-			->push(new OpenSubMenuOption(TUTORIAL_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_Unlock_Captain_Switch))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Use_Louie))
-				->push(CutsceneMgr::create_option(Game::DEMO_Pluck_First_Pikmin))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Number_Pellet))
-				->push(CutsceneMgr::create_option(Game::DEMO_Reunite_Captains))
-				->push(CutsceneMgr::create_option(Game::DEMO_You_Appear_Lost))
-				->push(CutsceneMgr::create_option(Game::DEMO_Discover_Treasure))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Gate_Down))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Globe_Day_End))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Nectar_Use))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Sunset_Warning))
-				->push(CutsceneMgr::create_option(Game::DEMO_Whites_Digging))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Spiderwort_Mold))
-				->push(CutsceneMgr::create_option(Game::DEMO_President_Start))
-			))
-			->push(new OpenSubMenuOption(AREA_ENTER_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_Day_One_Start))
-				->push(CutsceneMgr::create_option(Game::DEMO_Enter_Awakening_Wood))
-				->push(CutsceneMgr::create_option(Game::DEMO_Enter_Perplexing_Pool))
-				->push(CutsceneMgr::create_option(Game::DEMO_Enter_Wistful_Wild))
-			))
-			->push(new OpenSubMenuOption(CAVE_RELATED_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Cave_Enter))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Corpse_In_Cave))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Cave_Deeper_Hole))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Cave_Geyser))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Cave_Return))
-				->push(CutsceneMgr::create_option(Game::DEMO_Waterwraith_Appears))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Titan_Dweevil))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Loozy_Treasure))
-			))
-			->push(new OpenSubMenuOption(PIKMIN_COLOR_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_Louie_Finds_Red_Onion))
-				->push(CutsceneMgr::create_option(Game::DEMO_Meet_Red_Pikmin))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Yellow_Onion))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Blue_Onion))
-				->push(CutsceneMgr::create_option(Game::DEMO_Purple_Candypop))
-				->push(CutsceneMgr::create_option(Game::DEMO_White_Candypop))
-				->push(CutsceneMgr::create_option(Game::DEMO_Discover_Bulbmin))
-			))
-			->push(new OpenSubMenuOption(PIKMIN_GROUP_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_Reds_In_Onion))
-				->push(CutsceneMgr::create_option(Game::DEMO_Purples_In_Ship))
-				->push(CutsceneMgr::create_option(Game::DEMO_Reds_Purples_Tutorial))
-				->push(CutsceneMgr::create_option(Game::DEMO_Whites_In_Ship))
-				->push(CutsceneMgr::create_option(Game::DEMO_Max_Pikmin_On_Field))
-			))
-			->push(new OpenSubMenuOption(HAZARD_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_Pikmin_In_Danger_Fire))
-				->push(CutsceneMgr::create_option(Game::DEMO_Pikmin_In_Danger_Water))
-				->push(CutsceneMgr::create_option(Game::DEMO_Pikmin_In_Danger_Poison))
-				->push(CutsceneMgr::create_option(Game::DEMO_Eat_White_Pikmin))
-			))
-			->push(new OpenSubMenuOption(SPRAYS_MENU_TITLE, (new ListMenu())
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Spicy_Berry))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Spicy_Spray_Made))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Spicy_Drop))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Spicy_Use))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Bitter_Berry))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Bitter_Spray_Made))
-				->push(CutsceneMgr::create_option(Game::DEMO_Find_Bitter_Drop))
-				->push(CutsceneMgr::create_option(Game::DEMO_First_Bitter_Use))
-			))
+			// Submenus get added in CutsceneMgr::init
 		));
 	// clang-format on
 
@@ -786,20 +723,6 @@ void ToggleMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 	if (title && !image_only) {
 		x += j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
-	}
-}
-
-void CutsceneMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
-{
-	if (image_name) {
-		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
-		x += p2gz->images->spacing();
-		// re-initialise the text printer to prevent the GPU dying
-		j2d.initiate();
-	}
-	if (title && !image_only) {
-		x += j2d.print(x, z, "%s: %s", title, on ? "already played" : "not yet played");
 	}
 }
 
