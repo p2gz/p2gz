@@ -217,9 +217,23 @@ void CutsceneToggle::set_cutscene_flag(bool played)
 	if (played) {
 		// game now thinks cutscene has been played
 		Game::playData->setDemoFlag(cutscene_id);
+
+		// cutscene-specific interactions
+		if (get_cutscene_id() == Game::DEMO_Pluck_First_Pikmin) {
+			// unlock reds
+			Game::playData->setMeetPikmin(Game::Red);
+			Game::playData->setContainer(Game::Red);
+		}
 	} else {
 		// game now thinks cutscene has NOT been played
 		Game::playData->mDemoFlags.resetFlag(cutscene_id);
+
+		// cutscene-specific interactions
+		if (get_cutscene_id() == Game::DEMO_Pluck_First_Pikmin) {
+			// plucking first pikmin unlocks reds - need to re-prime this trigger
+			Game::playData->mMeetPikminFlags &= ~(1 << Game::Red);
+			Game::playData->mHasContainerFlags &= ~(1 << Game::Red);
+		}
 	}
 }
 
