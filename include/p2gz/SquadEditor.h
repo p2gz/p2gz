@@ -20,6 +20,8 @@ public:
 	void birth_piki(Game::EPikiKind, Game::EPikiHappa, int);
 	void kill_piki(Game::EPikiKind, Game::EPikiHappa, int);
 
+	void clear_all_pikmin();
+
 private:
 	gz::Vec<s32> get_squad();
 

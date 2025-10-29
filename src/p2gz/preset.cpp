@@ -3,11 +3,37 @@
 #include <p2gz/Preset.h>
 #include <p2gz/BoundDelegate.h>
 #include <Game/Piki.h>
+#include <Game/PikiMgr.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
 
 using namespace gz;
+
+Preset::Preset(const char* name_, PresetCategory category_)
+{
+	name             = name_;
+	category         = category_;
+	bitters_unlocked = false;
+	spicies_unlocked = false;
+	num_bitters      = 0;
+	num_spicies      = 0;
+
+	squad.clear();
+	onion_pikis.clear();
+}
+
+Preset::Preset(Preset& other)
+{
+	name             = other.name;
+	category         = other.category;
+	bitters_unlocked = other.bitters_unlocked;
+	spicies_unlocked = other.spicies_unlocked;
+	num_bitters      = other.num_bitters;
+	num_spicies      = other.num_spicies;
+	squad            = other.squad;
+	onion_pikis      = other.onion_pikis;
+}
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
 {
@@ -44,21 +70,25 @@ void Preset::apply()
 	// TODO: is this necessary?
 	// GameStat::mePikis.clear(); // clear sprouts
 
-	// Clear squad
-	for (int color = 0; color < 6; color++) {
-		for (int stage = 0; stage < 3; stage++) {
-			p2gz->squad_editor->kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), MAX_PIKI_COUNT);
+	for (int i = 0; i < 2; i++) {
+		Game::Navi* navi = Game::naviMgr->getAt(i);
+		if (navi && navi->isAlive() && navi->isStickTo()) {
+			navi->endStick();
 		}
 	}
 
-	// Reset container flags for onions/ship space unlocks
-	Game::playData->resetContainerFlag();
+	p2gz->squad_editor->clear_all_pikmin();
+	Game::playData->resetContainerFlag();                     // Reset container flags for onions/ship space unlocks
+	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected
 
 	// Apply squad
 	for (int color = 0; color < 6; color++) {
 		for (int stage = 0; stage < 3; stage++) {
 			int amount       = squad.getCount(color, stage);
-			int onion_amount = onion_pikis.getCount(color, stage);
+			int onion_amount = 0;
+			if (color < 5) { // no bulbmin onion
+				onion_amount = onion_pikis.getCount(color, stage);
+			}
 			if (amount > 0 || onion_amount > 0) {
 				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
 			}
@@ -81,9 +111,10 @@ void Preset::apply()
 	// }
 }
 
-PresetMenuOption::PresetMenuOption()
+PresetMenuOption::PresetMenuOption(IDelegate1<Preset*>* on_select_)
     : MenuOption("preset")
 {
+	on_select            = on_select_;
 	pod_presets_menu     = new ListMenu();
 	at_presets_menu      = new ListMenu();
 	general_presets_menu = new ListMenu();
@@ -114,6 +145,9 @@ PresetMenuOption::PresetMenuOption()
 	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
 	// when changing the warp menu selections
 	current_preset = p2gz->preset_mgr->find("EC", PoD);
+	if (on_select) {
+		on_select->invoke(current_preset);
+	}
 }
 
 static const char* PIKI_IMG_NAMES[15] = {
@@ -194,6 +228,13 @@ void PresetMenuOption::select()
 	p2gz->menu->push_layer(preset_category_list);
 }
 
+void PresetMenuOption::do_on_preset_selected(Preset* preset)
+{
+	if (on_select) {
+		on_select->invoke(preset);
+	}
+}
+
 PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_)
     : MenuOption(preset_ ? preset_->name : nullptr)
 {
@@ -206,7 +247,8 @@ PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOpti
 void PresetPreviewMenuOption::select()
 {
 	parent->current_preset = preset;
-	MenuLayer* warp_menu   = p2gz->menu->get_option("warp")->get_sub_menu();
+	parent->do_on_preset_selected(preset);
+	MenuLayer* warp_menu = p2gz->menu->get_option("warp")->get_sub_menu();
 	while (p2gz->menu->get_active_layer() != warp_menu) {
 		p2gz->menu->pop_layer();
 	}

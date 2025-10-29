@@ -63,6 +63,7 @@ void P2GZ::update()
 	freecam->update();
 	squad_editor->update();
 	cutscene_mgr->update();
+	segment_history->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

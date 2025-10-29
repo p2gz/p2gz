@@ -9,6 +9,26 @@ void SprayEditor::init()
 	spray_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items/sprays")->get_sub_menu());
 }
 
+bool SprayEditor::get_bitters_unlocked()
+{
+	return Game::playData->isDemoFlag(Game::DEMO_BITTER_ENABLED);
+}
+
+bool SprayEditor::get_spicies_unlocked()
+{
+	return Game::playData->isDemoFlag(Game::DEMO_SPICY_ENABLED);
+}
+
+s32 SprayEditor::get_bitters()
+{
+	return Game::playData->mSprayCount[1];
+}
+
+s32 SprayEditor::get_spicies()
+{
+	return Game::playData->mSprayCount[0];
+}
+
 void SprayEditor::set_bitters(s32 count)
 {
 	if (!Game::playData->isDemoFlag(Game::DEMO_BITTER_ENABLED)) {

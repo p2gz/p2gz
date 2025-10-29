@@ -2,9 +2,34 @@
 #define _GZ_WARP_H
 
 #include <types.h>
+#include <p2gz/Preset.h>
 #include <Game/SingleGameSection.h>
 
 namespace gz {
+
+struct WarpDestination {
+public:
+	WarpDestination()
+	{
+		area         = 0;
+		cave         = 0;
+		sublevel     = 0;
+		day          = 2;
+		use_set_seed = false;
+	}
+
+	~WarpDestination() { }
+
+	u32 area;
+	u32 cave;
+	u32 sublevel;
+	u32 day;
+	u32 seed;
+	bool use_set_seed;
+
+	// whether to do the falling animation or the ship fly-in animation when warping to AG
+	size_t enter_area_type;
+};
 
 struct Warp {
 public:
@@ -13,17 +38,27 @@ public:
 
 	void init();
 
+	static WarpDestination current_dest();
+	void set_dest(WarpDestination new_dest);
+
 	void set_warp_area(size_t area);
 	void set_warp_cave(size_t cave);
 	void set_warp_sublevel(s32 sublevel);
-	void set_warp_day(s32 day) { warp_day = day - 1; }
+	void set_warp_day(s32 day) { dest.day = day - 1; }
 	void set_allow_zero_piki_in_caves(bool allow) { allow_zero_pikmin_in_caves = allow; }
-	void set_enter_area_type(size_t type) { enter_area_type = type == 1; }
+	void set_enter_area_type(size_t type) { dest.enter_area_type = type == 1; }
+	void set_seed(u32);
+	void set_random_seed() { dest.use_set_seed = false; }
+
+	void set_preset(Preset* preset);
+	void set_chosen_preset(Preset* preset);
+	Preset* get_effective_preset();
+
+	bool using_set_seed() { return dest.use_set_seed; }
+	u32 get_seed() { return dest.seed; }
 
 	void do_warp();
 
-	u32 set_seed;
-	bool use_set_seed;
 	bool allow_zero_pikmin_in_caves;
 
 private:
@@ -33,14 +68,24 @@ private:
 	void warp_to_cave(Game::SingleGameSection* game);
 	void warp_to_area(Game::SingleGameSection* game);
 	void save_pikmin();
+	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
-	u32 warp_area;
-	u32 warp_cave;
-	u32 warp_sublevel;
-	u32 warp_day;
+	WarpDestination dest;
 
-	// whether to do the falling animation or the ship fly-in animation when warping to AG
-	size_t enter_area_type;
+	/// The preset chosen in the menu.
+	Preset* chosen_preset;
+
+	/// The preset that will actually be used for the next warp. May differ
+	/// from chosen_preset if set by another feature, e.g. sublevel retry.
+	Preset* current_preset;
+
+	RadioMenuOption* area_opt;
+	RangeMenuOption* sublevel_opt;
+	RadioMenuOption* cave_opt;
+	RangeMenuOption* day_opt;
+	RadioMenuOption* enter_area_type_opt;
+	HexInputOption* seed_opt;
+	PresetMenuOption* preset_opt;
 };
 
 }; // namespace gz

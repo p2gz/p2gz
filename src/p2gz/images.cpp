@@ -36,6 +36,11 @@ void ImageMgr::init()
 	JKRArchive* image_arc = JKRMountArchive("menu_images.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	GZASSERTLINE(image_arc);
 
+	push(new Image(getImageFile(image_arc, "l_btn.bti"), "l_btn"));
+	push(new Image(getImageFile(image_arc, "r_btn.bti"), "r_btn"));
+	push(new Image(getImageFile(image_arc, "x_btn.bti"), "x_btn"));
+	push(new Image(getImageFile(image_arc, "y_btn.bti"), "y_btn"));
+
 	push(new Image(getImageFile(image_arc, "rp_l64.bti"), "red_leaf"));
 	push(new Image(getImageFile(image_arc, "rp_b64.bti"), "red_bud"));
 	push(new Image(getImageFile(image_arc, "rp_f64.bti"), "red_flower"));

@@ -190,7 +190,8 @@ private:
 
 struct HexInputOption : public MenuOption {
 public:
-	HexInputOption(const char* title_, const char* value_if_unselected_, const char* image_name_ = nullptr, bool image_only_ = false);
+	HexInputOption(const char* title_, const char* value_if_unselected_, IDelegate1<u32>* on_selected, IDelegate* on_unselected,
+	               const char* image_name_ = nullptr, bool image_only_ = false);
 
 	virtual MenuLayer* get_sub_menu();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -199,6 +200,7 @@ public:
 
 	bool is_selected();
 	u32 get_selected_val();
+	void set_selected_val(u32);
 
 private:
 	HexKeypad* keypad;
@@ -318,7 +320,7 @@ private:
 
 struct HexKeypad : public MenuLayer {
 public:
-	HexKeypad(const char* title_);
+	HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u32>* on_selected_, IDelegate* on_unselected_);
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -329,8 +331,12 @@ public:
 	}
 
 	u32 get_value() { return value; }
-
-	bool is_unselected;
+	u32 set_value(u32 value_)
+	{
+		value         = value_;
+		unselected    = false;
+	}
+	bool is_unselected() { return unselected; }
 
 private:
 	void select_digit(u32);
@@ -340,6 +346,11 @@ private:
 	GridMenu* keypad;
 	u32 value;
 	u8 cur_digit;
+	const char* cancel_text;
+	bool unselected;
+
+	IDelegate1<u32>* on_selected;
+	IDelegate* on_unselected;
 };
 
 struct GZMenu {

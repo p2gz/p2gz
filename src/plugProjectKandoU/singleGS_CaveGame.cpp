@@ -119,6 +119,10 @@ void CaveState::gameStart(SingleGameSection* game)
 		PSSystem::checkGameScene(scene);
 		scene->stopPollutionSe();
 	}
+
+	// @P2GZ - save current squad to history when starting a sublevel
+	gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
+	seg->preset      = p2gz->preset_mgr->create();
 }
 
 /**
@@ -549,12 +553,18 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		Vector3f holepos = game->mHole->getPosition();
 		game->prepareHoleIn(holepos, true);
 		game->saveCaveMore();
+
+		// @P2GZ - retry sublevel
+		p2gz->segment_history->entering_next_sublevel = true;
 	}
 
 	if (config->is("s0C_cv_escape")) {
 		gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 		Vector3f geyserpos = game->mFountain->getPosition();
 		game->prepareFountainOn(geyserpos);
+
+		// @P2GZ - retry sublevel
+		p2gz->segment_history->entering_next_sublevel = true;
 	}
 }
 
@@ -565,6 +575,9 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* config, u32, u32 naviID)
 {
 	if (config->is("s0C_cv_escape")) {
+		// @P2GZ - retry sublevel
+		p2gz->segment_history->entering_next_sublevel = false;
+
 		PSMCancelToPauseOffMainBgm();
 		moviePlayer->clearSuspendedDemo();
 		pikiMgr->caveSaveAllPikmins(true, true);
@@ -587,6 +600,9 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		// @P2GZ - timer
 		// Reset sublevel timer right before save box appears (fadeout timing)
 		p2gz->timer->reset_sub_timer();
+
+		// @P2GZ - retry sublevel
+		p2gz->segment_history->entering_next_sublevel = false;
 
 		return;
 	} else if (config->is("g07_cv_gamestart")) {
