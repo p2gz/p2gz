@@ -715,9 +715,7 @@ DecimalKeypad::DecimalKeypad(const char* title_)
 		->push_to_row(new PerformActionMenuOption("6", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 6)))
 		->push_to_row(new PerformActionMenuOption("7", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 7)))
 		->push_to_row(new PerformActionMenuOption("8", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 8)))
-		->push_to_row(new PerformActionMenuOption("9", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 9)))
-		->end_row()
-		->push_to_row(new PerformActionMenuOption("submit", new Delegate<DecimalKeypad>(this, &submit)));
+		->push_to_row(new PerformActionMenuOption("9", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 9)));
 	// clang-format on
 }
 
