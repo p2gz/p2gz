@@ -21,8 +21,6 @@ private:
 
 	bool enabled;
 	bool dismissed;
-	int fade_frames;
-	f32 alpha;
 	Vector3f positions[8];
 	f32 radii[8];
 };
