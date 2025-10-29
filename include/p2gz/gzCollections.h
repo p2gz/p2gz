@@ -116,12 +116,7 @@ struct Vec {
 		}
 	}
 
-	void clear()
-	{
-		delete[] mBuf;
-		mBuf = new T[mCapacity];
-		mLen = 0;
-	}
+	void clear() { mLen = 0; }
 
 private:
 	void _grow(size_t newCapacity)
