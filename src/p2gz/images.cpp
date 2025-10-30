@@ -1,4 +1,5 @@
 #include <p2gz/images.h>
+#include <Resource.h>
 
 using namespace gz;
 

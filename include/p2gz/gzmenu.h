@@ -54,6 +54,11 @@ struct OpenSubMenuOption : public MenuOption {
 
 public:
 	OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_);
+	~OpenSubMenuOption()
+	{
+		if (sub_menu)
+			delete sub_menu;
+	}
 
 	virtual void select();
 };
@@ -64,6 +69,11 @@ public:
 	    : MenuOption(title_, image_name_, image_only_)
 	    , on_selected(on_selected_)
 	{
+	}
+	~PerformActionMenuOption()
+	{
+		if (on_selected)
+			delete on_selected;
 	}
 
 	virtual void select()
@@ -84,6 +94,11 @@ public:
 	    , on(on_)
 	    , on_selected(on_selected_)
 	{
+	}
+	~ToggleMenuOption()
+	{
+		if (on_selected)
+			delete on_selected;
 	}
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -110,6 +125,11 @@ public:
 	    , on_selected(on_selected_)
 	    , selected_idx(0)
 	{
+	}
+	~RadioMenuOption()
+	{
+		if (on_selected)
+			delete on_selected;
 	}
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -138,6 +158,11 @@ public:
 	    , max(max_)
 	    , overflow_behavior(overflow_behavior_)
 	{
+	}
+	~RangeMenuOption()
+	{
+		if (on_selected)
+			delete on_selected;
 	}
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -170,6 +195,11 @@ public:
 	    , max(max_)
 	{
 	}
+	~FloatRangeMenuOption()
+	{
+		if (on_selected)
+			delete on_selected;
+	}
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
@@ -193,6 +223,7 @@ struct HexInputOption : public MenuOption {
 public:
 	HexInputOption(const char* title_, const char* value_if_unselected_, IDelegate1<u32>* on_selected, IDelegate* on_unselected,
 	               const char* image_name_ = nullptr, bool image_only_ = false);
+	~HexInputOption() { delete keypad; }
 
 	virtual MenuLayer* get_sub_menu();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -211,6 +242,7 @@ private:
 struct DecimalInputOption : public MenuOption {
 public:
 	DecimalInputOption(const char* title_, const char* image_name_ = nullptr, bool image_only_ = false);
+	~DecimalInputOption() { delete keypad; }
 
 	virtual MenuLayer* get_sub_menu();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -254,6 +286,13 @@ public:
 	{
 		selected = 0;
 		scroll   = 0;
+	}
+	~ListMenu()
+	{
+		while (options.len() > 0) {
+			MenuOption* opt = options.pop();
+			delete opt;
+		}
 	}
 
 	virtual void update();
@@ -301,6 +340,18 @@ public:
 		editing_range = false;
 	}
 
+	~GridMenu()
+	{
+		while (options.len() > 0) {
+			Vec<MenuOption*>* row = options.pop();
+			while (row->len() > 0) {
+				MenuOption* opt = row->pop();
+				delete opt;
+			}
+			delete row;
+		}
+	}
+
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
 	virtual MenuOption* get_option(const char* path);
@@ -346,6 +397,16 @@ private:
 struct HexKeypad : public MenuLayer {
 public:
 	HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u32>* on_selected_, IDelegate* on_unselected_);
+	~HexKeypad()
+	{
+		delete keypad;
+		if (on_selected) {
+			delete on_selected;
+		}
+		if (on_unselected) {
+			delete on_unselected;
+		}
+	}
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -381,6 +442,7 @@ private:
 struct DecimalKeypad : public MenuLayer {
 public:
 	DecimalKeypad(const char* title_);
+	~DecimalKeypad() { delete keypad; }
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -408,6 +470,12 @@ private:
 struct GZMenu {
 public:
 	GZMenu();
+	~GZMenu()
+	{
+		// `layer` is expected to be further down in the tree from `root_layer`
+		// so it shouldn't need to be destroyed separately.
+		delete root_layer;
+	}
 
 	void init_menu();
 

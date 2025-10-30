@@ -21,6 +21,12 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	inited = false;
+
+	JKRHeap* current_heap = JKRHeap::getCurrentHeap();
+	p2gz_heap             = JKRExpHeap::create(HEAP_SIZE, current_heap, true);
+	JKRHeap* old_heap     = p2gz_heap->becomeCurrentHeap();
+
 	// Setup all our P2GZ menus/features here
 	collision_viewer             = new CollisionViewer();
 	controller                   = new Controller(JUTGamePad::PORT_0);
@@ -45,10 +51,19 @@ P2GZ::P2GZ()
 	dismiss_positions            = new DismissPositions();
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
+
+	// When switching heap, we must always return to the previous heap when we're done
+	old_heap->becomeCurrentHeap();
 }
 
 void P2GZ::init()
 {
+	if (inited) {
+		return;
+	}
+
+	JKRHeap* old_heap = p2gz_heap->becomeCurrentHeap();
+
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
@@ -61,10 +76,21 @@ void P2GZ::init()
 	cutscene_mgr->init();
 	poko_editor->init();
 	ek_editor->init();
+
+	inited = true;
+
+	OSReport("Free space in P2GZ heap after init: %d bytes\n", p2gz_heap->getTotalFreeSize());
+	old_heap->becomeCurrentHeap();
 }
 
 void P2GZ::update()
 {
+	if (!inited) {
+		return;
+	}
+
+	JKRHeap* old_heap = p2gz_heap->becomeCurrentHeap();
+
 	day_editor->update();
 	spray_editor->update();
 	freecam->update();
@@ -78,23 +104,41 @@ void P2GZ::update()
 	// inadvertantly do things in other systems on the same frame they're pressed.
 	// NEW - we use the menu lock to prevent this issue for update calls outside of this function (such as graphical updates)
 	menu->update();
+
+	old_heap->becomeCurrentHeap();
 }
 
 // Anything that needs to appear on the screen in clip space should be drawn here.
 void P2GZ::draw_2d()
 {
+	if (!inited) {
+		return;
+	}
+
+	JKRHeap* old_heap = p2gz_heap->becomeCurrentHeap();
+
 	menu->draw();
 	timer->draw();
 	segment_history->draw_2d();
+
+	old_heap->becomeCurrentHeap();
 }
 
 // Anything that needs to be drawn in 3D space should be drawn here.
 void P2GZ::draw()
 {
+	if (!inited) {
+		return;
+	}
+
+	JKRHeap* old_heap = p2gz_heap->becomeCurrentHeap();
+
 	collision_viewer->draw();
 	freecam->draw();
 	enemy_debug_info->draw();
 	dismiss_positions->draw();
+
+	old_heap->becomeCurrentHeap();
 }
 
 // Code to draw the version number on the title screen

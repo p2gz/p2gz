@@ -57,7 +57,11 @@ struct Vec {
 		mBuf      = new T[capacity];
 	}
 
-	~Vec() { delete[] mBuf; }
+	~Vec()
+	{
+		clear();
+		delete[] mBuf;
+	}
 
 	size_t len() { return mLen; }
 
@@ -100,6 +104,8 @@ struct Vec {
 		return mBuf[mLen];
 	}
 
+	T& get(size_t idx) { return this->operator[](idx); }
+
 	T& operator[](size_t idx)
 	{
 		GZASSERTLINE(idx < mLen);
@@ -121,7 +127,13 @@ struct Vec {
 		}
 	}
 
-	void clear() { mLen = 0; }
+	void clear()
+	{
+		while (mLen > 0) {
+			T val = pop();
+			// val dropped and dtor run
+		}
+	}
 
 private:
 	void _grow(size_t newCapacity)

@@ -33,6 +33,8 @@ public:
 	P2GZ();
 	~P2GZ() { }
 
+	static const u32 HEAP_SIZE = 0x31000;
+
 	void init();
 	void update();
 	void draw_2d();
@@ -66,6 +68,10 @@ public:
 	gz::DismissPositions* dismiss_positions;
 	gz::PokoEditor* poko_editor;
 	gz::EKEditor* ek_editor;
+
+private:
+	JKRExpHeap* p2gz_heap;
+	bool inited;
 };
 
 // global instance

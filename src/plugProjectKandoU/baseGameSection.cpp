@@ -262,7 +262,7 @@ void BaseGameSection::init()
 	sys->heapStatusEnd("baseGameSection::init");
 	mTreasureGetState = 0;
 
-	p2gz = new P2GZ; // @P2GZ
+	// @P2GZ
 	p2gz->init();
 }
 

@@ -415,10 +415,18 @@ System::System()
 	sUseABXCommand = true;
 	initCurrentHeapMutex();
 	JKRHeap* heap = JKRGetCurrentHeap();
-	mSysHeap      = JKRExpHeap::create(0x428000, nullptr, true);
+
+	// @P2GZ - expand system heap to make room for p2gz heap
+	// mSysHeap = JKRExpHeap::create(0x428000, nullptr, true);
+	mSysHeap = JKRExpHeap::create(0x428000 + P2GZ::HEAP_SIZE, nullptr, true);
+
 	mSysHeap->becomeCurrentHeap();
 	mHeapStatus = new HeapStatus;
 	construct();
+
+	// @P2GZ - construct global p2gz object and create sub-heap
+	p2gz = new P2GZ;
+
 	heap->becomeCurrentHeap();
 	mGfx = nullptr;
 	JUTVideo::sManager->setPostRetraceCallback(retraceCallback);
