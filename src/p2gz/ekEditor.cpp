@@ -8,7 +8,7 @@ using namespace Game;
 
 void EKEditor::init()
 {
-	ListMenu* upgrades_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items/upgrades")->get_sub_menu());
+	upgrades_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items/upgrades")->get_sub_menu());
 	GZASSERTLINE(upgrades_menu);
 
 	// clang-format off
@@ -46,9 +46,9 @@ void EKEditor::init()
 	// clang-format on
 }
 
-void set_upgrade_menu(OlimarData::ItemIndex item, const char* opt_name)
+void EKEditor::set_menu_opt(OlimarData::ItemIndex item, const char* opt_name)
 {
-	ToggleMenuOption* opt = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("items/upgrades")->get_sub_menu()->get_option(opt_name));
+	ToggleMenuOption* opt = static_cast<ToggleMenuOption*>(upgrades_menu->get_option(opt_name));
 	GZASSERTLINE(opt);
 	opt->set_selection(playData->mOlimarData->hasItem(item));
 }
@@ -59,16 +59,16 @@ void EKEditor::check_upgrades()
 		return;
 	}
 
-	set_upgrade_menu(OlimarData::ODII_ProfessionalNoisemaker, "pluckaphone");
-	set_upgrade_menu(OlimarData::ODII_AmplifiedAmplifier, "mega tweeter");
-	set_upgrade_menu(OlimarData::ODII_FiveManNapsack, "napsack");
-	set_upgrade_menu(OlimarData::ODII_PrototypeDetector, "treasure gauge");
-	set_upgrade_menu(OlimarData::ODII_StellarOrb, "stellar orb");
-	set_upgrade_menu(OlimarData::ODII_BruteKnuckles, "brute knuckles");
-	set_upgrade_menu(OlimarData::ODII_RepugnantAppendage, "rush boots");
-	set_upgrade_menu(OlimarData::ODII_ForgedCourage, "scorch guard");
-	set_upgrade_menu(OlimarData::ODII_DreamMaterial, "anti-electrifier");
-	set_upgrade_menu(OlimarData::ODII_JusticeAlloy, "metal suit Z");
+	set_menu_opt(OlimarData::ODII_ProfessionalNoisemaker, "pluckaphone");
+	set_menu_opt(OlimarData::ODII_AmplifiedAmplifier, "mega tweeter");
+	set_menu_opt(OlimarData::ODII_FiveManNapsack, "napsack");
+	set_menu_opt(OlimarData::ODII_PrototypeDetector, "treasure gauge");
+	set_menu_opt(OlimarData::ODII_StellarOrb, "stellar orb");
+	set_menu_opt(OlimarData::ODII_BruteKnuckles, "brute knuckles");
+	set_menu_opt(OlimarData::ODII_RepugnantAppendage, "rush boots");
+	set_menu_opt(OlimarData::ODII_ForgedCourage, "scorch guard");
+	set_menu_opt(OlimarData::ODII_DreamMaterial, "anti-electrifier");
+	set_menu_opt(OlimarData::ODII_JusticeAlloy, "metal suit Z");
 }
 
 void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
