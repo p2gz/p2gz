@@ -22,6 +22,7 @@
 #include "VsOtakaraName.h"
 #include "JSystem/J3D/J3DModelLoader.h"
 #include "nans.h"
+#include <Game/SingleGameSection.h>
 
 #define TREASURE_MAP_COUNT ARRAY_SIZE(treasureMap)
 
@@ -218,10 +219,361 @@ LocalizationTreasureSwap treasureMap[] = {
 	    183,                            // index in piklopedia
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
-
+	{
+	    System::LANG_English,           // region
+	    "g_futa_hiruzen",               // internal name
+	    "g_futa_hiruzen.szs",           // archive filename
+	    "us_futa_carmex.bmd",           // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    20.0,                           // radius
+	    20.0,                           // pradius
+	    7.0,                            // height
+	    200.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    6,                              // min carry
+	    10,                             // max carry
+	    "lod",                          // dynamics
+	    60,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    168,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    System::LANG_French,            // region
+	    "g_futa_hiruzen",               // internal name
+	    "g_futa_hiruzen.szs",           // archive filename
+	    "pal_cap_vitamalz.bmd",         // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    17.0,                           // radius
+	    17.0,                           // pradius
+	    4.0,                            // height
+	    150.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    100,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    14.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    10.0,                           // depth B (for burying stuff)
+	    10.0,                           // depth C (for burying stuff)
+	    10.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    178,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    System::LANG_Japanese,          // region
+	    "g_futa_hiruzen",               // internal name
+	    "g_futa_hiruzen.szs",           // archive filename
+	    "g_futa_hiruzen.bmd",           // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    20.0,                           // radius
+	    20.0,                           // pradius
+	    5.0,                            // height
+	    200.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    178,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Massive Lid
+	    System::LANG_English,           // region
+	    "g_futa_kyusyu",                // internal name
+	    "g_futa_kyusyu.szs",            // archive filename
+	    "us_cap_yoohoo.bmd",            // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    17.0,                           // radius
+	    17.0,                           // pradius
+	    4.0,                            // height
+	    150.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    100,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    14.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    10.0,                           // depth B (for burying stuff)
+	    10.0,                           // depth C (for burying stuff)
+	    10.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    178,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Massive Lid in PAL (this is actually Survival Container)
+	    System::LANG_French,            // region
+	    "g_futa_sikoku",                // internal name
+	    "g_futa_sikoku.szs",            // archive filename
+	    "us_kan_clabbergirl.bmd",       // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    25.0,                           // radius
+	    25.0,                           // pradius
+	    12.0,                           // height
+	    300.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    10,                             // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    130,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    60.0,                           // max depth (for burying stuff)
+	    55.0,                           // depth A (for burying stuff)
+	    55.0,                           // depth B (for burying stuff)
+	    55.0,                           // depth C (for burying stuff)
+	    55.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    163,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Massive Lid in JP
+	    System::LANG_Japanese,          // region
+	    "g_futa_kyusyu",                // internal name
+	    "g_futa_kyusyu.szs",            // archive filename
+	    "g_futa_kyusyu.bmd",            // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    20.0,                           // radius
+	    20.0,                           // pradius
+	    5.0,                            // height
+	    200.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    170,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Happiness Emblem
+	    System::LANG_English,           // region
+	    "g_futa_sikoku",                // internal name
+	    "g_futa_sikoku.szs",            // archive filename
+	    "us_cap_squirt.bmd",            // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    17.0,                           // radius
+	    17.0,                           // pradius
+	    4.0,                            // height
+	    150.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    100,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    14.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    10.0,                           // depth B (for burying stuff)
+	    10.0,                           // depth C (for burying stuff)
+	    10.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    180,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Happiness Emblem (JP)
+	    System::LANG_Japanese,          // region
+	    "g_futa_sikoku",                // internal name
+	    "g_futa_sikoku.szs",            // archive filename
+	    "g_futa_sikoku.bmd",            // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    20.0,                           // radius
+	    20.0,                           // pradius
+	    5.0,                            // height
+	    200.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    170,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Happiness Emblem (PAL - This is Drone Supplies)
+	    System::LANG_French,            // region
+	    "g_futa_kyusyu",                // internal name
+	    "g_futa_kyusyu.szs",            // archive filename
+	    "pal_sweets_haribo.bmd",        // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    55.0,                           // radius
+	    55.0,                           // pradius
+	    13.0,                           // height
+	    600.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    15,                             // min carry
+	    25,                             // max carry
+	    "lod",                          // dynamics
+	    100,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    172,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
 };
 
 namespace LocalizationTreasureSwapFunc {
+
+// GK2 is dumb for many reasons, but one of them is the internal name for treasues is not the
+// Same between regions (unlike every other treasure), so we check for that here
+// Replace the US/JP internal name with the PAL version, and vice versa depending on the current version
+char* gk2TreasureNameSwap(char* oldTreasureName)
+{
+	// If not either of the 2 trouble treasures tied to GK, don't bother with anything below
+	if (!(!strcmp(oldTreasureName, "g_futa_kyusyu") || !strcmp(oldTreasureName, "g_futa_sikoku"))) {
+		return oldTreasureName;
+	}
+	// Check if we are in GK
+	Game::BaseGameSection* section = Game::gameSystem->getSection();
+	if (section && section->getCaveID() == 'y_02') { // glutton's kitchen
+		Game::RoomMapMgr* roomMgr = static_cast<Game::RoomMapMgr*>(Game::mapMgr);
+		if (roomMgr && roomMgr->mCaveInfo) {
+			// If GK2
+			if (section->getCurrFloor() + 1 == 2) {
+				// If PAL version
+				if (global_language_swap->get_treasure_region() == System::LANG_French) {
+					// If the current treasure name is the US/JP internal name
+					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
+						// Return PAL name
+						return "g_futa_sikoku";
+					}
+				}
+				// Otherwise (US/JP version)
+				else {
+					// If the current treasure name is the PAL internal name
+					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
+						// Return US/JP name
+						return "g_futa_kyusyu";
+					}
+				}
+			}
+			// If GK4
+			else if (section->getCurrFloor() + 1 == 4) {
+				// If PAL version
+				if (global_language_swap->get_treasure_region() == System::LANG_French) {
+					// If the current treasure name is the US/JP internal name
+					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
+						// Return PAL name
+						return "g_futa_kyusyu";
+					}
+				}
+				// Otherwise (US/JP version)
+				else {
+					// If the current treasure name is the PAL internal name
+					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
+						// Return US/JP name
+						return "g_futa_sikoku";
+					}
+				}
+			}
+		}
+	}
+	// Not relevant, don't change name
+	return oldTreasureName;
+}
 
 void updatePelletConfig(Game::PelletConfig* thisConfig)
 {
@@ -229,8 +581,9 @@ void updatePelletConfig(Game::PelletConfig* thisConfig)
 	for (int i = 0; i < TREASURE_MAP_COUNT; i++) {
 		OSReport("Sys region: %d P2GZ region: %d Cur treasure map region: %d\n", sys->mRegion, global_language_swap->get_treasure_region(),
 		         treasureMap[i].region);
+		OSReport("gk treasure swap: %s\n", gk2TreasureNameSwap(thisConfig->mParams.mName.mData));
 		// Loop through all treasures in the map to find the one we need to edit
-		if (!strcmp(thisConfig->mParams.mName.mData, treasureMap[i].mName)) {
+		if (!strcmp(gk2TreasureNameSwap(thisConfig->mParams.mName.mData), treasureMap[i].mName)) {
 			// This is the treasure we need; now check if it's for the right version
 			if (global_language_swap->get_treasure_region() == treasureMap[i].region) {
 				OSReport("Region difference detected! Converting...\n");
@@ -452,7 +805,8 @@ void BasePelletMgr::load_texArc(char* filename)
 			}
 
 			if (config->mParams.mAnimMgr.mData != 0) {
-				sprintf(path, "%s/%s", config->mParams.mName.mData, config->mParams.mAnimMgr.mData);
+				sprintf(path, "%s/%s", LocalizationTreasureSwapFunc::gk2TreasureNameSwap(config->mParams.mName.mData),
+				        config->mParams.mAnimMgr.mData);
 				mAnimMgr[i] = SysShape::AnimMgr::load(textArc, path, data, archive, nullptr);
 				if (mAnimMgr[i] == nullptr) {
 					mAnimMgr[i] = SysShape::AnimMgr::load(textArc, path, data, archive, nullptr);
@@ -460,7 +814,8 @@ void BasePelletMgr::load_texArc(char* filename)
 			}
 
 			if (config->mParams.mColltree.mData != 0) {
-				sprintf(path, "%s/%s", config->mParams.mName.mData, config->mParams.mColltree.mData);
+				sprintf(path, "%s/%s", LocalizationTreasureSwapFunc::gk2TreasureNameSwap(config->mParams.mName.mData),
+				        config->mParams.mColltree.mData);
 				mCollParts[i] = CollPartFactory::load(textArc, path);
 			}
 		}

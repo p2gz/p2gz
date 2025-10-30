@@ -52,6 +52,6 @@ namespace LocalizationTreasureSwapFunc {
 
 void updatePelletConfig(Game::PelletConfig* thisConfig);
 
-};
+}; // namespace LocalizationTreasureSwapFunc
 
 #endif
