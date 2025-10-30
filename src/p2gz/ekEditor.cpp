@@ -82,3 +82,10 @@ void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 		playData->mOlimarData->mFlags[1 - data_idx] &= 0 << (item - (data_idx << 3));
 	}
 }
+
+void EKEditor::reset_all()
+{
+	for (int item = OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; item < OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; item++) {
+		set_upgrade(static_cast<OlimarData::ItemIndex>(item), false);
+	}
+}

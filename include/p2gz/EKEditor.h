@@ -13,6 +13,7 @@ public:
 
 	void init();
 	void set_upgrade(Game::OlimarData::ItemIndex, bool enabled);
+	void reset_all();
 	void check_upgrades();
 
 private:
