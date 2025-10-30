@@ -44,6 +44,7 @@ P2GZ::P2GZ()
 	cutscene_mgr                 = new CutsceneMgr();
 	dismiss_positions            = new DismissPositions();
 	poko_editor                  = new PokoEditor();
+	ek_editor                    = new EKEditor();
 }
 
 void P2GZ::init()
@@ -59,6 +60,7 @@ void P2GZ::init()
 	squad_editor->init();
 	cutscene_mgr->init();
 	poko_editor->init();
+	ek_editor->init();
 }
 
 void P2GZ::update()

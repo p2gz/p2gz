@@ -22,10 +22,11 @@
 #include <p2gz/Preset.h>
 #include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
+#include <p2gz/CutsceneToggle.h>
+#include <p2gz/EKEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha1"
-#include <p2gz/CutsceneToggle.h>
 
 struct P2GZ {
 public:
@@ -64,6 +65,7 @@ public:
 	gz::CutsceneMgr* cutscene_mgr;
 	gz::DismissPositions* dismiss_positions;
 	gz::PokoEditor* poko_editor;
+	gz::EKEditor* ek_editor;
 };
 
 // global instance
