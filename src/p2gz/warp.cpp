@@ -53,8 +53,9 @@ static const char* ENTER_KINDS[2] = {
 };
 
 Warp::Warp()
-    : allow_zero_pikmin_in_caves(true)
 {
+	allow_zero_pikmin_in_caves = true;
+	preset_status              = PS_Stale;
 }
 
 void Warp::init()
@@ -80,30 +81,13 @@ void Warp::init()
 	update_sublevel_opt();
 }
 
-Preset* Warp::get_effective_preset()
+void Warp::set_preset(Preset* preset_, int preset_status_)
 {
-	if (current_preset) {
-		return current_preset;
-	}
-	if (chosen_preset) {
-		return chosen_preset;
-	}
-	return nullptr;
-}
-
-void Warp::set_chosen_preset(Preset* preset)
-{
-	chosen_preset  = preset;
-	current_preset = preset;
+	preset        = preset_;
+	preset_status = static_cast<PresetStatus>(preset_status_);
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
-}
-
-void Warp::set_preset(Preset* preset)
-{
-	current_preset = preset;
-	chosen_preset  = nullptr;
 }
 
 WarpDestination Warp::current_dest()
@@ -196,25 +180,18 @@ void Warp::update_sublevel_opt()
 
 void Warp::update_preset_opt()
 {
-	if (current_preset == chosen_preset && current_preset == nullptr) {
-		// nullptr preset is the "keep current squad" option. Leave it alone if this is selected
+	if (preset_status > PS_Suggested) {
 		return;
 	}
 
-	// If the player has chosen a General preset we don't want to override it. These are not suggested
-	// and aren't supposed to be relevant for speedrun practice.
-	if (chosen_preset && chosen_preset->category == General) {
-		return;
+	PresetCategory category = PoD;
+	if (preset) {
+		category = preset->category;
 	}
 
-	Preset* effective_preset = get_effective_preset();
-	PresetCategory category  = PoD;
-	if (effective_preset) {
-		category = effective_preset->category;
-	}
 	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
 	if (suggested_preset) {
-		set_chosen_preset(suggested_preset);
+		set_preset(suggested_preset, PS_Suggested);
 	}
 }
 
@@ -223,9 +200,9 @@ void Warp::do_warp()
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
-	Preset* effective_preset = get_effective_preset();
-	if (effective_preset) {
-		effective_preset->apply();
+	if (preset) {
+		preset->apply();
+		preset_status = PS_Stale;
 	}
 
 	if (dest.cave == 0) {

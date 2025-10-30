@@ -1,6 +1,7 @@
 #ifndef _GZ_PRESET_H
 #define _GZ_PRESET_H
 
+#include <IDelegate.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/gzmenu.h>
 #include <p2gz/warp.h>
@@ -10,6 +11,7 @@
 
 namespace gz {
 
+struct Warp;
 struct WarpDestination;
 
 enum PresetCategory { PoD, AT, General, Generated };
@@ -52,7 +54,7 @@ public:
 
 struct PresetMenuOption : public MenuOption {
 public:
-	PresetMenuOption(IDelegate1<Preset*>* on_select_);
+	PresetMenuOption(IDelegate2<Preset*, int>* on_select_);
 
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -67,7 +69,7 @@ private:
 	ListMenu* at_presets_menu;
 	ListMenu* general_presets_menu;
 
-	IDelegate1<Preset*>* on_select;
+	IDelegate2<Preset*, int>* on_select;
 };
 
 struct PresetPreviewMenuOption : public MenuOption {

@@ -111,7 +111,7 @@ void Preset::apply()
 	// }
 }
 
-PresetMenuOption::PresetMenuOption(IDelegate1<Preset*>* on_select_)
+PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
     : MenuOption("preset")
 {
 	on_select            = on_select_;
@@ -146,7 +146,7 @@ PresetMenuOption::PresetMenuOption(IDelegate1<Preset*>* on_select_)
 	// when changing the warp menu selections
 	current_preset = p2gz->preset_mgr->find("EC", PoD);
 	if (on_select) {
-		on_select->invoke(current_preset);
+		on_select->invoke(current_preset, PS_Stale);
 	}
 }
 
@@ -231,7 +231,7 @@ void PresetMenuOption::select()
 void PresetMenuOption::do_on_preset_selected(Preset* preset)
 {
 	if (on_select) {
-		on_select->invoke(preset);
+		on_select->invoke(preset, PS_Chosen);
 	}
 }
 

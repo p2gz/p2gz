@@ -56,7 +56,7 @@ void SegmentHistory::update()
 			current_dest.use_set_seed = false;
 
 			p2gz->warp->set_dest(current_dest);
-			p2gz->warp->set_preset(current_segment->preset);
+			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -68,7 +68,7 @@ void SegmentHistory::update()
 			current_dest.use_set_seed = true;
 
 			p2gz->warp->set_dest(current_dest);
-			p2gz->warp->set_preset(current_segment->preset);
+			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -114,10 +114,9 @@ void SegmentHistory::update()
 				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
 					cat = floor0_segment->preset->category;
 				}
-				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat));
-
+				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
 			} else {
-				p2gz->warp->set_preset(floor0_segment->preset);
+				p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
 			}
 			p2gz->warp->set_dest(floor0_dest);
 			p2gz->warp->do_warp();

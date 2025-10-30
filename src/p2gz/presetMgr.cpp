@@ -119,6 +119,8 @@ Preset* PresetMgr::find(const char* name, PresetCategory category)
 			return preset;
 		}
 	}
+
+	OSReport("Attempted to find preset \"%s\" that does not exist\n", name);
 	return nullptr;
 }
 
@@ -198,7 +200,7 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 			return find("BK", PoD);
 		case SCx:
 			if (dest.sublevel < 4)
-				return find("SCx1-3", PoD);
+				return find("SCx1-4", PoD);
 			else
 				return find("SCx5-FC", PoD);
 		case FC:
