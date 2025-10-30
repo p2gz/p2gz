@@ -228,6 +228,8 @@ private:
 /// Base class for different types of menus
 struct MenuLayer {
 public:
+	MenuLayer(IDelegate* on_opened_ = nullptr) { on_opened = on_opened_; }
+
 	virtual void update()                            = 0;
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
 	virtual void reset_selection()                   = 0;
@@ -238,12 +240,16 @@ public:
 	/// Menu to return to when backing out of this menu.
 	/// Root menu should leave as null.
 	MenuLayer* parent;
+
+	/// Optional callback to be run when this menu is opened
+	IDelegate* on_opened;
 };
 
 struct ListMenu : public MenuLayer {
 public:
-	ListMenu()
-	    : pah_up(Controller::PRESS_DPAD_UP)
+	ListMenu(IDelegate* on_opened_ = nullptr)
+	    : MenuLayer(on_opened_)
+	    , pah_up(Controller::PRESS_DPAD_UP)
 	    , pah_down(Controller::PRESS_DPAD_DOWN)
 	{
 		selected = 0;
@@ -281,8 +287,9 @@ private:
 
 struct GridMenu : public MenuLayer {
 public:
-	GridMenu(f32 column_width_)
-	    : column_width(column_width_)
+	GridMenu(f32 column_width_, IDelegate* on_opened_ = nullptr)
+	    : MenuLayer(on_opened_)
+	    , column_width(column_width_)
 	    , selected_row(0)
 	    , selected_col(0)
 	    , pah_up(Controller::PRESS_DPAD_UP)

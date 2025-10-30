@@ -91,6 +91,7 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("bitters unlocked", true, new Delegate1<SprayEditor, bool>(p2gz->spray_editor, &SprayEditor::toggle_bitters)))
 				->push(new ToggleMenuOption("spicies unlocked", true, new Delegate1<SprayEditor, bool>(p2gz->spray_editor, &SprayEditor::toggle_spicies)))
 			))
+			->push(new OpenSubMenuOption("upgrades", new ListMenu(new Delegate<EKEditor>(p2gz->ek_editor, &EKEditor::check_upgrades))))
 		))
         ->push(new OpenSubMenuOption("captain", (new ListMenu())
             ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
@@ -203,6 +204,9 @@ void GZMenu::push_layer(MenuLayer* layer_)
 		layer->reset_selection();
 		if (layer->title) {
 			breadcrumbs.push(layer->title);
+		}
+		if (layer->on_opened) {
+			layer->on_opened->invoke();
 		}
 	}
 }
