@@ -31,6 +31,13 @@ public:
 	size_t enter_area_type;
 };
 
+typedef enum PresetStatus {
+	PS_Stale     = 0,
+	PS_Generated = 1,
+	PS_Suggested = 2,
+	PS_Chosen    = 3,
+} PresetStatus;
+
 struct Warp {
 public:
 	Warp();
@@ -50,9 +57,8 @@ public:
 	void set_seed(u32);
 	void set_random_seed() { dest.use_set_seed = false; }
 
-	void set_preset(Preset* preset);
-	void set_chosen_preset(Preset* preset);
-	Preset* get_effective_preset();
+	void set_preset(Preset* preset, int preset_status);
+	Preset* get_preset() { return preset; }
 
 	bool using_set_seed() { return dest.use_set_seed; }
 	u32 get_seed() { return dest.seed; }
@@ -70,14 +76,9 @@ private:
 	void save_pikmin();
 	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
+	Preset* preset;
+	PresetStatus preset_status;
 	WarpDestination dest;
-
-	/// The preset chosen in the menu.
-	Preset* chosen_preset;
-
-	/// The preset that will actually be used for the next warp. May differ
-	/// from chosen_preset if set by another feature, e.g. sublevel retry.
-	Preset* current_preset;
 
 	RadioMenuOption* area_opt;
 	RangeMenuOption* sublevel_opt;
