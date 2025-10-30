@@ -8,7 +8,6 @@
 *.dump
 *.elf
 *.exe
-*.exe
 *.filters
 *.id0
 *.id1
@@ -53,13 +52,18 @@ sheet.tsv
 tools/mwcc_compiler/
 tools/powerpc/
 compile_commands.json
+release/
+release_assets/version.txt
+!release_assets/*.exe
+!release_assets/*.bat
+!release_assets/*.sh
+p2gz-*.zip
 
-*.exe
 *.iso
 root
 pikminBMGtool.py
 Dolphin.exe.lnk
-nodtool.*
+/nodtool.*
 
 !clang-format.exe
 !orig/*/.gitkeep
