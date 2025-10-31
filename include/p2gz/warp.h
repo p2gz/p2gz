@@ -4,6 +4,7 @@
 #include <types.h>
 #include <p2gz/Preset.h>
 #include <Game/SingleGameSection.h>
+#include <Game/Entities/ItemCave.h>
 
 namespace gz {
 
@@ -20,10 +21,10 @@ public:
 
 	~WarpDestination() { }
 
-	u32 area;
-	u32 cave;
-	u32 sublevel;
-	u32 day;
+	u8 area;
+	u8 cave;
+	u8 sublevel;
+	u8 day;
 	u32 seed;
 	bool use_set_seed;
 
@@ -87,6 +88,8 @@ private:
 	RadioMenuOption* enter_area_type_opt;
 	HexInputOption* seed_opt;
 	PresetMenuOption* preset_opt;
+
+	Game::ItemCave::Item* cave;
 };
 
 }; // namespace gz
