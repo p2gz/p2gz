@@ -100,6 +100,9 @@ void CaveState::init(SingleGameSection* game, StateArg* arg)
 	} else {
 		game->mNeedTreasureCalc = false;
 	}
+
+	// @P2GZ - set correct flags for warping
+	p2gz->warp->warping_from_menu = false;
 }
 
 /**
@@ -119,6 +122,8 @@ void CaveState::gameStart(SingleGameSection* game)
 		PSSystem::checkGameScene(scene);
 		scene->stopPollutionSe();
 	}
+
+	p2gz->warp->post_warp();
 
 	// @P2GZ - save current squad to history when starting a sublevel
 	gz::Segment* seg = p2gz->segment_history->cur_segment_mut();

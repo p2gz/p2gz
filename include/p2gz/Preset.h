@@ -23,6 +23,7 @@ public:
 	~Preset() { }
 
 	void apply();
+	void pre_apply();
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);

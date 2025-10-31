@@ -99,10 +99,12 @@ void Preset::apply()
 	// TODO: is this necessary?
 	// GameStat::mePikis.clear(); // clear sprouts
 
-	for (int i = 0; i < 2; i++) {
-		Game::Navi* navi = Game::naviMgr->getAt(i);
-		if (navi && navi->isAlive() && navi->isStickTo()) {
-			navi->endStick();
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive() && navi->isStickTo()) {
+				navi->endStick();
+			}
 		}
 	}
 

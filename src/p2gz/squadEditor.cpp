@@ -20,12 +20,12 @@ void SquadEditor::init()
 // Add a Pikmin to the active captain's squad if there are fewer than 100 Pikmin in the field.
 void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int count)
 {
-	Game::Navi* navi = Game::naviMgr->getActiveNavi();
-	if (!navi) {
+	if (!Game::naviMgr || !Game::naviMgr->mArray || !Game::playData || !Game::pikiMgr) {
 		return;
 	}
 
-	if (!Game::playData) {
+	Game::Navi* navi = Game::naviMgr->getActiveNavi();
+	if (!navi) {
 		return;
 	}
 
@@ -37,6 +37,28 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		Game::playData->setMeetPikmin(color);
 	}
 
+	set_demo_flags_for_color(color);
+
+	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Replace;
+	for (int i = 0; i < count; i++) {
+		Game::Piki* piki = Game::pikiMgr->birth();
+		GZASSERTLINE(piki);
+
+		piki->init(nullptr);
+		piki->changeShape(color);
+		piki->changeHappa(stage);
+
+		Vector3f pos = navi->getPosition();
+		piki->setPosition(pos, false);
+		piki->mNavi = navi;
+		PikiAI::ActFormationInitArg arg(navi);
+		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
+	}
+	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Normal;
+}
+
+void SquadEditor::set_demo_flags_for_color(Game::EPikiKind color)
+{
 	switch (color) {
 	case Game::Blue:
 		Game::playData->setDemoFlag(Game::DEMO_Find_Blue_Onion);
@@ -61,23 +83,6 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		Game::playData->setDemoFlag(Game::DEMO_Discover_Bulbmin);
 		break;
 	}
-
-	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Replace;
-	for (int i = 0; i < count; i++) {
-		Game::Piki* piki = Game::pikiMgr->birth();
-		GZASSERTLINE(piki);
-
-		piki->init(nullptr);
-		piki->changeShape(color);
-		piki->changeHappa(stage);
-
-		Vector3f pos = navi->getPosition();
-		piki->setPosition(pos, false);
-		piki->mNavi = navi;
-		PikiAI::ActFormationInitArg arg(navi);
-		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
-	}
-	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Normal;
 }
 
 // Remove a Pikmin from the active captain's squad.
