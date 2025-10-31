@@ -65,7 +65,6 @@ public:
 	u32 get_seed() { return dest.seed; }
 
 	void do_warp();
-	void post_warp();
 
 	bool allow_zero_pikmin_in_caves;
 	bool warping_from_menu;
@@ -82,7 +81,6 @@ private:
 	Preset* preset;
 	PresetStatus preset_status;
 	WarpDestination dest;
-	bool needs_post_warp;
 
 	RadioMenuOption* area_opt;
 	RangeMenuOption* sublevel_opt;

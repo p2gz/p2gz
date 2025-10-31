@@ -231,8 +231,6 @@ unknown GameState::gameStart(SingleGameSection*)
 		mgr->checkScene();
 		static_cast<PSM::Scene_Game*>(mgr->mScenes->mChild)->getEnvSe()->on();
 	}
-
-	p2gz->warp->post_warp();
 }
 
 /**

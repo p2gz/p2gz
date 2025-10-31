@@ -29,14 +29,6 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		return;
 	}
 
-	if (color != Game::Bulbmin) {
-		if (color != Game::Purple && color != Game::White) {
-			Game::playData->setBootContainer(color);
-		}
-		Game::playData->setContainer(color);
-		Game::playData->setMeetPikmin(color);
-	}
-
 	set_demo_flags_for_color(color);
 
 	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Replace;
@@ -59,11 +51,20 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 
 void SquadEditor::set_demo_flags_for_color(Game::EPikiKind color)
 {
+	if (color != Game::Bulbmin) {
+		if (color != Game::Purple && color != Game::White) {
+			Game::playData->setBootContainer(color);
+		}
+		Game::playData->setContainer(color);
+		Game::playData->setMeetPikmin(color);
+	}
+
 	switch (color) {
 	case Game::Blue:
 		Game::playData->setDemoFlag(Game::DEMO_Find_Blue_Onion);
 		break;
 	case Game::Red:
+		Game::playData->setDemoFlag(Game::DEMO_Pluck_First_Pikmin);
 		Game::playData->setDemoFlag(Game::DEMO_Meet_Red_Pikmin);
 		Game::playData->setDemoFlag(Game::DEMO_Louie_Finds_Red_Onion);
 		break;
@@ -113,8 +114,10 @@ void SquadEditor::clear_all_pikmin()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-		piki->kill(&arg);
+		if (!piki->isZikatu()) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
+		}
 	}
 }
 

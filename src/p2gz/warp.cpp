@@ -57,7 +57,6 @@ Warp::Warp()
 {
 	allow_zero_pikmin_in_caves = true;
 	warping_from_menu          = false;
-	needs_post_warp            = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 }
@@ -204,10 +203,7 @@ void Warp::do_warp()
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
-	if (warping_from_menu) {
-		preset->pre_apply();
-		needs_post_warp = true;
-	} else if (preset) {
+	if (preset) {
 		preset->apply();
 		preset_status = PS_Stale;
 	}
@@ -222,19 +218,6 @@ void Warp::do_warp()
 	} else {
 		warp_to_cave(game);
 	}
-}
-
-void Warp::post_warp()
-{
-	if (!needs_post_warp) {
-		return;
-	}
-
-	if (preset) {
-		preset->apply();
-		preset_status = PS_Stale;
-	}
-	needs_post_warp = false;
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
@@ -285,7 +268,9 @@ void Warp::save_pikmin()
 
 void Warp::warp_to_cave(Game::SingleGameSection* game)
 {
-	save_pikmin();
+	if (!warping_from_menu) {
+		save_pikmin();
+	}
 
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
@@ -332,7 +317,9 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 
 void Warp::warp_to_area(Game::SingleGameSection* game)
 {
-	save_pikmin();
+	if (!warping_from_menu) {
+		save_pikmin();
+	}
 
 	// TODO: Probably not all of this is necessary - copy-paste from DayEndState::exec()
 	Game::gameSystem->resetFlag(Game::GAMESYS_IsGameWorldActive);
