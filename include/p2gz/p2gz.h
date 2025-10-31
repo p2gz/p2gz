@@ -33,7 +33,7 @@ public:
 	P2GZ();
 	~P2GZ() { }
 
-	static const u32 HEAP_SIZE = 0x25000;
+	static const u32 HEAP_SIZE = 0x20000;
 
 	void init();
 	void update();
