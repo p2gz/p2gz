@@ -56,6 +56,7 @@ Warp::Warp()
 {
 	allow_zero_pikmin_in_caves = true;
 	preset_status              = PS_Stale;
+	cave                       = nullptr;
 }
 
 void Warp::init()
@@ -266,7 +267,9 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
 	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest.cave - 1));
-	Game::ItemCave::Item* cave = new Game::ItemCave::Item;
+	if (!cave) {
+		cave = new Game::ItemCave::Item;
+	}
 	cave->mCaveID              = caveID;
 	cave->mCaveFilename        = dst_course_info->getCaveinfoFilename_FromID(caveID);
 
@@ -287,7 +290,6 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	game->mCaveIndex         = caveID.getID();
 	game->mCurrentFloor      = dest.sublevel;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
-
 	Game::SingleGame::LoadArg arg(100, true, false, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 }
