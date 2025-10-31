@@ -2,6 +2,7 @@
 #include <p2gz/DayEditor.h>
 #include <Game/TimeMgr.h>
 #include <Game/GameSystem.h>
+#include <Game/gamePlayData.h>
 
 using namespace gz;
 
@@ -33,6 +34,7 @@ void DayEditor::set_time_paused(bool paused)
 
 void DayEditor::set_time(f32 time)
 {
+	Game::playData->mCaveSaveData.mTime = time;
 	if (time_mgr) {
 		time_mgr->setTime(time);
 	}

@@ -20,6 +20,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	spicies_unlocked = false;
 	num_bitters      = 0;
 	num_spicies      = 0;
+	time             = 7.0f;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -35,6 +36,17 @@ Preset::Preset(Preset& other)
 	num_spicies      = other.num_spicies;
 	squad            = other.squad;
 	onion_pikis      = other.onion_pikis;
+	time             = other.time;
+
+	upgrades.expandCapacityTo(other.upgrades.len());
+	for (size_t i = 0; i < other.upgrades.len(); i++) {
+		upgrades.push(other.upgrades[i]);
+	}
+
+	cutscene_flags.expandCapacityTo(other.cutscene_flags.len());
+	for (size_t i = 0; i < other.cutscene_flags.len(); i++) {
+		cutscene_flags.push(other.cutscene_flags[i]);
+	}
 }
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
@@ -55,6 +67,12 @@ Preset* Preset::set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unl
 	bitters_unlocked = bitters_unlocked_;
 	num_spicies      = spicies;
 	num_bitters      = bitters;
+	return this;
+}
+
+Preset* Preset::set_time(f32 time_)
+{
+	time = time_;
 	return this;
 }
 
@@ -88,6 +106,7 @@ void Preset::apply()
 		}
 	}
 
+	p2gz->day_editor->set_time(time);
 	p2gz->squad_editor->clear_all_pikmin();
 	Game::playData->resetContainerFlag();                     // Reset container flags for onions/ship space unlocks
 	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected

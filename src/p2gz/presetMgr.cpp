@@ -17,17 +17,22 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_sprays(false, 0, true, 16));
-	presets.push((new Preset("EC", PoD))->set_pikmin(Flower, Red, 46)->set_pikmin(Leaf, Red, 6));
+	presets.push((new Preset("EC", PoD))->set_pikmin(Flower, Red, 46)->set_pikmin(Leaf, Red, 6)->set_time(8.0f));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
 	                 ->set_onion_pikmin(Leaf, Purple, 10));
-	presets.push((new Preset("HoB1-2", PoD))->set_pikmin(Flower, Red, 62)->set_pikmin(Flower, Purple, 10));
-	presets.push((new Preset("HoB3-4", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 10)->set_pikmin(Leaf, Purple, 10));
-	presets.push((new Preset("HoB5", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 20));
+	presets.push((new Preset("HoB1-2", PoD))->set_pikmin(Flower, Red, 62)->set_pikmin(Flower, Purple, 10)->set_time(8.0f));
+	presets.push((new Preset("HoB3-4", PoD))
+	                 ->set_pikmin(Flower, Red, 52)
+	                 ->set_pikmin(Flower, Purple, 10)
+	                 ->set_pikmin(Leaf, Purple, 10)
+	                 ->set_time(8.0f));
+	presets.push((new Preset("HoB5", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 20)->set_time(8.0f));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_time(8.0f)
 	                 ->set_upgrades(1, (OlimarData::ItemIndex[1]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                   }));
@@ -35,6 +40,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_time(8.0f)
 	                 ->set_upgrades(1, (OlimarData::ItemIndex[1]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                   }));
@@ -42,6 +48,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_time(8.5f)
 	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -50,6 +57,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 34)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_time(10.5f)
 	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -59,6 +67,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
+	                 ->set_time(10.5f)
 	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -69,6 +78,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_time(10.5f)
 	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -79,6 +89,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_time(10.5f)
 	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -89,6 +100,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 24)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_time(10.5f)
 	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -99,6 +111,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 28)
 	                 ->set_pikmin(Leaf, Blue, 32)
+	                 ->set_time(13.0f)
 	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -130,6 +143,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_time(9.5f)
 	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -142,6 +156,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 20)
 	                 ->set_onion_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_time(9.5f)
 	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -154,6 +169,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 20)
 	                 ->set_onion_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_time(10.5f)
 	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
@@ -178,6 +194,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 34)
 	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_time(8.5f)
 	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
 	                                       OlimarData::ODII_PrototypeDetector,
 	                                       OlimarData::ODII_FiveManNapsack,
