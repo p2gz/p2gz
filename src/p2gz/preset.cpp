@@ -11,6 +11,8 @@
 using namespace gz;
 
 Preset::Preset(const char* name_, PresetCategory category_)
+    : upgrades(1)
+    , cutscene_flags(1)
 {
 	name             = name_;
 	category         = category_;
@@ -65,6 +67,15 @@ Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
 	return this;
 }
 
+Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
+{
+	upgrades.expandCapacityTo(num_upgrades);
+	for (size_t i = 0; i < num_upgrades; i++) {
+		upgrades.push(items[i]);
+	}
+	return this;
+}
+
 void Preset::apply()
 {
 	// TODO: is this necessary?
@@ -103,6 +114,12 @@ void Preset::apply()
 	p2gz->spray_editor->set_spicies(num_spicies);
 	p2gz->spray_editor->toggle_bitters(bitters_unlocked);
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
+
+	// Apply upgrades
+	p2gz->ek_editor->reset_all();
+	for (size_t i = 0; i < upgrades.len(); i++) {
+		p2gz->ek_editor->set_upgrade(upgrades[i], true);
+	}
 
 	// Set cutscene flags
 	// TODO: use cutscene flag editor for this

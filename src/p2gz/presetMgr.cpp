@@ -24,66 +24,167 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Leaf, Purple, 10));
 	presets.push((new Preset("HoB1-2", PoD))->set_pikmin(Flower, Red, 62)->set_pikmin(Flower, Purple, 10));
 	presets.push((new Preset("HoB3-4", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 10)->set_pikmin(Leaf, Purple, 10));
-	presets.push((new Preset("HoB5-WFG3", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 20));
-	presets.push(
-	    (new Preset("WFG4-enter SH", PoD))->set_pikmin(Flower, Red, 37)->set_pikmin(Flower, Purple, 20)->set_pikmin(Flower, White, 15));
-	presets.push((new Preset("SH1-2", PoD))->set_pikmin(Flower, Red, 34)->set_pikmin(Flower, Purple, 20)->set_pikmin(Flower, White, 15));
+	presets.push((new Preset("HoB5", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 20));
+	presets.push((new Preset("WFG1-WFG3", PoD))
+	                 ->set_pikmin(Flower, Red, 52)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_upgrades(1, (OlimarData::ItemIndex[1]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                   }));
+	presets.push((new Preset("WFG4-WFG5", PoD))
+	                 ->set_pikmin(Flower, Red, 37)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_upgrades(1, (OlimarData::ItemIndex[1]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                   }));
+	presets.push((new Preset("enter SH", PoD))
+	                 ->set_pikmin(Flower, Red, 37)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                   }));
+	presets.push((new Preset("SH1-2", PoD))
+	                 ->set_pikmin(Flower, Red, 34)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                   }));
 	presets.push((new Preset("SH3-7", PoD))
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
-	                 ->set_pikmin(Leaf, White, 5));
+	                 ->set_pikmin(Leaf, White, 5)
+	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                   }));
 	presets.push((new Preset("enter BK (15/5)", PoD))
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 29)
-	                 ->set_onion_pikmin(Leaf, Blue, 16));
+	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                   }));
 	presets.push((new Preset("enter BK (20)", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 29)
-	                 ->set_onion_pikmin(Leaf, Blue, 16));
+	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                   }));
 	presets.push((new Preset("enter BK (25)", PoD))
 	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 24)
-	                 ->set_onion_pikmin(Leaf, Blue, 16));
+	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                   }));
 	presets.push((new Preset("BK", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 28)
-	                 ->set_pikmin(Leaf, Blue, 32));
+	                 ->set_pikmin(Leaf, Blue, 32)
+	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                   }));
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
-	                 ->set_onion_pikmin(Leaf, Blue, 60));
+	                 ->set_onion_pikmin(Leaf, Blue, 60)
+	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                   }));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
-	                 ->set_onion_pikmin(Flower, Red, 29));
+	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                   }));
 	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 60)
-	                 ->set_onion_pikmin(Flower, Red, 29));
-	presets.push((new Preset("SCx5-FC", PoD))
+	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                   }));
+	presets.push((new Preset("SCx5-FC5", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 20)
 	                 ->set_onion_pikmin(Flower, Red, 29)
-	                 ->set_onion_pikmin(Flower, Blue, 25));
+	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                   }));
+	presets.push((new Preset("FC6-7", PoD))
+	                 ->set_pikmin(Flower, White, 35)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 20)
+	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                       OlimarData::ODII_BruteKnuckles,
+	                                   }));
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 40)
-	                 ->set_onion_pikmin(Flower, Red, 29));
+	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                       OlimarData::ODII_BruteKnuckles,
+	                                   }));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 34)
-	                 ->set_onion_pikmin(Flower, Red, 29));
+	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
+	                                       OlimarData::ODII_PrototypeDetector,
+	                                       OlimarData::ODII_FiveManNapsack,
+	                                       OlimarData::ODII_JusticeAlloy,
+	                                       OlimarData::ODII_ForgedCourage,
+	                                       OlimarData::ODII_BruteKnuckles,
+	                                   }));
 }
 
 Preset* PresetMgr::create()
@@ -185,12 +286,12 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 			else if (dest.sublevel < 4)
 				return find("HoB3-4", PoD);
 			else
-				return find("HoB5-WFG3", PoD);
+				return find("HoB5", PoD);
 		case WFG:
 			if (dest.sublevel < 3)
-				return find("HoB5-WFG3", PoD);
+				return find("WFG1-WFG3", PoD);
 			else
-				return find("WFG4-enter SH", PoD);
+				return find("WFG4-WFG5", PoD);
 		case SH:
 			if (dest.sublevel < 2)
 				return find("SH1-2", PoD);
@@ -202,9 +303,12 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 			if (dest.sublevel < 4)
 				return find("SCx1-4", PoD);
 			else
-				return find("SCx5-FC", PoD);
+				return find("SCx5-FC5", PoD);
 		case FC:
-			return find("SCx5-FC", PoD);
+			if (dest.sublevel < 5)
+				return find("SCx5-FC5", PoD);
+			else
+				return find("FC6-7", PoD);
 		case CoS:
 			return find("CoS", PoD);
 		case GK:
@@ -216,7 +320,7 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 				else
 					return find("enter SCx", PoD);
 			} else if (dest.area == 1) {
-				if (dest.day == 2)
+				if (dest.day < 5)
 					return find("enter HoB", PoD);
 				else
 					return find("enter BK (20)", PoD);

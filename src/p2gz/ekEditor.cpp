@@ -75,10 +75,26 @@ void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 {
 	if (enabled) {
 		playData->mOlimarData->getItem(item);
+
+		// Avoids the treasure gauge doing its animation
+		if (item == OlimarData::ODII_PrototypeDetector) {
+			Game::playData->setDemoFlag(Game::DEMO_RADAR_ENABLED);
+		}
 	} else {
 		bool validItem = item >= OlimarData::ODII_BruteKnuckles && item < OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM;
 		GZASSERTLINE(validItem);
 		int data_idx = (item >> 3);
 		playData->mOlimarData->mFlags[1 - data_idx] &= 0 << (item - (data_idx << 3));
+
+		if (item == OlimarData::ODII_PrototypeDetector) {
+			Game::playData->mDemoFlags.resetFlag(Game::DEMO_RADAR_ENABLED);
+		}
+	}
+}
+
+void EKEditor::reset_all()
+{
+	for (int item = OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; item < OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; item++) {
+		set_upgrade(static_cast<OlimarData::ItemIndex>(item), false);
 	}
 }
