@@ -51,7 +51,8 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	switch (mGameLoadType) {
 	case MapEnter_NewGame:
 		// new game, load between (auto-skipped) movie and crash landing cutscene
-		p2gz->timer->reset_main_timer(6.0f);
+		// we reset timer on A press, so don't reset it again
+		// TODO: offset timer because of autoskipped movie? maybe?
 		break;
 
 	case MapEnter_NewDay:
