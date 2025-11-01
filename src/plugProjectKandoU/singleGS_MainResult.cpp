@@ -14,6 +14,7 @@
 #include "TParticle2dMgr.h"
 #include "utilityU.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 static JKRHeap* theTekiHeap;
 
@@ -283,6 +284,11 @@ void MainResultState::draw(SingleGameSection* game, Graphics& gfx)
 		moviePlayer->drawLoading(gfx);
 		game->draw2D(gfx);
 	}
+
+	// @P2GZ - timer
+	// for some reason, the timer isn't draw on top in the end of day results screen
+	// so, manually draw it on top.
+	p2gz->timer->draw();
 }
 
 /**

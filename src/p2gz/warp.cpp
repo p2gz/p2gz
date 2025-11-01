@@ -220,14 +220,14 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 
 	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_otakara(i)         = 0;
+		counter_otakara(i) = 0;
 	}
 
 	pelmgr                          = Game::PelletItem::mgr;
 	Game::KindCounter& counter_item = mem->mItem;
 	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_item(i)         = 0;
+		counter_item(i) = 0;
 	}
 }
 
@@ -288,7 +288,19 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	game->mCurrentFloor      = dest.sublevel;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 
-	Game::SingleGame::LoadArg arg(100, true, false, false);
+	// adjust timer to account for saving + enable sub timer
+	// usually we'd only reset the sub timer between sublevels, but on warp we reset both
+	// NB: this means that retrying the sublevel will reset the main timer - that's probably okay for now?
+	// TODO: record timer at sublevel start and, if retrying level, reset main timer to that value instead
+	p2gz->timer->set_sub_timer_enabled(true);
+	p2gz->timer->reset_main_timer();
+	if (game->mCurrentFloor == 0) {
+		p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
+	} else {
+		p2gz->timer->offset_main_timer(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
+	}
+
+	Game::SingleGame::LoadArg arg(Game::SingleGame::MapEnter_CaveEnter, true, false, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 }
 
@@ -379,6 +391,9 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	case 1:
 	default:
 		map_enter_status = Game::SingleGame::MapEnter_NewDay;
+		// set flag so timer resets on load-in
+		p2gz->timer->set_FS_map_flag(true);
+		break;
 	}
 	Game::SingleGame::LoadArg arg(map_enter_status, false, false, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);

@@ -8,10 +8,9 @@ using namespace gz;
 Timer::Timer()
     : enabled(false)
     , sub_timer_enabled(true)
-    , main_timer_set(false)
-    , sub_timer_set(false)
     , skip_timer_set(false)
     , pause_timer_set(false)
+    , FS_map_flag(false)
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
@@ -92,16 +91,73 @@ void Timer::reset_main_timer()
 	reset_sub_timer();
 }
 
+void Timer::reset_main_timer(f32 offset_seconds)
+{
+	if (offset_seconds >= 0.0f) {
+		u32 secs      = floor(offset_seconds);
+		u32 tenths    = floor((offset_seconds - floor(offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		main_timer    = get_cur_time() - millisecs;
+	} else {
+		u32 secs      = floor(-offset_seconds);
+		u32 tenths    = floor((-offset_seconds - floor(-offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		main_timer    = get_cur_time() + millisecs;
+	}
+	reset_sub_timer(offset_seconds);
+}
+
+void Timer::offset_main_timer(f32 offset_seconds)
+{
+	if (offset_seconds >= 0.0f) {
+		// "add" to timer
+		u32 secs      = floor(offset_seconds);
+		u32 tenths    = floor((offset_seconds - floor(offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		main_timer -= millisecs;
+	} else {
+		// "subtract" from timer
+		u32 secs      = floor(-offset_seconds);
+		u32 tenths    = floor((-offset_seconds - floor(-offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		main_timer += millisecs;
+	}
+	offset_sub_timer(offset_seconds);
+}
+
 void Timer::reset_sub_timer()
 {
 	sub_timer = get_cur_time();
+}
 
-	// If loading directly into a cave from file select, the initial
-	// timer set that happens at init time is way too early, so do an
-	// extra reset to bring it in line with the normal floor start time.
-	if (!main_timer_set) {
-		main_timer     = get_cur_time();
-		main_timer_set = true;
+void Timer::reset_sub_timer(f32 offset_seconds)
+{
+	if (offset_seconds >= 0.0f) {
+		u32 secs      = floor(offset_seconds);
+		u32 tenths    = floor((offset_seconds - floor(offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		sub_timer     = get_cur_time() - millisecs;
+	} else {
+		u32 secs      = floor(-offset_seconds);
+		u32 tenths    = floor((-offset_seconds - floor(-offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		sub_timer     = get_cur_time() + millisecs;
+	}
+}
+void Timer::offset_sub_timer(f32 offset_seconds)
+{
+	if (offset_seconds >= 0.0f) {
+		// "add" to timer
+		u32 secs      = floor(offset_seconds);
+		u32 tenths    = floor((offset_seconds - floor(offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		sub_timer -= millisecs;
+	} else {
+		// "subtract" from timer
+		u32 secs      = floor(-offset_seconds);
+		u32 tenths    = floor((-offset_seconds - floor(-offset_seconds)) * 10.0f);
+		u32 millisecs = secs * 1000 + tenths * 100;
+		sub_timer += millisecs;
 	}
 }
 
@@ -114,13 +170,48 @@ void Timer::reset_skip_timer()
 	skip_timer_set = true;
 }
 
-void Timer::stop_skip_timer()
+void Timer::stop_skip_timer_treasure()
 {
-	if (skip_timer_set) {
+	if (!skip_timer_set) {
 		return;
 	}
-	skip_timer     = get_cur_time();
-	skip_timer_set = true;
+	OSReport("Skip timer value: %d\n", skip_timer);
+	OSReport("Current time: %d\n", get_cur_time());
+	int remaining = skip_timer + (MAX_TREASURE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
+	OSReport("remaining: %d\n", remaining);
+	if (remaining < 0) {
+		remaining = 0;
+	}
+
+	OSReport("Old main timer: %d\n", main_timer);
+	main_timer -= remaining;
+	OSReport("New main timer: %d\n", main_timer);
+	sub_timer -= remaining;
+	skip_timer_set = false;
+}
+
+void Timer::stop_skip_timer_upgrade()
+{
+	if (!skip_timer_set) {
+		return;
+	}
+	int remaining = skip_timer + (MAX_UPGRADE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
+	if (remaining < 0) {
+		remaining = 0;
+	}
+
+	main_timer -= remaining;
+	sub_timer -= remaining;
+	skip_timer_set = false;
+}
+
+void Timer::cancel_skip_timer()
+{
+	if (!skip_timer_set) {
+		return;
+	}
+	skip_timer     = 0;
+	skip_timer_set = false;
 }
 
 void Timer::reset_pause_timer()

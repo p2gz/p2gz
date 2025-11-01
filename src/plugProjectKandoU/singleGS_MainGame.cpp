@@ -207,10 +207,6 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 		PSSystem::checkGameScene(scene);
 		scene->setPollutUp();
 	}
-
-	// @P2GZ - timer
-	// Reset main timer when loading an above-ground area
-	p2gz->timer->reset_main_timer();
 }
 
 /**
@@ -439,7 +435,9 @@ void GameState::exec(SingleGameSection* game)
 		// we skip the save prompt further down, so we also need to avoid the check_Save check
 		if (p2gz->skip_save->get_save_skip_status() || (u8)Screen::gGame2DMgr->check_Save()) {
 			// MapEnter type isnt used when loading into caves, someone put 100 here for the funny
-			LoadArg arg(100, true, false, false);
+			// @P2GZ: label load type so it's easier to hook into
+			// LoadArg arg(100, true, false, false);
+			LoadArg arg(MapEnter_CaveEnter, true, false, false);
 			transit(game, SGS_Load, &arg);
 		}
 		return;
@@ -681,6 +679,12 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 {
 	bool repay = needRepayDemo();
 
+	// @P2GZ - timer
+	// make sure we re-prime treasure CS skip timer
+	if (config->is("s10_suck_treasure") || config->is("s17_suck_equipment")) {
+		p2gz->timer->cancel_skip_timer();
+	}
+
 	// Check first treasure collected day end
 	if (config->is("s10_suck_treasure")) {
 		playData->getGroundOtakaraNum(0);
@@ -819,10 +823,19 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 		og::Screen::DispMemberSave disp;
 		disp.mDoSound = true;
 		PSMCancelToPauseOffMainBgm();
+		// @P2GZ - timer
+		// reset timer on end of holein cutscene
+		p2gz->timer->set_sub_timer_enabled(true);
+		p2gz->timer->reset_main_timer();
+
 		// @P2GZ: skip save prompts in caves
 		// only open the save screen if we don't have "skip save" toggled on
 		if (!p2gz->skip_save->get_save_skip_status()) {
 			Screen::gGame2DMgr->open_Save(disp);
+		} else {
+			// @P2GZ - timer
+			// add offset for save prompt
+			p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
 		}
 		mInSaveScreen = true;
 		return;

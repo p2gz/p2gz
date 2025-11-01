@@ -9,6 +9,7 @@
 #include "PSM/Scene.h"
 #include "TParticle2dMgr.h"
 #include "Game/GameSystem.h"
+#include <p2gz/p2gz.h>
 
 static const u32 unused[3] = { 0, 0, 0 };
 static const char name[]   = "SingleGS_Game";
@@ -127,6 +128,11 @@ void FileState::startGame(SingleGameSection* game)
 	}
 
 	case STORYSAVE_WorldMap: {
+		// @P2GZ - timer
+		// set flag when we enter world map from title so we don't start the timer too early
+		p2gz->timer->set_FS_map_flag(true);
+		p2gz->timer->set_enabled(false);
+
 		transit(game, SGS_Select, nullptr);
 		break;
 	}

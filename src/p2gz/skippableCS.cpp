@@ -22,6 +22,15 @@ void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
 			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
 			pod->stimulate(interaction);
 			is_treasure_collected = true;
+
+			// update timer with remaining cutscene time
+			if (moviePlayer->isPlaying("s22_cv_suck_treasure")) {
+				OSReport("Add skip timer (treasure)\n");
+				p2gz->timer->stop_skip_timer_treasure();
+			} else if (moviePlayer->isPlaying("s22_cv_suck_equipment")) {
+				OSReport("Add skip timer (upgrade)\n");
+				p2gz->timer->stop_skip_timer_upgrade();
+			}
 		}
 	}
 
@@ -34,6 +43,15 @@ void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
 			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
 			ufo->stimulate(interaction);
 			is_treasure_collected = true;
+
+			// update timer with remaining cutscene time
+			if (moviePlayer->isPlaying("s10_suck_treasure")) {
+				OSReport("Add skip timer (treasure)\n");
+				p2gz->timer->stop_skip_timer_treasure();
+			} else if (moviePlayer->isPlaying("s17_suck_equipment")) {
+				OSReport("Add skip timer (upgrade)\n");
+				p2gz->timer->stop_skip_timer_upgrade();
+			}
 		}
 	}
 }
@@ -48,6 +66,9 @@ void SkippableTreasureCS::prime_skip(Creature* cutscene_target, MovieConfig* con
 	    || config->is("s17_suck_equipment")) {
 		is_treasure_collected = false;
 		config->mFlags &= 0x1; // assign "skippable" flag to cutscene
+
+		// set skip timer
+		p2gz->timer->reset_skip_timer();
 
 		// TODO: this is where we'd also record the treasure being collected for the purposes of collection statistics
 	}
