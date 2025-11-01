@@ -1034,13 +1034,6 @@ void GameState::draw(SingleGameSection* game, Graphics& gfx)
 	game->BaseGameSection::doDraw(gfx);
 	game->drawMainMapScreen();
 	game->test_draw_treasure_detector();
-
-	// @P2GZ - timer
-	// need to draw timer over crash landing cutscene
-	// @BUG - the timer gets stolen by the ship during the text lol, need to fix
-	if (moviePlayer->isPlaying("x01_gamestart")) {
-		p2gz->timer->draw();
-	}
 }
 
 /**
