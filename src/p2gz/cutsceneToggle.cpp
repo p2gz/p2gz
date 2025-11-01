@@ -197,6 +197,13 @@ CutsceneToggle* CutsceneMgr::get_toggle(Game::DemoFlags id)
 	return nullptr;
 }
 
+void CutsceneMgr::reset_all()
+{
+	for (size_t i = 0; i < cutscene_list.len(); i++) {
+		cutscene_list[i]->set_cutscene_flag(false);
+	}
+}
+
 void CutsceneMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {

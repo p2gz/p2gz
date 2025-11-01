@@ -106,6 +106,7 @@ public:
 	void update();
 
 	CutsceneToggle* get_toggle(Game::DemoFlags id);
+	void reset_all();
 
 	static CutsceneMenuOption* create_option(Game::DemoFlags id);
 

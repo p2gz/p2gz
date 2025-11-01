@@ -8,6 +8,36 @@
 using namespace gz;
 using namespace Game;
 
+#define NUM_BASE_DEMO_FLAGS 13
+#define BASE_DEMO_FLAGS                                                                                                                   \
+	DEMO_Pluck_First_Pikmin, DEMO_Discover_Treasure, DEMO_First_Gate_Down, DEMO_Reds_In_Onion, DEMO_First_Nectar_Use, DEMO_Day_One_Start, \
+	    DEMO_Meet_Red_Pikmin, DEMO_Louie_Finds_Red_Onion, DEMO_Unlock_Captain_Switch, DEMO_First_Use_Louie, DEMO_Reunite_Captains,        \
+	    DEMO_You_Appear_Lost, DEMO_First_Number_Pellet
+
+#define NUM_AW_DEMO_FLAGS NUM_BASE_DEMO_FLAGS + 7
+#define AW_DEMO_FLAGS                                                                                                  \
+	BASE_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_Find_Cave_Geyser, DEMO_First_Cave_Enter, DEMO_First_Cave_Return, \
+	    DEMO_First_Globe_Day_End, DEMO_Purple_Candypop, DEMO_First_Corpse_In_Cave
+
+#define NUM_HOB_DEMO_FLAGS NUM_AW_DEMO_FLAGS + 4
+#define HOB_DEMO_FLAGS \
+	AW_DEMO_FLAGS, DEMO_Enter_Awakening_Wood, DEMO_Purples_In_Ship, DEMO_Reds_Purples_Tutorial, DEMO_Pikmin_In_Danger_Fire
+
+#define NUM_WFG_DEMO_FLAGS NUM_HOB_DEMO_FLAGS + 3
+#define WFG_DEMO_FLAGS     HOB_DEMO_FLAGS, DEMO_White_Candypop, DEMO_Whites_Digging, DEMO_Eat_White_Pikmin
+
+#define NUM_SH_DEMO_FLAGS NUM_WFG_DEMO_FLAGS + 3
+#define SH_DEMO_FLAGS     WFG_DEMO_FLAGS, DEMO_Find_Blue_Onion, DEMO_Pikmin_In_Danger_Poison, DEMO_Pikmin_In_Danger_Water
+
+#define NUM_VOR2_DEMO_FLAGS NUM_SH_DEMO_FLAGS + 2
+#define VOR2_DEMO_FLAGS     SH_DEMO_FLAGS, DEMO_Whites_In_Ship, DEMO_Max_Pikmin_On_Field
+
+#define NUM_COS_DEMO_FLAGS NUM_VOR2_DEMO_FLAGS + 2
+#define COS_DEMO_FLAGS     VOR2_DEMO_FLAGS, DEMO_Discover_Bulbmin, DEMO_Enter_Perplexing_Pool
+
+#define NUM_GK_DEMO_FLAGS NUM_COS_DEMO_FLAGS + 1
+#define GK_DEMO_FLAGS     COS_DEMO_FLAGS, DEMO_Find_Yellow_Onion
+
 PresetMgr::PresetMgr()
 {
 	presets.push((new Preset("everything", General))
@@ -17,61 +47,85 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_sprays(false, 0, true, 16));
-	presets.push((new Preset("EC", PoD))->set_pikmin(Flower, Red, 46)->set_pikmin(Leaf, Red, 6)->set_time(8.0f));
+	presets.push((new Preset("EC", PoD))
+	                 ->set_pikmin(Flower, Red, 46)
+	                 ->set_pikmin(Leaf, Red, 6)
+	                 ->set_time(8.0f)
+	                 ->set_cutscene_flags(NUM_BASE_DEMO_FLAGS, (DemoFlags[NUM_BASE_DEMO_FLAGS]) { BASE_DEMO_FLAGS }));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
-	                 ->set_onion_pikmin(Leaf, Purple, 10));
-	presets.push((new Preset("HoB1-2", PoD))->set_pikmin(Flower, Red, 62)->set_pikmin(Flower, Purple, 10)->set_time(8.0f));
+	                 ->set_onion_pikmin(Leaf, Purple, 10)
+	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS }));
+	presets.push((new Preset("HoB1-2", PoD))
+	                 ->set_pikmin(Flower, Red, 62)
+	                 ->set_pikmin(Flower, Purple, 10)
+	                 ->set_time(8.0f)
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
 	presets.push((new Preset("HoB3-4", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_pikmin(Leaf, Purple, 10)
-	                 ->set_time(8.0f));
-	presets.push((new Preset("HoB5", PoD))->set_pikmin(Flower, Red, 52)->set_pikmin(Flower, Purple, 20)->set_time(8.0f));
+	                 ->set_time(8.0f)
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
+	presets.push((new Preset("HoB5", PoD))
+	                 ->set_pikmin(Flower, Red, 52)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_time(8.0f)
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
-	                 ->set_upgrades(1, (OlimarData::ItemIndex[1]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                   }));
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                })
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
 	presets.push((new Preset("WFG4-WFG5", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.0f)
-	                 ->set_upgrades(1, (OlimarData::ItemIndex[1]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                   }));
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                })
+	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS }));
 	presets.push((new Preset("enter SH", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                   }));
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                })
+	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS }));
 	presets.push((new Preset("SH1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 34)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                   }));
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("SH3-7", PoD))
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(2, (OlimarData::ItemIndex[2]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                   }));
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("enter BK (15/5)", PoD))
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
@@ -79,77 +133,91 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                   }));
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("enter BK (20)", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                   }));
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("enter BK (25)", PoD))
 	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 24)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                   }));
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("BK", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Red, 28)
 	                 ->set_pikmin(Leaf, Blue, 32)
 	                 ->set_time(13.0f)
-	                 ->set_upgrades(3, (OlimarData::ItemIndex[3]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                   }));
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
-	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                   }));
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 29)
-	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                   }));
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
 	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 29)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                   }));
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
 	presets.push((new Preset("SCx5-FC5", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -157,12 +225,14 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4, (OlimarData::ItemIndex[4]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                   }));
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
 	presets.push((new Preset("FC6-7", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -170,38 +240,44 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                       OlimarData::ODII_BruteKnuckles,
-	                                   }));
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                    OlimarData::ODII_BruteKnuckles,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 40)
 	                 ->set_onion_pikmin(Flower, Red, 29)
-	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                       OlimarData::ODII_BruteKnuckles,
-	                                   }));
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                    OlimarData::ODII_BruteKnuckles,
+	                                })
+	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS }));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 34)
 	                 ->set_onion_pikmin(Flower, Red, 29)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(5, (OlimarData::ItemIndex[5]) {
-	                                       OlimarData::ODII_PrototypeDetector,
-	                                       OlimarData::ODII_FiveManNapsack,
-	                                       OlimarData::ODII_JusticeAlloy,
-	                                       OlimarData::ODII_ForgedCourage,
-	                                       OlimarData::ODII_BruteKnuckles,
-	                                   }));
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                    OlimarData::ODII_BruteKnuckles,
+	                                })
+	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS }));
 }
 
 Preset* PresetMgr::create()
