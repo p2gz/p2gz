@@ -45,11 +45,14 @@ public:
 	void stop_skip_timer_upgrade();
 	void cancel_skip_timer();
 
-	void reset_pause_timer();
-	void stop_pause_timer();
+	void pause();
+	void unpause();
 
 	void set_FS_map_flag(bool flag) { FS_map_flag = flag; }
 	bool get_FS_map_flag() { return FS_map_flag; }
+
+	void set_freecam_mode(bool set) { in_freecam_mode = set; }
+	bool is_freecam_mode() { return in_freecam_mode; }
 
 private:
 	struct TimeComponents {
@@ -67,7 +70,8 @@ private:
 	bool skip_timer_set;
 	bool pause_timer_set;
 
-	bool FS_map_flag; // are we loading into the world map/select area from file select?
+	bool FS_map_flag;     // are we loading into the world map/select area from file select?
+	bool in_freecam_mode; // handle pausing timer differently when we close the menu for freecam
 
 	u32 main_timer;  // overall/default timer
 	u32 sub_timer;   // sublevel timer

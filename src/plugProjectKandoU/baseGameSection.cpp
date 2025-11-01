@@ -398,9 +398,9 @@ void BaseGameSection::doDraw(Graphics& gfx)
 	}
 
 	// @P2GZ - timer
-	// need to draw timer over crash landing cutscene
+	// need to draw timer over cutscenes
 	// the positioning for this is important, otherwise the talking pod steals the timer :')
-	if (moviePlayer->isPlaying("x01_gamestart")) {
+	if (moviePlayer->isFlag(MVP_IsActive)) {
 		p2gz->timer->draw();
 	}
 

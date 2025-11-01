@@ -11,6 +11,7 @@ Timer::Timer()
     , skip_timer_set(false)
     , pause_timer_set(false)
     , FS_map_flag(false)
+    , in_freecam_mode(false)
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
@@ -23,6 +24,7 @@ Timer::Timer()
 	z            = 12.0;
 
 	enable();
+	reset_main_timer();
 }
 
 void Timer::draw()
@@ -184,17 +186,13 @@ void Timer::stop_skip_timer_treasure()
 	if (!skip_timer_set) {
 		return;
 	}
-	OSReport("Skip timer value: %d\n", skip_timer);
-	OSReport("Current time: %d\n", get_cur_time());
+
 	int remaining = skip_timer + (MAX_TREASURE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
-	OSReport("remaining: %d\n", remaining);
 	if (remaining < 0) {
 		remaining = 0;
 	}
 
-	OSReport("Old main timer: %d\n", main_timer);
 	main_timer -= remaining;
-	OSReport("New main timer: %d\n", main_timer);
 	sub_timer -= remaining;
 	skip_timer_set = false;
 }
@@ -223,7 +221,7 @@ void Timer::cancel_skip_timer()
 	skip_timer_set = false;
 }
 
-void Timer::reset_pause_timer()
+void Timer::pause()
 {
 	if (pause_timer_set) {
 		return;
@@ -232,7 +230,7 @@ void Timer::reset_pause_timer()
 	pause_timer_set = true;
 }
 
-void Timer::stop_pause_timer()
+void Timer::unpause()
 {
 	if (!pause_timer_set) {
 		return;
@@ -251,10 +249,7 @@ void Timer::enable()
 		return;
 	}
 
-	main_timer  = get_cur_time();
-	sub_timer   = get_cur_time();
-	pause_timer = get_cur_time();
-	enabled     = true;
+	enabled = true;
 }
 
 void Timer::disable()

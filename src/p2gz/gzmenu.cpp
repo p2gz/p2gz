@@ -233,7 +233,7 @@ void GZMenu::open()
 	lock    = true;
 
 	Game::gameSystem->setPause(true, "gzmenu", 3);
-	p2gz->timer->reset_pause_timer();
+	p2gz->timer->pause();
 }
 
 void GZMenu::close()
@@ -243,7 +243,10 @@ void GZMenu::close()
 
 	enabled = false;
 	Game::gameSystem->setPause(false, "gzmenu", 3);
-	p2gz->timer->stop_pause_timer();
+	// don't unpause timer if we're in freecam mode (until we exit that mode)
+	if (!p2gz->timer->is_freecam_mode()) {
+		p2gz->timer->unpause();
+	}
 }
 
 void GZMenu::draw()
