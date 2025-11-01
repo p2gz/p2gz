@@ -76,9 +76,9 @@ Preset* Preset::set_time(f32 time_)
 	return this;
 }
 
-Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
+Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
-	cutscene_flags.expandCapacityTo(num_flags);
+	cutscene_flags.expandCapacityTo(cutscene_flags.len() + num_flags);
 	for (size_t i = 0; i < num_flags; i++) {
 		cutscene_flags.push(flags[i]);
 	}
@@ -87,7 +87,7 @@ Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
 
 Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
 {
-	upgrades.expandCapacityTo(num_upgrades);
+	upgrades.expandCapacityTo(upgrades.len() + num_upgrades);
 	for (size_t i = 0; i < num_upgrades; i++) {
 		upgrades.push(items[i]);
 	}
@@ -141,10 +141,13 @@ void Preset::apply()
 	}
 
 	// Set cutscene flags
-	// TODO: use cutscene flag editor for this
-	// for (size_t i = 0; i < preset.cutscene_flags.len(); i++) {
-	// 	playData->mDemoFlags.setFlag(preset.cutscene_flags[i]);
-	// }
+	for (size_t i = 0; i < cutscene_flags.len(); i++) {
+		Game::DemoFlags flag            = cutscene_flags[i];
+		CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
+		if (cutscene_toggle) {
+			cutscene_toggle->set_cutscene_flag(true);
+		}
+	}
 }
 
 PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)

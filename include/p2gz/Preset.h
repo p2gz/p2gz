@@ -28,7 +28,7 @@ public:
 	Preset* set_onion_pikmin(int stage, int color, int amount);
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
 	Preset* set_time(f32 time_);
-	Preset* set_cutscene_flags(size_t num_flags, int flags[]);
+	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
 	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
 
 	PresetCategory category;
@@ -40,7 +40,7 @@ public:
 	int num_bitters;
 	int num_spicies;
 	f32 time;
-	Vec<int> cutscene_flags;
+	Vec<Game::DemoFlags> cutscene_flags;
 	Vec<Game::OlimarData::ItemIndex> upgrades;
 };
 
