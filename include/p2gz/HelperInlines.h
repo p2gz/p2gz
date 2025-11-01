@@ -7,37 +7,37 @@
 
 namespace gz {
 
-inline bool inBootUp()
+inline bool in_boot_up()
 {
 	// make sure gameflow is in boot up state
 	return GameFlow::mActiveSectionFlag == GameFlow::SN_Boot;
 }
 
-inline bool inTitleScreen()
+inline bool in_title_screen()
 {
 	// make sure gameflow is title state (incl. options menus, hiscore menus, etc)
 	return GameFlow::mActiveSectionFlag == GameFlow::SN_MainTitle;
 }
 
-inline bool inStoryMode()
+inline bool in_story_mode()
 {
 	// make sure game system is active and we're not in challenge mode/vs mode/piklopedia/etc
 	return Game::gameSystem && Game::gameSystem->isStoryMode();
 }
 
-inline Game::SingleGameSection* getSGS()
+inline Game::SingleGameSection* get_SGS()
 {
 	// make sure current section is castable to SingleGameSection
-	if (!inStoryMode()) {
+	if (!in_story_mode()) {
 		return nullptr;
 	}
 	return static_cast<Game::SingleGameSection*>(Game::gameSystem->getSection());
 }
 
-inline bool inFileSelect()
+inline bool in_file_select()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -53,10 +53,10 @@ inline bool inFileSelect()
 	return true;
 }
 
-inline bool inWorldMap()
+inline bool in_world_map()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -71,10 +71,10 @@ inline bool inWorldMap()
 	return true;
 }
 
-inline bool inAboveGroundPlay()
+inline bool in_above_ground_play()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -89,10 +89,10 @@ inline bool inAboveGroundPlay()
 	return true;
 }
 
-inline bool inCavePlay()
+inline bool in_cave_play()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -107,10 +107,10 @@ inline bool inCavePlay()
 	return true;
 }
 
-inline bool inEndOfDay()
+inline bool in_end_of_day()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -125,10 +125,10 @@ inline bool inEndOfDay()
 	return true;
 }
 
-inline bool inCaveResults()
+inline bool in_cave_results()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -143,10 +143,10 @@ inline bool inCaveResults()
 	return true;
 }
 
-inline bool inLoad()
+inline bool in_load()
 {
 	// must be in single player mode
-	Game::SingleGameSection* sgs = getSGS();
+	Game::SingleGameSection* sgs = get_SGS();
 	if (!sgs) {
 		return false;
 	}
@@ -161,13 +161,13 @@ inline bool inLoad()
 	return true;
 }
 
-inline bool inEnterCaveLoad()
+inline bool in_enter_cave_load()
 {
 	// must be in a single player load state
-	if (!inLoad()) {
+	if (!in_load()) {
 		return false;
 	}
-	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(getSGS()->getCurrState());
+	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(get_SGS()->getCurrState());
 	if (!state) {
 		return false;
 	}
@@ -182,13 +182,13 @@ inline bool inEnterCaveLoad()
 	return true;
 }
 
-inline bool inBetweenSublevelLoad()
+inline bool in_between_sublevel_load()
 {
 	// must be in single player mode
-	if (!inLoad()) {
+	if (!in_load()) {
 		return false;
 	}
-	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(getSGS()->getCurrState());
+	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(get_SGS()->getCurrState());
 	if (!state) {
 		return false;
 	}
@@ -199,13 +199,13 @@ inline bool inBetweenSublevelLoad()
 	return true;
 }
 
-inline bool inExitCaveLoad()
+inline bool in_exit_cave_load()
 {
 	// must be in single player mode
-	if (!inLoad()) {
+	if (!in_load()) {
 		return false;
 	}
-	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(getSGS()->getCurrState());
+	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(get_SGS()->getCurrState());
 	if (!state) {
 		return false;
 	}
@@ -220,13 +220,13 @@ inline bool inExitCaveLoad()
 	return true;
 }
 
-inline bool inEnterAreaLoad()
+inline bool in_enter_area_load()
 {
 	// must be in single player mode
-	if (!inLoad()) {
+	if (!in_load()) {
 		return false;
 	}
-	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(getSGS()->getCurrState());
+	Game::SingleGame::LoadState* state = static_cast<Game::SingleGame::LoadState*>(get_SGS()->getCurrState());
 	if (!state) {
 		return false;
 	}
