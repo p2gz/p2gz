@@ -134,7 +134,7 @@ void GZMenu::init_menu()
 		->push(new OpenSubMenuOption("timer", (new ListMenu())
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
-			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
 		))
 		// Cutscene re-enable menu
 		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())

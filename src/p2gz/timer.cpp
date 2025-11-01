@@ -85,6 +85,15 @@ Timer::TimeComponents Timer::calc_time(u32 start_time, u32 end_time)
 	return components;
 }
 
+void Timer::on_reset()
+{
+	main_timer = get_cur_time();
+	sub_timer  = get_cur_time();
+	if (pause_timer_set) {
+		pause_timer = get_cur_time();
+	}
+}
+
 void Timer::reset_main_timer()
 {
 	main_timer = get_cur_time();
@@ -242,9 +251,10 @@ void Timer::enable()
 		return;
 	}
 
-	main_timer = get_cur_time();
-	sub_timer  = get_cur_time();
-	enabled    = true;
+	main_timer  = get_cur_time();
+	sub_timer   = get_cur_time();
+	pause_timer = get_cur_time();
+	enabled     = true;
 }
 
 void Timer::disable()

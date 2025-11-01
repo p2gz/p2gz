@@ -30,6 +30,7 @@ public:
 	void disable();
 	void set_enabled(bool on);
 	void set_sub_timer_enabled(bool on);
+	void on_reset();
 
 	void reset_main_timer();
 	void reset_sub_timer();
