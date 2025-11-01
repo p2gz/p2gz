@@ -29,11 +29,14 @@ using namespace Game;
 #define NUM_SH_DEMO_FLAGS NUM_WFG_DEMO_FLAGS + 3
 #define SH_DEMO_FLAGS     WFG_DEMO_FLAGS, DEMO_Find_Blue_Onion, DEMO_Pikmin_In_Danger_Poison, DEMO_Pikmin_In_Danger_Water
 
-#define NUM_VOR2_DEMO_FLAGS NUM_SH_DEMO_FLAGS + 1
-#define VOR2_DEMO_FLAGS     SH_DEMO_FLAGS, DEMO_Whites_In_Ship
+#define NUM_VOR2_DEMO_FLAGS NUM_SH_DEMO_FLAGS + 2
+#define VOR2_DEMO_FLAGS     SH_DEMO_FLAGS, DEMO_Whites_In_Ship, DEMO_Max_Pikmin_On_Field
 
-#define NUM_GK_DEMO_FLAGS NUM_VOR2_DEMO_FLAGS + 2
-#define GK_DEMO_FLAGS     VOR2_DEMO_FLAGS, DEMO_Find_Yellow_Onion, DEMO_Enter_Perplexing_Pool
+#define NUM_COS_DEMO_FLAGS NUM_VOR2_DEMO_FLAGS + 2
+#define COS_DEMO_FLAGS     VOR2_DEMO_FLAGS, DEMO_Discover_Bulbmin, DEMO_Enter_Perplexing_Pool
+
+#define NUM_GK_DEMO_FLAGS NUM_COS_DEMO_FLAGS + 1
+#define GK_DEMO_FLAGS     COS_DEMO_FLAGS, DEMO_Find_Yellow_Onion
 
 PresetMgr::PresetMgr()
 {
@@ -259,7 +262,7 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
-	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS }));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
