@@ -233,6 +233,7 @@ void GZMenu::open()
 	lock    = true;
 
 	Game::gameSystem->setPause(true, "gzmenu", 3);
+	p2gz->timer->reset_pause_timer();
 }
 
 void GZMenu::close()
@@ -242,6 +243,7 @@ void GZMenu::close()
 
 	enabled = false;
 	Game::gameSystem->setPause(false, "gzmenu", 3);
+	p2gz->timer->stop_pause_timer();
 }
 
 void GZMenu::draw()

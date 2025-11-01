@@ -23,6 +23,12 @@ public:
 	void reset_main_timer();
 	void reset_sub_timer();
 
+	void reset_skip_timer();
+	void stop_skip_timer();
+
+	void reset_pause_timer();
+	void stop_pause_timer();
+
 private:
 	struct TimeComponents {
 		u32 minutes;
@@ -32,13 +38,19 @@ private:
 
 	static u32 get_cur_time() { return (u32)OSTicksToMilliseconds(OSGetTime()); }
 	static TimeComponents calc_time(u32 start_time);
+	static TimeComponents calc_time(u32 start_time, u32 end_time);
 
 	bool enabled;
 	bool sub_timer_enabled;
-	bool has_been_set;
+	bool main_timer_set;
+	bool sub_timer_set;
+	bool skip_timer_set;
+	bool pause_timer_set;
 
-	u32 main_timer;
-	u32 sub_timer;
+	u32 main_timer;  // overall/default timer
+	u32 sub_timer;   // sublevel timer
+	u32 skip_timer;  // for offsets because of P2GZ toggles
+	u32 pause_timer; // for when gz menu is open
 
 	// display settings
 	JUtility::TColor color;
