@@ -56,6 +56,7 @@ Warp::Warp()
 {
 	allow_zero_pikmin_in_caves = true;
 	preset_status              = PS_Stale;
+	cave                       = nullptr;
 }
 
 void Warp::init()
@@ -266,9 +267,11 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
 	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest.cave - 1));
-	Game::ItemCave::Item* cave = new Game::ItemCave::Item;
-	cave->mCaveID              = caveID;
-	cave->mCaveFilename        = dst_course_info->getCaveinfoFilename_FromID(caveID);
+	if (!cave) {
+		cave = new Game::ItemCave::Item;
+	}
+	cave->mCaveID       = caveID;
+	cave->mCaveFilename = dst_course_info->getCaveinfoFilename_FromID(caveID);
 
 	Game::gameSystem->mTimeMgr->mDayCount        = dest.day; // set day
 	Game::playData->mCaveSaveData.mTime          = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
