@@ -218,6 +218,16 @@ void Warp::do_warp()
 	} else {
 		warp_to_cave(game);
 	}
+
+	// Disable the option for skipping save prompts and force it to be on
+	// when warping out of the menu. This is because there's no save file selected,
+	// so saving in this state causes a crash.
+	if (warping_from_menu) {
+		ToggleMenuOption* skip_save_prompts_opt = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("settings/skip save prompts"));
+		skip_save_prompts_opt->visible          = false;
+		skip_save_prompts_opt->set_selection(true);
+		p2gz->skip_save->toggle_save_skip(true);
+	}
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
