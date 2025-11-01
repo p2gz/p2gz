@@ -29,6 +29,7 @@
 #include <p2gz/TreasureEditor.h>
 #include <p2gz/GeneratorDebugInfo.h>
 #include <p2gz/Test.h>
+#include <p2gz/SaveState.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha3"
@@ -77,6 +78,7 @@ public:
 	gz::TreasureEditor* treasure_editor;
 	gz::Localization* localization_op;
 	gz::test::TestRunner* test_runner;
+	gz::SaveStateMgr* savestate_mgr;
 
 private:
 	bool inited;

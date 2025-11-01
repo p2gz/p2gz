@@ -59,6 +59,7 @@ P2GZ::P2GZ()
 	ek_editor            = new EKEditor();
 	treasure_editor      = new TreasureEditor();
 	localization_op      = new Localization();
+	savestate_mgr        = new SaveStateMgr();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();

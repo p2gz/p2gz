@@ -12,6 +12,7 @@
 #include <p2gz/Preset.h>
 #include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
+#include <p2gz/SaveState.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -30,6 +31,7 @@ using namespace gz;
 
 GZMenu::GZMenu()
     : open_close_action(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
+    , bindable_action(DoublePress(Controller::PRESS_DPAD_RIGHT, 15))
     , enabled(false)
     , lock(false)
     , eat_inputs(true)
@@ -89,6 +91,7 @@ void GZMenu::init_menu()
 				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_flower", true))
 			))
 		))
+		->push(new PerformActionMenuOption("save state", new Delegate<SaveStateMgr>(p2gz->savestate_mgr, &SaveStateMgr::save)))
 		->push(new OpenSubMenuOption("captain", (new ListMenu())
 			->push(new DecimalInputOption("pokos", new Delegate1<PokoEditor, u32>(p2gz->poko_editor, &PokoEditor::set_pokos), new Delegate<PokoEditor>(p2gz->poko_editor, &PokoEditor::sync)))
 			->push(new OpenSubMenuOption("sprays", (new ListMenu(new Delegate<SprayEditor>(p2gz->spray_editor, &SprayEditor::sync)))
@@ -178,6 +181,7 @@ void GZMenu::update()
 		// so we don't do it accidentally when switching pikmin or something
 		if (!enabled && controller->getButton() & Controller::PRESS_A) {
 			open_close_action.reset();
+			bindable_action.reset();
 		}
 
 		// Open/close the menu
@@ -186,6 +190,10 @@ void GZMenu::update()
 				close();
 			else
 				open();
+		}
+
+		if (bindable_action.check(controller)) {
+			p2gz->savestate_mgr->load();
 		}
 
 		// If A or B button was pressed, set the lock for one frame (disable accidental inputs for other submenus as we navigate between

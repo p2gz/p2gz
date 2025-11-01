@@ -605,6 +605,7 @@ private:
 	void decrease_text_size();
 
 	DoublePress open_close_action;
+	DoublePress bindable_action;
 	ListMenu* root_layer;
 	BottomControlsDisplay controls;
 
