@@ -206,6 +206,7 @@ void Warp::do_warp()
 		preset_status = PS_Stale;
 	}
 
+	reset_cave_treasure_collections(game);
 	if (dest.cave == 0) {
 		warp_to_area(game);
 	} else {
@@ -221,14 +222,14 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 
 	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_otakara(i)         = 0;
+		counter_otakara(i) = 0;
 	}
 
 	pelmgr                          = Game::PelletItem::mgr;
 	Game::KindCounter& counter_item = mem->mItem;
 	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_item(i)         = 0;
+		counter_item(i) = 0;
 	}
 }
 
@@ -261,7 +262,6 @@ void Warp::save_pikmin()
 
 void Warp::warp_to_cave(Game::SingleGameSection* game)
 {
-	reset_cave_treasure_collections(game);
 	save_pikmin();
 
 	// Look up destination cave ID from index
@@ -270,8 +270,8 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	if (!cave) {
 		cave = new Game::ItemCave::Item;
 	}
-	cave->mCaveID              = caveID;
-	cave->mCaveFilename        = dst_course_info->getCaveinfoFilename_FromID(caveID);
+	cave->mCaveID       = caveID;
+	cave->mCaveFilename = dst_course_info->getCaveinfoFilename_FromID(caveID);
 
 	Game::gameSystem->mTimeMgr->mDayCount        = dest.day; // set day
 	Game::playData->mCaveSaveData.mTime          = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
