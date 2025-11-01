@@ -141,6 +141,7 @@ void Preset::apply()
 	}
 
 	// Set cutscene flags
+	p2gz->cutscene_mgr->reset_all();
 	for (size_t i = 0; i < cutscene_flags.len(); i++) {
 		Game::DemoFlags flag            = cutscene_flags[i];
 		CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
