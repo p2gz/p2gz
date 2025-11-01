@@ -2,6 +2,7 @@
 #include "P2Macros.h"
 #include "System.h"
 #include "Game/MemoryCard/Mgr.h"
+#include <p2gz/p2gz.h>
 
 namespace ebi {
 namespace CardError {
@@ -658,6 +659,14 @@ void FSMState_Q04_DoYouStartGameWithoutSave::do_open(TMgr* mgr)
 void FSMState_Q04_DoYouStartGameWithoutSave::do_transitYes(TMgr* mgr)
 {
 	if (mgr->mParentMenuType == TMgr::Parent_FileSelect) {
+		// @P2GZ - timer
+		// if selecting new file, start timer immediately on select
+		// this is technically a little after selecting, but
+		// the layering of these managers and screens is impenetrable, this is the best i can do.
+		// TODO: we could reset with a slight offset if we want down the track
+		p2gz->timer->set_sub_timer_enabled(false);
+		p2gz->timer->reset_main_timer();
+
 		mgr->goEnd_(TMgr::End_StartWithoutSave);
 	} else if (mgr->mParentMenuType == TMgr::Parent_Save) {
 		P2ASSERTLINE(518, false);

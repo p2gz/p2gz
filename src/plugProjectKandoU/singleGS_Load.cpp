@@ -44,6 +44,63 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 
 	mIsInitialized = false;
 	mHasDrawn      = false;
+
+	// @P2GZ - timer
+	// logic for when to reset a timer on load
+
+	switch (mGameLoadType) {
+	case MapEnter_NewGame:
+		// new game, load between (auto-skipped) movie and crash landing cutscene
+		// we reset timer on A press, so don't reset it again
+		// TODO: offset timer because of autoskipped movie? maybe?
+		break;
+
+	case MapEnter_NewDay:
+		// either entering area from world map, or entering cave from file select
+		if (mIsCaveLoad) {
+			// file select -> cave
+			p2gz->timer->set_sub_timer_enabled(true);
+			p2gz->timer->reset_main_timer();
+		} else {
+			// world map -> area, don't reset timer unless we're coming from file select
+			if (p2gz->timer->get_FS_map_flag()) {
+				p2gz->timer->set_enabled(true);
+				p2gz->timer->set_sub_timer_enabled(false);
+
+				p2gz->timer->reset_main_timer();
+				p2gz->timer->set_FS_map_flag(false);
+			}
+		}
+		break;
+
+	case MapEnter_CaveEnter:
+		// AG -> cave - don't reset either timer, since we need to do it before the save prompt in GameState
+		break;
+
+	case MapEnter_CaveGiveUp:
+	case MapEnter_CaveExtinction:
+		// cave results -> AG - weird niche case, but reset both + hide subtimer
+		p2gz->timer->set_sub_timer_enabled(false);
+		p2gz->timer->reset_main_timer();
+		break;
+
+	case MapEnter_CaveNavisDown:
+		// either cave results -> AG, or file select -> AG - either way, reset the timer on load + hide sub timer
+		p2gz->timer->set_sub_timer_enabled(false);
+		p2gz->timer->reset_main_timer();
+		break;
+
+	case MapEnter_CaveGeyser:
+		// file select -> AG (as if from cave) OR cave results -> AG OR cave sublevel -> cave sublevel
+		if (mIsCaveDeeper) {
+			// cave sublevel to next, don't reset anything, since we need to do it before the save prompt in CaveState
+		} else {
+			// file select or cave results -> AG - reset both, hide sub timer
+			p2gz->timer->set_sub_timer_enabled(false);
+			p2gz->timer->reset_main_timer();
+		}
+		break;
+	}
 }
 
 /**

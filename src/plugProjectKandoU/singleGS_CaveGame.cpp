@@ -574,6 +574,12 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
  */
 void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* config, u32, u32 naviID)
 {
+	// @P2GZ - timer
+	// make sure we re-prime treasure CS skip timer
+	if (config->is("s22_cv_suck_treasure") || config->is("s22_cv_suck_equipment")) {
+		p2gz->timer->cancel_skip_timer();
+	}
+
 	if (config->is("s0C_cv_escape")) {
 		// @P2GZ - retry sublevel
 		p2gz->segment_history->entering_next_sublevel = false;
@@ -590,16 +596,21 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		og::Screen::DispMemberSave disp;
 		disp.mDoSound = true;
 		PSMCancelToPauseOffMainBgm();
+
+		// @P2GZ - timer
+		// reset sub timer on end of holein cutscene
+		p2gz->timer->reset_sub_timer();
+
 		// @P2GZ: skip save prompts in caves
 		// only open the save screen if we don't have "skip save" toggled on
 		if (!p2gz->skip_save->get_save_skip_status()) {
 			Screen::gGame2DMgr->open_Save(disp);
+		} else {
+			// @P2GZ - timer
+			// add offset for save prompt (to both timers!)
+			p2gz->timer->offset_main_timer(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
 		}
 		mDrawSave = true;
-
-		// @P2GZ - timer
-		// Reset sublevel timer right before save box appears (fadeout timing)
-		p2gz->timer->reset_sub_timer();
 
 		// @P2GZ - retry sublevel
 		p2gz->segment_history->entering_next_sublevel = false;

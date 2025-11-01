@@ -133,8 +133,8 @@ void GZMenu::init_menu()
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu())
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
-			->push(new ToggleMenuOption("show sub-timer", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
-			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::reset_main_timer)))
+			->push(new ToggleMenuOption("show sub-timer", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
+			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
 		))
 		// Cutscene re-enable menu
 		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
@@ -233,6 +233,7 @@ void GZMenu::open()
 	lock    = true;
 
 	Game::gameSystem->setPause(true, "gzmenu", 3);
+	p2gz->timer->pause();
 }
 
 void GZMenu::close()
@@ -242,6 +243,10 @@ void GZMenu::close()
 
 	enabled = false;
 	Game::gameSystem->setPause(false, "gzmenu", 3);
+	// don't unpause timer if we're in freecam mode (until we exit that mode)
+	if (!p2gz->timer->is_freecam_mode()) {
+		p2gz->timer->unpause();
+	}
 }
 
 void GZMenu::draw()

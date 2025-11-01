@@ -396,6 +396,14 @@ void BaseGameSection::doDraw(Graphics& gfx)
 	if (mDraw2DCreature) {
 		drawOtakaraWindow(gfx);
 	}
+
+	// @P2GZ - timer
+	// need to draw timer over cutscenes
+	// the positioning for this is important, otherwise the talking pod steals the timer :')
+	if (moviePlayer->isFlag(MVP_IsActive)) {
+		p2gz->timer->draw();
+	}
+
 	Screen::gGame2DMgr->drawKanteiMsg(gfx);
 	if (moviePlayer && !gameSystem->mIsMoviePause) {
 		moviePlayer->draw(gfx);

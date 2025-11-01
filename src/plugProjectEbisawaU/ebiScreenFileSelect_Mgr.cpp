@@ -2,6 +2,7 @@
 #include "Game/MemoryCard/PlayerFileInfo.h"
 #include "Game/MemoryCard/Mgr.h"
 #include "PSSystem/PSSystemIF.h"
+#include <p2gz/p2gz.h>
 
 static const char className[] = "ebiScreenFileSelect_Mgr";
 
@@ -621,6 +622,14 @@ void FSMState00b_CheckData::do_init(TMgr* mgr, Game::StateArg*)
 	mgr->mMainScreen.outCopyErase();
 	mgr->mMainScreen.outDataBall(mgr->mCurrSelection);
 	mgr->mMainScreen.createFiledecide(mgr->mCurrSelection);
+
+	// @P2GZ - timer
+	// if selecting new file, start timer immediately on select
+	Screen::FileSelect::TFileData* data = &mgr->mMainScreen.mFileData[mgr->mCurrSelection];
+	if (data->mIsNewFile) {
+		p2gz->timer->set_sub_timer_enabled(false);
+		p2gz->timer->reset_main_timer();
+	}
 
 	mStatus = CheckDataState_DoLoad;
 }

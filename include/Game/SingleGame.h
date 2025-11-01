@@ -50,12 +50,13 @@ enum StateID {
 
 // Used by a few game states for knowing what to do upon loading into a map
 enum MapEnterStatus {
-	MapEnter_NewDay         = 0, // start of new day
-	MapEnter_CaveGeyser     = 1, // left cave via geyser
-	MapEnter_CaveNavisDown  = 2, // left via both captains down
-	MapEnter_CaveExtinction = 3, // left via pikmin extinction
-	MapEnter_CaveGiveUp     = 4, // left via giving up
-	MapEnter_NewGame        = 5, // start of new game file (crash landing)
+	MapEnter_NewDay         = 0,   // start of new day
+	MapEnter_CaveGeyser     = 1,   // left cave via geyser
+	MapEnter_CaveNavisDown  = 2,   // left via both captains down
+	MapEnter_CaveExtinction = 3,   // left via pikmin extinction
+	MapEnter_CaveGiveUp     = 4,   // left via giving up
+	MapEnter_NewGame        = 5,   // start of new game file (crash landing)
+	MapEnter_CaveEnter      = 100, // @P2GZ - just isn't labelled in decomp, but helpful for hooking into load transitions
 };
 
 struct FSM : public StateMachine<SingleGameSection> {
