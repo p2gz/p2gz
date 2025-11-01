@@ -51,28 +51,33 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 46)
 	                 ->set_pikmin(Leaf, Red, 6)
 	                 ->set_time(8.0f)
-	                 ->set_cutscene_flags(NUM_BASE_DEMO_FLAGS, (DemoFlags[NUM_BASE_DEMO_FLAGS]) { BASE_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_BASE_DEMO_FLAGS, (DemoFlags[NUM_BASE_DEMO_FLAGS]) { BASE_DEMO_FLAGS })
+	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" }));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
 	                 ->set_onion_pikmin(Leaf, Purple, 10)
-	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS })
+	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" }));
 	presets.push((new Preset("HoB1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_time(8.0f)
-	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("HoB3-4", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_pikmin(Leaf, Purple, 10)
 	                 ->set_time(8.0f)
-	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("HoB5", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
-	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -81,7 +86,8 @@ PresetMgr::PresetMgr()
 	                                (OlimarData::ItemIndex[1]) {
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
-	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("WFG4-WFG5", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -91,7 +97,8 @@ PresetMgr::PresetMgr()
 	                                (OlimarData::ItemIndex[1]) {
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
-	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("enter SH", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -102,7 +109,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
-	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("SH1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 34)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -113,7 +121,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("SH3-7", PoD))
 	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -125,7 +134,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("enter BK (15/5)", PoD))
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
@@ -139,7 +149,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("enter BK (20)", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -152,7 +163,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("enter BK (25)", PoD))
 	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -165,7 +177,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("BK", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -178,7 +191,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -190,7 +204,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
-	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -203,7 +218,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
-	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -217,7 +233,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
-	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
 	presets.push((new Preset("SCx5-FC5", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -232,7 +249,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
-	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
 	presets.push((new Preset("FC6-7", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -248,7 +266,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
-	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -262,7 +281,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
-	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -277,7 +297,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
-	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS }));
+	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
 }
 
 Preset* PresetMgr::create()

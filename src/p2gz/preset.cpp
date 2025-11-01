@@ -97,7 +97,7 @@ Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex it
 Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
 {
 	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
-	for (size_t i = 0; i < destroyed_gates; i++) {
+	for (size_t i = 0; i < num_gates; i++) {
 		GZASSERTLINE(gates[i]);
 		destroyed_gates.push(gates[i]);
 	}
