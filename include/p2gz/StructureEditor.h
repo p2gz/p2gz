@@ -9,7 +9,14 @@ namespace gz {
 
 struct StructureEditor {
 	struct GateWrapper {
+		GateWrapper()
+		{
+			gate = nullptr;
+			name = nullptr;
+		}
+
 		Game::ItemGate* gate;
+		const char* name;
 
 		void set_gate_segments(s32 segments);
 		void set_gate_segment_health(f32 health);
@@ -34,6 +41,7 @@ public:
 	void init();
 
 	void add_gate(Game::ItemGate* gate);
+	void set_gate_stages_left(const char* name, int stages_left);
 	void clear_gates();
 
 private:

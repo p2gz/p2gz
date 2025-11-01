@@ -43,8 +43,8 @@ void StructureEditor::add_gate(Game::ItemGate* gate)
 {
 	GateWrapper* gate_wrapper = new GateWrapper();
 	gate_wrapper->gate        = gate;
+	gate_wrapper->name        = get_gate_name(gate->mPosition.x, gate->mPosition.z);
 	gates.push(gate_wrapper);
-	const char* gate_name = get_gate_name(gate->mPosition.x, gate->mPosition.z);
 
 	// clang-format off
 	gate_menu->push(new OpenSubMenuOption(gate_name, (new ListMenu())
@@ -74,6 +74,16 @@ const char* StructureEditor::get_gate_name(f32 x, f32 z)
 	char* name = new char[8];
 	sprintf(name, "gate %d", gates.len());
 	return name;
+}
+
+void StructureEditor::set_gate_stages_left(const char* name, int stages_left)
+{
+	for (size_t i = 0; i < gates.len(); i++) {
+		GateWrapper* gate = gates[i];
+		if (strcmp(name, gate->name) == 0) {
+			gate->set_gate_segments(stages_left);
+		}
+	}
 }
 
 void StructureEditor::GateWrapper::set_gate_segments(s32 segments)
