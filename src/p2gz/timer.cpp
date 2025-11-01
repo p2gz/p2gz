@@ -1,6 +1,7 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <p2gz/timer.h>
+#include <p2gz/HelperInlines.h>
 
 using namespace gz;
 
@@ -34,12 +35,15 @@ void Timer::draw()
 	j2d.mGradientColor.set(color);
 
 	Timer::TimeComponents main_c = calc_time(main_timer);
+	main_c.minutes += 100;
+
+	f32 main_width = j2d.print(x, z, "%ld:%.2ld.%.1ld", main_c.minutes, main_c.seconds, main_c.tenths);
 	if (sub_timer_enabled) {
+		f32 sub_offset = (main_c.minutes < 10) ? 65.0f : (main_c.minutes < 100) ? 80.0f : 95.0f;
+		// if you have the main timer going for longer than 999 minutes, go touch grass.
+
 		Timer::TimeComponents sub_c = calc_time(sub_timer);
-		j2d.print(x, z, "%ld:%.2ld:%.1ld (%ld:%.2ld:%.1ld)", main_c.minutes, main_c.seconds, main_c.tenths, sub_c.minutes, sub_c.seconds,
-		          sub_c.tenths);
-	} else {
-		j2d.print(x, z, "%ld:%.2ld:%.1ld", main_c.minutes, main_c.seconds, main_c.tenths);
+		j2d.print(x + sub_offset, z, "(%ld:%.2ld.%.1ld)", sub_c.minutes, sub_c.seconds, sub_c.tenths);
 	}
 }
 
