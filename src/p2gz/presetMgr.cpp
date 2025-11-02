@@ -305,6 +305,8 @@ PresetMgr::PresetMgr()
 
 Preset* PresetMgr::create()
 {
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	Preset* preset           = new Preset(nullptr, Generated);
 	preset->name             = "generated preset";
 	preset->spicies_unlocked = p2gz->spray_editor->get_spicies_unlocked();
@@ -331,6 +333,7 @@ Preset* PresetMgr::create()
 		copy_vec(preset->upgrades, last_used_preset->upgrades);
 	}
 
+	prev_heap->becomeCurrentHeap();
 	return preset;
 }
 

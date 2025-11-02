@@ -21,6 +21,7 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	inited             = false;
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// Setup all our P2GZ menus/features here
@@ -53,6 +54,10 @@ P2GZ::P2GZ()
 
 void P2GZ::init()
 {
+	if (inited) {
+		return;
+	}
+
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// Menu must come first since other inits might change menu options
@@ -68,11 +73,16 @@ void P2GZ::init()
 	poko_editor->init();
 	ek_editor->init();
 
+	inited = true;
 	prev_heap->becomeCurrentHeap();
 }
 
 void P2GZ::update()
 {
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	day_editor->update();
@@ -95,6 +105,10 @@ void P2GZ::update()
 // Anything that needs to appear on the screen in clip space should be drawn here.
 void P2GZ::draw_2d()
 {
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	menu->draw();
@@ -107,6 +121,10 @@ void P2GZ::draw_2d()
 // Anything that needs to be drawn in 3D space should be drawn here.
 void P2GZ::draw()
 {
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	collision_viewer->draw();

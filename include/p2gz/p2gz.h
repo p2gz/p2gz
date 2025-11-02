@@ -66,6 +66,9 @@ public:
 	gz::DismissPositions* dismiss_positions;
 	gz::PokoEditor* poko_editor;
 	gz::EKEditor* ek_editor;
+
+private:
+	bool inited;
 };
 
 // global instance

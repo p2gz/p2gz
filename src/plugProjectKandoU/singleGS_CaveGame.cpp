@@ -127,10 +127,8 @@ void CaveState::gameStart(SingleGameSection* game)
 	p2gz->warp->do_post_warp();
 
 	// @P2GZ - save current squad to history when starting a sublevel
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
 	seg->preset      = p2gz->preset_mgr->create();
-	prev_heap->becomeCurrentHeap();
 }
 
 /**
