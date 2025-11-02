@@ -83,8 +83,6 @@ void P2GZ::update()
 		return;
 	}
 
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
-
 	day_editor->update();
 	spray_editor->update();
 	freecam->update();
@@ -98,24 +96,18 @@ void P2GZ::update()
 	// inadvertantly do things in other systems on the same frame they're pressed.
 	// NEW - we use the menu lock to prevent this issue for update calls outside of this function (such as graphical updates)
 	menu->update();
-
-	prev_heap->becomeCurrentHeap();
 }
 
 // Anything that needs to appear on the screen in clip space should be drawn here.
 void P2GZ::draw_2d()
 {
-	if (!inited || !sys->mSysHeap) {
+	if (!inited) {
 		return;
 	}
-
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	menu->draw();
 	timer->draw();
 	segment_history->draw_2d();
-
-	prev_heap->becomeCurrentHeap();
 }
 
 // Anything that needs to be drawn in 3D space should be drawn here.
@@ -125,14 +117,10 @@ void P2GZ::draw()
 		return;
 	}
 
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
-
 	collision_viewer->draw();
 	freecam->draw();
 	enemy_debug_info->draw();
 	dismiss_positions->draw();
-
-	prev_heap->becomeCurrentHeap();
 }
 
 // Code to draw the version number on the title screen
