@@ -26,7 +26,7 @@
 #include <p2gz/EKEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha1"
+#define P2GZ_VERSION "alpha2"
 
 struct P2GZ {
 public:
