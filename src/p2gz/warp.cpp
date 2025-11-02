@@ -189,7 +189,7 @@ void Warp::update_preset_opt()
 	}
 
 	PresetCategory category = PoD;
-	if (preset) {
+	if (preset && preset->category != Generated) {
 		category = preset->category;
 	}
 
