@@ -3,6 +3,7 @@
 This is the first public release of P2GZ, the new Pikmin 2 practice ROM built by [@jonathonbrady](https://github.com/jonathonbrady), [@mayabyte](https://github.com/mayabyte), [@HeartPiece44](https://github.com/HeartPiece44), and [@amaritnez](https://github.com/amaritnez).
 
 This release includes the following features:
+
 - Warp anywhere in the game, including automatic squad presets for all current PoD splits
 - Edit your pikmin squad, spray numbers, and pokos in real time
 - Freecam mode with the ability to teleport anywhere in the current level
@@ -15,6 +16,9 @@ This release includes the following features:
 - Skippable treasure cutscenes
 - Debug info for the game's heap and enemy state
 - Togglable in-game timer displayed on screen
+- Realtime squad dismiss position viewer
+- Exploration Kit editor
+- Togglable cutscene flags
 
 Open the GZ menu to access these features any time by double pressing Dpad Left while in game.
 
