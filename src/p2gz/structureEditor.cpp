@@ -46,8 +46,6 @@ void StructureEditor::add_gate(Game::ItemGate* gate)
 	gate_wrapper->name        = get_gate_name(gate->mPosition.x, gate->mPosition.z);
 	gates.push(gate_wrapper);
 
-	OSReport("added gate %s\n", gate_wrapper->name);
-
 	// clang-format off
 	gate_menu->push(new OpenSubMenuOption(gate_wrapper->name, (new ListMenu())
 	    ->push(new RangeMenuOption("segments remaining", 0, 3, 3 - gate->mSegmentsDown, RangeMenuOption::CAP, new Delegate1<GateWrapper, s32>(gates[gates.len()-1], &GateWrapper::set_gate_segments)))
