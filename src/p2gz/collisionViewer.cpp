@@ -25,8 +25,8 @@ bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable* 
 	}
 
 	for (int i = 0; i < 3; i++) {
-		Vector3f naviVertex = *vertTable->getVertex(naviTriangle->mVertices[i]);
-		Vector3f triVertex  = *vertTable->getVertex(tri->mVertices[i]);
+		Vector3f* naviVertex = vertTable->getVertex(naviTriangle->mVertices[i]);
+		Vector3f* triVertex  = vertTable->getVertex(tri->mVertices[i]);
 		if (naviVertex != triVertex) {
 			return false;
 		}
@@ -75,8 +75,8 @@ void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 
 			GXBegin(GX_TRIANGLES, GX_VTXFMT0, 3);
 			for (int i = 0; i < 3; i++) {
-				Vector3f vertex = *vertTable->getVertex(tri->mVertices[i]);
-				GXPosition3f32(vertex.x, vertex.y, vertex.z);
+				Vector3f* vertex = vertTable->getVertex(tri->mVertices[i]);
+				GXPosition3f32(vertex->x, vertex->y, vertex->z);
 				GXColor4u8(color.r, color.g, color.b, color.a);
 			}
 			GXEnd();
