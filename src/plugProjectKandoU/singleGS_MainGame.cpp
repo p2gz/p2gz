@@ -210,6 +210,9 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 
 	// @P2GZ - set correct flags for warping
 	p2gz->warp->warping_from_menu = false;
+
+	// @P2GZ - post-load actions on warp
+	p2gz->warp->do_post_warp();
 }
 
 /**

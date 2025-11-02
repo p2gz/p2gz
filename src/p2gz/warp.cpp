@@ -57,6 +57,7 @@ Warp::Warp()
 {
 	allow_zero_pikmin_in_caves = true;
 	warping_from_menu          = false;
+	needs_post_load_action     = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 }
@@ -205,7 +206,8 @@ void Warp::do_warp()
 
 	if (preset) {
 		preset->apply();
-		preset_status = PS_Stale;
+		preset_status          = PS_Stale;
+		needs_post_load_action = true;
 	}
 
 	if (particle2dMgr) {
@@ -419,4 +421,16 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	}
 	Game::SingleGame::LoadArg arg(map_enter_status, false, warping_from_menu, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
+}
+
+void Warp::do_post_warp()
+{
+	if (!needs_post_load_action) {
+		return;
+	}
+
+	needs_post_load_action = false;
+	if (preset) {
+		preset->apply_post_load();
+	}
 }

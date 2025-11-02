@@ -65,6 +65,7 @@ public:
 	u32 get_seed() { return dest.seed; }
 
 	void do_warp();
+	void do_post_warp();
 
 	bool allow_zero_pikmin_in_caves;
 	bool warping_from_menu;
@@ -91,6 +92,8 @@ private:
 	PresetMenuOption* preset_opt;
 
 	Game::ItemCave::Item* cave;
+
+	bool needs_post_load_action;
 };
 
 }; // namespace gz

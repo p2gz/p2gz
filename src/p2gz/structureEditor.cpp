@@ -43,11 +43,11 @@ void StructureEditor::add_gate(Game::ItemGate* gate)
 {
 	GateWrapper* gate_wrapper = new GateWrapper();
 	gate_wrapper->gate        = gate;
+	gate_wrapper->name        = get_gate_name(gate->mPosition.x, gate->mPosition.z);
 	gates.push(gate_wrapper);
-	const char* gate_name = get_gate_name(gate->mPosition.x, gate->mPosition.z);
 
 	// clang-format off
-	gate_menu->push(new OpenSubMenuOption(gate_name, (new ListMenu())
+	gate_menu->push(new OpenSubMenuOption(gate_wrapper->name, (new ListMenu())
 	    ->push(new RangeMenuOption("segments remaining", 0, 3, 3 - gate->mSegmentsDown, RangeMenuOption::CAP, new Delegate1<GateWrapper, s32>(gates[gates.len()-1], &GateWrapper::set_gate_segments)))
 		->push(new FloatRangeMenuOption("segment health", 0.0f, gate->mMaxSegmentHealth, gate->mCurrentSegmentHealth, new Delegate1<GateWrapper, f32>(gates[gates.len()-1], &GateWrapper::set_gate_segment_health)))
     ));
@@ -74,6 +74,17 @@ const char* StructureEditor::get_gate_name(f32 x, f32 z)
 	char* name = new char[8];
 	sprintf(name, "gate %d", gates.len());
 	return name;
+}
+
+void StructureEditor::set_gate_stages_left(const char* name, int stages_left)
+{
+	for (size_t i = 0; i < gates.len(); i++) {
+		GateWrapper* gate = gates[i];
+		if (strcmp(name, gate->name) == 0) {
+			gate->set_gate_segments(stages_left);
+			return;
+		}
+	}
 }
 
 void StructureEditor::GateWrapper::set_gate_segments(s32 segments)

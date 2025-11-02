@@ -123,6 +123,9 @@ void CaveState::gameStart(SingleGameSection* game)
 		scene->stopPollutionSe();
 	}
 
+	// @P2GZ - post-load actions on warp
+	p2gz->warp->do_post_warp();
+
 	// @P2GZ - save current squad to history when starting a sublevel
 	gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
 	seg->preset      = p2gz->preset_mgr->create();

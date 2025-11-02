@@ -23,6 +23,7 @@ public:
 	~Preset() { }
 
 	void apply();
+	void apply_post_load();
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
@@ -30,6 +31,7 @@ public:
 	Preset* set_time(f32 time_);
 	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
 	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
+	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
 
 	PresetCategory category;
 	const char* name;
@@ -42,6 +44,7 @@ public:
 	f32 time;
 	Vec<Game::DemoFlags> cutscene_flags;
 	Vec<Game::OlimarData::ItemIndex> upgrades;
+	Vec<const char*> destroyed_gates; // Will we need a way to store stages?
 };
 
 struct PresetMgr {

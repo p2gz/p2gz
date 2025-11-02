@@ -94,6 +94,16 @@ Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex it
 	return this;
 }
 
+Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
+{
+	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
+	for (size_t i = 0; i < num_gates; i++) {
+		GZASSERTLINE(gates[i]);
+		destroyed_gates.push(gates[i]);
+	}
+	return this;
+}
+
 void Preset::apply()
 {
 	// TODO: is this necessary?
@@ -155,6 +165,14 @@ void Preset::apply()
 		if (cutscene_toggle) {
 			cutscene_toggle->set_cutscene_flag(true);
 		}
+	}
+}
+
+void Preset::apply_post_load()
+{
+	// Destroy gates
+	for (size_t i = 0; i < destroyed_gates.len(); i++) {
+		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
 	}
 }
 
