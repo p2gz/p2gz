@@ -174,6 +174,16 @@ void Preset::apply_post_load()
 	for (size_t i = 0; i < destroyed_gates.len(); i++) {
 		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
 	}
+
+	// Make sure all navi have max health
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive()) {
+				navi->mHealth = 50.0f;
+			}
+		}
+	}
 }
 
 PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)

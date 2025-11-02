@@ -21,6 +21,9 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	inited             = false;
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	// Setup all our P2GZ menus/features here
 	collision_viewer             = new CollisionViewer();
 	controller                   = new Controller(JUTGamePad::PORT_0);
@@ -45,10 +48,18 @@ P2GZ::P2GZ()
 	dismiss_positions            = new DismissPositions();
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
+
+	prev_heap->becomeCurrentHeap();
 }
 
 void P2GZ::init()
 {
+	if (inited) {
+		return;
+	}
+
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
@@ -61,10 +72,17 @@ void P2GZ::init()
 	cutscene_mgr->init();
 	poko_editor->init();
 	ek_editor->init();
+
+	inited = true;
+	prev_heap->becomeCurrentHeap();
 }
 
 void P2GZ::update()
 {
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	day_editor->update();
 	spray_editor->update();
 	freecam->update();
@@ -83,6 +101,10 @@ void P2GZ::update()
 // Anything that needs to appear on the screen in clip space should be drawn here.
 void P2GZ::draw_2d()
 {
+	if (!inited) {
+		return;
+	}
+
 	menu->draw();
 	timer->draw();
 	segment_history->draw_2d();
@@ -91,6 +113,10 @@ void P2GZ::draw_2d()
 // Anything that needs to be drawn in 3D space should be drawn here.
 void P2GZ::draw()
 {
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	collision_viewer->draw();
 	freecam->draw();
 	enemy_debug_info->draw();

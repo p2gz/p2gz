@@ -59,9 +59,9 @@ struct Vec {
 
 	~Vec() { delete[] mBuf; }
 
-	size_t len() { return mLen; }
+	inline size_t len() { return mLen; }
 
-	size_t capacity() { return mCapacity; }
+	inline size_t capacity() { return mCapacity; }
 
 	void push(T val)
 	{
@@ -137,6 +137,17 @@ private:
 	size_t mLen;
 	T* mBuf;
 };
+
+template <typename T>
+static void copy_vec(Vec<T>& dst, Vec<T>& src)
+{
+	dst.clear();
+	dst.expandCapacityTo(src.len());
+
+	for (size_t i = 0; i < src.len(); i++) {
+		dst.push(src[i]);
+	}
+}
 
 } // namespace gz
 

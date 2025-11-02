@@ -119,6 +119,18 @@ void SquadEditor::clear_all_pikmin()
 			piki->kill(&arg);
 		}
 	}
+
+	if (Game::ItemPikihead::mgr) {
+		Iterator<Game::ItemPikihead::Item> iPikihead = Game::ItemPikihead::mgr;
+		CI_LOOP(iPikihead)
+		{
+			Game::ItemPikihead::Item* item = *iPikihead;
+			if (item->isAlive()) {
+				Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+				item->kill(&arg);
+			}
+		}
+	}
 }
 
 // Get the current Pikmin counts from the active captain's squad.

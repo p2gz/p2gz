@@ -415,10 +415,11 @@ System::System()
 	sUseABXCommand = true;
 	initCurrentHeapMutex();
 	JKRHeap* heap = JKRGetCurrentHeap();
-	mSysHeap      = JKRExpHeap::create(0x428000, nullptr, true);
+	mSysHeap      = JKRExpHeap::create(0x448000, nullptr, true);
 	mSysHeap->becomeCurrentHeap();
 	mHeapStatus = new HeapStatus;
 	construct();
+	p2gz = new P2GZ; // @P2GZ - create and init while in system heap
 	heap->becomeCurrentHeap();
 	mGfx = nullptr;
 	JUTVideo::sManager->setPostRetraceCallback(retraceCallback);

@@ -189,7 +189,7 @@ void Warp::update_preset_opt()
 	}
 
 	PresetCategory category = PoD;
-	if (preset) {
+	if (preset && preset->category != Generated) {
 		category = preset->category;
 	}
 
@@ -207,6 +207,7 @@ void Warp::do_warp()
 	if (preset) {
 		preset->apply();
 		preset_status          = PS_Stale;
+		p2gz->preset_mgr->last_used_preset = preset;
 		needs_post_load_action = true;
 	}
 

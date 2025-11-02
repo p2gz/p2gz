@@ -182,6 +182,8 @@ void SegmentHistory::draw_reset_controls()
 
 void SegmentHistory::start_segment(u32 seed)
 {
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	Segment* segment     = new Segment();
 	WarpDestination dest = Warp::current_dest();
 	dest.seed            = seed;
@@ -190,4 +192,6 @@ void SegmentHistory::start_segment(u32 seed)
 	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
 
 	segments.push(const_cast<const Segment*>(segment));
+
+	prev_heap->becomeCurrentHeap();
 }
