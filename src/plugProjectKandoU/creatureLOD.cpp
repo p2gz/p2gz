@@ -6,6 +6,8 @@
 #include "Viewport.h"
 #include "nans.h"
 
+#include <p2gz/p2gz.h>
+
 namespace Game {
 
 bool AILOD::drawInfo;
@@ -38,6 +40,12 @@ AILOD::AILOD()
  */
 void Creature::updateLOD(Game::AILODParm& parm)
 {
+	// @P2GZ: treasure editor
+	// force AILOD_IsVisibleBoth while enabled
+	if (p2gz->treasure_editor->is_enabled()) {
+		return;
+	}
+
 	Sys::Sphere lodSphere;
 	Sys::Cylinder lodCylinder;
 	getLODSphere(lodSphere);

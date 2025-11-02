@@ -106,6 +106,7 @@ void SingleGame::FSM::transit(SingleGameSection* game, int sceneNum, Game::State
 	// Clear structures currently in menu whenever we load a new area/sublevel
 	if (sceneNum == SGS_Load) {
 		p2gz->structure_editor->clear_gates();
+		p2gz->treasure_editor->clear_treasures();
 	}
 
 	StateMachine<SingleGameSection>::transit(game, sceneNum, arg);

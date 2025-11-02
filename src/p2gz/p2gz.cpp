@@ -58,6 +58,7 @@ void P2GZ::init()
 	spray_editor->init();
 	squad_editor->init();
 	cutscene_mgr->init();
+	treasure_editor->init();
 }
 
 void P2GZ::update()
@@ -69,7 +70,6 @@ void P2GZ::update()
 	cutscene_mgr->update();
 	segment_history->update();
 	dismiss_positions->update();
-	treasure_editor->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.

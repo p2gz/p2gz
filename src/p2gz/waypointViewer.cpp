@@ -1,4 +1,5 @@
 #include <p2gz/WaypointViewer.h>
+#include <p2gz/p2gz.h>
 #include <Game/pathfinder.h>
 #include <Game/PikiMgr.h>
 #include <PikiAI.h>
@@ -152,9 +153,14 @@ void WaypointViewer::update()
 	{
 		Game::WayPoint* wp = *waypointIter;
 		if (Game::naviMgr->getActiveNavi() != nullptr) {
-			Vector3f naviPos = Game::naviMgr->getActiveNavi()->getPosition();
-			Vector3f wpPos   = wp->getPosition();
-			if (sqrDistanceXZ(naviPos, wpPos) <= RENDER_DISTANCE) {
+			Vector3f center;
+			if (p2gz->treasure_editor->is_enabled()) {
+				center = Game::cameraMgr->mCameraObjList[Game::naviMgr->getActiveNavi()->getNaviID()]->mGoalPosition;
+			} else {
+				center = Game::naviMgr->getActiveNavi()->getPosition();
+			}
+			Vector3f wpPos = wp->getPosition();
+			if (sqrDistanceXZ(center, wpPos) <= RENDER_DISTANCE) {
 				draw_node(wp, gfx);
 				populate_adjacency_matrix(wp, &nextEdge);
 			}

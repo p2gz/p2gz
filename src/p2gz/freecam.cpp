@@ -53,7 +53,6 @@ void FreeCam::disable()
 		return;
 
 	enabled = false;
-	Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
 
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle                       = PI / 8;
@@ -65,8 +64,6 @@ void FreeCam::disable()
 
 	navi   = nullptr;
 	camera = nullptr;
-
-	og::ogSound->setCancel();
 }
 
 // Perform all updates to the freecam based on the controller inputs on this frame.
@@ -85,16 +82,35 @@ void FreeCam::update()
 	update_zoom();
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
-		warp_to_current_position();
+		if (p2gz->treasure_editor->is_enabled()) {
+			p2gz->menu->navigate_to("map/treasures");
+			og::ogSound->setDecide();
+			disable();
+		} else {
+			warp_to_current_position();
+		}
 		return;
 	}
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
 		if (!p2gz->menu->is_open()) {
-			p2gz->menu->navigate_to("tools/freecam");
+			if (p2gz->treasure_editor->is_enabled()) {
+				p2gz->menu->navigate_to("map/treasures");
+				p2gz->treasure_editor->reset_active_treasure();
+			} else {
+				p2gz->menu->navigate_to("tools/freecam");
+			}
 		}
-
 		disable();
+		og::ogSound->setCancel();
+		return;
+	}
+
+	if (navi->mController1->getButtonDown() & Controller::PRESS_X && p2gz->treasure_editor->is_enabled()) {
+		p2gz->treasure_editor->snap_to_nearest_waypoint();
+		minZoom = p2gz->treasure_editor->get_active_treasure()->getPosition().y;
+		zoom    = minZoom + INITIAL_ZOOM_OFFSET;
+		maxZoom = zoom + MAX_ZOOM_OFFSET;
 		return;
 	}
 
@@ -212,6 +228,11 @@ void FreeCam::update_position()
 	Vector3f goalPosition(camera->mGoalPosition.x + result.x * speed, camera->mGoalPosition.y, camera->mGoalPosition.z + result.z * speed);
 	if (Game::mapMgr->getMinY(goalPosition) > OUT_OF_BOUNDS_MIN_Y) {
 		camera->mGoalPosition = goalPosition;
+
+		if (p2gz->treasure_editor->is_enabled()) {
+			Vector3f treasurePos = Vector3f(goalPosition.x, Game::mapMgr->getMinY(goalPosition), goalPosition.z);
+			p2gz->treasure_editor->get_active_treasure()->setPosition(treasurePos, false);
+		}
 	}
 }
 
@@ -240,6 +261,11 @@ void FreeCam::draw()
 	if (!enabled) {
 		return;
 	}
+
+	if (p2gz->treasure_editor->is_enabled()) {
+		return;
+	}
+
 	draw_current_position();
 }
 

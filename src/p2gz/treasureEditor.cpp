@@ -1,6 +1,8 @@
 #include <p2gz/TreasureEditor.h>
 #include <p2gz/FreeCam.h>
 #include <Game/Entities/PelletItem.h>
+#include <Game/Entities/PelletOtakara.h>
+#include <Game/MapMgr.h>
 #include <Game/pelletMgr.h>
 #include <VsOtakaraName.h>
 #include <p2gz/p2gz.h>
@@ -13,18 +15,84 @@ void TreasureEditor::init()
 
 void TreasureEditor::enable()
 {
+	enabled = true;
+
+	Game::Pellet* target = nullptr;
+
+	Iterator<Game::PelletOtakara::Object> treasureIterator(Game::PelletOtakara::mgr);
+	CI_LOOP(treasureIterator)
+	{
+		Game::PelletOtakara::Object* treasure = *treasureIterator;
+		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
+			target = treasure;
+		}
+		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
+	}
+
+	Iterator<Game::PelletItem::Object> upgradeIterator(Game::PelletItem::mgr);
+	CI_LOOP(upgradeIterator)
+	{
+		Game::PelletItem::Object* treasure = *upgradeIterator;
+		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
+			target = treasure;
+		}
+		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
+	}
+
+	GZASSERTLINE(target);
+	active_treasure  = target;
+	initial_position = target->getPosition();
+
 	p2gz->waypoint_viewer->toggle(true);
 	p2gz->freecam->enable();
+
+	// We could have a target Creature that freecam follows, or we could just do this,
+	// which feels like a hack but took zero effort.
+	p2gz->freecam->set_position(target->getPosition());
 }
 
-void TreasureEditor::disable()
+void TreasureEditor::snap_to_nearest_waypoint()
 {
-	p2gz->waypoint_viewer->toggle(false);
-	p2gz->freecam->disable();
+	Game::WayPoint* nearest = nullptr;
+	Iterator<Game::WayPoint> iterator(Game::mapMgr->mRouteMgr);
+	CI_LOOP(iterator)
+	{
+		Game::WayPoint* wp = *iterator;
+		if (!nearest) {
+			nearest = wp;
+			continue;
+		}
+
+		Vector3f treasurePos = active_treasure->getPosition();
+		Vector3f currentPos  = wp->getPosition();
+		Vector3f nearestPos  = nearest->getPosition();
+		if (sqrDistanceXZ(treasurePos, currentPos) < sqrDistanceXZ(treasurePos, nearestPos)) {
+			nearest = wp;
+		}
+	}
+
+	GZASSERTLINE(nearest);
+	Vector3f pos = Vector3f(nearest->getPosition().x, p2gz->freecam->get_position().y, nearest->getPosition().z);
+	p2gz->freecam->set_position(pos);
 }
 
-void TreasureEditor::add(Pellet* treasure)
+void TreasureEditor::add(Game::Pellet* pellet)
 {
+	Game::PelletItem::Object* treasure = static_cast<Game::PelletItem::Object*>(pellet);
+
+	// clang-format off
+	treasures->push(new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu())
+		->push(new PerformActionMenuOption("move", new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::enable)))
+		->push(new ToggleMenuOption("collected", false, new Delegate1<TreasureEditor, bool>(p2gz->treasure_editor, &TreasureEditor::toggle_collected)))
+	));
+	// clang-format on
+}
+
+void TreasureEditor::clear_treasures()
+{
+	if (treasures) {
+		treasures->clear();
+	}
 }
 } // namespace gz
 
@@ -207,7 +275,8 @@ void Pellet::onInit(CreatureInitArg* initArg)
 		gameSystem->mSection->sendMessage(msg);
 	}
 
-	if (getKind() == PelletType::Treasure) {
+	if (getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) {
+		OSReport("added %s\n", getConfigName());
 		p2gz->treasure_editor->add(this);
 	}
 }
