@@ -1,3 +1,14 @@
+# alpha2
+
+This release includes the following fixes:
+
+- Fixed crash when enabling collision viewer while out of bounds in a sublevel with no void
+- Fixed crashes related to retrying sublevels and warping
+- Exploration Kit upgrades persist on retry
+- Cutscene flags persist on retry
+
+---
+
 # alpha1
 
 This is the first public release of P2GZ, the new Pikmin 2 practice ROM built by [@jonathonbrady](https://github.com/jonathonbrady), [@mayabyte](https://github.com/mayabyte), [@HeartPiece44](https://github.com/HeartPiece44), and [@amaritnez](https://github.com/amaritnez).
