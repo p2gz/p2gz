@@ -3,6 +3,7 @@
 
 #include <Controller.h>
 #include <System.h>
+#include <p2gz/HelperInlines.h>
 
 namespace gz {
 
@@ -17,8 +18,6 @@ public:
 
 	bool check(Controller* controller)
 	{
-		const bool is_30_fps = sys->mFrameRate == 2.0f;
-
 		if (frames_left > 0) {
 			frames_left -= 1;
 		}
@@ -27,7 +26,7 @@ public:
 			if (frames_left > 0) {
 				return true;
 			}
-			frames_left = is_30_fps ? window : window * 2;
+			frames_left = is_30_fps() ? window : window * 2;
 		}
 
 		return false;
@@ -57,14 +56,12 @@ public:
 
 	bool check(Controller* controller)
 	{
-		const bool is_30_fps = sys->mFrameRate == 2.0f;
-
 		if (controller->getButton() & button) {
 			if (frames_left == 0) {
 				if (repeating) {
-					frames_left = is_30_fps ? repeat_delay : repeat_delay * 2;
+					frames_left = is_30_fps() ? repeat_delay : repeat_delay * 2;
 				} else {
-					frames_left = is_30_fps ? initial_repeat_delay : initial_repeat_delay * 2;
+					frames_left = is_30_fps() ? initial_repeat_delay : initial_repeat_delay * 2;
 					repeating   = true;
 				}
 				return true;
