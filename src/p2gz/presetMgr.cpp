@@ -40,6 +40,8 @@ using namespace Game;
 
 PresetMgr::PresetMgr()
 {
+	last_used_preset = nullptr;
+
 	presets.push((new Preset("everything", General))
 	                 ->set_pikmin(Flower, Red, 20)
 	                 ->set_pikmin(Flower, Yellow, 20)
@@ -304,6 +306,7 @@ PresetMgr::PresetMgr()
 Preset* PresetMgr::create()
 {
 	Preset* preset           = new Preset(nullptr, Generated);
+	preset->name             = "generated preset";
 	preset->spicies_unlocked = p2gz->spray_editor->get_spicies_unlocked();
 	preset->bitters_unlocked = p2gz->spray_editor->get_bitters_unlocked();
 	preset->num_spicies      = p2gz->spray_editor->get_spicies();
@@ -321,6 +324,12 @@ Preset* PresetMgr::create()
 
 	preset->onion_pikis.clear();
 	preset->onion_pikis = Game::playData->mPikiContainer;
+
+	if (last_used_preset) {
+		copy_vec(preset->cutscene_flags, last_used_preset->cutscene_flags);
+		copy_vec(preset->destroyed_gates, last_used_preset->destroyed_gates);
+		copy_vec(preset->upgrades, last_used_preset->upgrades);
+	}
 
 	return preset;
 }

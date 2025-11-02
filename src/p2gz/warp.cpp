@@ -207,6 +207,7 @@ void Warp::do_warp()
 	if (preset) {
 		preset->apply();
 		preset_status          = PS_Stale;
+		p2gz->preset_mgr->last_used_preset = preset;
 		needs_post_load_action = true;
 	}
 

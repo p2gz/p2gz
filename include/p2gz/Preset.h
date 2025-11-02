@@ -57,6 +57,7 @@ public:
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
+	Preset* last_used_preset;
 };
 
 struct PresetMenuOption : public MenuOption {
