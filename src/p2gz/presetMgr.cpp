@@ -327,6 +327,9 @@ Preset* PresetMgr::create()
 	preset->onion_pikis.clear();
 	preset->onion_pikis = Game::playData->mPikiContainer;
 
+	if (!last_used_preset) {
+		last_used_preset = p2gz->preset_mgr->suggested_preset(Warp::current_dest(), PoD);
+	}
 	if (last_used_preset) {
 		copy_vec(preset->cutscene_flags, last_used_preset->cutscene_flags);
 		copy_vec(preset->destroyed_gates, last_used_preset->destroyed_gates);
