@@ -67,6 +67,7 @@ public:
 	void do_warp();
 
 	bool allow_zero_pikmin_in_caves;
+	bool warping_from_menu;
 
 private:
 	void update_cave_opt();

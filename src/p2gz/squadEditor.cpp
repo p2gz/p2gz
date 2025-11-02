@@ -20,15 +20,37 @@ void SquadEditor::init()
 // Add a Pikmin to the active captain's squad if there are fewer than 100 Pikmin in the field.
 void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int count)
 {
+	if (!Game::naviMgr || !Game::naviMgr->mArray || !Game::playData || !Game::pikiMgr) {
+		return;
+	}
+
 	Game::Navi* navi = Game::naviMgr->getActiveNavi();
 	if (!navi) {
 		return;
 	}
 
-	if (!Game::playData) {
-		return;
-	}
+	set_demo_flags_for_color(color);
 
+	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Replace;
+	for (int i = 0; i < count; i++) {
+		Game::Piki* piki = Game::pikiMgr->birth();
+		GZASSERTLINE(piki);
+
+		piki->init(nullptr);
+		piki->changeShape(color);
+		piki->changeHappa(stage);
+
+		Vector3f pos = navi->getPosition();
+		piki->setPosition(pos, false);
+		piki->mNavi = navi;
+		PikiAI::ActFormationInitArg arg(navi);
+		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
+	}
+	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Normal;
+}
+
+void SquadEditor::set_demo_flags_for_color(Game::EPikiKind color)
+{
 	if (color != Game::Bulbmin) {
 		if (color != Game::Purple && color != Game::White) {
 			Game::playData->setBootContainer(color);
@@ -42,6 +64,7 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		Game::playData->setDemoFlag(Game::DEMO_Find_Blue_Onion);
 		break;
 	case Game::Red:
+		Game::playData->setDemoFlag(Game::DEMO_Pluck_First_Pikmin);
 		Game::playData->setDemoFlag(Game::DEMO_Meet_Red_Pikmin);
 		Game::playData->setDemoFlag(Game::DEMO_Louie_Finds_Red_Onion);
 		break;
@@ -61,23 +84,6 @@ void SquadEditor::birth_piki(Game::EPikiKind color, Game::EPikiHappa stage, int 
 		Game::playData->setDemoFlag(Game::DEMO_Discover_Bulbmin);
 		break;
 	}
-
-	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Replace;
-	for (int i = 0; i < count; i++) {
-		Game::Piki* piki = Game::pikiMgr->birth();
-		GZASSERTLINE(piki);
-
-		piki->init(nullptr);
-		piki->changeShape(color);
-		piki->changeHappa(stage);
-
-		Vector3f pos = navi->getPosition();
-		piki->setPosition(pos, false);
-		piki->mNavi = navi;
-		PikiAI::ActFormationInitArg arg(navi);
-		piki->mBrain->start(PikiAI::ACT_Formation, &arg);
-	}
-	Game::pikiMgr->mBirthMode = Game::PikiMgr::PSM_Normal;
 }
 
 // Remove a Pikmin from the active captain's squad.
@@ -108,8 +114,10 @@ void SquadEditor::clear_all_pikmin()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-		piki->kill(&arg);
+		if (!piki->isZikatu()) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
+		}
 	}
 }
 

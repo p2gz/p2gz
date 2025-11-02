@@ -100,6 +100,9 @@ void CaveState::init(SingleGameSection* game, StateArg* arg)
 	} else {
 		game->mNeedTreasureCalc = false;
 	}
+
+	// @P2GZ - set correct flags for warping
+	p2gz->warp->warping_from_menu = false;
 }
 
 /**

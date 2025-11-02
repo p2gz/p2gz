@@ -8,7 +8,7 @@ namespace gz {
 struct SkipSave {
 public:
 	SkipSave()
-	    : enabled(false)
+	    : enabled(true)
 	{
 	}
 

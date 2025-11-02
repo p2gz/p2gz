@@ -207,6 +207,9 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 		PSSystem::checkGameScene(scene);
 		scene->setPollutUp();
 	}
+
+	// @P2GZ - set correct flags for warping
+	p2gz->warp->warping_from_menu = false;
 }
 
 /**

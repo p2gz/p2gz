@@ -19,6 +19,7 @@ public:
 
 	void birth_piki(Game::EPikiKind, Game::EPikiHappa, int);
 	void kill_piki(Game::EPikiKind, Game::EPikiHappa, int);
+	void set_demo_flags_for_color(Game::EPikiKind);
 
 	void clear_all_pikmin();
 

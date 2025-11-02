@@ -73,6 +73,11 @@ void FileState::dvdload()
  */
 void FileState::exec(SingleGameSection* game)
 {
+	// @P2GZ - set correct args to be able to warp out of file select
+	if (p2gz) {
+		p2gz->warp->warping_from_menu = true;
+	}
+
 	if (mIsNotInitialized) {
 		mBackupHeap = JKRGetCurrentHeap();
 		mMainHeap   = JKRExpHeap::create(mBackupHeap->getFreeSize(), mBackupHeap, true);
@@ -84,6 +89,11 @@ void FileState::exec(SingleGameSection* game)
 		mIsNotInitialized = false;
 
 	} else if (mMainHeap) {
+		// @P2GZ - pause file select when GZ menu is open
+		if (p2gz && p2gz->menu->is_open()) {
+			return;
+		}
+
 		if (particle2dMgr) {
 			particle2dMgr->update();
 		}

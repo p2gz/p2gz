@@ -99,10 +99,12 @@ void Preset::apply()
 	// TODO: is this necessary?
 	// GameStat::mePikis.clear(); // clear sprouts
 
-	for (int i = 0; i < 2; i++) {
-		Game::Navi* navi = Game::naviMgr->getAt(i);
-		if (navi && navi->isAlive() && navi->isStickTo()) {
-			navi->endStick();
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive() && navi->isStickTo()) {
+				navi->endStick();
+			}
 		}
 	}
 
@@ -120,7 +122,12 @@ void Preset::apply()
 				onion_amount = onion_pikis.getCount(color, stage);
 			}
 			if (amount > 0 || onion_amount > 0) {
+				// If warping from a menu, birthing the pikis will fail but we need to set their demo flags either way
+				p2gz->squad_editor->set_demo_flags_for_color(static_cast<Game::EPikiKind>(color));
 				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
+			}
+			if (amount > 0) {
+				Game::playData->mCaveSaveData.mCavePikis.getCount(color, stage) += amount;
 			}
 		}
 	}

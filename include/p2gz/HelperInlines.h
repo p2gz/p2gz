@@ -7,6 +7,11 @@
 
 namespace gz {
 
+inline bool is_30_fps()
+{
+	return sys && (sys->mFrameRate == 2.0f);
+}
+
 inline bool in_boot_up()
 {
 	// make sure gameflow is in boot up state
