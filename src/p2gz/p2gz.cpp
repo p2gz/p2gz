@@ -118,7 +118,6 @@ void P2GZ::draw()
 		return;
 	}
 
-	collision_viewer->draw();
 	freecam->draw();
 	enemy_debug_info->draw();
 	dismiss_positions->draw();

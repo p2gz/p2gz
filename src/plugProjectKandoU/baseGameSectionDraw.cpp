@@ -39,6 +39,10 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		particleMgr->setXfb(mXfbImage->mTexInfo);
 	}
 
+	// @P2GZ: collision viewer
+	// draw first in the frame so other graphics are drawn on top
+	p2gz->collision_viewer->draw();
+
 	// Draw particles for both viewports
 	sys->mTimers->_start("part-draw", true);
 	drawParticle(gfx, PLAYER1_VIEWPORT);
