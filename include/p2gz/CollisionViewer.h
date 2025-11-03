@@ -23,8 +23,8 @@ private:
 	bool is_navi_on_triangle(Sys::Triangle*, Sys::Triangle*, Sys::VertexTable*);
 	void draw_triangles(Sys::Sphere&);
 	bool enabled;
-	Vector3f olimarPos;
-	Vector3f louiePos;
+	Sys::Sphere olimarSphere;
+	Sys::Sphere louieSphere;
 	Sys::Triangle* olimarTriangle;
 	Sys::Triangle* louieTriangle;
 };

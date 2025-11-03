@@ -100,26 +100,31 @@ void CollisionViewer::draw()
 
 	Game::Navi* olimar = Game::naviMgr->getAt(NAVIID_Olimar);
 	if (olimar) {
-		olimarPos      = olimar->getPosition();
-		olimarTriangle = olimar->mFloorTriangle;
+		Vector3f olimarPos = olimar->getPosition();
+		olimarSphere       = Sys::Sphere(olimarPos, RENDER_RADIUS);
+		olimarTriangle     = olimar->mFloorTriangle;
 	}
 	Game::Navi* louie = Game::naviMgr->getAt(NAVIID_Louie);
 	if (louie) {
-		louiePos      = louie->getPosition();
-		louieTriangle = louie->mFloorTriangle;
+		Vector3f louiePos = louie->getPosition();
+		louieSphere       = Sys::Sphere(louiePos, RENDER_RADIUS);
+		louieTriangle     = louie->mFloorTriangle;
 	}
 
 	Graphics* gfx = sys->getGfx();
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	gfx->initPrimDraw(nullptr);
 
-	if (olimar) {
-		Sys::Sphere olimarSphere(olimarPos, RENDER_RADIUS);
+	Game::Navi* navi = Game::naviMgr->getActiveNavi();
+	if (navi) {
+		draw_triangles(navi->mNaviIndex == NAVIID_Olimar ? olimarSphere : louieSphere);
+	} else {
+		// Minimize duplicate triangles while switching captains by only drawing triangles for both
+		// if they are arbitrarily far apart.
 		draw_triangles(olimarSphere);
-	}
-	if (louie) {
-		Sys::Sphere louieSphere(louiePos, RENDER_RADIUS);
-		draw_triangles(louieSphere);
+		if (sqrDistanceXZ(olimarSphere.mPosition, louieSphere.mPosition) > RENDER_RADIUS / 3) {
+			draw_triangles(louieSphere);
+		}
 	}
 }
 } // namespace gz
