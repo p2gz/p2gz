@@ -29,13 +29,13 @@ public:
 
 	void init();
 	void draw();
-	void update();
 
 	void enable();
 	void disable();
 	void set_enabled(bool on);
 	void set_sub_timer_enabled(bool on);
 	void on_reset();
+	void sync();
 
 	void reset_main_timer();
 	void reset_sub_timer();

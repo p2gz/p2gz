@@ -67,17 +67,8 @@ void Timer::draw()
 	}
 }
 
-void Timer::update()
+void Timer::sync()
 {
-	// don't bother updating the menu values when the menu isn't open
-	if (!p2gz->menu->is_open()) {
-		return;
-	}
-	// don't update the values if we're currently in the timer menu
-	if (p2gz->menu->is_active_menu("timer")) {
-		return;
-	}
-
 	static_cast<ToggleMenuOption*>(timer_menu->get_option("enabled"))->set_selection(enabled);
 	static_cast<ToggleMenuOption*>(timer_menu->get_option("show sub-timer"))->set_selection(sub_timer_enabled);
 }

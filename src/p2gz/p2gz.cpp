@@ -84,7 +84,6 @@ void P2GZ::update()
 		return;
 	}
 
-	timer->update();
 	day_editor->update();
 	spray_editor->update();
 	freecam->update();
