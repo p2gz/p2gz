@@ -11,12 +11,7 @@
 namespace gz {
 struct CollisionViewer {
 public:
-	CollisionViewer()
-	{
-		enabled   = false;
-		olimarPos = Vector3f::zero;
-		louiePos  = Vector3f::zero;
-	}
+	CollisionViewer() { enabled = false; }
 	~CollisionViewer() { }
 
 	void toggle(bool);
