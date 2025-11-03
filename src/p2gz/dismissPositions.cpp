@@ -9,6 +9,8 @@
 using namespace gz;
 
 const f32 CIRCLE_VERTICAL_OFFSET = 5.0f;
+const f32 MAX_DRAW_CIRCLE_HEIGHT = 20.0f;
+
 const Color4 PIKMIN_COLORS[Game::PikiColorCount + 1]
     = { Color4(0, 50, 255, 255),    Color4(255, 30, 0, 255),  Color4(255, 210, 0, 255), Color4(28, 0, 52, 255),
 	    Color4(255, 230, 255, 255), Color4(255, 140, 0, 255), Color4(255, 255, 255, 0) };
@@ -22,20 +24,35 @@ void DismissPositions::draw_circle(Vector3f position, f32 radius, Color4 color)
 	Vector3f vertices[3];
 	vertices[0] = position;
 	// Offset y position so the circle is not clipping into the ground and adjusts for slopes
-	vertices[0].y = Game::mapMgr->getMinY(vertices[0]);
+	// Also if the difference in height is too great, clamp the height of the circle to prevent jank-looking circles
+	f32 minY = Game::mapMgr->getMinY(vertices[0]);
+	if (fabs(position.y - minY) > MAX_DRAW_CIRCLE_HEIGHT) {
+		minY = position.y > minY ? position.y - MAX_DRAW_CIRCLE_HEIGHT : position.y + MAX_DRAW_CIRCLE_HEIGHT;
+	}
+	vertices[0].y = minY;
 	vertices[0].y += CIRCLE_VERTICAL_OFFSET;
 
 	for (int i = 0; i < 32; i++) {
 		f32 theta   = -HALF_PI - (TAU * i / 32);
 		vertices[1] = Vector3f(radius * sinf(theta), 0.0f, radius * cosf(theta)) + position;
 		// Offset y position so the circle is not clipping into the ground and adjusts for slopes
-		vertices[1].y = Game::mapMgr->getMinY(vertices[1]);
+		// Also if the difference in height is too great, clamp the height of the circle to prevent jank-looking circles
+		minY = Game::mapMgr->getMinY(vertices[1]);
+		if (fabs(position.y - minY) > MAX_DRAW_CIRCLE_HEIGHT) {
+			minY = position.y > minY ? position.y - MAX_DRAW_CIRCLE_HEIGHT : position.y + MAX_DRAW_CIRCLE_HEIGHT;
+		}
+		vertices[1].y = minY;
 		vertices[1].y += CIRCLE_VERTICAL_OFFSET;
 
 		f32 nextTheta = -HALF_PI - (TAU * (i + 1) / 32);
 		vertices[2]   = Vector3f(radius * sinf(nextTheta), 0.0f, radius * cosf(nextTheta)) + position;
 		// Offset y position so the circle is not clipping into the ground and adjusts for slopes
-		vertices[2].y = Game::mapMgr->getMinY(vertices[2]);
+		// Also if the difference in height is too great, clamp the height of the circle to prevent jank-looking circles
+		minY = Game::mapMgr->getMinY(vertices[2]);
+		if (fabs(position.y - minY) > MAX_DRAW_CIRCLE_HEIGHT) {
+			minY = position.y > minY ? position.y - MAX_DRAW_CIRCLE_HEIGHT : position.y + MAX_DRAW_CIRCLE_HEIGHT;
+		}
+		vertices[2].y = minY;
 		vertices[2].y += CIRCLE_VERTICAL_OFFSET;
 
 		GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
@@ -76,8 +93,13 @@ void DismissPositions::draw()
 
 		Vector3f pos1 = Game::naviMgr->getActiveNavi()->getPosition();
 		Vector3f pos2 = positions[i];
-		// Adjust y-endpoint so the line can point to circles that aren't on the same xz plane as the player
-		pos2.y = Game::mapMgr->getMinY(pos2);
+		// Adjust y-endpoint so the line can point to circles that aren't on the same xz plane as the player (be sure to clamp on offsets
+		// that are too high!)
+		f32 minY = Game::mapMgr->getMinY(pos2);
+		if (fabs(pos2.y - minY) > MAX_DRAW_CIRCLE_HEIGHT) {
+			minY = pos2.y > minY ? pos2.y - MAX_DRAW_CIRCLE_HEIGHT : pos2.y + MAX_DRAW_CIRCLE_HEIGHT;
+		}
+		pos2.y = minY;
 		pos2.y += CIRCLE_VERTICAL_OFFSET;
 		gfx->drawLine(pos1, pos2);
 		gfx->mDrawColor = Color4(0, 0, 0, 255);
