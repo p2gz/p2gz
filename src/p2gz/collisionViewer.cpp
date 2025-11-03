@@ -12,15 +12,9 @@
 const f32 RENDER_RADIUS = 1024.0f;
 
 namespace gz {
-bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::VertexTable* vertTable)
+bool CollisionViewer::is_navi_on_triangle(Sys::Triangle* tri, Sys::Triangle* naviTriangle, Sys::VertexTable* vertTable)
 {
-	Game::Navi* navi = Game::naviMgr->getActiveNavi();
-	if (navi == nullptr || tri == nullptr) {
-		return false;
-	}
-
-	Sys::Triangle* naviTriangle = Game::naviMgr->getActiveNavi()->mFloorTriangle;
-	if (naviTriangle == nullptr) {
+	if (!tri || !naviTriangle) {
 		return false;
 	}
 
@@ -51,7 +45,7 @@ void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 		triTable                       = shapeMapMgr->mMapCollision.mDivider->mTriangleTable;
 	}
 
-	if (triLists == nullptr) {
+	if (!triLists) {
 		return;
 	}
 
@@ -59,7 +53,7 @@ void CollisionViewer::draw_triangles(Sys::Sphere& sphere)
 		for (int i = 0; i < triLists->getNum(); i++) {
 			Sys::Triangle* tri = triTable->getTriangle(triLists->mObjects[i]);
 			Color4 color       = Color4(200, 200, 200, 128);
-			if (!is_navi_on_triangle(tri, vertTable)) {
+			if (!is_navi_on_triangle(tri, olimarTriangle, vertTable) && !is_navi_on_triangle(tri, louieTriangle, vertTable)) {
 				switch (tri->mCode.getSlipCode()) {
 				case MapCode::Code::SlipCode_NoSlip:
 					color = Color4(0, 50 + 150 * fabs(tri->mTrianglePlane.mNormal.y), 0, 128);
@@ -104,18 +98,29 @@ void CollisionViewer::draw()
 		return;
 	}
 
-	Game::Navi* navi = Game::naviMgr->getActiveNavi();
-	if (navi == nullptr) {
-		return;
+	Game::Navi* olimar = Game::naviMgr->getAt(NAVIID_Olimar);
+	if (olimar) {
+		olimarPos      = olimar->getPosition();
+		olimarTriangle = olimar->mFloorTriangle;
+	}
+	Game::Navi* louie = Game::naviMgr->getAt(NAVIID_Louie);
+	if (louie) {
+		louiePos      = louie->getPosition();
+		louieTriangle = louie->mFloorTriangle;
 	}
 
 	Graphics* gfx = sys->getGfx();
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	gfx->initPrimDraw(nullptr);
 
-	Vector3f naviPos = navi->getPosition();
-	Sys::Sphere renderSphere(naviPos, RENDER_RADIUS);
-	draw_triangles(renderSphere);
+	if (olimar) {
+		Sys::Sphere olimarSphere(olimarPos, RENDER_RADIUS);
+		draw_triangles(olimarSphere);
+	}
+	if (louie) {
+		Sys::Sphere louieSphere(louiePos, RENDER_RADIUS);
+		draw_triangles(louieSphere);
+	}
 }
 } // namespace gz
 

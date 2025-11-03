@@ -11,7 +11,12 @@
 namespace gz {
 struct CollisionViewer {
 public:
-	CollisionViewer() { enabled = false; }
+	CollisionViewer()
+	{
+		enabled   = false;
+		olimarPos = Vector3f::zero;
+		louiePos  = Vector3f::zero;
+	}
 	~CollisionViewer() { }
 
 	void toggle(bool);
@@ -20,9 +25,13 @@ public:
 	bool is_enabled() { return enabled; }
 
 private:
-	bool is_navi_on_triangle(Sys::Triangle*, Sys::VertexTable*);
+	bool is_navi_on_triangle(Sys::Triangle*, Sys::Triangle*, Sys::VertexTable*);
 	void draw_triangles(Sys::Sphere&);
 	bool enabled;
+	Vector3f olimarPos;
+	Vector3f louiePos;
+	Sys::Triangle* olimarTriangle;
+	Sys::Triangle* louieTriangle;
 };
 } // namespace gz
 #endif
