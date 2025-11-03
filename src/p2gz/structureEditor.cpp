@@ -6,6 +6,8 @@
 
 using namespace gz;
 
+#define GATE_SEARCH_RADIUS (5.0f)
+
 static const size_t NUM_GATE_NAMES                                            = 20;
 static const StructureEditor::NameCoordinateMap COORD_TO_NAME[NUM_GATE_NAMES] = {
 	// VoR
@@ -66,7 +68,7 @@ const char* StructureEditor::get_gate_name(f32 x, f32 z)
 {
 	for (size_t i = 0; i < NUM_GATE_NAMES; i++) {
 		NameCoordinateMap map = COORD_TO_NAME[i];
-		if (map.x == x && map.z == z) {
+		if ((absF(map.x - x) < GATE_SEARCH_RADIUS) && (absF(map.z - z) < GATE_SEARCH_RADIUS)) {
 			return map.name;
 		}
 	}
