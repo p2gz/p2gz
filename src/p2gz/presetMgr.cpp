@@ -8,11 +8,11 @@
 using namespace gz;
 using namespace Game;
 
-#define NUM_BASE_DEMO_FLAGS 13
+#define NUM_BASE_DEMO_FLAGS 14
 #define BASE_DEMO_FLAGS                                                                                                                   \
 	DEMO_Pluck_First_Pikmin, DEMO_Discover_Treasure, DEMO_First_Gate_Down, DEMO_Reds_In_Onion, DEMO_First_Nectar_Use, DEMO_Day_One_Start, \
 	    DEMO_Meet_Red_Pikmin, DEMO_Louie_Finds_Red_Onion, DEMO_Unlock_Captain_Switch, DEMO_First_Use_Louie, DEMO_Reunite_Captains,        \
-	    DEMO_You_Appear_Lost, DEMO_First_Number_Pellet
+	    DEMO_You_Appear_Lost, DEMO_First_Number_Pellet, DEMO_Find_Spiderwort_Mold
 
 #define NUM_AW_DEMO_FLAGS NUM_BASE_DEMO_FLAGS + 7
 #define AW_DEMO_FLAGS                                                                                                  \
