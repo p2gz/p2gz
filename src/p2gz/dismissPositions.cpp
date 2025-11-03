@@ -4,6 +4,7 @@
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
 #include <Game/PikiState.h>
+#include <Game/MapMgr.h>
 
 using namespace gz;
 
@@ -18,18 +19,24 @@ void DismissPositions::draw_circle(Vector3f position, f32 radius, Color4 color)
 	Graphics* gfx = sys->getGfx();
 	gfx->initPerspPrintf(gfx->mCurrentViewport);
 
-	// Offset y position so the circle is not clipping into the ground.
-	position.y += CIRCLE_VERTICAL_OFFSET;
-
 	Vector3f vertices[3];
 	vertices[0] = position;
+	// Offset y position so the circle is not clipping into the ground and adjusts for slopes
+	vertices[0].y = Game::mapMgr->getMinY(vertices[0]);
+	vertices[0].y += CIRCLE_VERTICAL_OFFSET;
 
 	for (int i = 0; i < 32; i++) {
 		f32 theta   = -HALF_PI - (TAU * i / 32);
 		vertices[1] = Vector3f(radius * sinf(theta), 0.0f, radius * cosf(theta)) + position;
+		// Offset y position so the circle is not clipping into the ground and adjusts for slopes
+		vertices[1].y = Game::mapMgr->getMinY(vertices[1]);
+		vertices[1].y += CIRCLE_VERTICAL_OFFSET;
 
 		f32 nextTheta = -HALF_PI - (TAU * (i + 1) / 32);
 		vertices[2]   = Vector3f(radius * sinf(nextTheta), 0.0f, radius * cosf(nextTheta)) + position;
+		// Offset y position so the circle is not clipping into the ground and adjusts for slopes
+		vertices[2].y = Game::mapMgr->getMinY(vertices[2]);
+		vertices[2].y += CIRCLE_VERTICAL_OFFSET;
 
 		GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
 		for (int j = 0; j < 3; j++) {
@@ -68,7 +75,10 @@ void DismissPositions::draw()
 		gfx->mDrawColor = PIKMIN_COLORS[i];
 
 		Vector3f pos1 = Game::naviMgr->getActiveNavi()->getPosition();
-		Vector3f pos2 = positions[i] + Vector3f(0, CIRCLE_VERTICAL_OFFSET, 0);
+		Vector3f pos2 = positions[i];
+		// Adjust y-endpoint so the line can point to circles that aren't on the same xz plane as the player
+		pos2.y = Game::mapMgr->getMinY(pos2);
+		pos2.y += CIRCLE_VERTICAL_OFFSET;
 		gfx->drawLine(pos1, pos2);
 		gfx->mDrawColor = Color4(0, 0, 0, 255);
 	}
