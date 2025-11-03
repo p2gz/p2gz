@@ -136,6 +136,8 @@ void P2GZ::draw_version()
 	j2d.mCharColor.set(color);
 	j2d.mGradientColor.set(color);
 
-	// coordinates determined experimentally - will need to re-adjust based on text length
-	j2d.print(250.0f, 424.0f, "v.%s", P2GZ_VERSION);
+	// print version text in the bottom-center of screen
+	// automagically determine where to print it so it's centered
+	f32 width = j2d.getWidth("v.%s", P2GZ_VERSION);
+	j2d.print((System::getRenderModeWidth() / 2) - (width / 2), 424.0f, "v.%s", P2GZ_VERSION);
 }
