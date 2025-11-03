@@ -400,7 +400,12 @@ void BaseGameSection::doDraw(Graphics& gfx)
 	// need to draw timer over cutscenes
 	// the positioning for this is important, otherwise the talking pod steals the timer :')
 	if (moviePlayer->isFlag(MVP_IsActive)) {
-		p2gz->timer->draw();
+		// don't repeat drawing of timer during treasure collection
+		// (otherwise, the timer will attach to the treasures. don't ask.)
+		if (!moviePlayer->isPlaying("s22_cv_suck_treasure") && !moviePlayer->isPlaying("s22_cv_suck_equipment")
+		    && !moviePlayer->isPlaying("s10_suck_treasure") && !moviePlayer->isPlaying("s17_suck_equipment")) {
+			p2gz->timer->draw();
+		}
 	}
 
 	Screen::gGame2DMgr->drawKanteiMsg(gfx);
