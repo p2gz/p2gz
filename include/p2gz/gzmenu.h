@@ -358,8 +358,8 @@ public:
 	u32 get_value() { return value; }
 	u32 set_value(u32 value_)
 	{
-		value         = value_;
-		unselected    = false;
+		value      = value_;
+		unselected = false;
 	}
 	bool is_unselected() { return unselected; }
 
@@ -446,6 +446,50 @@ public:
 		}
 		// Safety check failed, return nothing
 		return nullptr;
+	}
+
+	/// Check if current active menu layer has title `title`
+	bool is_active_menu(const char* title)
+	{
+		// check if menu is open, and if active layer title matches
+		if (!is_open()) {
+			return false;
+		}
+		MenuLayer* active_layer = get_active_layer();
+		if (!active_layer) {
+			return false;
+		}
+		if (!active_layer->title) {
+			return false;
+		}
+		if (strcmp(active_layer->title, title) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	/// Check if current active menu layer is a submenu of layer titled `title`
+	bool is_active_menu_parent(const char* title)
+	{
+		// check if menu is open, and if active layer title matches
+		if (!is_open()) {
+			return false;
+		}
+		MenuLayer* active_layer = get_active_layer();
+		if (!active_layer) {
+			return false;
+		}
+		MenuLayer* parent_layer = active_layer->parent;
+		if (!parent_layer) {
+			return false;
+		}
+		if (!parent_layer->title) {
+			return false;
+		}
+		if (strcmp(parent_layer->title, title) != 0) {
+			return false;
+		}
+		return true;
 	}
 
 	f32 glyph_width;

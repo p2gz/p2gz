@@ -8,6 +8,9 @@
 
 namespace gz {
 
+// forward declarations
+struct ListMenu;
+
 /// timer offsets, in seconds
 /// NB: these might be the same, but they're split out in case we want to edit them later
 #define CAVE_ENTER_SAVE_OFFSET_TIME    (4.0f)
@@ -24,7 +27,9 @@ public:
 	Timer();
 	~Timer() { }
 
+	void init();
 	void draw();
+	void update();
 
 	void enable();
 	void disable();
@@ -77,6 +82,9 @@ private:
 	u32 sub_timer;   // sublevel timer
 	u32 skip_timer;  // for offsets because of P2GZ toggles
 	u32 pause_timer; // for when gz menu is open
+
+	// menu hook
+	ListMenu* timer_menu;
 
 	// display settings
 	JUtility::TColor color;
