@@ -212,8 +212,7 @@ void SquadEditor::set_squad(s32 _)
 void SquadEditor::update()
 {
 	// Don't update the live squad count while the squad editor is open.
-	if (p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
-	    && strcmp(p2gz->menu->get_active_layer()->title, "squad") == 0) {
+	if (p2gz->menu->is_active_menu("squad")) {
 		open = true;
 		return;
 	}

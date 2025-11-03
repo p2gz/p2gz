@@ -63,6 +63,7 @@ void P2GZ::init()
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
+	timer->init();
 	structure_editor->init();
 	warp->init();
 	day_editor->init();

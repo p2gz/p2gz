@@ -2,6 +2,7 @@
 #include <P2JME/P2JME.h>
 #include <p2gz/timer.h>
 #include <p2gz/HelperInlines.h>
+#include <p2gz/p2gz.h>
 
 using namespace gz;
 
@@ -22,9 +23,13 @@ Timer::Timer()
 	glyph_height = 16.0;
 	x            = 12.0;
 	z            = 12.0;
+}
 
+void Timer::init()
+{
 	enable();
 	reset_main_timer();
+	timer_menu = static_cast<ListMenu*>(p2gz->menu->get_option("timer")->get_sub_menu());
 }
 
 void Timer::draw()
@@ -60,6 +65,12 @@ void Timer::draw()
 		}
 		j2d.print(x + sub_offset, z, "(%ld:%.2ld.%.1ld)", sub_c.minutes, sub_c.seconds, sub_c.tenths);
 	}
+}
+
+void Timer::sync()
+{
+	static_cast<ToggleMenuOption*>(timer_menu->get_option("enabled"))->set_selection(enabled);
+	static_cast<ToggleMenuOption*>(timer_menu->get_option("show sub-timer"))->set_selection(sub_timer_enabled);
 }
 
 Timer::TimeComponents Timer::calc_time(u32 start_time)

@@ -83,8 +83,7 @@ void SprayEditor::toggle_spicies(bool unlocked)
 
 void SprayEditor::update()
 {
-	if (p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
-	    && strcmp(p2gz->menu->get_active_layer()->title, "sprays") == 0) {
+	if (p2gz->menu->is_active_menu("sprays")) {
 		return;
 	}
 
