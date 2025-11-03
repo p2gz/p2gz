@@ -95,6 +95,12 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	// manually adjust offsets for certain enemies with weird lifegauge offsets
 	// may need to add to these later as a QoL update, especially bosses
 	switch (enemy->getEnemyTypeID()) {
+	case Game::EnemyTypeID::EnemyID_Chappy:
+	case Game::EnemyTypeID::EnemyID_BlueChappy:
+	case Game::EnemyTypeID::EnemyID_YellowChappy:
+		pos.y += 30.0f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_RedPom:
 	case Game::EnemyTypeID::EnemyID_BluePom:
 	case Game::EnemyTypeID::EnemyID_YellowPom:
@@ -104,8 +110,128 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		pos.y += 50.0f;
 		break;
 
+	case Game::EnemyTypeID::EnemyID_KumaChappy:
+		pos.y += 30.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Armor:
+		pos.y += 20.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Qurione:
+		pos.y += 60.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Kabuto:
+	case Game::EnemyTypeID::EnemyID_Rkabuto:
+		pos.y += 45.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Fkabuto:
+		pos.y += 30.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Tank:
+	case Game::EnemyTypeID::EnemyID_Wtank:
+		pos.y += 10.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Mar:
+	case Game::EnemyTypeID::EnemyID_Hanachirashi:
+		pos.y += 40.0f;
+		break;
+
 	case Game::EnemyTypeID::EnemyID_Queen:
 		pos.y += 160.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_SnakeCrow:
+		pos.y += 100.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_SnakeWhole:
+		pos.y += 160.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Bomb:
+		pos.y += 15.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_PanModoki:
+		pos.y += 20.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_OoPanModoki:
+		pos.y += 60.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_KingChappy:
+		pos.y += 100.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Miulin:
+		pos.y += 30.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Damagumo:
+		pos.y += 140.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Houdai:
+		pos.y += 80.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Jigumo:
+		pos.y += 50.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_BigFoot:
+		pos.y += 160.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_BigTreasure:
+		pos.y += 130.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Kurage:
+		pos.y += 30.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_OniKurage:
+		pos.y += 100.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_UmiMushiBlind:
+		pos.y -= 20.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_BombSarai:
+		pos.y += 70.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_MiniHoudai:
+	case Game::EnemyTypeID::EnemyID_FminiHoudai:
+		pos.y += 30.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Stone:
+		pos.y += 90.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Rock:
+		pos.y += 30.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_BlackMan:
+		pos.y += 80.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_Tyre:
+		pos.y += 20.0f;
+		break;
+
+	case Game::EnemyTypeID::EnemyID_DangoMushi:
+		pos.y += 100.0f;
 		break;
 	}
 
