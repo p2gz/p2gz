@@ -206,7 +206,7 @@ void GZMenu::push_layer(MenuLayer* layer_)
 			breadcrumbs.push(layer->title);
 		}
 		if (layer->on_opened) {
-			layer->on_opened->invoke();
+			layer->on_opened->invoke(layer);
 		}
 	}
 }
