@@ -11,6 +11,7 @@
 #include "Game/gamePlayData.h"
 #include "Game/MoviePlayer.h"
 #include "PSSystem/PSSystemIF.h"
+#include "LifeGaugeMgr.h"
 #include "nans.h"
 #include <p2gz/p2gz.h>
 
@@ -51,6 +52,12 @@ ItemGate::ItemGate()
 	mIsElectric             = false;
 	mEgateEfxA              = nullptr;
 	mEgateEfxBC             = nullptr;
+
+	// @P2GZ: gate debug info
+	// setup life gauge information so we can draw it later
+	if (lifeGaugeMgr) {
+		lifeGaugeMgr->createLifeGauge(this);
+	}
 }
 
 /**
@@ -93,6 +100,12 @@ void ItemGate::onInit(CreatureInitArg* arg)
 	} else {
 		mMatAnimator = new Sys::MatLoopAnimator;
 		mMatAnimator->start(&itemGateMgr->mMatTevRegAnim);
+	}
+
+	// @P2GZ: gate debug info
+	// make life gauge visible and actively updated
+	if (lifeGaugeMgr) {
+		lifeGaugeMgr->activeLifeGauge(this, 1.0f);
 	}
 }
 
@@ -733,10 +746,12 @@ void ItemGate::changeMaterial()
 	}
 }
 
-inline f32 ItemGate::getGateHealth()
-{
-	return (mMaxSegments - mSegmentsDown - 1) * mMaxSegmentHealth + mCurrentSegmentHealth;
-}
+// @P2GZ: gate debug info
+// move this to ItemGate.h so we can use it elsewhere
+// inline f32 ItemGate::getGateHealth()
+// {
+// 	return (mMaxSegments - mSegmentsDown - 1) * mMaxSegmentHealth + mCurrentSegmentHealth;
+// }
 
 /**
  * @note Address: 0x801C88D8
@@ -749,7 +764,11 @@ void ItemGate::getLifeGaugeParam(Game::LifeGaugeParam& param)
 	param.mPosition.y += 120.0f;
 	param.mRadius          = 10.0f;
 	param.mCurrHealthRatio = getGateHealth() / (mMaxSegmentHealth * mMaxSegments);
-	param.mIsGaugeShown    = mLod.isFlag(AILOD_IsVisible);
+	// @P2GZ: gate debug info
+	// hide life gauge when gate is at zero health
+	// (we could do this with inactiveLifeGauge I think, but not from in here)
+	// param.mIsGaugeShown    = mLod.isFlag(AILOD_IsVisible);
+	param.mIsGaugeShown = mLod.isFlag(AILOD_IsVisible) && (getGateHealth() > 0.0f);
 }
 
 /**
