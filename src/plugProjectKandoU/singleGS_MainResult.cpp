@@ -137,7 +137,7 @@ void MainResultState::exec(SingleGameSection* game)
 		p2gz->warp->set_lockout_frames(10);
 		if (mDvdThread.mMode == DvdThreadCommand::CM_Completed) {
 			// @P2GZ pause-loading-fix: add like a 1s frame delay to prevent crashing before the menus/ship popup
-			p2gz->warp->set_lockout_frames(330);
+			p2gz->warp->set_lockout_frames(30);
 			mStatus = Result_OpenWait;
 			MoviePlayArg arg("s02_dayend_result", nullptr, game->mMovieFinishCallback, 0);
 			moviePlayer->play(arg);

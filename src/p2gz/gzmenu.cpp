@@ -256,7 +256,12 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
-	Game::gameSystem->setPause(false, "gzmenu", 3);
+	// Don't unpause the game if we're in the enter cave/escape cave submenues
+	Game::SingleGameSection* gameSec = get_SGS();
+	if (!gameSec->mOpenMenuFlags) { // if nonzero, we're in at least one of the menus
+		Game::gameSystem->setPause(false, "gzmenu", 3);
+	}
+
 	// don't unpause timer if we're in freecam mode (until we exit that mode)
 	if (!p2gz->timer->is_freecam_mode()) {
 		p2gz->timer->unpause();
