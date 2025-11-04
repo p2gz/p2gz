@@ -112,7 +112,6 @@ void CollisionViewer::draw()
 	}
 
 	Graphics* gfx = sys->getGfx();
-	gfx->initPerspPrintf(gfx->mCurrentViewport);
 	gfx->initPrimDraw(nullptr);
 
 	Game::Navi* navi = Game::naviMgr->getActiveNavi();

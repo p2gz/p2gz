@@ -42,6 +42,7 @@ P2GZ::P2GZ()
 	spray_editor                 = new SprayEditor();
 	segment_history              = new SegmentHistory();
 	enemy_debug_info             = new EnemyDebugInfo();
+	cave_debug_info              = new CaveDebugInfo();
 	squad_editor                 = new SquadEditor();
 	preset_mgr                   = new PresetMgr();
 	cutscene_mgr                 = new CutsceneMgr();
@@ -123,6 +124,7 @@ void P2GZ::draw()
 
 	freecam->draw();
 	enemy_debug_info->draw();
+	cave_debug_info->draw();
 	structure_editor->draw();
 	dismiss_positions->draw();
 }

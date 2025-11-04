@@ -20,7 +20,7 @@ const Color4 PIKMIN_COLORS[Game::PikiColorCount + 1]
 void DismissPositions::draw_circle(Vector3f position, f32 radius, Color4 color)
 {
 	Graphics* gfx = sys->getGfx();
-	gfx->initPerspPrintf(gfx->mCurrentViewport);
+	gfx->initPrimDraw(nullptr);
 
 	Vector3f vertices[3];
 	vertices[0] = position;
@@ -70,7 +70,7 @@ void DismissPositions::draw()
 
 		Graphics* gfx = sys->getGfx();
 		GXSetLineWidth(10, GX_TO_ZERO);
-		gfx->initPerspPrintf(gfx->mCurrentViewport);
+		gfx->initPrimDraw(nullptr);
 		gfx->mDrawColor = PIKMIN_COLORS[i];
 
 		Vector3f pos1 = Game::naviMgr->getActiveNavi()->getPosition();
