@@ -92,6 +92,8 @@ void P2GZ::update()
 	segment_history->update();
 	dismiss_positions->update();
 	poko_editor->update();
+	navi_tools->update();
+
 	warp->update_lockout_frames();
 
 	// Menu must update last so button presses for menu interactions don't
