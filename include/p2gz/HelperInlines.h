@@ -166,6 +166,30 @@ inline bool in_cave_results()
 	return true;
 }
 
+// Similar to above, but used for warping - must not be loading any BLO stuff, or else we get lockout crash
+inline bool in_cave_results_safe_to_warp()
+{
+	// must be in single player mode
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs) {
+		return false;
+	}
+	Game::SingleGame::State* state = sgs->getCurrState();
+	if (!state) {
+		return false;
+	}
+	// check we're in the correct state - this is cave results
+	if (state->getCurrStateID() != Game::SingleGame::SGS_CaveResult) {
+		return false;
+	}
+	Game::SingleGame::CaveResultState* caveCast = static_cast<Game::SingleGame::CaveResultState*>(state);
+	// State 3 is the regular state; states 0 and 1 related to loading BLOs and prepartions stuff, not safe
+	if (caveCast->mStatus != 3) {
+		return false;
+	}
+	return true;
+}
+
 inline bool in_load()
 {
 	// must be in single player mode

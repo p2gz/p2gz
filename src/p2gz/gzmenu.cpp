@@ -231,9 +231,10 @@ void GZMenu::open()
 	// cutscenes (causes gameplay desync)
 	// loading (causes gameplay desync)
 	// end of day (causes gameplay desync)
-	// cave results (crashes when warping out)
+	// cave results but only in the very beginning before the blo loads (crashes when warping out)
 	// day results (crashes when warping out)
-	if (Game::moviePlayer->isFlag(Game::MVP_IsActive) || in_day_end_sunset() || in_load() || in_cave_results() || in_end_of_day_result()) {
+	if (Game::moviePlayer->isFlag(Game::MVP_IsActive) || in_day_end_sunset() || in_load()
+	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || in_end_of_day_result()) {
 		return;
 	}
 
