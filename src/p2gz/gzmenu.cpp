@@ -228,19 +228,17 @@ void GZMenu::open()
 		return;
 
 	// Don't open P2GZ menu during the following:
-	// cutscenes (causes gameplay desync)
-	// loading (causes gameplay desync)
-	// end of day (causes gameplay desync)
-	// cave results but only in the very beginning before the blo loads (crashes when warping out)
-	// day results (crashes when warping out)
-	if (Game::moviePlayer->isFlag(Game::MVP_IsActive) || in_day_end_sunset() || in_load()
-	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || in_end_of_day_result()) {
+	// - cutscenes (causes gameplay desync) - One exception:
+	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
+	// - loading (causes gameplay desync)
+	// - end of day (causes gameplay desync)
+	// - cave results but only in the very beginning before the blo loads (crashes when warping out)
+	// - day results but only in the very beginning before the blo loads (crashes when warping out)
+	if ((!in_end_of_day_result() && Game::moviePlayer->isFlag(Game::MVP_IsActive))
+	    || (in_end_of_day_result() && !in_end_of_day_result_safe_to_warp()) || in_day_end_sunset() || in_load()
+	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || p2gz->warp->is_warp_lockout()) {
 		return;
 	}
-
-	Game::SingleGameSection* sgs   = get_SGS();
-	Game::SingleGame::State* state = sgs->getCurrState();
-	OSReport("state debug: %d\n\n\n\n", state->getCurrStateID());
 
 	layer = root_layer;
 	layer->reset_selection();

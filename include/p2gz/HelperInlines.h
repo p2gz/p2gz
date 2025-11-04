@@ -148,6 +148,26 @@ inline bool in_end_of_day_result()
 	return true;
 }
 
+// Similar to above, but used for warping - must not be loading any BLO stuff, or else we get weird crashes
+inline bool in_end_of_day_result_safe_to_warp()
+{
+	// must be in day end results (duh)
+	if (!in_end_of_day_result()) {
+		return false;
+	}
+
+	Game::SingleGameSection* sgs                  = get_SGS();
+	Game::SingleGame::State* state                = sgs->getCurrState();
+	Game::SingleGame::MainResultState* resultCast = static_cast<Game::SingleGame::MainResultState*>(state);
+
+	// State 3 is the regular state; states 0 relate to loading BLOs and prepartions stuff, not safe
+	if (resultCast->mStatus != Game::SingleGame::MainResultState::Result_ScreenActive
+	    && resultCast->mStatus != Game::SingleGame::MainResultState::Result_OpenWait) {
+		return false;
+	}
+	return true;
+}
+
 inline bool in_cave_results()
 {
 	// must be in single player mode

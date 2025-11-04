@@ -125,9 +125,19 @@ unknown MainResultState::open2D(SingleGameSection* game)
  */
 void MainResultState::exec(SingleGameSection* game)
 {
+	// @P2GZ pause-loading-fix: end function early to prevent anything happening for dayend results
+	// This effectively pauses the game, so players can warp without accidentally letting the game continue
+	if (p2gz && p2gz->menu->is_open()) {
+		return;
+	}
+
 	switch (mStatus) {
 	case Result_LoadData:
+		// @P2GZ pause-loading-fix: constantly set lockout frames so we never can warp here
+		p2gz->warp->set_lockout_frames(10);
 		if (mDvdThread.mMode == DvdThreadCommand::CM_Completed) {
+			// @P2GZ pause-loading-fix: add like a 1s frame delay to prevent crashing before the menus/ship popup
+			p2gz->warp->set_lockout_frames(330);
 			mStatus = Result_OpenWait;
 			MoviePlayArg arg("s02_dayend_result", nullptr, game->mMovieFinishCallback, 0);
 			moviePlayer->play(arg);
@@ -138,10 +148,14 @@ void MainResultState::exec(SingleGameSection* game)
 		return;
 	case Result_Unused1: // this state seems to never be used
 		mStartTimer -= sys->mDeltaTime;
-		if (mStartTimer < 0.0f)
+		if (mStartTimer < 0.0f) {
 			mStatus = Result_ScreenActive;
+			// @P2GZ pause-loading-fix: add like a 3 frame delay to prevent crashing when the "Today's Report" text appears
+			p2gz->warp->set_lockout_frames(3);
+		}
 		break;
 	case Result_OpenWait:
+
 		if (++mCounter >= 199 || mControl->getButtonDown() & Controller::PRESS_A) {
 			open2D(game);
 		}
