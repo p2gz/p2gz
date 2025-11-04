@@ -99,7 +99,9 @@ void GZMenu::init_menu()
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
 			->push(new OpenSubMenuOption("structures", (new ListMenu())
-				->push(new OpenSubMenuOption("gates", (new ListMenu()))) // Will be populated dynamically by StructureEditor
+				->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
+				->push(new ToggleMenuOption("show gate debug info", false,
+	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
 			))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))

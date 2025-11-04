@@ -2,11 +2,13 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/p2gz.h>
 #include <Game/Entities/ItemGate.h>
+#include <P2JME/P2JME.h>
 #include <types.h>
 
 using namespace gz;
 
-#define GATE_SEARCH_RADIUS (5.0f)
+#define GATE_SEARCH_RADIUS     (5.0f)
+#define GATE_DEBUG_RENDER_DIST (512.0f)
 
 static const size_t NUM_GATE_NAMES                                            = 20;
 static const StructureEditor::NameCoordinateMap COORD_TO_NAME[NUM_GATE_NAMES] = {
@@ -108,4 +110,88 @@ void StructureEditor::GateWrapper::set_gate_segments(s32 segments)
 void StructureEditor::GateWrapper::set_gate_segment_health(f32 health)
 {
 	gate->mCurrentSegmentHealth = health;
+}
+
+void StructureEditor::sync_gates()
+{
+	for (size_t i = 0; i < gates.len(); i++) {
+		// sanity check to only update gates we have actual info for
+		if (!gates[i] || !gates[i]->name || !gates[i]->gate) {
+			continue;
+		}
+
+		ListMenu* gate_submenu = static_cast<ListMenu*>(gate_menu->get_option(gates[i]->name)->get_sub_menu());
+		if (gate_submenu) {
+			static_cast<RangeMenuOption*>(gate_submenu->get_option("segments remaining"))->set_selection(3 - gates[i]->gate->mSegmentsDown);
+			static_cast<FloatRangeMenuOption*>(gate_submenu->get_option("segment health"))
+			    ->set_selection(gates[i]->gate->mCurrentSegmentHealth);
+		}
+	}
+}
+
+void StructureEditor::draw()
+{
+	if (!gate_debug_enabled) {
+		return;
+	}
+
+	if (!Game::itemGateMgr) {
+		return;
+	}
+
+	Graphics* gfx = sys->mGfx;
+	if (!gfx || !gfx->mCurrentViewport || !Game::naviMgr || !Game::naviMgr->getActiveNavi()) {
+		return;
+	}
+	gfx->initPerspPrintf(gfx->mCurrentViewport);
+
+	for (size_t i = 0; i < gates.len(); i++) {
+		if (!gates[i]) {
+			continue;
+		}
+		Game::ItemGate* gate = gates[i]->gate;
+		const char* name     = gates[i]->name;
+		if (gate && name) {
+			draw_gate_debug(gate, name, gfx);
+		}
+	}
+}
+
+void StructureEditor::draw_gate_debug(Game::ItemGate* gate, const char* name, Graphics* gfx)
+{
+	if (!gate || !name) {
+		return;
+	}
+
+	if (gate->getGateHealth() <= 0.0f || !gate->mLod.isFlag(AILOD_IsVisible)) {
+		return;
+	}
+
+	Vector3f naviPos = Game::naviMgr->getActiveNavi()->getPosition();
+	Vector3f gatePos = gate->mPosition;
+	if (sqrDistanceXZ(naviPos, gatePos) > SQUARE(GATE_DEBUG_RENDER_DIST)) {
+		return;
+	}
+
+	Color4 color(255, 255, 255, 255);
+
+	PerspPrintfInfo info;
+	info.mFont   = gP2JMEMgr->mFont;
+	info.mScale  = 0.5f;
+	info.mColorA = color;
+	info.mColorB = color;
+	Vector3f pos = gatePos + Vector3f(0, 120.0f + 40.0f, 0);
+
+	int line_height = 22;
+	// draw name
+	gfx->perspPrintf(info, pos, "%s", name);
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw current health
+	gfx->perspPrintf(info, pos, "health remaining: %.0f", gate->getGateHealth());
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw total health
+	gfx->perspPrintf(info, pos, "max health: %.0f", gate->mMaxSegmentHealth * gate->mMaxSegments);
+	info.mPerspectiveOffsetY += line_height;
 }

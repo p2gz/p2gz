@@ -120,6 +120,7 @@ void P2GZ::draw()
 
 	freecam->draw();
 	enemy_debug_info->draw();
+	structure_editor->draw();
 	dismiss_positions->draw();
 }
 

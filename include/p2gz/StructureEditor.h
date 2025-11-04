@@ -36,19 +36,30 @@ struct StructureEditor {
 	};
 
 public:
-	StructureEditor() { }
+	StructureEditor()
+	    : gate_menu(nullptr)
+	    , gate_debug_enabled(false)
+	{
+	}
 
 	void init();
+	void draw();
 
 	void add_gate(Game::ItemGate* gate);
 	void set_gate_stages_left(const char* name, int stages_left);
 	void clear_gates();
+	void sync_gates();
+
+	void set_enabled_gate_debug(bool set) { gate_debug_enabled = set; }
+	bool is_gate_debug_enabled() { return gate_debug_enabled; }
+	void draw_gate_debug(Game::ItemGate* gate, const char* name, Graphics* gfx);
 
 private:
 	const char* get_gate_name(f32 x, f32 z);
 
 	Vec<GateWrapper*> gates;
 	ListMenu* gate_menu;
+	bool gate_debug_enabled;
 };
 
 }; // namespace gz
