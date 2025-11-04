@@ -112,7 +112,25 @@ inline bool in_cave_play()
 	return true;
 }
 
-inline bool in_end_of_day()
+inline bool in_day_end_sunset()
+{
+	// must be in single player mode
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs) {
+		return false;
+	}
+	Game::SingleGame::State* state = sgs->getCurrState();
+	if (!state) {
+		return false;
+	}
+	// check we're in the correct state - this is day ending cutscene (returning to onyons + ship)
+	if (state->getCurrStateID() != Game::SingleGame::SGS_DayEnd) {
+		return false;
+	}
+	return true;
+}
+
+inline bool in_end_of_day_result()
 {
 	// must be in single player mode
 	Game::SingleGameSection* sgs = get_SGS();

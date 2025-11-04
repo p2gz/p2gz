@@ -20,6 +20,7 @@
 #include <string.h>
 #include <IDelegate.h>
 #include <Graphics.h>
+#include <Game/MoviePlayer.h>
 
 using namespace gz;
 
@@ -225,6 +226,20 @@ void GZMenu::open()
 {
 	if (enabled)
 		return;
+
+	// Don't open P2GZ menu during the following:
+	// cutscenes (causes gameplay desync)
+	// loading (causes gameplay desync)
+	// end of day (causes gameplay desync)
+	// cave results (crashes when warping out)
+	// day results (crashes when warping out)
+	if (Game::moviePlayer->isFlag(Game::MVP_IsActive) || in_day_end_sunset() || in_load() || in_cave_results() || in_end_of_day_result()) {
+		return;
+	}
+
+	Game::SingleGameSection* sgs   = get_SGS();
+	Game::SingleGame::State* state = sgs->getCurrState();
+	OSReport("state debug: %d\n\n\n\n", state->getCurrStateID());
 
 	layer = root_layer;
 	layer->reset_selection();
