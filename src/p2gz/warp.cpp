@@ -206,9 +206,9 @@ void Warp::do_warp()
 
 	if (preset) {
 		preset->apply();
-		preset_status          = PS_Stale;
+		preset_status                      = PS_Stale;
 		p2gz->preset_mgr->last_used_preset = preset;
-		needs_post_load_action = true;
+		needs_post_load_action             = true;
 	}
 
 	if (particle2dMgr) {
@@ -300,8 +300,7 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
 
 	// Save changes to world state if we're above-ground currently
-	// TODO: do we want to do this? Should it be a setting?
-	if (!Game::gameSystem->mIsInCave) {
+	if (in_above_ground_play()) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -355,8 +354,7 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	}
 
 	// Save changes to world state if we're above-ground currently
-	// TODO: do we want to do this? Should it be a setting?
-	if (!Game::gameSystem->mIsInCave) {
+	if (in_above_ground_play()) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
