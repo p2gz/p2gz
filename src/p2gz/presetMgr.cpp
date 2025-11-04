@@ -59,12 +59,20 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
 	                 ->set_onion_pikmin(Leaf, Purple, 10)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS })
 	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" }));
 	presets.push((new Preset("HoB1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_time(8.0f)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("HoB3-4", PoD))
@@ -72,20 +80,29 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_pikmin(Leaf, Purple, 10)
 	                 ->set_time(8.0f)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("HoB5", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
@@ -95,8 +112,9 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.0f)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
@@ -106,75 +124,93 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("SH1-2", PoD))
-	                 ->set_pikmin(Flower, Red, 34)
-	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Red, 35)
+	                 ->set_pikmin(Flower, Purple, 18)
 	                 ->set_pikmin(Flower, White, 15)
+	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("SH3-7", PoD))
-	                 ->set_pikmin(Flower, Red, 29)
-	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Red, 30)
+	                 ->set_pikmin(Flower, Purple, 18)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
+	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
-	presets.push((new Preset("enter BK (15/5)", PoD))
+	presets.push((new Preset("enter BK (15/5w)", PoD))
+	                 ->set_pikmin(Flower, Red, 27)
+	                 ->set_pikmin(Flower, Purple, 18)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_pikmin(Leaf, White, 5)
-	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
-	presets.push((new Preset("enter BK (20)", PoD))
+	presets.push((new Preset("enter BK (20w)", PoD))
+	                 ->set_pikmin(Flower, Red, 27)
+	                 ->set_pikmin(Flower, Purple, 18)
 	                 ->set_pikmin(Flower, White, 20)
-	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Red, 29)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
-	presets.push((new Preset("enter BK (25)", PoD))
+	presets.push((new Preset("enter BK (25w)", PoD))
+	                 ->set_pikmin(Flower, Red, 22)
+	                 ->set_pikmin(Flower, Purple, 18)
 	                 ->set_pikmin(Flower, White, 25)
-	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Red, 24)
 	                 ->set_onion_pikmin(Leaf, Blue, 16)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
@@ -182,28 +218,71 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("BK", PoD))
+	                 ->set_pikmin(Flower, Red, 27)
+	                 ->set_pikmin(Flower, Purple, 18)
 	                 ->set_pikmin(Flower, White, 20)
-	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Red, 28)
-	                 ->set_pikmin(Leaf, Blue, 32)
+	                 ->set_pikmin(Leaf, Blue, 35)
+	                 ->set_onion_pikmin(Leaf, Blue, 25)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(13.0f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	presets.push((new Preset("BK (25w)", PoD))
+	                 ->set_pikmin(Flower, Red, 22)
+	                 ->set_pikmin(Flower, Purple, 18)
+	                 ->set_pikmin(Flower, White, 25)
+	                 ->set_pikmin(Leaf, Blue, 35)
+	                 ->set_onion_pikmin(Leaf, Blue, 25)
+	                 ->set_onion_pikmin(Flower, Purple, 2)
+	                 ->set_onion_pikmin(Flower, Red, 1)
+	                 ->set_time(13.0f)
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
 	presets.push((new Preset("day 6 CR", PoD))
-	                 ->set_onion_pikmin(Flower, White, 20)
-	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_onion_pikmin(Flower, Purple, 20)
+	                 ->set_onion_pikmin(Flower, White, 20)
+	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	presets.push((new Preset("day 6 CR (25w)", PoD))
+	                 ->set_onion_pikmin(Leaf, Blue, 60)
+	                 ->set_onion_pikmin(Flower, Purple, 20)
+	                 ->set_onion_pikmin(Flower, White, 25)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
@@ -212,12 +291,31 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
-	                 ->set_onion_pikmin(Flower, Red, 29)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	presets.push((new Preset("enter SCx (25w)", PoD))
+	                 ->set_onion_pikmin(Flower, White, 25)
+	                 ->set_onion_pikmin(Flower, Purple, 20)
+	                 ->set_onion_pikmin(Flower, Blue, 55)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -226,29 +324,105 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 60)
-	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
-	presets.push((new Preset("SCx5-FC5", PoD))
-	                 ->set_pikmin(Flower, White, 35)
+	presets.push((new Preset("SCx1-4 (25w)", PoD))
+	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, Blue, 20)
-	                 ->set_onion_pikmin(Flower, Red, 29)
-	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_pikmin(Flower, Blue, 55)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("SCx5-8", PoD))
+	                 ->set_pikmin(Flower, White, 35)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 45)
+	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_time(9.5f)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("SCx5-8 (40w)", PoD))
+	                 ->set_pikmin(Flower, White, 40)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 40)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_time(9.5f)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("FC1-5", PoD))
+	                 ->set_pikmin(Flower, White, 35)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 20)
+	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_time(9.5f)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("FC1-5 (40w)", PoD))
+	                 ->set_pikmin(Flower, White, 40)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 15)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_time(9.5f)
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -257,14 +431,36 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 20)
-	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                    OlimarData::ODII_BruteKnuckles,
+	                                })
+	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("FC6-7 (40w)", PoD))
+	                 ->set_pikmin(Flower, White, 40)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 15)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_onion_pikmin(Flower, Blue, 25)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_time(10.5f)
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -274,12 +470,34 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 40)
-	                 ->set_onion_pikmin(Flower, Red, 29)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_onion_pikmin(Flower, Blue, 5)
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                    OlimarData::ODII_BruteKnuckles,
+	                                })
+	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("CoS (40w)", PoD))
+	                 ->set_pikmin(Flower, White, 40)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 35)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_onion_pikmin(Flower, Blue, 5)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -289,13 +507,36 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, Blue, 34)
-	                 ->set_onion_pikmin(Flower, Red, 29)
+	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_onion_pikmin(Flower, Blue, 11)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
+	                                    OlimarData::ODII_ForgedCourage,
+	                                    OlimarData::ODII_BruteKnuckles,
+	                                })
+	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	presets.push((new Preset("GK (40w)", PoD))
+	                 ->set_pikmin(Flower, White, 40)
+	                 ->set_pikmin(Flower, Purple, 20)
+	                 ->set_pikmin(Flower, Blue, 29)
+	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_onion_pikmin(Flower, Blue, 11)
+	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_time(8.5f)
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                    OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack,
+	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -432,10 +673,10 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 			if (dest.sublevel < 4)
 				return find("SCx1-4", PoD);
 			else
-				return find("SCx5-FC5", PoD);
+				return find("SCx5-8", PoD);
 		case FC:
 			if (dest.sublevel < 5)
-				return find("SCx5-FC5", PoD);
+				return find("FC1-5", PoD);
 			else
 				return find("FC6-7", PoD);
 		case CoS:

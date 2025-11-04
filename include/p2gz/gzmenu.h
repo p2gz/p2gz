@@ -228,7 +228,9 @@ private:
 /// Base class for different types of menus
 struct MenuLayer {
 public:
-	MenuLayer(IDelegate* on_opened_ = nullptr) { on_opened = on_opened_; }
+	MenuLayer() { on_opened = nullptr; }
+	MenuLayer(IDelegate1<MenuLayer*>* on_opened_) { on_opened = on_opened_; }
+	MenuLayer(IDelegate* on_opened_) { on_opened = new Delegate1<IDelegate, MenuLayer*>(on_opened_, nullptr); }
 
 	virtual void update()                            = 0;
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
@@ -242,19 +244,27 @@ public:
 	MenuLayer* parent;
 
 	/// Optional callback to be run when this menu is opened
-	IDelegate* on_opened;
+	IDelegate1<MenuLayer*>* on_opened;
 };
 
 struct ListMenu : public MenuLayer {
-public:
-	ListMenu(IDelegate* on_opened_ = nullptr)
-	    : MenuLayer(on_opened_)
-	    , pah_up(Controller::PRESS_DPAD_UP)
-	    , pah_down(Controller::PRESS_DPAD_DOWN)
-	{
-		selected = 0;
-		scroll   = 0;
+#define __LM_CTOR_BODY                                                       \
+	pah_up(Controller::PRESS_DPAD_UP), pah_down(Controller::PRESS_DPAD_DOWN) \
+	{                                                                        \
+		selected = 0;                                                        \
+		scroll   = 0;                                                        \
 	}
+
+public:
+	ListMenu()
+	    : MenuLayer()
+	    , __LM_CTOR_BODY;
+	ListMenu(IDelegate* on_opened_)
+	    : MenuLayer(on_opened_)
+	    , __LM_CTOR_BODY;
+	ListMenu(IDelegate1<MenuLayer*>* on_opened_)
+	    : MenuLayer(on_opened_)
+	    , __LM_CTOR_BODY;
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -286,20 +296,24 @@ private:
 };
 
 struct GridMenu : public MenuLayer {
-public:
-	GridMenu(f32 column_width_, IDelegate* on_opened_ = nullptr)
-	    : MenuLayer(on_opened_)
-	    , column_width(column_width_)
-	    , selected_row(0)
-	    , selected_col(0)
-	    , pah_up(Controller::PRESS_DPAD_UP)
-	    , pah_down(Controller::PRESS_DPAD_DOWN)
-	    , pah_left(Controller::PRESS_DPAD_LEFT)
-	    , pah_right(Controller::PRESS_DPAD_RIGHT)
-	{
-		options.push(new Vec<MenuOption*>);
-		editing_range = false;
+#define __GM_CTOR_BODY                                                                                                        \
+	column_width(column_width_), selected_row(0), selected_col(0), pah_up(Controller::PRESS_DPAD_UP),                         \
+	    pah_down(Controller::PRESS_DPAD_DOWN), pah_left(Controller::PRESS_DPAD_LEFT), pah_right(Controller::PRESS_DPAD_RIGHT) \
+	{                                                                                                                         \
+		options.push(new Vec<MenuOption*>);                                                                                   \
+		editing_range = false;                                                                                                \
 	}
+
+public:
+	GridMenu(f32 column_width_)
+	    : MenuLayer()
+	    , __GM_CTOR_BODY;
+	GridMenu(f32 column_width_, IDelegate* on_opened_)
+	    : MenuLayer(on_opened_)
+	    , __GM_CTOR_BODY;
+	GridMenu(f32 column_width_, IDelegate1<MenuLayer*>* on_opened_)
+	    : MenuLayer(on_opened_)
+	    , __GM_CTOR_BODY;
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
