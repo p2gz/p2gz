@@ -59,12 +59,20 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
 	                 ->set_onion_pikmin(Leaf, Purple, 10)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS })
 	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" }));
 	presets.push((new Preset("HoB1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_time(8.0f)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("HoB3-4", PoD))
@@ -72,20 +80,29 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_pikmin(Leaf, Purple, 10)
 	                 ->set_time(8.0f)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("HoB5", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
+	                 ->set_upgrades(1,
+	                                (OlimarData::ItemIndex[1]) {
+	                                    OlimarData::ODII_SphericalAtlas,
+	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
@@ -95,8 +112,9 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.0f)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
+	                 ->set_upgrades(2,
+	                                (OlimarData::ItemIndex[2]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
@@ -106,8 +124,9 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
@@ -121,8 +140,9 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
@@ -137,8 +157,9 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
+	                 ->set_upgrades(3,
+	                                (OlimarData::ItemIndex[3]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
@@ -153,8 +174,9 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
@@ -169,8 +191,9 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
@@ -185,8 +208,9 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(4,
+	                                (OlimarData::ItemIndex[4]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
@@ -202,11 +226,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(13.0f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
@@ -219,11 +245,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(13.0f)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
+	                 ->set_upgrades(5,
+	                                (OlimarData::ItemIndex[5]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
@@ -232,11 +260,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Red, 28)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
@@ -246,11 +276,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, White, 25)
 	                 ->set_onion_pikmin(Flower, Red, 23)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
@@ -260,11 +292,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 28)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -275,11 +309,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 55)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_onion_pikmin(Flower, Red, 23)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -290,11 +326,13 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -306,11 +344,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -321,11 +361,13 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 45)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -337,11 +379,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -353,11 +397,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -370,11 +416,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
+	                 ->set_upgrades(6,
+	                                (OlimarData::ItemIndex[6]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
@@ -386,11 +434,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -404,11 +454,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(10.5f)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -420,11 +472,13 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 40)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 5)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -437,11 +491,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_onion_pikmin(Flower, Blue, 5)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -454,11 +510,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 11)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
@@ -472,11 +530,13 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 11)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(8.5f)
-	                 ->set_upgrades(5,
-	                                (OlimarData::ItemIndex[5]) {
+	                 ->set_upgrades(7,
+	                                (OlimarData::ItemIndex[7]) {
+	                                    OlimarData::ODII_SphericalAtlas,
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                    OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection,
 	                                    OlimarData::ODII_ForgedCourage,
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
