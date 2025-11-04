@@ -213,6 +213,10 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 
 	// @P2GZ - post-load actions on warp
 	p2gz->warp->do_post_warp();
+
+	// @P2GZ - clear list of spawnpoints to draw
+	// TODO: when (if?) we have spawnpoint viewing working for AG, remove this
+	p2gz->cave_debug_info->clear();
 }
 
 /**
