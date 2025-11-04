@@ -52,6 +52,11 @@ void SelectState::init(SingleGameSection*, StateArg*)
 	playData->mDeadNaviID = 0;
 	naviMgr->clearDeadCount();
 	mNewLevelOpen = false;
+
+	// @P2GZ p2gz-pause-fixes: set correct args to be able to warp out of world map
+	if (p2gz) {
+		p2gz->warp->warping_from_menu = true;
+	}
 }
 
 /**
