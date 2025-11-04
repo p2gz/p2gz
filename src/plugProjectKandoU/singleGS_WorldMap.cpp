@@ -11,6 +11,7 @@
 #include "TParticle2dMgr.h"
 #include "JSystem/J2D/J2DPrint.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -176,6 +177,12 @@ void SelectState::exec(SingleGameSection* game)
 	}
 	default: {
 		if (mWMapHeap) {
+
+			// @P2GZ p2gz-pause-fixes: don't update world map menu if in p2gz menu, just end function immediately
+			if (p2gz && p2gz->menu->is_open()) {
+				return;
+			}
+
 			game->BaseHIOSection::doUpdate();
 			WorldMap::UpdateArg arg;
 			arg.mCourseInfo = nullptr;
