@@ -1,3 +1,4 @@
+#include <p2gz/HelperInlines.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <p2gz/p2gz.h>
@@ -19,13 +20,14 @@ void SegmentHistory::draw_2d()
 	}
 	SceneType scene_type = Screen::gGame2DMgr->mScreenMgr->getSceneType();
 
+	bool gz_menu_open = p2gz->menu->is_open();
 	bool is_paused = Game::gameSystem
 	              && (scene_type == SCENE_PAUSE_MENU_DOUKUTU || scene_type == SCENE_PAUSE_MENU_ITEMS || scene_type == SCENE_PAUSE_MENU_MAP
 	                  || scene_type == SCENE_PAUSE_MENU_CONTROLS);
 	bool is_in_load_screen = scene_type == SCENE_FLOOR && started_creating_map;
-	bool gz_menu_open      = p2gz->menu->is_open();
+	bool is_paused_in_cave = in_cave_play() && (is_paused || gz_menu_open);
 
-	if (is_paused || is_in_load_screen || gz_menu_open) {
+	if (is_paused_in_cave || is_in_load_screen) {
 		draw_cur_seed();
 	}
 
