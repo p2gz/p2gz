@@ -1,7 +1,9 @@
 #include <p2gz/TreasureEditor.h>
 #include <p2gz/FreeCam.h>
+#include <Game/Entities/ItemTreasure.h>
 #include <Game/Entities/PelletItem.h>
 #include <Game/Entities/PelletOtakara.h>
+#include <Game/generalEnemyMgr.h>
 #include <Game/MapMgr.h>
 #include <Game/pelletMgr.h>
 #include <VsOtakaraName.h>
@@ -19,6 +21,7 @@ void TreasureEditor::enable()
 
 	Game::Pellet* target = nullptr;
 
+	// normal treasures
 	Iterator<Game::PelletOtakara::Object> treasureIterator(Game::PelletOtakara::mgr);
 	CI_LOOP(treasureIterator)
 	{
@@ -29,6 +32,7 @@ void TreasureEditor::enable()
 		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 	}
 
+	// exploration kit upgrades are different for some reason
 	Iterator<Game::PelletItem::Object> upgradeIterator(Game::PelletItem::mgr);
 	CI_LOOP(upgradeIterator)
 	{
@@ -39,15 +43,51 @@ void TreasureEditor::enable()
 		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 	}
 
+	// treasures inside enemies
+	GeneralMgrIterator<Game::EnemyBase> enemyIterator(Game::generalEnemyMgr);
+	CI_LOOP(enemyIterator)
+	{
+		Game::EnemyBase* enemy = enemyIterator.getObject();
+		if (!enemy->isAlive()) {
+			continue;
+		}
+
+		if (enemy->mPelletDropCode != 0) {
+			Game::PelletInitArg arg;
+			Game::pelletMgr->makePelletInitArg(arg, enemy->mPelletDropCode);
+			if (strcmp(arg.mTextIdentifier, treasures->cur_option()->title) == 0) {
+				enemy->throwupItem();
+				target = enemy->mHeldPellet;
+				target->mLod.setFlag(AILOD_IsVisibleBoth);
+
+				Game::CreatureKillArg killArg(Game::CKILL_LeaveNoCarcass);
+				enemy->kill(&killArg);
+			}
+		}
+	}
+
 	GZASSERTLINE(target);
+
+	// release target if buried
+	Iterator<Game::BaseItem> buriedIterator(Game::ItemTreasure::mgr);
+	CI_LOOP(buriedIterator)
+	{
+		Game::ItemTreasure::Item* item = static_cast<Game::ItemTreasure::Item*>(*buriedIterator);
+		if (!item->mPellet) {
+			continue;
+		}
+
+		if (strcmp(target->getConfigName(), item->mPellet->getConfigName()) == 0) {
+			item->mTotalLife = 0.0f;
+			item->releasePellet();
+		}
+	}
+
 	active_treasure  = target;
 	initial_position = target->getPosition();
 
 	p2gz->waypoint_viewer->toggle(true);
 	p2gz->freecam->enable();
-
-	// We could have a target Creature that freecam follows, or we could just do this,
-	// which feels like a hack but took zero effort.
 	p2gz->freecam->set_position(target->getPosition());
 }
 
@@ -80,12 +120,30 @@ void TreasureEditor::add(Game::Pellet* pellet)
 {
 	Game::PelletItem::Object* treasure = static_cast<Game::PelletItem::Object*>(pellet);
 
+	for (int i = 0; i < treasures->options.len(); i++) {
+		if (strcmp(treasures->options[i]->title, treasure->getConfigName()) == 0) {
+			return;
+		}
+	}
+
 	// clang-format off
 	treasures->push(new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu())
 		->push(new PerformActionMenuOption("move", new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::enable)))
 		->push(new ToggleMenuOption("collected", false, new Delegate1<TreasureEditor, bool>(p2gz->treasure_editor, &TreasureEditor::toggle_collected)))
 	));
 	// clang-format on
+}
+
+void TreasureEditor::remove(Game::Pellet* pellet)
+{
+	Game::PelletItem::Object* treasure = static_cast<Game::PelletItem::Object*>(pellet);
+	for (int i = 0; i < treasures->options.len(); i++) {
+		if (strcmp(treasures->options[i]->title, treasure->getConfigName()) == 0) {
+			treasures->options.removeAt(i);
+			return;
+		}
+	}
+	GZASSERTLINE(false);
 }
 
 void TreasureEditor::clear_treasures()
@@ -275,9 +333,67 @@ void Pellet::onInit(CreatureInitArg* initArg)
 		gameSystem->mSection->sendMessage(msg);
 	}
 
+	// @P2GZ: treasure editor
 	if (getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) {
-		OSReport("added %s\n", getConfigName());
 		p2gz->treasure_editor->add(this);
+	}
+}
+
+void Pellet::onKill(CreatureKillArg* killArg)
+{
+	if (gameSystem->isVersusMode()) {
+		mPelletSM->start(this, 0, nullptr);
+	}
+
+	setAlive(false);
+
+	if (shadowMgr) {
+		shadowMgr->delShadow(this);
+	}
+
+	if (gameSystem->isVersusMode()) {
+		GameMessagePelletDead msg(this);
+		gameSystem->mSection->sendMessage(msg);
+	}
+
+	Vector3f scale(1.0f);
+	Vector3f rotation(0.0f);
+	Vector3f translation(0.0f);
+	mBaseTrMatrix.makeSRT(scale, rotation, translation);
+
+	if (mModel) {
+		mLodSphere.mPosition = Vector3f(0.0f);
+		mLodSphere.mRadius   = FLOAT_DIST_MAX;
+		mScale               = Vector3f(1.0f);
+		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+		mScale.set(mModel->mJ3dModel->mModelScale);
+		mModel->clearAnimatorAll();
+		mModel->mJ3dModel->calc();
+	}
+
+	releaseParticles();
+	mCollTree->release();
+	mMgr->kill(this);
+
+	if ((killArg && static_cast<PelletKillArg*>(killArg)->mDoRevive) || (gameSystem->isVersusMode() && mPelletFlag == FLAG_VS_CHERRY)) {
+		mMgr->setRevival(this);
+	}
+
+	finishDisplayCarryInfo();
+
+	if (mPelletView) {
+		mPelletView->viewOnPelletKilled();
+		mPelletView->mPellet = nullptr;
+		mPelletView          = nullptr;
+	}
+
+	if (getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) {
+		Radar::Mgr::exit(this);
+
+		OSReport("killed %s\n", getConfigName());
+
+		// @P2GZ: treasure editor
+		p2gz->treasure_editor->remove(this);
 	}
 }
 } // namespace Game

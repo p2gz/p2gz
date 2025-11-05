@@ -42,6 +42,9 @@
 #include "Dolphin/rand.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 // Archives
 JKRArchive* Game::gParmArc;
 PSSystem::ArcMgr<PSGame::BASARC>* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
@@ -2562,7 +2565,14 @@ void EnemyBase::throwupItem()
 	PelletInitArg pelletInitArg;
 
 	if (pelletMgr->makePelletInitArg(pelletInitArg, mPelletDropCode)) {
-		pelletInitArg.mState         = PelBirthType_ScaleAppear;
+		pelletInitArg.mState = PelBirthType_ScaleAppear;
+
+		// @P2GZ: treasure editor
+		// make treasures appear instantly
+		if (p2gz->treasure_editor->is_enabled()) {
+			pelletInitArg.mState = PelBirthType_Normal;
+		}
+
 		EnemyTypeID::EEnemyTypeID id = getEnemyTypeID();
 
 		// For bosses in the final floor of a cave in story mode,

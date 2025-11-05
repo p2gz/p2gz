@@ -85,6 +85,8 @@ void FreeCam::update()
 		if (p2gz->treasure_editor->is_enabled()) {
 			p2gz->menu->navigate_to("map/treasures");
 			og::ogSound->setDecide();
+			p2gz->treasure_editor->disable();
+			p2gz->waypoint_viewer->toggle(false);
 			disable();
 		} else {
 			warp_to_current_position();
@@ -97,6 +99,8 @@ void FreeCam::update()
 			if (p2gz->treasure_editor->is_enabled()) {
 				p2gz->menu->navigate_to("map/treasures");
 				p2gz->treasure_editor->reset_active_treasure();
+				p2gz->treasure_editor->disable();
+				p2gz->waypoint_viewer->toggle(false);
 			} else {
 				p2gz->menu->navigate_to("tools/freecam");
 			}
