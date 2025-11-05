@@ -223,6 +223,12 @@ void Warp::do_warp()
 		warp_to_cave(game);
 	}
 
+	// Warping revives captains, but because it skips the normal load sequence, any dead captains
+	// are still considered dead even after being revived. This informs naviMgr that they're both alive again.
+	if (Game::naviMgr) {
+		Game::naviMgr->clearDeadCount();
+	}
+
 	// Disable the option for skipping save prompts and force it to be on
 	// when warping out of the menu. This is because there's no save file selected,
 	// so saving in this state causes a crash.
