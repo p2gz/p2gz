@@ -72,8 +72,6 @@ public:
 	Preset* current_preset;
 
 private:
-	void select_current_preset(MenuLayer* menu);
-
 	ListMenu* preset_category_list;
 	ListMenu* pod_presets_menu;
 	ListMenu* at_presets_menu;
