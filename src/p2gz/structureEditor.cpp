@@ -115,6 +115,7 @@ void StructureEditor::init()
 	gate_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/gates")->get_sub_menu());
 	bridge_menu = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/bridges")->get_sub_menu());
 	plug_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/plugs")->get_sub_menu());
+	bag_menu    = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/bags")->get_sub_menu());
 }
 
 void StructureEditor::add_gate(Game::ItemGate* gate)
@@ -316,7 +317,7 @@ void StructureEditor::BridgeWrapper::set_bridge_glitch(bool glitched)
 void StructureEditor::sync_bridges()
 {
 	for (size_t i = 0; i < bridges.len(); i++) {
-		// sanity check to only update gates we have actual info for
+		// sanity check to only update bridges we have actual info for
 		if (!bridges[i] || !bridges[i]->name || !bridges[i]->bridge) {
 			continue;
 		}
@@ -473,7 +474,7 @@ void StructureEditor::PlugWrapper::create_water_box()
 void StructureEditor::sync_plugs()
 {
 	for (size_t i = 0; i < plugs.len(); i++) {
-		// sanity check to only update gates we have actual info for
+		// sanity check to only update plugs we have actual info for
 		if (!plugs[i] || !plugs[i]->name || !plugs[i]->plug) {
 			continue;
 		}
@@ -486,6 +487,87 @@ void StructureEditor::sync_plugs()
 				health = plugs[i]->plug->mHealth;
 			}
 			static_cast<FloatRangeMenuOption*>(plug_submenu->get_option("plug health"))->set_selection(health);
+		}
+	}
+}
+
+void StructureEditor::add_bag(Game::ItemDownFloor::Item* bag)
+{
+	BagWrapper* wrapper = new BagWrapper();
+	wrapper->bag        = bag;
+	wrapper->name       = get_bag_name(bag->mPosition.x, bag->mPosition.z);
+	bags.push(wrapper);
+
+	Game::ItemDownFloor::Mgr* mgr = Game::ItemDownFloor::mgr;
+
+	if (!mgr) {
+		return;
+	}
+
+	// clang-format off
+	bag_menu->push(new OpenSubMenuOption(wrapper->name, (new ListMenu())
+		->push(new ToggleMenuOption("bag alive", true, new Delegate1<BagWrapper, bool>(bags[bags.len()-1], &BagWrapper::set_bag_state)))
+    ));
+	// clang-format on
+}
+
+void StructureEditor::clear_bags()
+{
+	bags.clear();
+	if (bag_menu) {
+		bag_menu->clear();
+	}
+}
+
+const char* StructureEditor::get_bag_name(f32 x, f32 z)
+{
+	for (size_t i = 0; i < NUM_BAG_NAMES; i++) {
+		NameCoordinateMap map = BAG_COORD_TO_NAME[i];
+		if ((absF(map.x - x) < STRUCT_SEARCH_RADIUS) && (absF(map.z - z) < STRUCT_SEARCH_RADIUS)) {
+			return map.name;
+		}
+	}
+
+	char* name = new char[8];
+	sprintf(name, "bag %d", plugs.len());
+	return name;
+}
+
+void StructureEditor::BagWrapper::set_bag_state(bool alive)
+{
+	if (alive) {
+		if (bag->mWayPoint) {
+			bag->mWayPoint->setOpen(false);
+		}
+		bag->mPlatInstance->setCollision(true);
+		bag->mFsm->transit(bag, Game::ItemDownFloor::DOWNFLOOR_Up, nullptr);
+	} else {
+		bag->mPlatInstance->setCollision(false);
+
+		bag->mIsPressed = true;
+		bag->mFsm->transit(bag, Game::ItemDownFloor::DOWNFLOOR_Down, nullptr);
+		if (bag->mCarryInfoList) {
+			bag->mCarryInfoList->mParam.mCarryInfo.disappear();
+			bag->mCarryInfoList = nullptr;
+		}
+
+		if (bag->mWayPoint) {
+			bag->mWayPoint->setOpen(true);
+		}
+	}
+}
+
+void StructureEditor::sync_bags()
+{
+	for (size_t i = 0; i < bags.len(); i++) {
+		// sanity check to only update bags we have actual info for
+		if (!bags[i] || !bags[i]->name || !bags[i]->bag) {
+			continue;
+		}
+
+		ListMenu* bag_submenu = static_cast<ListMenu*>(bag_menu->get_option(bags[i]->name)->get_sub_menu());
+		if (bag_submenu) {
+			static_cast<ToggleMenuOption*>(bag_submenu->get_option("bag alive"))->set_selection(!bags[i]->bag->mIsPressed);
 		}
 	}
 }

@@ -11,6 +11,7 @@
 #include "Dolphin/rand.h"
 #include "Platform.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace ItemDownFloor {
@@ -147,6 +148,12 @@ void Item::onSetPosition()
 		} else {
 			mWayPoint = nullptr;
 		}
+	}
+
+	// @P2GZ: bag editor
+	// add bags to menu as they spawn
+	if (mDownFloorType == DFTYPE_PaperBag) {
+		p2gz->structure_editor->add_bag(this);
 	}
 }
 
@@ -375,7 +382,9 @@ void Item::doLoad(Stream& input)
 				mCarryInfoList = nullptr;
 			}
 
-			platMgr->delInstance(mPlatInstance);
+			// @P2GZ: bag editor
+			// don't delete the collision in case we want to bring it back later
+			// platMgr->delInstance(mPlatInstance);
 
 			if (mWayPoint) {
 				mWayPoint->setOpen(true);
@@ -778,7 +787,9 @@ void DownState::onKeyEvent(Item* item, SysShape::KeyEvent const&)
 			item->mCarryInfoList = nullptr;
 		}
 
-		platMgr->delInstance(item->mPlatInstance);
+		// @P2GZ: bag editor
+		// don't delete the collision in case we want to bring it back later
+		// platMgr->delInstance(item->mPlatInstance);
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_WORK_FINISH, 0);
 
 		if (item->mWayPoint) {

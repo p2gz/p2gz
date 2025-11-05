@@ -108,6 +108,7 @@ void SingleGame::FSM::transit(SingleGameSection* game, int sceneNum, Game::State
 		p2gz->structure_editor->clear_gates();
 		p2gz->structure_editor->clear_bridges();
 		p2gz->structure_editor->clear_plugs();
+		p2gz->structure_editor->clear_bags();
 		p2gz->treasure_editor->clear_treasures();
 	}
 

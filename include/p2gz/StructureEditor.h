@@ -54,18 +54,18 @@ struct StructureEditor {
 		void create_water_box();
 	};
 
-	// struct BagWrapper {
-	// 	BagWrapper()
-	// 	{
-	// 		bag  = nullptr;
-	// 		name = nullptr;
-	// 	}
+	struct BagWrapper {
+		BagWrapper()
+		{
+			bag  = nullptr;
+			name = nullptr;
+		}
 
-	// 	Game::ItemDownFloor::Item* bag;
-	// 	const char* name;
+		Game::ItemDownFloor::Item* bag;
+		const char* name;
 
-	// 	void set_bag_state(bool alive);
-	// };
+		void set_bag_state(bool alive);
+	};
 
 	struct NameCoordinateMap {
 		NameCoordinateMap(f32 x_, f32 z_, const char* name_)
@@ -99,9 +99,9 @@ public:
 	    , gate_debug_enabled(false)
 	    , bridge_menu(nullptr)
 	    , bridge_debug_enabled(false)
-	// , plug_menu(nullptr)
-	// , plug_debug_enabled(false)
-	// , bag_menu(nullptr)
+	    , plug_menu(nullptr)
+	    , plug_debug_enabled(false)
+	    , bag_menu(nullptr)
 	{
 	}
 
@@ -119,14 +119,12 @@ public:
 	void sync_bridges();
 
 	void add_plug(Game::ItemBarrel::Item* plug);
-	void set_plug_kill(Game::ItemBarrel::Item* plug);
 	void clear_plugs();
 	void sync_plugs();
 
-	// void add_bag(Game::ItemDownFloor::Item* bridge);
-	// void set_bag_state(const char* name, bool alive);
-	// void clear_bags();
-	// void sync_bags();
+	void add_bag(Game::ItemDownFloor::Item* bag);
+	void clear_bags();
+	void sync_bags();
 
 	void set_enabled_gate_debug(bool set) { gate_debug_enabled = set; }
 	bool is_gate_debug_enabled() { return gate_debug_enabled; }
@@ -143,18 +141,18 @@ public:
 	ListMenu* gate_menu;
 	ListMenu* bridge_menu;
 	ListMenu* plug_menu;
-	// ListMenu* bag_menu;
+	ListMenu* bag_menu;
 
 private:
 	const char* get_gate_name(f32 x, f32 z);
 	const char* get_bridge_name(f32 x, f32 z);
 	const char* get_plug_name(f32 x, f32 z);
-	// const char* get_bag_name(f32 x, f32 z);
+	const char* get_bag_name(f32 x, f32 z);
 
 	Vec<GateWrapper*> gates;
 	Vec<BridgeWrapper*> bridges;
 	Vec<PlugWrapper*> plugs;
-	// Vec<BagWrapper*> bags;
+	Vec<BagWrapper*> bags;
 
 	bool gate_debug_enabled;
 	bool bridge_debug_enabled;
