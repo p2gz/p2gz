@@ -632,6 +632,10 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 
 		if (isFinal) {
 			Screen::gGame2DMgr->open_GameCave(disp, 2);
+
+			// @P2GZ - post-load actions on warp
+			p2gz->warp->do_post_warp();
+
 			return;
 		}
 
@@ -672,6 +676,10 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 
 			if (isFinal) {
 				Screen::gGame2DMgr->open_GameCave(disp, 2);
+
+				// @P2GZ - post-load actions on warp
+				p2gz->warp->do_post_warp();
+
 				return;
 			}
 
