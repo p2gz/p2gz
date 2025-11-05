@@ -7,6 +7,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "PlatAttacher.h"
 #include "trig.h"
+#include <p2gz/p2gz.h>
 
 static f32 bridgeFirstPos[4] = { 42.5f, 12.5f, 42.5f, 12.5f };
 static f32 bridgeGrad[4]     = { 0.0f, 8.0f, 0.0f, 0.0f };
@@ -62,6 +63,10 @@ Item::Item()
 {
 	mMass         = 0.0f;
 	mCurrStageIdx = 0;
+
+	// @P2GZ: bridge editor
+	// marker for if bridge is glitched
+	mIsGlitched = false;
 }
 
 /**
@@ -186,6 +191,10 @@ void Item::constructor()
  */
 void Item::doLoad(Stream& input)
 {
+	// @P2GZ - bridge editor
+	// marker for if bridge is glitched
+	mIsGlitched = true;
+
 	mCurrStageIdx = input.readInt();
 	for (int i = 0; i < mStageCount; i++) {
 		mStageHealths[i] = 0.0f;
@@ -232,6 +241,12 @@ void Item::onSetPosition()
 	mPlatInstanceAttacher.fixCollision(true);
 	createWayPoints();
 	setCurrStage(0);
+
+	// @P2GZ: bridge editor
+	// Register created bridge with structure editor.
+	// Done in onSetPosition because StructureEditor uses
+	// coords to determine the name for the bridge.
+	p2gz->structure_editor->add_bridge(this);
 }
 
 /**

@@ -104,6 +104,9 @@ void GZMenu::init_menu()
 				->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
 				->push(new ToggleMenuOption("show gate debug info", false,
 	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
+				->push(new OpenSubMenuOption("bridges", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bridges))))) // Will be populated dynamically by StructureEditor
+				->push(new ToggleMenuOption("show bridge debug info", false,
+	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_bridge_debug)))
 			))
 			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))

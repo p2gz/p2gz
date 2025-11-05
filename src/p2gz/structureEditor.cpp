@@ -3,15 +3,19 @@
 #include <p2gz/p2gz.h>
 #include <Game/Entities/ItemGate.h>
 #include <P2JME/P2JME.h>
+#include <PSM/WorkItem.h>
 #include <types.h>
 
 using namespace gz;
 
-#define GATE_SEARCH_RADIUS     (5.0f)
-#define GATE_DEBUG_RENDER_DIST (512.0f)
+#define STRUCT_SEARCH_RADIUS     (5.0f)
+#define STRUCT_DEBUG_RENDER_DIST (512.0f)
 
-static const size_t NUM_GATE_NAMES                                            = 20;
-static const StructureEditor::NameCoordinateMap COORD_TO_NAME[NUM_GATE_NAMES] = {
+/* ------------------------------------------------- */
+/* --------------------- GATES --------------------- */
+/* ------------------------------------------------- */
+
+static const StructureEditor::NameCoordinateMap GATE_COORD_TO_NAME[] = {
 	// VoR
 	StructureEditor::NameCoordinateMap(-591.0f, 1427.0f, "EC gate"),
 	StructureEditor::NameCoordinateMap(369.0f, 1565.0f, "water gate"),
@@ -38,9 +42,65 @@ static const StructureEditor::NameCoordinateMap COORD_TO_NAME[NUM_GATE_NAMES] = 
 	StructureEditor::NameCoordinateMap(-3514.0f, 1153.0f, "water gate"),
 };
 
+static const size_t NUM_GATE_NAMES = ARRAY_SIZE(GATE_COORD_TO_NAME); // 20
+
+/* ------------------------------------------------- */
+/* -------------------- BRIDGES -------------------- */
+/* ------------------------------------------------- */
+
+static const StructureEditor::NameCoordinateMap BRIDGE_COORD_TO_NAME[] = {
+	// VoR
+	StructureEditor::NameCoordinateMap(540.0f, 775.0f, "water bridge"),
+	StructureEditor::NameCoordinateMap(-316.8f, -1664.5f, "FC bridge"),
+	// AW
+	StructureEditor::NameCoordinateMap(-1250.0f, 2260.0f, "globe bridge"),
+	StructureEditor::NameCoordinateMap(-1517.3f, 3529.5f, "air brake bridge to globe"),
+	StructureEditor::NameCoordinateMap(-1353.2f, 3760.6f, "air brake bridge to SH"),
+	// PP
+	StructureEditor::NameCoordinateMap(326.0f, -759.0f, "bitter plant bridge"),
+	StructureEditor::NameCoordinateMap(1431.0f, 404.0f, "SR bridge"),
+	StructureEditor::NameCoordinateMap(-2159.0f, -857.0f, "CoS bridge"),
+	// WW
+	StructureEditor::NameCoordinateMap(-1479.3f, 558.3f, "water bridge"),
+};
+
+static const size_t NUM_BRIDGE_NAMES = ARRAY_SIZE(BRIDGE_COORD_TO_NAME); // 9
+
+/* ------------------------------------------------- */
+/* --------------------- PLUGS --------------------- */
+/* ------------------------------------------------- */
+
+static const StructureEditor::NameCoordinateMap PLUG_COORD_TO_NAME[] = {
+	// VoR
+	StructureEditor::NameCoordinateMap(800.0f, 1380.0f, "bridge plug"),
+	// AW
+	StructureEditor::NameCoordinateMap(380.6f, 1948.9f, "BK plug"),
+	// PP
+	StructureEditor::NameCoordinateMap(1408.7f, 1625.2f, "SR plug"),
+	// WW
+	StructureEditor::NameCoordinateMap(-2773.3f, 1328.5f, "plants plug"),
+};
+
+static const size_t NUM_PLUG_NAMES = ARRAY_SIZE(PLUG_COORD_TO_NAME); // 4
+
+/* ------------------------------------------------- */
+/* --------------------- BAGS ---------------------- */
+/* ------------------------------------------------- */
+
+static const StructureEditor::NameCoordinateMap BAG_COORD_TO_NAME[] = {
+	// VoR
+	StructureEditor::NameCoordinateMap(-910.7f, 2769.2f, "landing area bag (15)"),
+	StructureEditor::NameCoordinateMap(-1150.0f, 2455.0f, "hubcap bag (35)"),
+	// AW
+	StructureEditor::NameCoordinateMap(-395.0f, 1115.0f, "WFG bag (200)"),
+};
+
+static const size_t NUM_BAG_NAMES = ARRAY_SIZE(BAG_COORD_TO_NAME); // 3
+
 void StructureEditor::init()
 {
-	gate_menu = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/gates")->get_sub_menu());
+	gate_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/gates")->get_sub_menu());
+	bridge_menu = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/bridges")->get_sub_menu());
 }
 
 void StructureEditor::add_gate(Game::ItemGate* gate)
@@ -69,8 +129,8 @@ void StructureEditor::clear_gates()
 const char* StructureEditor::get_gate_name(f32 x, f32 z)
 {
 	for (size_t i = 0; i < NUM_GATE_NAMES; i++) {
-		NameCoordinateMap map = COORD_TO_NAME[i];
-		if ((absF(map.x - x) < GATE_SEARCH_RADIUS) && (absF(map.z - z) < GATE_SEARCH_RADIUS)) {
+		NameCoordinateMap map = GATE_COORD_TO_NAME[i];
+		if ((absF(map.x - x) < STRUCT_SEARCH_RADIUS) && (absF(map.z - z) < STRUCT_SEARCH_RADIUS)) {
 			return map.name;
 		}
 	}
@@ -129,30 +189,167 @@ void StructureEditor::sync_gates()
 	}
 }
 
+void StructureEditor::add_bridge(Game::ItemBridge::Item* bridge)
+{
+	BridgeWrapper* wrapper = new BridgeWrapper();
+	wrapper->bridge        = bridge;
+	wrapper->name          = get_bridge_name(bridge->mPosition.x, bridge->mPosition.z);
+	bridges.push(wrapper);
+
+	Game::ItemBridge::Mgr* mgr = Game::ItemBridge::mgr;
+
+	if (!mgr) {
+		return;
+	}
+
+	// clang-format off
+	bridge_menu->push(new OpenSubMenuOption(wrapper->name, (new ListMenu())
+	    ->push(new RangeMenuOption("segments remaining", 0, bridge->mStageCount, bridge->mStageCount - bridge->mCurrStageIdx, RangeMenuOption::CAP, new Delegate1<BridgeWrapper, s32>(bridges[bridges.len()-1], &BridgeWrapper::set_bridge_segments)))
+		->push(new FloatRangeMenuOption("segment health", 0.0f, mgr->mParms->mBridgeParms.mHealth(), bridge->getCurrentStageHealth(), new Delegate1<BridgeWrapper, f32>(bridges[bridges.len()-1], &BridgeWrapper::set_bridge_segment_health)))
+		->push(new ToggleMenuOption("bridge glitch", true, new Delegate1<BridgeWrapper, bool>(bridges[bridges.len()-1], &BridgeWrapper::set_bridge_glitch)))
+    ));
+	// clang-format on
+}
+
+void StructureEditor::clear_bridges()
+{
+	bridges.clear();
+	if (bridge_menu) {
+		bridge_menu->clear();
+	}
+}
+
+const char* StructureEditor::get_bridge_name(f32 x, f32 z)
+{
+	for (size_t i = 0; i < NUM_BRIDGE_NAMES; i++) {
+		NameCoordinateMap map = BRIDGE_COORD_TO_NAME[i];
+		if ((absF(map.x - x) < STRUCT_SEARCH_RADIUS) && (absF(map.z - z) < STRUCT_SEARCH_RADIUS)) {
+			return map.name;
+		}
+	}
+
+	char* name = new char[8];
+	sprintf(name, "bridge %d", bridges.len());
+	return name;
+}
+
+void StructureEditor::set_bridge_stages_left(const char* name, int stages_left)
+{
+	for (size_t i = 0; i < bridges.len(); i++) {
+		BridgeWrapper* bridge = bridges[i];
+		if (strcmp(name, bridge->name) == 0) {
+			bridge->set_bridge_segments(stages_left);
+			return;
+		}
+	}
+}
+
+void StructureEditor::BridgeWrapper::set_bridge_segments(s32 segments)
+{
+	if (segments == 0) {
+		bridge->setCurrStage(bridge->mStageCount);
+		bridge->setAlive(false);
+		PSSystem::spSysIF->playSystemSe(PSSE_SY_WORK_FINISH, 0);
+
+		if (bridge->mBridgeWP && bridge->mEndWP) {
+			bridge->mBridgeWP->setOpen(true);
+			bridge->mEndWP->setOpen(true);
+			bridge->mBridgeWP->setWater(false);
+			bridge->mEndWP->setWater(false);
+		}
+
+		bridge->mSoundEvent.finish();
+		static_cast<PSM::WorkItem*>(bridge->mSoundObj)->eventFinish();
+	} else {
+		for (int i = 0; i < bridge->mStageCount - segments; i++) {
+			if (bridge->mIsGlitched) {
+				bridge->mStageHealths[i] = 0.0f;
+			} else {
+				bridge->mStageHealths[i] = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth();
+			}
+		}
+		bridge->mStageHealths[bridge->mStageCount - segments] = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth();
+		bridge->setCurrStage(bridge->mStageCount - segments);
+		bridge->setAlive(true);
+
+		if (bridge->mBridgeWP && bridge->mEndWP) {
+			bridge->mBridgeWP->setOpen(false);
+			bridge->mEndWP->setOpen(false);
+			bridge->mBridgeWP->setWater(false);
+			bridge->mEndWP->setWater(false);
+		}
+	}
+}
+
+void StructureEditor::BridgeWrapper::set_bridge_segment_health(f32 health)
+{
+	bridge->mStageHealths[bridge->mCurrStageIdx] = health;
+}
+
+void StructureEditor::BridgeWrapper::set_bridge_glitch(bool glitched)
+{
+	bridge->mIsGlitched = glitched;
+	// set all remaining stage healths to 0 (glitched) or max (not glitched)
+	for (int i = bridge->mCurrStageIdx + 1; i < bridge->mStageCount; i++) {
+		if (glitched) {
+			bridge->mStageHealths[i] = 0.0f;
+		} else {
+			bridge->mStageHealths[i] = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth();
+		}
+	}
+}
+
+void StructureEditor::sync_bridges()
+{
+	for (size_t i = 0; i < bridges.len(); i++) {
+		// sanity check to only update gates we have actual info for
+		if (!bridges[i] || !bridges[i]->name || !bridges[i]->bridge) {
+			continue;
+		}
+
+		ListMenu* bridge_submenu = static_cast<ListMenu*>(bridge_menu->get_option(bridges[i]->name)->get_sub_menu());
+		if (bridge_submenu) {
+			static_cast<RangeMenuOption*>(bridge_submenu->get_option("segments remaining"))
+			    ->set_selection(bridges[i]->bridge->mStageCount - bridges[i]->bridge->mCurrStageIdx);
+			static_cast<FloatRangeMenuOption*>(bridge_submenu->get_option("segment health"))
+			    ->set_selection(bridges[i]->bridge->getCurrentStageHealth());
+			static_cast<ToggleMenuOption*>(bridge_submenu->get_option("bridge glitch"))->set_selection(bridges[i]->bridge->mIsGlitched);
+		}
+	}
+}
+
 void StructureEditor::draw()
 {
-	if (!gate_debug_enabled) {
-		return;
-	}
-
-	if (!Game::itemGateMgr) {
-		return;
-	}
-
 	Graphics* gfx = sys->mGfx;
 	if (!gfx || !gfx->mCurrentViewport || !Game::naviMgr || !Game::naviMgr->getActiveNavi()) {
 		return;
 	}
-	gfx->initPerspPrintf(gfx->mCurrentViewport);
+	if (gate_debug_enabled) {
+		gfx->initPerspPrintf(gfx->mCurrentViewport);
 
-	for (size_t i = 0; i < gates.len(); i++) {
-		if (!gates[i]) {
-			continue;
+		for (size_t i = 0; i < gates.len(); i++) {
+			if (!gates[i]) {
+				continue;
+			}
+			Game::ItemGate* gate = gates[i]->gate;
+			const char* name     = gates[i]->name;
+			if (gate && name) {
+				draw_gate_debug(gate, name, gfx);
+			}
 		}
-		Game::ItemGate* gate = gates[i]->gate;
-		const char* name     = gates[i]->name;
-		if (gate && name) {
-			draw_gate_debug(gate, name, gfx);
+	}
+	if (bridge_debug_enabled) {
+		gfx->initPerspPrintf(gfx->mCurrentViewport);
+
+		for (size_t i = 0; i < bridges.len(); i++) {
+			if (!bridges[i]) {
+				continue;
+			}
+			Game::ItemBridge::Item* bridge = bridges[i]->bridge;
+			const char* name               = bridges[i]->name;
+			if (bridge && name) {
+				draw_bridge_debug(bridge, name, gfx);
+			}
 		}
 	}
 }
@@ -169,7 +366,7 @@ void StructureEditor::draw_gate_debug(Game::ItemGate* gate, const char* name, Gr
 
 	Vector3f naviPos = Game::naviMgr->getActiveNavi()->getPosition();
 	Vector3f gatePos = gate->mPosition;
-	if (sqrDistanceXZ(naviPos, gatePos) > SQUARE(GATE_DEBUG_RENDER_DIST)) {
+	if (sqrDistanceXZ(naviPos, gatePos) > SQUARE(STRUCT_DEBUG_RENDER_DIST)) {
 		return;
 	}
 
@@ -193,5 +390,54 @@ void StructureEditor::draw_gate_debug(Game::ItemGate* gate, const char* name, Gr
 
 	// draw total health
 	gfx->perspPrintf(info, pos, "max health: %.0f", gate->mMaxSegmentHealth * gate->mMaxSegments);
+	info.mPerspectiveOffsetY += line_height;
+}
+
+void StructureEditor::draw_bridge_debug(Game::ItemBridge::Item* bridge, const char* name, Graphics* gfx)
+{
+	if (!bridge || !name) {
+		return;
+	}
+
+	if (bridge->mCurrStageIdx >= bridge->mStageCount || !bridge->mLod.isFlag(AILOD_IsVisible)) {
+		return;
+	}
+
+	Vector3f naviPos   = Game::naviMgr->getActiveNavi()->getPosition();
+	Vector3f bridgePos = bridge->mPosition;
+	if (sqrDistanceXZ(naviPos, bridgePos) > SQUARE(STRUCT_DEBUG_RENDER_DIST)) {
+		return;
+	}
+
+	Color4 color(255, 255, 255, 255);
+
+	PerspPrintfInfo info;
+	info.mFont   = gP2JMEMgr->mFont;
+	info.mScale  = 0.5f;
+	info.mColorA = color;
+	info.mColorB = color;
+	Vector3f pos = bridgePos + Vector3f(0, 50.0f + 40.0f, 0);
+
+	int line_height = 22;
+	// draw name
+	gfx->perspPrintf(info, pos, "%s", name);
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw segment count
+	gfx->perspPrintf(info, pos, "segments built: %d / %d", bridge->mCurrStageIdx, bridge->mStageCount);
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw current health
+	gfx->perspPrintf(info, pos, "health remaining: %.0f", bridge->getBridgeHealth());
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw total health
+	f32 maxHealth = 0.0f;
+	if (bridge->mIsGlitched) {
+		maxHealth = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth();
+	} else {
+		maxHealth = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth() * bridge->mStageCount;
+	}
+	gfx->perspPrintf(info, pos, "max health: %.0f", maxHealth);
 	info.mPerspectiveOffsetY += line_height;
 }
