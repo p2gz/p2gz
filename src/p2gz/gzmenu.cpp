@@ -228,6 +228,10 @@ void GZMenu::open()
 	if (enabled)
 		return;
 
+	// If freecam is active, don't open the menu
+	if (p2gz->freecam && p2gz->freecam->is_enabled())
+		return;
+
 	layer = root_layer;
 	layer->reset_selection();
 	breadcrumbs.clear();

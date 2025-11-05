@@ -48,7 +48,7 @@ void FreeCam::enable()
 }
 
 // Disable freecam on the active Navi's camera.
-void FreeCam::disable()
+void FreeCam::disable(bool doUnpause)
 {
 	if (!enabled)
 		return;
@@ -58,7 +58,9 @@ void FreeCam::disable()
 		p2gz->timer->set_freecam_mode(false);
 	}
 	enabled = false;
-	Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
+
+	if (doUnpause)
+		Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
 
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle                       = PI / 8;
@@ -95,13 +97,16 @@ void FreeCam::update()
 	}
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
+		// we're still in the menu, so don't unpause the timer
+		p2gz->timer->set_freecam_mode(false);
+		// Don't unpause the game when we exit freecam by cancelling
+		disable(false);
+
+		// Open back up the p2gz menu; this needs to be done LAST so that way we disable freecam mode first
+		// Otherwise, p2gz menu won't open since it still thinks we're in freecam mode
 		if (!p2gz->menu->is_open()) {
 			p2gz->menu->navigate_to("tools/freecam");
 		}
-		// we're still in the menu, so don't unpause the timer
-		p2gz->timer->set_freecam_mode(false);
-
-		disable();
 		return;
 	}
 
@@ -169,7 +174,7 @@ void FreeCam::warp_to_current_position()
 		}
 	}
 
-	disable();
+	disable(true);
 
 	og::ogSound->setDecide();
 }
