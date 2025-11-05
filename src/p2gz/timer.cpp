@@ -4,6 +4,15 @@
 #include <p2gz/HelperInlines.h>
 #include <p2gz/p2gz.h>
 
+#include "Morimura/HurryUp.h"
+#include "Morimura/mrUtil.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Game/GameSystem.h"
+#include "Game/MoviePlayer.h"
+#include "Game/gamePlayData.h"
+#include "Game/Navi.h"
+#include "nans.h"
+
 using namespace gz;
 
 Timer::Timer()
@@ -281,3 +290,48 @@ void Timer::set_sub_timer_enabled(bool on)
 {
 	sub_timer_enabled = on;
 }
+
+// Yeehaw the follow code from hurryUp2D.cpp since it's not matching and we need it
+
+namespace Morimura {
+
+/**
+ * @note Address: 0x8034792C
+ * @note Size: 0x240
+ */
+void THurryUp2D::scaleUp2()
+{
+	f32 goal = mParams[mState].mGoalScale;
+	if (mPaneSunL->mScale.x < goal) {
+		f32 factor = mTimer * mScaleSp2 * 60.0f;
+		f32 scale  = factor * sys->mDeltaTime + mParams[mState].mScale;
+		if (scale > goal) {
+			scale = goal;
+		}
+		u8 alpha = mFadeFraction * u8(mAlphaMod1 * scale + mAlphaMod2);
+		mPaneHurry2->setAlpha(alpha);
+		mPaneSundown2->setAlpha(alpha);
+		mPaneSunL->setAlpha(alpha);
+		mPaneSunW->setAlpha(alpha);
+		mWhitePane->setAlpha(0);
+		mPaneSunL->updateScale(scale);
+	} else {
+		if (!mIsSection && (Game::gameSystem->isFlag(Game::GAMESYS_IsGameWorldActive)) && !mIsSection && Game::moviePlayer
+		    && !Game::playData->isDemoFlag(Game::DEMO_First_Sunset_Warning)) {
+			Game::MoviePlayArg arg("g09_first_sunset", nullptr, nullptr, 0);
+			Game::Navi* navi = Game::naviMgr->getActiveNavi();
+			if (navi && navi->mCamera) {
+				// @P2GZ sunset-pause-fix: close p2gz menu when first sunset warning cutscene plays to prevent unpause desync issues
+				if (p2gz && p2gz->menu->is_open()) {
+					p2gz->menu->close();
+				}
+				Game::playData->setDemoFlag(Game::DEMO_First_Sunset_Warning);
+				Game::moviePlayer->mTargetNavi   = navi;
+				Game::moviePlayer->mActingCamera = navi->mCamera;
+				Game::moviePlayer->play(arg);
+			}
+		}
+	}
+}
+
+} // namespace Morimura
