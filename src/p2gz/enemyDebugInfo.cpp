@@ -28,6 +28,7 @@ EnemyDebugInfo::EnemyDebugInfo()
 	draw_cur_state   = true;
 	draw_flick_count = true;
 	draw_position    = false;
+	draw_collision   = false;
 }
 
 void EnemyDebugInfo::set_size(s32 size)
@@ -255,14 +256,32 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		info.mPerspectiveOffsetY += line_height;
 	}
 
-	// Debug collision draw
-
-	// Setup collision sphere draw next (drawing shapes vs. text needs a different init call)
+	// Setup sphere draw next (drawing shapes vs. text needs a different init call)
 	gfx->initPrimDraw(nullptr);
-	// Start our recursive drawing with the root; the 0 tells the recursion this is the root and not to draw the root collision
-	recursive_draw_coll_sphere(enemy, gfx, 0, enemy->mCollTree->mPart);
+
+	// Debug collision draw
+	if (draw_collision) {
+		// Start our recursive drawing with the root; the 0 tells the recursion this is the root and not to draw the root collision
+		recursive_draw_coll_sphere(enemy, gfx, 0, enemy->mCollTree->mPart);
+	}
 }
 
+/**
+ * Uses both recursive and non-recursive iteration to draw all collision spheres in the colltree of an enemy
+ * Collision in an enemy can be visualized as follows:
+ * root
+ * 		A
+ * 		B
+ * 			C
+ * 			D
+ * 		E
+ * 			F
+ * 				G
+ * 		H
+ * end
+ *
+ * where indentation represents depth of the tree (stuff to the right is the child to stuff to the left)
+ */
 void EnemyDebugInfo::recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* curPart)
 {
 	// While loop checks for collision parts in the same level; once this is null, no more coll parts on this level of the tree
