@@ -51,6 +51,7 @@ struct StructureEditor {
 
 		void set_plug_state(bool alive);
 		void set_plug_health(f32 health);
+		void create_water_box();
 	};
 
 	// struct BagWrapper {
@@ -79,6 +80,19 @@ struct StructureEditor {
 		const char* name;
 	};
 
+	struct WaterBoxMap {
+		WaterBoxMap(const char* name_, f32 minX, f32 minY, f32 minZ, f32 maxX, f32 maxY, f32 maxZ)
+		    : min_bounds(minX, minY, minZ)
+		    , max_bounds(maxX, maxY, maxZ)
+		    , name(name_)
+		{
+		}
+
+		const Vector3f min_bounds;
+		const Vector3f max_bounds;
+		const char* name;
+	};
+
 public:
 	StructureEditor()
 	    : gate_menu(nullptr)
@@ -101,14 +115,13 @@ public:
 
 	void add_bridge(Game::ItemBridge::Item* bridge);
 	void set_bridge_stages_left(const char* name, int stages_left);
-	void set_bridge_glitch(const char* name, bool glitched);
 	void clear_bridges();
 	void sync_bridges();
 
-	// void add_plug(Game::ItemBarrel::Item* bridge);
-	// void set_plug_state(const char* name, bool alive);
-	// void clear_plugs();
-	// void sync_plugs();
+	void add_plug(Game::ItemBarrel::Item* plug);
+	void set_plug_kill(Game::ItemBarrel::Item* plug);
+	void clear_plugs();
+	void sync_plugs();
 
 	// void add_bag(Game::ItemDownFloor::Item* bridge);
 	// void set_bag_state(const char* name, bool alive);
@@ -123,29 +136,29 @@ public:
 	bool is_bridge_debug_enabled() { return bridge_debug_enabled; }
 	void draw_bridge_debug(Game::ItemBridge::Item* bridge, const char* name, Graphics* gfx);
 
-	// void set_enabled_plug_debug(bool set);
-	// bool is_plug_debug_enabled();
-	// void draw_plug_debug(Game::ItemBarrel::Item* bridge, const char* name, Graphics* gfx);
+	void set_enabled_plug_debug(bool set) { plug_debug_enabled = set; }
+	bool is_plug_debug_enabled() { return plug_debug_enabled; }
+	void draw_plug_debug(Game::ItemBarrel::Item* plug, const char* name, Graphics* gfx);
+
+	ListMenu* gate_menu;
+	ListMenu* bridge_menu;
+	ListMenu* plug_menu;
+	// ListMenu* bag_menu;
 
 private:
 	const char* get_gate_name(f32 x, f32 z);
 	const char* get_bridge_name(f32 x, f32 z);
-	// const char* get_plug_name(f32 x, f32 z);
+	const char* get_plug_name(f32 x, f32 z);
 	// const char* get_bag_name(f32 x, f32 z);
 
 	Vec<GateWrapper*> gates;
 	Vec<BridgeWrapper*> bridges;
-	// Vec<PlugWrapper*> plugs;
+	Vec<PlugWrapper*> plugs;
 	// Vec<BagWrapper*> bags;
-
-	ListMenu* gate_menu;
-	ListMenu* bridge_menu;
-	// ListMenu* plug_menu;
-	// ListMenu* bag_menu;
 
 	bool gate_debug_enabled;
 	bool bridge_debug_enabled;
-	// bool plug_debug_enabled;
+	bool plug_debug_enabled;
 };
 
 }; // namespace gz

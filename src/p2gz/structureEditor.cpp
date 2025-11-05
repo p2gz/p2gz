@@ -2,6 +2,8 @@
 #include <p2gz/gzmenu.h>
 #include <p2gz/p2gz.h>
 #include <Game/Entities/ItemGate.h>
+#include <Game/Entities/ItemBarrel.h>
+#include <Game/Entities/ItemHole.h>
 #include <P2JME/P2JME.h>
 #include <PSM/WorkItem.h>
 #include <types.h>
@@ -74,11 +76,22 @@ static const StructureEditor::NameCoordinateMap PLUG_COORD_TO_NAME[] = {
 	// VoR
 	StructureEditor::NameCoordinateMap(800.0f, 1380.0f, "bridge plug"),
 	// AW
-	StructureEditor::NameCoordinateMap(380.6f, 1948.9f, "BK plug"),
+	StructureEditor::NameCoordinateMap(380.5f, 1948.9f, "BK plug"),
 	// PP
 	StructureEditor::NameCoordinateMap(1408.7f, 1625.2f, "SR plug"),
 	// WW
 	StructureEditor::NameCoordinateMap(-2773.3f, 1328.5f, "plants plug"),
+};
+
+static const StructureEditor::WaterBoxMap PLUG_NAME_TO_WATERBOX[] = {
+	// VoR
+	StructureEditor::WaterBoxMap("bridge plug", -140.000000f, -60.000000f, 1250.000000f, 960.000000f, 40.000000f, 2150.000000f),
+	// AW
+	StructureEditor::WaterBoxMap("BK plug", 245.000000f, -172.500000f, 1774.195313f, 595.000000f, -72.500000f, 2124.195313f),
+	// PP
+	StructureEditor::WaterBoxMap("SR plug", 90.000000f, -140.000000f, -200.000000f, 1790.000000f, -40.000000f, 2200.000000f),
+	// WW
+	StructureEditor::WaterBoxMap("plants plug", -3700.000000f, -110.000000f, 850.000000f, -2500.000000f, -10.000000f, 1650.000000f),
 };
 
 static const size_t NUM_PLUG_NAMES = ARRAY_SIZE(PLUG_COORD_TO_NAME); // 4
@@ -101,6 +114,7 @@ void StructureEditor::init()
 {
 	gate_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/gates")->get_sub_menu());
 	bridge_menu = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/bridges")->get_sub_menu());
+	plug_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/plugs")->get_sub_menu());
 }
 
 void StructureEditor::add_gate(Game::ItemGate* gate)
@@ -318,6 +332,164 @@ void StructureEditor::sync_bridges()
 	}
 }
 
+void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
+{
+	const char* plug_name = get_plug_name(plug->mPosition.x, plug->mPosition.z);
+	// check if we already have a menu item for this plug
+	for (int i = 0; i < plugs.len(); i++) {
+		if (strcmp(plug_name, plugs[i]->name) == 0) {
+			return;
+		}
+
+		// we only ever have one plug per floor, so just check for the only name it could have
+		if (in_cave_play() && (strcmp("plug 0", plugs[i]->name) == 0)) {
+			return;
+		}
+	}
+
+	PlugWrapper* wrapper = new PlugWrapper();
+	wrapper->plug        = plug;
+	wrapper->name        = plug_name;
+	plugs.push(wrapper);
+
+	Game::ItemBarrel::Mgr* mgr = Game::ItemBarrel::mgr;
+
+	if (!mgr) {
+		return;
+	}
+
+	// clang-format off
+	plug_menu->push(new OpenSubMenuOption(wrapper->name, (new ListMenu())
+		->push(new ToggleMenuOption("plug alive", true, new Delegate1<PlugWrapper, bool>(plugs[plugs.len()-1], &PlugWrapper::set_plug_state)))
+		->push(new FloatRangeMenuOption("plug health", 0.0f, mgr->mParms->mBarrelParms.mHealth(), plug->mHealth, new Delegate1<PlugWrapper, f32>(plugs[plugs.len()-1], &PlugWrapper::set_plug_health)))
+    ));
+	// clang-format on
+}
+
+void StructureEditor::clear_plugs()
+{
+	plugs.clear();
+	if (plug_menu) {
+		plug_menu->clear();
+	}
+}
+
+const char* StructureEditor::get_plug_name(f32 x, f32 z)
+{
+	for (size_t i = 0; i < NUM_PLUG_NAMES; i++) {
+		NameCoordinateMap map = PLUG_COORD_TO_NAME[i];
+		if ((absF(map.x - x) < STRUCT_SEARCH_RADIUS) && (absF(map.z - z) < STRUCT_SEARCH_RADIUS)) {
+			return map.name;
+		}
+	}
+
+	char* name = new char[8];
+	sprintf(name, "plug %d", plugs.len());
+	return name;
+}
+
+void StructureEditor::PlugWrapper::set_plug_health(f32 health)
+{
+	if (plug) {
+		plug->mHealth = health;
+	}
+}
+
+void StructureEditor::PlugWrapper::set_plug_state(bool alive)
+{
+	if (alive) {
+		plug->mPosition.y += 100.0f;
+		plug->mModel->mJ3dModel->calc();
+		plug->mModel->mJ3dModel->calcMaterial();
+		plug->mModel->mJ3dModel->makeDL();
+		plug->mModel->mJ3dModel->lock();
+		plug->mFsm->transit(plug, Game::ItemBarrel::BARREL_Normal, nullptr);
+		plug->setAlive(true);
+		plug->createBarrel();
+		plug->mAnimSpeed         = 0.0f;
+		plug->mAnimator.mAnimMgr = Game::ItemBarrel::mgr->mAnimMgr;
+		plug->mAnimator.startAnim(1, plug);
+		plug->mCollTree->createFromFactory(plug->mModel, Game::ItemBarrel::mgr->mCollPartFactory, nullptr);
+		plug->mStoredDamage = 0.0f;
+
+		// if we're dead, respawn the plug and increase the water
+		create_water_box();
+
+		if (in_cave_play()) {
+			// check if there's a hole to cover with this plug
+			Iterator<Game::BaseItem> iter(Game::ItemHole::mgr);
+			CI_LOOP(iter)
+			{
+				Game::ItemHole::Item* hole = static_cast<Game::ItemHole::Item*>(*iter);
+				if (hole->isAlive()) {
+					Vector3f sep = plug->getPosition() - hole->getPosition();
+					Vector2f sep2D(sep.x, sep.z);
+					if (sep2D.length() < 40.0f) {
+						hole->mBarrel = plug;
+						break;
+					}
+				}
+			}
+		}
+		plug->mSkipDeathEfx = false;
+		p2gz->menu->close();
+
+	} else {
+		// if we're alive, kill the plug.
+		if (plug && plug->getCurrState()->getCurrStateID() != Game::ItemBarrel::BARREL_Dead) {
+			plug->mSkipDeathEfx = true;
+			plug->mFsm->transit(plug, Game::ItemBarrel::BARREL_Dead, nullptr);
+			p2gz->menu->close();
+		}
+	}
+}
+
+void StructureEditor::PlugWrapper::create_water_box()
+{
+	for (size_t i = 0; i < NUM_PLUG_NAMES; i++) {
+		WaterBoxMap map = PLUG_NAME_TO_WATERBOX[i];
+		if (strcmp(map.name, name) != 0) {
+			continue;
+		}
+
+		BoundBox boundBox;
+		boundBox.mMin          = map.min_bounds;
+		boundBox.mMax          = map.max_bounds;
+		Game::AABBWaterBox* wb = new Game::AABBWaterBox;
+		boundBox.mMin.y -= 1000.0f;
+		wb->mBounds                       = boundBox;
+		wb->mWaterTop                     = boundBox.mMax.y;
+		wb->mState                        = Game::AABBWaterBox::WaterBox_Active;
+		wb->mLoweredAmount                = 0.0f;
+		wb->_14                           = 0.0f;
+		TObjectNode<Game::WaterBox>* node = new TObjectNode<Game::WaterBox>;
+		node->mContents                   = wb;
+		wb->attachModel(*Game::mapMgr->mSeaMgr->mModelData, Game::mapMgr->mSeaMgr->mAnimations, 100.0f);
+		Game::mapMgr->mSeaMgr->mNode.add(node);
+		return;
+	}
+}
+
+void StructureEditor::sync_plugs()
+{
+	for (size_t i = 0; i < plugs.len(); i++) {
+		// sanity check to only update gates we have actual info for
+		if (!plugs[i] || !plugs[i]->name || !plugs[i]->plug) {
+			continue;
+		}
+
+		ListMenu* plug_submenu = static_cast<ListMenu*>(plug_menu->get_option(plugs[i]->name)->get_sub_menu());
+		if (plug_submenu) {
+			static_cast<ToggleMenuOption*>(plug_submenu->get_option("plug alive"))->set_selection(plugs[i]->plug->isAlive());
+			f32 health = 0.0f;
+			if (plugs[i]->plug->isAlive() && plugs[i]->plug->mHealth > 0.0f) {
+				health = plugs[i]->plug->mHealth;
+			}
+			static_cast<FloatRangeMenuOption*>(plug_submenu->get_option("plug health"))->set_selection(health);
+		}
+	}
+}
+
 void StructureEditor::draw()
 {
 	Graphics* gfx = sys->mGfx;
@@ -349,6 +521,21 @@ void StructureEditor::draw()
 			const char* name               = bridges[i]->name;
 			if (bridge && name) {
 				draw_bridge_debug(bridge, name, gfx);
+			}
+		}
+	}
+
+	if (plug_debug_enabled) {
+		gfx->initPerspPrintf(gfx->mCurrentViewport);
+
+		for (size_t i = 0; i < plugs.len(); i++) {
+			if (!plugs[i]) {
+				continue;
+			}
+			Game::ItemBarrel::Item* plug = plugs[i]->plug;
+			const char* name             = plugs[i]->name;
+			if (plug && name) {
+				draw_plug_debug(plug, name, gfx);
 			}
 		}
 	}
@@ -439,5 +626,44 @@ void StructureEditor::draw_bridge_debug(Game::ItemBridge::Item* bridge, const ch
 		maxHealth = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth() * bridge->mStageCount;
 	}
 	gfx->perspPrintf(info, pos, "max health: %.0f", maxHealth);
+	info.mPerspectiveOffsetY += line_height;
+}
+
+void StructureEditor::draw_plug_debug(Game::ItemBarrel::Item* plug, const char* name, Graphics* gfx)
+{
+	if (!plug || !name) {
+		return;
+	}
+
+	if (plug->mHealth <= 0.0f || !plug->mLod.isFlag(AILOD_IsVisible)) {
+		return;
+	}
+
+	Vector3f naviPos = Game::naviMgr->getActiveNavi()->getPosition();
+	Vector3f plugPos = plug->mPosition;
+	if (sqrDistanceXZ(naviPos, plugPos) > SQUARE(STRUCT_DEBUG_RENDER_DIST)) {
+		return;
+	}
+
+	Color4 color(255, 255, 255, 255);
+
+	PerspPrintfInfo info;
+	info.mFont   = gP2JMEMgr->mFont;
+	info.mScale  = 0.5f;
+	info.mColorA = color;
+	info.mColorB = color;
+	Vector3f pos = plugPos + Vector3f(0, 50.0f + 40.0f, 0);
+
+	int line_height = 22;
+	// draw name
+	gfx->perspPrintf(info, pos, "%s", name);
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw current health
+	gfx->perspPrintf(info, pos, "health remaining: %.0f", plug->mHealth);
+	info.mPerspectiveOffsetY += line_height;
+
+	// draw total health
+	gfx->perspPrintf(info, pos, "max health: %.0f", Game::ItemBarrel::mgr->mParms->mBarrelParms.mHealth());
 	info.mPerspectiveOffsetY += line_height;
 }

@@ -16,6 +16,7 @@
 #include "SysShape/Model.h"
 #include "nans.h"
 #include "stream.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace ItemBarrel {
@@ -138,15 +139,22 @@ void DeadState::onKeyEvent(Item* item, SysShape::KeyEvent const& event)
 {
 	WaterBox* waterbox = mapMgr->findWater(item->mBoundingSphere);
 	if (waterbox && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		MoviePlayArg movieArg("x12_drain_water", nullptr, nullptr, 0);
-		movieArg.setTarget(item);
-		moviePlayer->mTargetObject = item;
-		moviePlayer->play(movieArg);
+		// @P2GZ: plug editor
+		// don't play the movie every time we spawn with a plug already killed
+		if (!item->mSkipDeathEfx) {
+			MoviePlayArg movieArg("x12_drain_water", nullptr, nullptr, 0);
+			movieArg.setTarget(item);
+			moviePlayer->mTargetObject = item;
+			moviePlayer->play(movieArg);
+		}
 		item->mSoundObj->startSound(PSSE_EV_WATER_OUT, 0);
 		waterbox->startDown(-100.0f);
 	}
 	item->mAnimSpeed = 0.0f;
-	mgr->kill(item);
+	// @P2GZ: plug editor
+	// don't kill the plug otherwise we can't respawn it
+	// mgr->kill(item);
+	item->mPosition.y -= 100.0f;
 }
 
 /**
@@ -226,6 +234,8 @@ Item::Item()
     : WorkItem(OBJTYPE_Barrel)
 {
 	mMass = 0.0f;
+	// @P2GZ: plug editor
+	mSkipDeathEfx = false;
 }
 
 /**
@@ -266,6 +276,12 @@ void Item::onSetPosition()
 {
 	makeTrMatrix();
 	updateBoundSphere();
+
+	// @P2GZ: plug editor
+	// Register created plug with structure editor.
+	// Done in onSetPosition because StructureEditor uses
+	// coords to determine the name for the plug.
+	p2gz->structure_editor->add_plug(this);
 }
 
 /**
