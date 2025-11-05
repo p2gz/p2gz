@@ -27,6 +27,7 @@ struct EnemyDebugInfo {
 
 private:
 	void draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx);
+	void recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* cp);
 
 	bool enabled;
 	f32 max_dist;    // max distance from active navi to enemy to draw debug info

@@ -50,7 +50,6 @@ void EnemyDebugInfo::draw()
 	if (!gfx || !gfx->mCurrentViewport || !Game::naviMgr || !Game::naviMgr->getActiveNavi()) {
 		return;
 	}
-	gfx->initPerspPrintf(gfx->mCurrentViewport);
 
 	cur_color = 0;
 	GeneralMgrIterator<Game::EnemyBase> iEnemyMgr(Game::generalEnemyMgr);
@@ -84,6 +83,9 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	if (cur_color >= text_colors.len()) {
 		cur_color = 0;
 	}
+
+	// Setup text draw first
+	gfx->initPerspPrintf(gfx->mCurrentViewport);
 
 	PerspPrintfInfo info;
 	info.mFont   = gP2JMEMgr->mFont;
@@ -251,5 +253,40 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	if (draw_flick_count) {
 		gfx->perspPrintf(info, pos, "flick: %d", (int)enemy->mFlickTimer);
 		info.mPerspectiveOffsetY += line_height;
+	}
+
+	// Debug collision draw
+
+	// Setup collision sphere draw next (drawing shapes vs. text needs a different init call)
+	gfx->initPrimDraw(nullptr);
+	// Start our recursive drawing with the root; the 0 tells the recursion this is the root and not to draw the root collision
+	recursive_draw_coll_sphere(enemy, gfx, 0, enemy->mCollTree->mPart);
+}
+
+void EnemyDebugInfo::recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* curPart)
+{
+	// While loop checks for collision parts in the same level; once this is null, no more coll parts on this level of the tree
+	while (curPart) {
+		// Don't draw the root collision
+		if (depth) {
+
+			Vector3f pos = curPart->mPosition;
+			// The collision sphere will be different colors based on which type of collision it is //
+			if (curPart->mSpecialID.match('s***', '*')) { // includes 'st__' and 's___' collparts (latter used only by bulborbs grrrrrr)
+				// Green for Collparts that are stickable (most damage)
+				gfx->mDrawColor = Color4(0, 255, 0, 255);
+			} else if (curPart->mSpecialID.match('_t**', '*')) {
+				// Yellow for collparts that are attackable but not stickable (reduced and/or no damage)
+				gfx->mDrawColor = Color4(255, 255, 0, 255);
+			} else { // '____'
+				// Red for collparts that are not attackable (not targetted)
+				gfx->mDrawColor = Color4(255, 0, 0, 255);
+			}
+			gfx->drawSphere(pos, curPart->mRadius);
+		}
+		// Recursively call this function go down the collision tree, to draw children
+		recursive_draw_coll_sphere(enemy, gfx, depth + 1, curPart->getChild());
+		// Meanwhile, in this iteration, get the next sphere within the same level to draw (or null to end the function)
+		curPart = curPart->getNext();
 	}
 }
