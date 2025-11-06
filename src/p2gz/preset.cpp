@@ -190,9 +190,13 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
     : MenuOption("preset")
 {
 	on_select            = on_select_;
-	pod_presets_menu     = new ListMenu();
-	at_presets_menu      = new ListMenu();
-	general_presets_menu = new ListMenu();
+	pod_presets_menu                = new ListMenu();
+	pod_presets_menu->on_opened     = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, pod_presets_menu);
+	at_presets_menu                 = new ListMenu();
+	at_presets_menu->on_opened      = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, at_presets_menu);
+	general_presets_menu            = new ListMenu();
+	general_presets_menu->on_opened = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, general_presets_menu);
+
 	preset_category_list = (new ListMenu())
 	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
 	                           ->push(new OpenSubMenuOption("PoD", pod_presets_menu))
@@ -223,6 +227,37 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 	if (on_select) {
 		on_select->invoke(current_preset, PS_Stale);
 	}
+}
+
+/// Adjusts the selection of a category menu when it's opened so the current preset is highlighted
+void PresetMenuOption::select_current_preset(ListMenu* menu)
+{
+	if (!current_preset || !menu) {
+		return;
+	}
+
+	bool found          = false;
+	int idx_in_category = -1;
+	for (size_t i = 0; i < p2gz->preset_mgr->presets.len(); i++) {
+		Preset* preset = p2gz->preset_mgr->presets[i];
+		if (preset->category == current_preset->category) {
+			idx_in_category += 1;
+		}
+		if (preset == current_preset) {
+			found = true;
+			break;
+		}
+	}
+
+	if (!found) {
+		return;
+	}
+
+	const size_t num_options = menu->options.len();
+	GZASSERTLINE(num_options > 0);
+	GZASSERTLINE(idx_in_category < num_options);
+
+	menu->selected = idx_in_category;
 }
 
 static const char* PIKI_IMG_NAMES[15] = {
