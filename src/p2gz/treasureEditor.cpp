@@ -254,6 +254,7 @@ void TreasureEditor::clear_treasures()
 } // namespace gz
 
 namespace Game {
+// @Extracted: pelletMgr.s onInit__Q24Game6PelletFPQ24Game15CreatureInitArg
 void Pellet::onInit(CreatureInitArg* initArg)
 {
 	mMaxCarriers = -1;
