@@ -179,6 +179,10 @@ struct FakePiki : public Creature, public SysShape::MotionListener {
 		}
 	}
 	virtual bool wasZikatu() { return isFPFlag(FPFLAGS_WasZikatu); } // _1FC (weak)
+
+	// @P2GZ - add helper for checking if a pikmin is wild bulbmin
+	bool isWildBulbmin() { return isFPFlag(FPFLAGS_IsWildBulbmin); }
+
 	virtual void inWaterCallback(WaterBox* wb) { }                   // _84 (weak)
 	virtual void outWaterCallback() { }                              // _88 (weak)
 	virtual f32 getMapCollisionRadius() { return 8.5f; }             // _200 (weak)

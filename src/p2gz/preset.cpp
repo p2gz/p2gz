@@ -260,10 +260,9 @@ void PresetMenuOption::select_current_preset(ListMenu* menu)
 	menu->selected = idx_in_category;
 }
 
-static const char* PIKI_IMG_NAMES[15] = {
-	"blue_leaf",     "blue_bud",    "blue_flower", "red_leaf",      "red_bud",    "red_flower", "yellow_leaf",  "yellow_bud",
-	"yellow_flower", "purple_leaf", "purple_bud",  "purple_flower", "white_leaf", "white_bud",  "white_flower",
-};
+static const char* PIKI_IMG_NAMES[18] = { "blue_leaf",   "blue_bud",   "blue_flower",   "red_leaf",     "red_bud",     "red_flower",
+	                                      "yellow_leaf", "yellow_bud", "yellow_flower", "purple_leaf",  "purple_bud",  "purple_flower",
+	                                      "white_leaf",  "white_bud",  "white_flower",  "bulbmin_leaf", "bulbmin_bud", "bulbmin_flower" };
 
 static const char* ONION_IMG_NAMES[5] = {
 	"onion_blue", "onion_red", "onion_yellow", "ship_purple", "ship_white",
