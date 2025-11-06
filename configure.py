@@ -125,6 +125,12 @@ parser.add_argument(
     action="store_false",
     help="disable progress calculation",
 )
+parser.add_argument(
+    "--test",
+    dest="test",
+    action="store_true",
+    help="compile testing code",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -228,6 +234,11 @@ cflags_pikmin = [
     "-use_lmw_stmw on",
     "-str reuse,readonly",
     "-common on",
+]
+
+cflags_test = [
+    *cflags_pikmin,
+    "-d GZ_TEST",
 ]
 
 config.linker_version = "GC/2.6"
@@ -2086,11 +2097,19 @@ config.libs = [
     },
     {
         "lib": "p2gz",
-        "cflags": [*cflags_pikmin],
+        "cflags": [*cflags_test] if args.test else [*cflags_pikmin],
         "mw_version": "GC/2.6",
         "host": True,
         "objects": [Object(Matching, os.path.relpath(file, "src"))
                     for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))],
+    },
+    {
+        "lib": "p2gz_test",
+        "cflags": [*cflags_test],
+        "mw_version": "GC/2.6",
+        "host": True,
+        "objects": [Object(Matching, os.path.relpath(file, "src"))
+                    for file in glob.glob(os.path.join("src", "p2gz", "test", "*.cpp"))],
     },
 ]
 
@@ -2104,8 +2123,13 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
     if not config.non_matching:
         return objects
     if module_id == 0:  # DOL
-        return objects + [os.path.relpath(file, "src")
+        all_objects = objects + [os.path.relpath(file, "src")
                           for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))]
+        if args.test:
+            return all_objects + [os.path.relpath(file, "src")
+                          for file in glob.glob(os.path.join("src", "p2gz", "test", "*.cpp"))]
+        return all_objects
+
     return objects
 
 # Uncomment to enable the link order callback.

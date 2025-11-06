@@ -8,7 +8,6 @@
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
 #include <p2gz/SprayEditor.h>
-#include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
 #include <p2gz/EnemyDebugInfo.h>
@@ -28,6 +27,7 @@
 #include <p2gz/CaveDebugInfo.h>
 #include <p2gz/TreasureEditor.h>
 #include <p2gz/GeneratorDebugInfo.h>
+#include <p2gz/Test.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha2"
@@ -74,6 +74,7 @@ public:
 	gz::CaveDebugInfo* cave_debug_info;
 	gz::TreasureEditor* treasure_editor;
 	gz::Localization* localization_op;
+	gz::test::TestRunner* test_runner;
 
 private:
 	bool inited;

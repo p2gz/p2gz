@@ -376,8 +376,15 @@ struct JUTGamePadRecordFixed : public JUTGamePadRecordBase {
 	JUTGamePadRecordFixed();
 	virtual ~JUTGamePadRecordFixed(); // _08
 	// chances are, these are whichever pair aren't _0C and _10
-	virtual void virtual_14() = 0; // _14
-	virtual void virtual_18() = 0; // _18
+	// @P2GZ - make these non-pure-virtual
+	// virtual void virtual_14() = 0; // _14
+	// virtual void virtual_18() = 0; // _18
+
+	// @P2GZ - inherit to give empty body
+	virtual void virtual_10(PADStatus*) { }
+
+	// @P2GZ - inherit getStatus
+	virtual void getStatus(PADStatus* pad);
 
 	void setBuffer(void*, u32);
 	void setDataEnd(void*);
@@ -386,6 +393,9 @@ struct JUTGamePadRecordFixed : public JUTGamePadRecordBase {
 	void seek(int, EOrigin);
 	void do_read(PADStatus*);
 	void do_write(const PADStatus*);
+
+	// @P2GZ - add in a PADStatus to store state
+	PADStatus status;
 };
 
 #endif
