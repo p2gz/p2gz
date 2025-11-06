@@ -408,12 +408,32 @@ void ListMenu::update()
 		selected = scroll;
 	}
 
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_B) {
+		p2gz->menu->pop_layer();
+		return;
+	}
+
+	// Adjust selection if currently selected option is hidden
+	size_t num_checks = 0;
+	while (options.len() > 0 && !options[selected]->visible) {
+		selected = selected + 1;
+		if (selected >= options.len()) {
+			selected = 0;
+		}
+		num_checks += 1;
+		if (num_checks >= options.len()) {
+			return;
+		}
+	}
+
+	// handle inputs
 	if (pah_up.check(p2gz->controller)) {
 		if (selected == 0) {
 			selected = options.len();
 		}
 		do {
-			selected -= 1;
+			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap
 		} while (!options[selected]->visible);
 	}
 	if (pah_down.check(p2gz->controller) && options.len() > 0) {
@@ -424,13 +444,8 @@ void ListMenu::update()
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
-
-	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
-	}
-	if (btn & Controller::PRESS_B) {
-		p2gz->menu->pop_layer();
 	}
 
 	// ... but if we scrolled off the edge deliberately, adjust the scroll
@@ -438,7 +453,7 @@ void ListMenu::update()
 		scroll = selected;
 	}
 
-	if (options.len() > 0 && selected < options.len()) {
+	if (options.len() > 0 && selected < options.len() && options[selected]->visible) {
 		options[selected]->update();
 	}
 }
