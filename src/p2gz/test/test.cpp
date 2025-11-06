@@ -128,7 +128,6 @@ bool DoN::execute()
 
 bool ButtonInput::execute()
 {
-	OSReport("pressing %d\n", button);
 	hold_frames -= 1;
 	p2gz->test_runner->gamepad->status.button |= button;
 	if (hold_frames <= 0) {
