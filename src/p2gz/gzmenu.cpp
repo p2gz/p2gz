@@ -20,6 +20,7 @@
 #include <string.h>
 #include <IDelegate.h>
 #include <Graphics.h>
+#include <Game/MoviePlayer.h>
 
 using namespace gz;
 
@@ -228,6 +229,19 @@ void GZMenu::open()
 	if (enabled)
 		return;
 
+	// Don't open P2GZ menu during the following:
+	// - cutscenes (causes gameplay desync) - One exception:
+	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
+	// - loading (causes gameplay desync)
+	// - end of day (causes gameplay desync)
+	// - cave results but only in the very beginning before the blo loads (crashes when warping out)
+	// - day results but only in the very beginning before the blo loads (crashes when warping out)
+	if ((!in_end_of_day_result() && Game::moviePlayer->isFlag(Game::MVP_IsActive))
+	    || (in_end_of_day_result() && !in_end_of_day_result_safe_to_warp()) || in_day_end_sunset() || in_load()
+	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || p2gz->warp->is_warp_lockout()) {
+		return;
+	}
+
 	layer = root_layer;
 	layer->reset_selection();
 	breadcrumbs.clear();
@@ -244,7 +258,12 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
-	Game::gameSystem->setPause(false, "gzmenu", 3);
+	// Don't unpause the game if we're in the enter cave/escape cave submenues
+	Game::SingleGameSection* gameSec = get_SGS();
+	if (!gameSec->mOpenMenuFlags) { // if nonzero, we're in at least one of the menus
+		Game::gameSystem->setPause(false, "gzmenu", 3);
+	}
+
 	// don't unpause timer if we're in freecam mode (until we exit that mode)
 	if (!p2gz->timer->is_freecam_mode()) {
 		p2gz->timer->unpause();
