@@ -11,7 +11,7 @@ public:
 	~NaviTools() { }
 
 	void update();
-	void sync(MenuLayer* menu);
+	void sync();
 
 	inline Game::Navi* active_navi() { return Game::naviMgr->getActiveNavi(); }
 

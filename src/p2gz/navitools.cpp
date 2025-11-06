@@ -18,9 +18,9 @@ void NaviTools::update()
 	}
 }
 
-void NaviTools::sync(MenuLayer* menu)
+void NaviTools::sync()
 {
-	ListMenu* captain_menu       = static_cast<ListMenu*>(menu);
+	ListMenu* captain_menu       = static_cast<ListMenu*>(p2gz->menu->get_option("captain")->get_sub_menu());
 	FloatRangeMenuOption* hp_opt = static_cast<FloatRangeMenuOption*>(captain_menu->get_option("health"));
 	hp_opt->set_selection(active_navi()->mHealth);
 }
