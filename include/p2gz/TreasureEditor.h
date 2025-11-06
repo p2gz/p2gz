@@ -17,6 +17,7 @@ public:
 	void add(Game::Pellet*);
 	void enable();
 	void init();
+	void set_collected(Game::Pellet*, bool);
 
 private:
 	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }
@@ -26,7 +27,6 @@ private:
 	void find_treasure();
 	void handle_breadbug(Game::EnemyBase*);
 	void handle_dweevil(Game::EnemyBase*);
-	void set_collected(Game::Pellet*, bool);
 	void snap_to_nearest_waypoint();
 
 	ListMenu* treasures;
