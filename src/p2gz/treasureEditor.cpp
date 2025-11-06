@@ -19,6 +19,7 @@ void TreasureEditor::init()
 	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("map/treasures")->get_sub_menu());
 }
 
+// Find the Pellet pointer for the selected treasure.
 void TreasureEditor::find_treasure()
 {
 	active_treasure = nullptr;
@@ -78,7 +79,7 @@ void TreasureEditor::find_treasure()
 	CI_LOOP(buriedIterator)
 	{
 		Game::ItemTreasure::Item* item = static_cast<Game::ItemTreasure::Item*>(*buriedIterator);
-		// ItemTreasures still exist after releasing their pellets.
+		// ItemTreasures still exist after releasing their pellets
 		if (!item->mPellet) {
 			continue;
 		}
@@ -90,6 +91,7 @@ void TreasureEditor::find_treasure()
 	}
 }
 
+// Release treasures captured by breadbugs.
 void TreasureEditor::handle_breadbug(Game::EnemyBase* enemy)
 {
 	Game::EnemyTypeID::EEnemyTypeID id = enemy->getEnemyTypeID();
@@ -129,6 +131,7 @@ void TreasureEditor::handle_breadbug(Game::EnemyBase* enemy)
 	}
 }
 
+// Drop treasures carried by dweevils.
 void TreasureEditor::handle_dweevil(Game::EnemyBase* enemy)
 {
 	Game::EnemyTypeID::EEnemyTypeID id = enemy->getEnemyTypeID();
@@ -173,6 +176,7 @@ void TreasureEditor::handle_dweevil(Game::EnemyBase* enemy)
 	}
 }
 
+// Enable treasure editor.
 void TreasureEditor::enable()
 {
 	enabled = true;
@@ -185,6 +189,7 @@ void TreasureEditor::enable()
 	p2gz->freecam->set_position(active_treasure->getPosition());
 }
 
+// Snap the active treasure to the nearest waypoint.
 void TreasureEditor::snap_to_nearest_waypoint()
 {
 	Game::WayPoint* nearest = nullptr;
