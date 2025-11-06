@@ -105,6 +105,7 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("show gate debug info", false,
 	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
 			))
+			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
@@ -407,12 +408,32 @@ void ListMenu::update()
 		selected = scroll;
 	}
 
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_B) {
+		p2gz->menu->pop_layer();
+		return;
+	}
+
+	// Adjust selection if currently selected option is hidden
+	size_t num_checks = 0;
+	while (options.len() > 0 && !options[selected]->visible) {
+		selected = selected + 1;
+		if (selected >= options.len()) {
+			selected = 0;
+		}
+		num_checks += 1;
+		if (num_checks >= options.len()) {
+			return;
+		}
+	}
+
+	// handle inputs
 	if (pah_up.check(p2gz->controller)) {
 		if (selected == 0) {
 			selected = options.len();
 		}
 		do {
-			selected -= 1;
+			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap
 		} while (!options[selected]->visible);
 	}
 	if (pah_down.check(p2gz->controller) && options.len() > 0) {
@@ -423,13 +444,8 @@ void ListMenu::update()
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
-
-	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
-	}
-	if (btn & Controller::PRESS_B) {
-		p2gz->menu->pop_layer();
 	}
 
 	// ... but if we scrolled off the edge deliberately, adjust the scroll
@@ -437,7 +453,7 @@ void ListMenu::update()
 		scroll = selected;
 	}
 
-	if (options.len() > 0 && selected < options.len()) {
+	if (options.len() > 0 && selected < options.len() && options[selected]->visible) {
 		options[selected]->update();
 	}
 }

@@ -25,6 +25,7 @@
 #include <p2gz/CutsceneToggle.h>
 #include <p2gz/EKEditor.h>
 #include <p2gz/CaveDebugInfo.h>
+#include <p2gz/TreasureEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha2"
@@ -68,6 +69,7 @@ public:
 	gz::PokoEditor* poko_editor;
 	gz::EKEditor* ek_editor;
 	gz::CaveDebugInfo* cave_debug_info;
+	gz::TreasureEditor* treasure_editor;
 
 private:
 	bool inited;
