@@ -69,10 +69,10 @@ public:
 	gz::PokoEditor* poko_editor;
 	gz::EKEditor* ek_editor;
 	gz::CaveDebugInfo* cave_debug_info;
+	gz::TreasureEditor* treasure_editor;
 
 private:
 	bool inited;
-	gz::TreasureEditor* treasure_editor;
 };
 
 // global instance

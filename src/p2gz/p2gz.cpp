@@ -50,9 +50,9 @@ P2GZ::P2GZ()
 	dismiss_positions            = new DismissPositions();
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
+	treasure_editor              = new TreasureEditor();
 
 	prev_heap->becomeCurrentHeap();
-	treasure_editor = new TreasureEditor();
 }
 
 void P2GZ::init()
@@ -76,10 +76,10 @@ void P2GZ::init()
 	cutscene_mgr->init();
 	poko_editor->init();
 	ek_editor->init();
+	treasure_editor->init();
 
 	inited = true;
 	prev_heap->becomeCurrentHeap();
-	treasure_editor->init();
 }
 
 void P2GZ::update()
