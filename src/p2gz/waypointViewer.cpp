@@ -73,7 +73,7 @@ void WaypointViewer::draw_node(Game::WayPoint* wp, Graphics* gfx)
 		gfx->mDrawColor = UPCOMING_COLOR;
 	}
 
-	gfx->initPerspPrintf(gfx->mCurrentViewport);
+	gfx->initPrimDraw(nullptr);
 	gfx->drawCone(wp->mPosition, apex, 16, 8);
 	gfx->mDrawColor = Color4(0, 0, 0, 255);
 }
@@ -128,7 +128,7 @@ void WaypointViewer::draw_edges(Graphics* gfx)
 		}
 
 		GXSetLineWidth(10, GX_TO_ZERO);
-		gfx->initPerspPrintf(gfx->mCurrentViewport);
+		gfx->initPrimDraw(nullptr);
 		gfx->drawLine(apex1, apex2);
 		gfx->mDrawColor = NOT_IN_ROUTE_COLOR;
 	}

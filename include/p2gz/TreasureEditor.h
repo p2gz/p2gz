@@ -17,7 +17,10 @@ public:
 	void enable();
 	void init();
 	void add(Game::Pellet*);
-	void remove(Game::Pellet*);
+	void set_collected(Game::Pellet*, bool);
+	void find_treasure();
+	void handle_breadbug(Game::EnemyBase*);
+	void handle_dweevil(Game::EnemyBase*);
 	void clear_treasures();
 	void toggle_collected(bool) { }
 	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }
@@ -28,6 +31,12 @@ private:
 	Game::Pellet* active_treasure;
 	Vector3f initial_position;
 	bool enabled;
+};
+
+struct TreasureConfig {
+	const char* internal_name;
+	const char* external_name;
+	Vector3f spawnpoint;
 };
 } // namespace gz
 

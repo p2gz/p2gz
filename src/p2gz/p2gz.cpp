@@ -10,6 +10,7 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/SquadEditor.h>
 #include <p2gz/DismissPositions.h>
+#include <p2gz/PokoEditor.h>
 #include <p2gz/TreasureEditor.h>
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
@@ -21,6 +22,9 @@ P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
+	inited             = false;
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	// Setup all our P2GZ menus/features here
 	collision_viewer             = new CollisionViewer();
 	controller                   = new Controller(JUTGamePad::PORT_0);
@@ -39,18 +43,30 @@ P2GZ::P2GZ()
 	spray_editor                 = new SprayEditor();
 	segment_history              = new SegmentHistory();
 	enemy_debug_info             = new EnemyDebugInfo();
+	cave_debug_info              = new CaveDebugInfo();
 	squad_editor                 = new SquadEditor();
 	preset_mgr                   = new PresetMgr();
 	cutscene_mgr                 = new CutsceneMgr();
 	dismiss_positions            = new DismissPositions();
-	treasure_editor              = new TreasureEditor();
+	poko_editor                  = new PokoEditor();
+	ek_editor                    = new EKEditor();
+
+	prev_heap->becomeCurrentHeap();
+	treasure_editor = new TreasureEditor();
 }
 
 void P2GZ::init()
 {
+	if (inited) {
+		return;
+	}
+
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
+	timer->init();
 	structure_editor->init();
 	warp->init();
 	day_editor->init();
@@ -58,11 +74,20 @@ void P2GZ::init()
 	spray_editor->init();
 	squad_editor->init();
 	cutscene_mgr->init();
+	poko_editor->init();
+	ek_editor->init();
+
+	inited = true;
+	prev_heap->becomeCurrentHeap();
 	treasure_editor->init();
 }
 
 void P2GZ::update()
 {
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	day_editor->update();
 	spray_editor->update();
 	freecam->update();
@@ -70,6 +95,10 @@ void P2GZ::update()
 	cutscene_mgr->update();
 	segment_history->update();
 	dismiss_positions->update();
+	poko_editor->update();
+	navi_tools->update();
+
+	warp->update_lockout_frames();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
@@ -80,6 +109,10 @@ void P2GZ::update()
 // Anything that needs to appear on the screen in clip space should be drawn here.
 void P2GZ::draw_2d()
 {
+	if (!inited) {
+		return;
+	}
+
 	menu->draw();
 	timer->draw();
 	segment_history->draw_2d();
@@ -88,9 +121,14 @@ void P2GZ::draw_2d()
 // Anything that needs to be drawn in 3D space should be drawn here.
 void P2GZ::draw()
 {
-	collision_viewer->draw();
+	if (!inited || !sys->mSysHeap) {
+		return;
+	}
+
 	freecam->draw();
 	enemy_debug_info->draw();
+	cave_debug_info->draw();
+	structure_editor->draw();
 	dismiss_positions->draw();
 }
 
@@ -107,6 +145,8 @@ void P2GZ::draw_version()
 	j2d.mCharColor.set(color);
 	j2d.mGradientColor.set(color);
 
-	// coordinates determined experimentally - will need to re-adjust based on text length
-	j2d.print(250.0f, 424.0f, "v.%s", P2GZ_VERSION);
+	// print version text in the bottom-center of screen
+	// automagically determine where to print it so it's centered
+	f32 width = j2d.getWidth("v.%s", P2GZ_VERSION);
+	j2d.print((System::getRenderModeWidth() / 2) - (width / 2), 424.0f, "v.%s", P2GZ_VERSION);
 }

@@ -262,8 +262,7 @@ void BaseGameSection::init()
 	sys->heapStatusEnd("baseGameSection::init");
 	mTreasureGetState = 0;
 
-	p2gz = new P2GZ; // @P2GZ
-	p2gz->init();
+	p2gz->init(); // @P2GZ - init
 }
 
 /**
@@ -396,6 +395,19 @@ void BaseGameSection::doDraw(Graphics& gfx)
 	if (mDraw2DCreature) {
 		drawOtakaraWindow(gfx);
 	}
+
+	// @P2GZ - timer
+	// need to draw timer over cutscenes
+	// the positioning for this is important, otherwise the talking pod steals the timer :')
+	if (moviePlayer->isFlag(MVP_IsActive)) {
+		// don't repeat drawing of timer during treasure collection
+		// (otherwise, the timer will attach to the treasures. don't ask.)
+		if (!moviePlayer->isPlaying("s22_cv_suck_treasure") && !moviePlayer->isPlaying("s22_cv_suck_equipment")
+		    && !moviePlayer->isPlaying("s10_suck_treasure") && !moviePlayer->isPlaying("s17_suck_equipment")) {
+			p2gz->timer->draw();
+		}
+	}
+
 	Screen::gGame2DMgr->drawKanteiMsg(gfx);
 	if (moviePlayer && !gameSystem->mIsMoviePause) {
 		moviePlayer->draw(gfx);

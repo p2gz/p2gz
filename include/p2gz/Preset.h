@@ -1,6 +1,7 @@
 #ifndef _GZ_PRESET_H
 #define _GZ_PRESET_H
 
+#include <IDelegate.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/gzmenu.h>
 #include <p2gz/warp.h>
@@ -10,6 +11,7 @@
 
 namespace gz {
 
+struct Warp;
 struct WarpDestination;
 
 enum PresetCategory { PoD, AT, General, Generated };
@@ -21,11 +23,15 @@ public:
 	~Preset() { }
 
 	void apply();
+	void apply_post_load();
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
-	Preset* set_cutscene_flags(size_t num_flags, int flags[]);
+	Preset* set_time(f32 time_);
+	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
+	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
+	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
 
 	PresetCategory category;
 	const char* name;
@@ -35,7 +41,10 @@ public:
 	bool spicies_unlocked;
 	int num_bitters;
 	int num_spicies;
-	Vec<int> cutscene_flags;
+	f32 time;
+	Vec<Game::DemoFlags> cutscene_flags;
+	Vec<Game::OlimarData::ItemIndex> upgrades;
+	Vec<const char*> destroyed_gates; // Will we need a way to store stages?
 };
 
 struct PresetMgr {
@@ -48,11 +57,12 @@ public:
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
+	Preset* last_used_preset;
 };
 
 struct PresetMenuOption : public MenuOption {
 public:
-	PresetMenuOption(IDelegate1<Preset*>* on_select_);
+	PresetMenuOption(IDelegate2<Preset*, int>* on_select_);
 
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -62,12 +72,14 @@ public:
 	Preset* current_preset;
 
 private:
+	void select_current_preset(ListMenu* menu);
+
 	ListMenu* preset_category_list;
 	ListMenu* pod_presets_menu;
 	ListMenu* at_presets_menu;
 	ListMenu* general_presets_menu;
 
-	IDelegate1<Preset*>* on_select;
+	IDelegate2<Preset*, int>* on_select;
 };
 
 struct PresetPreviewMenuOption : public MenuOption {

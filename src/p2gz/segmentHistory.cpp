@@ -1,3 +1,4 @@
+#include <p2gz/HelperInlines.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <p2gz/p2gz.h>
@@ -19,13 +20,14 @@ void SegmentHistory::draw_2d()
 	}
 	SceneType scene_type = Screen::gGame2DMgr->mScreenMgr->getSceneType();
 
+	bool gz_menu_open = p2gz->menu->is_open();
 	bool is_paused = Game::gameSystem
 	              && (scene_type == SCENE_PAUSE_MENU_DOUKUTU || scene_type == SCENE_PAUSE_MENU_ITEMS || scene_type == SCENE_PAUSE_MENU_MAP
 	                  || scene_type == SCENE_PAUSE_MENU_CONTROLS);
 	bool is_in_load_screen = scene_type == SCENE_FLOOR && started_creating_map;
-	bool gz_menu_open      = p2gz->menu->is_open();
+	bool is_paused_in_cave = in_cave_play() && (is_paused || gz_menu_open);
 
-	if (is_paused || is_in_load_screen || gz_menu_open) {
+	if (is_paused_in_cave || is_in_load_screen) {
 		draw_cur_seed();
 	}
 
@@ -56,7 +58,7 @@ void SegmentHistory::update()
 			current_dest.use_set_seed = false;
 
 			p2gz->warp->set_dest(current_dest);
-			p2gz->warp->set_preset(current_segment->preset);
+			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -68,7 +70,7 @@ void SegmentHistory::update()
 			current_dest.use_set_seed = true;
 
 			p2gz->warp->set_dest(current_dest);
-			p2gz->warp->set_preset(current_segment->preset);
+			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 			p2gz->warp->do_warp();
 
 			entering_next_sublevel = false;
@@ -114,10 +116,9 @@ void SegmentHistory::update()
 				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
 					cat = floor0_segment->preset->category;
 				}
-				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat));
-
+				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
 			} else {
-				p2gz->warp->set_preset(floor0_segment->preset);
+				p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
 			}
 			p2gz->warp->set_dest(floor0_dest);
 			p2gz->warp->do_warp();
@@ -183,6 +184,8 @@ void SegmentHistory::draw_reset_controls()
 
 void SegmentHistory::start_segment(u32 seed)
 {
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
 	Segment* segment     = new Segment();
 	WarpDestination dest = Warp::current_dest();
 	dest.seed            = seed;
@@ -191,4 +194,6 @@ void SegmentHistory::start_segment(u32 seed)
 	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
 
 	segments.push(const_cast<const Segment*>(segment));
+
+	prev_heap->becomeCurrentHeap();
 }

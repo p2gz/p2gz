@@ -21,6 +21,7 @@
 #include <Game/generalEnemyMgr.h>
 #include <Game/MapMgr.h>
 #include <Dolphin/rand.h>
+#include <TParticle2dMgr.h>
 
 using namespace gz;
 
@@ -53,8 +54,13 @@ static const char* ENTER_KINDS[2] = {
 };
 
 Warp::Warp()
-    : allow_zero_pikmin_in_caves(true)
 {
+	allow_zero_pikmin_in_caves = true;
+	warping_from_menu          = false;
+	needs_post_load_action     = false;
+	preset_status              = PS_Stale;
+	cave                       = nullptr;
+	lockout_frames             = 0;
 }
 
 void Warp::init()
@@ -80,30 +86,13 @@ void Warp::init()
 	update_sublevel_opt();
 }
 
-Preset* Warp::get_effective_preset()
+void Warp::set_preset(Preset* preset_, int preset_status_)
 {
-	if (current_preset) {
-		return current_preset;
-	}
-	if (chosen_preset) {
-		return chosen_preset;
-	}
-	return nullptr;
-}
-
-void Warp::set_chosen_preset(Preset* preset)
-{
-	chosen_preset  = preset;
-	current_preset = preset;
+	preset        = preset_;
+	preset_status = static_cast<PresetStatus>(preset_status_);
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
-}
-
-void Warp::set_preset(Preset* preset)
-{
-	current_preset = preset;
-	chosen_preset  = nullptr;
 }
 
 WarpDestination Warp::current_dest()
@@ -196,25 +185,18 @@ void Warp::update_sublevel_opt()
 
 void Warp::update_preset_opt()
 {
-	if (current_preset == chosen_preset && current_preset == nullptr) {
-		// nullptr preset is the "keep current squad" option. Leave it alone if this is selected
+	if (preset_status > PS_Suggested) {
 		return;
 	}
 
-	// If the player has chosen a General preset we don't want to override it. These are not suggested
-	// and aren't supposed to be relevant for speedrun practice.
-	if (chosen_preset && chosen_preset->category == General) {
-		return;
+	PresetCategory category = PoD;
+	if (preset && preset->category != Generated) {
+		category = preset->category;
 	}
 
-	Preset* effective_preset = get_effective_preset();
-	PresetCategory category  = PoD;
-	if (effective_preset) {
-		category = effective_preset->category;
-	}
 	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
 	if (suggested_preset) {
-		set_chosen_preset(suggested_preset);
+		set_preset(suggested_preset, PS_Suggested);
 	}
 }
 
@@ -223,15 +205,38 @@ void Warp::do_warp()
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
-	Preset* effective_preset = get_effective_preset();
-	if (effective_preset) {
-		effective_preset->apply();
+	if (preset) {
+		preset->apply();
+		preset_status                      = PS_Stale;
+		p2gz->preset_mgr->last_used_preset = preset;
+		needs_post_load_action             = true;
 	}
 
+	if (particle2dMgr) {
+		particle2dMgr->killAll();
+	}
+
+	reset_cave_treasure_collections(game);
 	if (dest.cave == 0) {
 		warp_to_area(game);
 	} else {
 		warp_to_cave(game);
+	}
+
+	// Warping revives captains, but because it skips the normal load sequence, any dead captains
+	// are still considered dead even after being revived. This informs naviMgr that they're both alive again.
+	if (Game::naviMgr) {
+		Game::naviMgr->clearDeadCount();
+	}
+
+	// Disable the option for skipping save prompts and force it to be on
+	// when warping out of the menu. This is because there's no save file selected,
+	// so saving in this state causes a crash.
+	if (warping_from_menu) {
+		ToggleMenuOption* skip_save_prompts_opt = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("settings/skip save prompts"));
+		skip_save_prompts_opt->visible          = false;
+		skip_save_prompts_opt->set_selection(true);
+		p2gz->skip_save->toggle_save_skip(true);
 	}
 }
 
@@ -243,14 +248,14 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 
 	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_otakara(i)         = 0;
+		counter_otakara(i) = 0;
 	}
 
 	pelmgr                          = Game::PelletItem::mgr;
 	Game::KindCounter& counter_item = mem->mItem;
 	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_item(i)         = 0;
+		counter_item(i) = 0;
 	}
 }
 
@@ -283,15 +288,18 @@ void Warp::save_pikmin()
 
 void Warp::warp_to_cave(Game::SingleGameSection* game)
 {
-	reset_cave_treasure_collections(game);
-	save_pikmin();
+	if (!warping_from_menu) {
+		save_pikmin();
+	}
 
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
 	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest.cave - 1));
-	Game::ItemCave::Item* cave = new Game::ItemCave::Item;
-	cave->mCaveID              = caveID;
-	cave->mCaveFilename        = dst_course_info->getCaveinfoFilename_FromID(caveID);
+	if (!cave) {
+		cave = new Game::ItemCave::Item;
+	}
+	cave->mCaveID       = caveID;
+	cave->mCaveFilename = dst_course_info->getCaveinfoFilename_FromID(caveID);
 
 	Game::gameSystem->mTimeMgr->mDayCount        = dest.day; // set day
 	Game::playData->mCaveSaveData.mTime          = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
@@ -299,8 +307,7 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
 
 	// Save changes to world state if we're above-ground currently
-	// TODO: do we want to do this? Should it be a setting?
-	if (!Game::gameSystem->mIsInCave) {
+	if (in_above_ground_play()) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -311,13 +318,27 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	game->mCurrentFloor      = dest.sublevel;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 
-	Game::SingleGame::LoadArg arg(100, true, false, false);
+	// adjust timer to account for saving + enable sub timer
+	// usually we'd only reset the sub timer between sublevels, but on warp we reset both
+	// NB: this means that retrying the sublevel will reset the main timer - that's probably okay for now?
+	// TODO: record timer at sublevel start and, if retrying level, reset main timer to that value instead
+	p2gz->timer->set_sub_timer_enabled(true);
+	p2gz->timer->reset_main_timer();
+	if (game->mCurrentFloor == 0) {
+		p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
+	} else {
+		p2gz->timer->offset_main_timer(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
+	}
+
+	Game::SingleGame::LoadArg arg(Game::SingleGame::MapEnter_CaveEnter, true, warping_from_menu, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
 }
 
 void Warp::warp_to_area(Game::SingleGameSection* game)
 {
-	save_pikmin();
+	if (!warping_from_menu) {
+		save_pikmin();
+	}
 
 	// TODO: Probably not all of this is necessary - copy-paste from DayEndState::exec()
 	Game::gameSystem->resetFlag(Game::GAMESYS_IsGameWorldActive);
@@ -325,21 +346,22 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	Game::moviePlayer->reset();
 	Game::moviePlayer->clearSuspendedDemo();
 
-	if (game->mTheExpHeap != nullptr) {
+	if (game->mTheExpHeap) {
 		PSMCancelToPauseOffMainBgm();
 	}
 
-	Iterator<Game::Onyon> iOnyon(Game::ItemOnyon::mgr);
-	CI_LOOP(iOnyon)
-	{
-		(*iOnyon)->setSpotEffectActive(false);
-		(*iOnyon)->mSuckTimer = 4.0f;
-		(*iOnyon)->forceClose();
+	if (Game::ItemOnyon::mgr) {
+		Iterator<Game::Onyon> iOnyon(Game::ItemOnyon::mgr);
+		CI_LOOP(iOnyon)
+		{
+			(*iOnyon)->setSpotEffectActive(false);
+			(*iOnyon)->mSuckTimer = 4.0f;
+			(*iOnyon)->forceClose();
+		}
 	}
 
 	// Save changes to world state if we're above-ground currently
-	// TODO: do we want to do this? Should it be a setting?
-	if (!Game::gameSystem->mIsInCave) {
+	if (in_above_ground_play()) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -359,22 +381,19 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	Game::PelletOtakara::mgr->resetMgrAndResources();
 
 	// Clean up Navi resources
-	Game::Navi* navi = Game::naviMgr->getAt(NAVIID_Olimar);
-	if (navi->isAlive()) {
-		navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
-		efx::TNaviEffect* effectsObj = navi->mEffectsObj;
-		effectsObj->mFlags.unset(efx::NAVIFX_InWater);
-		effectsObj->killHamonA_();
-		effectsObj->killHamonB_();
-	}
-
-	navi = Game::naviMgr->getAt(NAVIID_Louie);
-	if (navi->isAlive()) {
-		navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
-		efx::TNaviEffect* effectsObj = navi->mEffectsObj;
-		effectsObj->mFlags.unset(efx::NAVIFX_InWater);
-		effectsObj->killHamonA_();
-		effectsObj->killHamonB_();
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive()) {
+				navi->mFsm->transit(navi, Game::NSID_Walk, nullptr);
+				efx::TNaviEffect* effectsObj = navi->mEffectsObj;
+				if (effectsObj) {
+					effectsObj->mFlags.unset(efx::NAVIFX_InWater);
+					effectsObj->killHamonA_();
+					effectsObj->killHamonB_();
+				}
+			}
+		}
 	}
 
 	Game::pikiMgr->forceEnterPikmins(false);
@@ -402,7 +421,22 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	case 1:
 	default:
 		map_enter_status = Game::SingleGame::MapEnter_NewDay;
+		// set flag so timer resets on load-in
+		p2gz->timer->set_FS_map_flag(true);
+		break;
 	}
-	Game::SingleGame::LoadArg arg(map_enter_status, false, false, false);
+	Game::SingleGame::LoadArg arg(map_enter_status, false, warping_from_menu, false);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Load, &arg);
+}
+
+void Warp::do_post_warp()
+{
+	if (!needs_post_load_action) {
+		return;
+	}
+
+	needs_post_load_action = false;
+	if (preset) {
+		preset->apply_post_load();
+	}
 }

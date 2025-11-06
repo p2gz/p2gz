@@ -18,6 +18,7 @@ namespace gz {
 // predeclarations
 struct MenuLayer;
 struct HexKeypad;
+struct DecimalKeypad;
 
 /// Base class for selectable menu options. Override `on_selected` in subclasses
 /// to give them unique behavior.
@@ -207,9 +208,28 @@ private:
 	const char* value_if_unselected;
 };
 
+struct DecimalInputOption : public MenuOption {
+public:
+	DecimalInputOption(const char* title_, const char* image_name_ = nullptr, bool image_only_ = false);
+
+	virtual MenuLayer* get_sub_menu();
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual void update() { }
+	virtual void select();
+
+	bool is_selected();
+	u32 get_selected_val();
+	void set_selected_val(u32);
+
+private:
+	DecimalKeypad* keypad;
+};
+
 /// Base class for different types of menus
 struct MenuLayer {
 public:
+	MenuLayer(IDelegate* on_opened_ = nullptr) { on_opened = on_opened_; }
+
 	virtual void update()                            = 0;
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
 	virtual void reset_selection()                   = 0;
@@ -220,12 +240,16 @@ public:
 	/// Menu to return to when backing out of this menu.
 	/// Root menu should leave as null.
 	MenuLayer* parent;
+
+	/// Optional callback to be run when this menu is opened
+	IDelegate* on_opened;
 };
 
 struct ListMenu : public MenuLayer {
 public:
-	ListMenu()
-	    : pah_up(Controller::PRESS_DPAD_UP)
+	ListMenu(IDelegate* on_opened_ = nullptr)
+	    : MenuLayer(on_opened_)
+	    , pah_up(Controller::PRESS_DPAD_UP)
 	    , pah_down(Controller::PRESS_DPAD_DOWN)
 	{
 		selected = 0;
@@ -263,8 +287,10 @@ private:
 
 struct GridMenu : public MenuLayer {
 public:
-	GridMenu(f32 column_width_)
-	    : column_width(column_width_)
+	GridMenu(f32 opt_width_, f32 opt_height_, IDelegate* on_opened_ = nullptr)
+	    : MenuLayer(on_opened_)
+	    , opt_width(opt_width_)
+	    , opt_height(opt_height_)
 	    , selected_row(0)
 	    , selected_col(0)
 	    , pah_up(Controller::PRESS_DPAD_UP)
@@ -308,7 +334,8 @@ public:
 	Vec<Vec<MenuOption*>*> options;
 	size_t selected_row;
 	size_t selected_col;
-	f32 column_width;
+	f32 opt_width;
+	f32 opt_height;
 	bool editing_range;
 
 private:
@@ -333,8 +360,8 @@ public:
 	u32 get_value() { return value; }
 	u32 set_value(u32 value_)
 	{
-		value         = value_;
-		unselected    = false;
+		value      = value_;
+		unselected = false;
 	}
 	bool is_unselected() { return unselected; }
 
@@ -351,6 +378,33 @@ private:
 
 	IDelegate1<u32>* on_selected;
 	IDelegate* on_unselected;
+};
+
+struct DecimalKeypad : public MenuLayer {
+public:
+	DecimalKeypad(const char* title_);
+
+	virtual void update();
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
+	virtual void reset_selection()
+	{
+		keypad->reset_selection();
+		cur_digit = 0;
+	}
+
+	u32 get_value() { return value; }
+	void set_value(u32 value_) { value = value_; }
+
+	bool is_unselected;
+
+private:
+	void select_digit(u32);
+	void submit();
+	void set_unselected();
+
+	GridMenu* keypad;
+	u32 value;
+	u8 cur_digit;
 };
 
 struct GZMenu {
@@ -394,6 +448,50 @@ public:
 		}
 		// Safety check failed, return nothing
 		return nullptr;
+	}
+
+	/// Check if current active menu layer has title `title`
+	bool is_active_menu(const char* title)
+	{
+		// check if menu is open, and if active layer title matches
+		if (!is_open()) {
+			return false;
+		}
+		MenuLayer* active_layer = get_active_layer();
+		if (!active_layer) {
+			return false;
+		}
+		if (!active_layer->title) {
+			return false;
+		}
+		if (strcmp(active_layer->title, title) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	/// Check if current active menu layer is a submenu of layer titled `title`
+	bool is_active_menu_parent(const char* title)
+	{
+		// check if menu is open, and if active layer title matches
+		if (!is_open()) {
+			return false;
+		}
+		MenuLayer* active_layer = get_active_layer();
+		if (!active_layer) {
+			return false;
+		}
+		MenuLayer* parent_layer = active_layer->parent;
+		if (!parent_layer) {
+			return false;
+		}
+		if (!parent_layer->title) {
+			return false;
+		}
+		if (strcmp(parent_layer->title, title) != 0) {
+			return false;
+		}
+		return true;
 	}
 
 	f32 glyph_width;

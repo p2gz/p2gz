@@ -174,9 +174,8 @@ void CutsceneMgr::update()
 		return;
 	}
 
-	// only update if we don't have a cutscene submenu open
-	if (p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->parent && p2gz->menu->get_active_layer()->parent->title
-	    && strcmp(p2gz->menu->get_active_layer()->parent->title, "cutscenes") == 0) {
+	// only update if we don't have a (direct) cutscene submenu open
+	if (p2gz->menu->is_active_menu_parent("cutscenes")) {
 		return;
 	}
 
@@ -195,6 +194,13 @@ CutsceneToggle* CutsceneMgr::get_toggle(Game::DemoFlags id)
 		}
 	}
 	return nullptr;
+}
+
+void CutsceneMgr::reset_all()
+{
+	for (size_t i = 0; i < cutscene_list.len(); i++) {
+		cutscene_list[i]->set_cutscene_flag(false);
+	}
 }
 
 void CutsceneMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)

@@ -789,7 +789,9 @@ void Obj::dropTreasure()
 {
 	bool dropCheck = false;
 	for (int i = 0; i < 4; i++) {
+		OSReport("%d: %.2f\n", i, mTreasureHealth[i]);
 		if (mTreasures[i] && mTreasureHealth[i] <= 0.0f) {
+			OSReport("dropping %d\n", i);
 			dropCheck = true;
 			createDropTreasureEffect(i);
 			finishTreasurePinchSmoke(i);
@@ -809,11 +811,17 @@ void Obj::dropTreasure()
  */
 bool Obj::dropTreasure(int idx)
 {
+	OSReport("what the fuck\n");
 	mTreasures[idx]->endCapture();
+	OSReport("what the fuck\n");
 	Vector3f velocity(0.0f, 100.0f, 0.0f);
+	OSReport("what the fuck\n");
 	mTreasures[idx]->setVelocity(velocity);
-	mTreasures[idx]      = nullptr;
+	OSReport("what the fuck\n");
+	mTreasures[idx] = nullptr;
+	OSReport("what the fuck\n");
 	mTreasureHealth[idx] = 0.0f;
+	OSReport("mTreasureHealth[%d] = %.2f\n", idx, mTreasureHealth[idx]);
 	return true;
 }
 

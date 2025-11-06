@@ -26,6 +26,7 @@ void FreeCam::enable()
 		return;
 
 	enabled = true;
+	p2gz->timer->set_freecam_mode(true);
 	p2gz->menu->close();
 
 	navi   = Game::naviMgr->getActiveNavi();
@@ -52,6 +53,10 @@ void FreeCam::disable()
 	if (!enabled)
 		return;
 
+	if (p2gz->timer->is_freecam_mode()) {
+		p2gz->timer->unpause();
+		p2gz->timer->set_freecam_mode(false);
+	}
 	enabled = false;
 
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
@@ -105,6 +110,8 @@ void FreeCam::update()
 				p2gz->menu->navigate_to("tools/freecam");
 			}
 		}
+		// we're still in the menu, so don't unpause the timer
+		p2gz->timer->set_freecam_mode(false);
 		disable();
 		og::ogSound->setCancel();
 		return;

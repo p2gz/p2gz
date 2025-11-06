@@ -9,6 +9,7 @@
 #include "PSM/Scene.h"
 #include "TParticle2dMgr.h"
 #include "Game/GameSystem.h"
+#include <p2gz/p2gz.h>
 
 static const u32 unused[3] = { 0, 0, 0 };
 static const char name[]   = "SingleGS_Game";
@@ -72,6 +73,11 @@ void FileState::dvdload()
  */
 void FileState::exec(SingleGameSection* game)
 {
+	// @P2GZ - set correct args to be able to warp out of file select
+	if (p2gz) {
+		p2gz->warp->warping_from_menu = true;
+	}
+
 	if (mIsNotInitialized) {
 		mBackupHeap = JKRGetCurrentHeap();
 		mMainHeap   = JKRExpHeap::create(mBackupHeap->getFreeSize(), mBackupHeap, true);
@@ -83,6 +89,11 @@ void FileState::exec(SingleGameSection* game)
 		mIsNotInitialized = false;
 
 	} else if (mMainHeap) {
+		// @P2GZ - pause file select when GZ menu is open
+		if (p2gz && p2gz->menu->is_open()) {
+			return;
+		}
+
 		if (particle2dMgr) {
 			particle2dMgr->update();
 		}
@@ -127,6 +138,11 @@ void FileState::startGame(SingleGameSection* game)
 	}
 
 	case STORYSAVE_WorldMap: {
+		// @P2GZ - timer
+		// set flag when we enter world map from title so we don't start the timer too early
+		p2gz->timer->set_FS_map_flag(true);
+		p2gz->timer->set_enabled(false);
+
 		transit(game, SGS_Select, nullptr);
 		break;
 	}

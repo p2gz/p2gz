@@ -11,6 +11,8 @@
 using namespace gz;
 
 Preset::Preset(const char* name_, PresetCategory category_)
+    : upgrades(1)
+    , cutscene_flags(1)
 {
 	name             = name_;
 	category         = category_;
@@ -18,6 +20,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	spicies_unlocked = false;
 	num_bitters      = 0;
 	num_spicies      = 0;
+	time             = 7.0f;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -33,6 +36,17 @@ Preset::Preset(Preset& other)
 	num_spicies      = other.num_spicies;
 	squad            = other.squad;
 	onion_pikis      = other.onion_pikis;
+	time             = other.time;
+
+	upgrades.expandCapacityTo(other.upgrades.len());
+	for (size_t i = 0; i < other.upgrades.len(); i++) {
+		upgrades.push(other.upgrades[i]);
+	}
+
+	cutscene_flags.expandCapacityTo(other.cutscene_flags.len());
+	for (size_t i = 0; i < other.cutscene_flags.len(); i++) {
+		cutscene_flags.push(other.cutscene_flags[i]);
+	}
 }
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
@@ -56,11 +70,36 @@ Preset* Preset::set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unl
 	return this;
 }
 
-Preset* Preset::set_cutscene_flags(size_t num_flags, int flags[])
+Preset* Preset::set_time(f32 time_)
 {
-	cutscene_flags.expandCapacityTo(num_flags);
+	time = time_;
+	return this;
+}
+
+Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
+{
+	cutscene_flags.expandCapacityTo(cutscene_flags.len() + num_flags);
 	for (size_t i = 0; i < num_flags; i++) {
 		cutscene_flags.push(flags[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
+{
+	upgrades.expandCapacityTo(upgrades.len() + num_upgrades);
+	for (size_t i = 0; i < num_upgrades; i++) {
+		upgrades.push(items[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
+{
+	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
+	for (size_t i = 0; i < num_gates; i++) {
+		GZASSERTLINE(gates[i]);
+		destroyed_gates.push(gates[i]);
 	}
 	return this;
 }
@@ -70,13 +109,16 @@ void Preset::apply()
 	// TODO: is this necessary?
 	// GameStat::mePikis.clear(); // clear sprouts
 
-	for (int i = 0; i < 2; i++) {
-		Game::Navi* navi = Game::naviMgr->getAt(i);
-		if (navi && navi->isAlive() && navi->isStickTo()) {
-			navi->endStick();
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive() && navi->isStickTo()) {
+				navi->endStick();
+			}
 		}
 	}
 
+	p2gz->day_editor->set_time(time);
 	p2gz->squad_editor->clear_all_pikmin();
 	Game::playData->resetContainerFlag();                     // Reset container flags for onions/ship space unlocks
 	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected
@@ -90,7 +132,12 @@ void Preset::apply()
 				onion_amount = onion_pikis.getCount(color, stage);
 			}
 			if (amount > 0 || onion_amount > 0) {
+				// If warping from a menu, birthing the pikis will fail but we need to set their demo flags either way
+				p2gz->squad_editor->set_demo_flags_for_color(static_cast<Game::EPikiKind>(color));
 				p2gz->squad_editor->birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), amount);
+			}
+			if (amount > 0) {
+				Game::playData->mCaveSaveData.mCavePikis.getCount(color, stage) += amount;
 			}
 		}
 	}
@@ -104,20 +151,52 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_bitters(bitters_unlocked);
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
+	// Apply upgrades
+	p2gz->ek_editor->reset_all();
+	for (size_t i = 0; i < upgrades.len(); i++) {
+		p2gz->ek_editor->set_upgrade(upgrades[i], true);
+	}
+
 	// Set cutscene flags
-	// TODO: use cutscene flag editor for this
-	// for (size_t i = 0; i < preset.cutscene_flags.len(); i++) {
-	// 	playData->mDemoFlags.setFlag(preset.cutscene_flags[i]);
-	// }
+	p2gz->cutscene_mgr->reset_all();
+	for (size_t i = 0; i < cutscene_flags.len(); i++) {
+		Game::DemoFlags flag            = cutscene_flags[i];
+		CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
+		if (cutscene_toggle) {
+			cutscene_toggle->set_cutscene_flag(true);
+		}
+	}
 }
 
-PresetMenuOption::PresetMenuOption(IDelegate1<Preset*>* on_select_)
+void Preset::apply_post_load()
+{
+	// Destroy gates
+	for (size_t i = 0; i < destroyed_gates.len(); i++) {
+		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
+	}
+
+	// Make sure all navi have max health
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive()) {
+				navi->mHealth = 50.0f;
+			}
+		}
+	}
+}
+
+PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
     : MenuOption("preset")
 {
 	on_select            = on_select_;
-	pod_presets_menu     = new ListMenu();
-	at_presets_menu      = new ListMenu();
-	general_presets_menu = new ListMenu();
+	pod_presets_menu                = new ListMenu();
+	pod_presets_menu->on_opened     = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, pod_presets_menu);
+	at_presets_menu                 = new ListMenu();
+	at_presets_menu->on_opened      = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, at_presets_menu);
+	general_presets_menu            = new ListMenu();
+	general_presets_menu->on_opened = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, general_presets_menu);
+
 	preset_category_list = (new ListMenu())
 	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
 	                           ->push(new OpenSubMenuOption("PoD", pod_presets_menu))
@@ -146,8 +225,39 @@ PresetMenuOption::PresetMenuOption(IDelegate1<Preset*>* on_select_)
 	// when changing the warp menu selections
 	current_preset = p2gz->preset_mgr->find("EC", PoD);
 	if (on_select) {
-		on_select->invoke(current_preset);
+		on_select->invoke(current_preset, PS_Stale);
 	}
+}
+
+/// Adjusts the selection of a category menu when it's opened so the current preset is highlighted
+void PresetMenuOption::select_current_preset(ListMenu* menu)
+{
+	if (!current_preset || !menu) {
+		return;
+	}
+
+	bool found          = false;
+	int idx_in_category = -1;
+	for (size_t i = 0; i < p2gz->preset_mgr->presets.len(); i++) {
+		Preset* preset = p2gz->preset_mgr->presets[i];
+		if (preset->category == current_preset->category) {
+			idx_in_category += 1;
+		}
+		if (preset == current_preset) {
+			found = true;
+			break;
+		}
+	}
+
+	if (!found) {
+		return;
+	}
+
+	const size_t num_options = menu->options.len();
+	GZASSERTLINE(num_options > 0);
+	GZASSERTLINE(idx_in_category < num_options);
+
+	menu->selected = idx_in_category;
 }
 
 static const char* PIKI_IMG_NAMES[15] = {
@@ -231,7 +341,7 @@ void PresetMenuOption::select()
 void PresetMenuOption::do_on_preset_selected(Preset* preset)
 {
 	if (on_select) {
-		on_select->invoke(preset);
+		on_select->invoke(preset, PS_Chosen);
 	}
 }
 

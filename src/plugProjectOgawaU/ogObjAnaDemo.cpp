@@ -5,6 +5,7 @@
 #include "og/Sound.h"
 #include "System.h"
 #include "Controller.h"
+#include <p2gz/p2gz.h>
 
 namespace og {
 namespace newScreen {
@@ -439,6 +440,11 @@ void ObjAnaDemo::setBlinkMenu()
 bool ObjAnaDemo::doUpdate()
 {
 	bool ret = false;
+	// @P2GZ pause-loading-fix: disable menu input/updates while in the p2gz menu
+	if (p2gz && p2gz->menu->is_open()) {
+		return ret;
+	}
+
 	commonUpdate();
 	Controller* pad = getGamePad();
 

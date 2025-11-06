@@ -52,14 +52,14 @@ void SprayEditor::toggle_bitters(bool unlocked)
 	if (unlocked) {
 		Game::playData->setDemoFlag(Game::DEMO_First_Bitter_Berry);
 		Game::playData->setDemoFlag(Game::DEMO_First_Bitter_Spray_Made);
-		// don't set DEMO_BITTER_ENABLED here, SingleGameSection will do it automatically
-		// (and then show counter)
+		if (Game::gameSystem->mIsInCave) {
+			Game::playData->setDemoFlag(Game::DEMO_BITTER_ENABLED);
+		}
 	} else {
 		Game::playData->mSprayCount[1] = 0;
 		static_cast<RangeMenuOption*>(spray_menu->get_option("bitters"))->set_selection(0);
 		Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Bitter_Berry);
 		Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Bitter_Spray_Made);
-		// unset flag so ogObjGround can hide display correctly, though
 		Game::playData->mDemoFlags.resetFlag(Game::DEMO_BITTER_ENABLED);
 	}
 }
@@ -69,22 +69,21 @@ void SprayEditor::toggle_spicies(bool unlocked)
 	if (unlocked) {
 		Game::playData->setDemoFlag(Game::DEMO_First_Spicy_Berry);
 		Game::playData->setDemoFlag(Game::DEMO_First_Spicy_Spray_Made);
-		// don't set DEMO_SPICY_ENABLED here, SingleGameSection will do it automatically
-		// (and then show counter)
+		if (Game::gameSystem->mIsInCave) {
+			Game::playData->setDemoFlag(Game::DEMO_SPICY_ENABLED);
+		}
 	} else {
 		Game::playData->mSprayCount[0] = 0;
 		static_cast<RangeMenuOption*>(spray_menu->get_option("spicies"))->set_selection(0);
 		Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Spicy_Berry);
 		Game::playData->mDemoFlags.resetFlag(Game::DEMO_First_Spicy_Spray_Made);
-		// unset flag so ogObjGround can hide display correctly, though
 		Game::playData->mDemoFlags.resetFlag(Game::DEMO_SPICY_ENABLED);
 	}
 }
 
 void SprayEditor::update()
 {
-	if (p2gz->menu->is_open() && p2gz->menu->get_active_layer() && p2gz->menu->get_active_layer()->title
-	    && strcmp(p2gz->menu->get_active_layer()->title, "sprays") == 0) {
+	if (p2gz->menu->is_active_menu("sprays")) {
 		return;
 	}
 

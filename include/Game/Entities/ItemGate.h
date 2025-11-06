@@ -133,7 +133,10 @@ struct ItemGate : public WorkItem<ItemGate, GateFSM, GateState> {
 	void initMotion();
 	void initPlanes();
 
-	inline f32 getGateHealth();
+	// @P2GZ: gate debug info
+	// bring this in from itemGate.cpp so we can use it elsewhere
+	// inline f32 getGateHealth();
+	f32 getGateHealth() { return (mMaxSegments - mSegmentsDown - 1) * mMaxSegmentHealth + mCurrentSegmentHealth; }
 
 	// unused/inlined:
 	void startDamageMotion();

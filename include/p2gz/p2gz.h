@@ -21,11 +21,14 @@
 #include <p2gz/EnemyDebugInfo.h>
 #include <p2gz/Preset.h>
 #include <p2gz/DismissPositions.h>
+#include <p2gz/PokoEditor.h>
+#include <p2gz/CutsceneToggle.h>
+#include <p2gz/EKEditor.h>
+#include <p2gz/CaveDebugInfo.h>
 #include <p2gz/TreasureEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha1"
-#include <p2gz/CutsceneToggle.h>
+#define P2GZ_VERSION "alpha2"
 
 struct P2GZ {
 public:
@@ -63,6 +66,12 @@ public:
 	gz::PresetMgr* preset_mgr;
 	gz::CutsceneMgr* cutscene_mgr;
 	gz::DismissPositions* dismiss_positions;
+	gz::PokoEditor* poko_editor;
+	gz::EKEditor* ek_editor;
+	gz::CaveDebugInfo* cave_debug_info;
+
+private:
+	bool inited;
 	gz::TreasureEditor* treasure_editor;
 };
 

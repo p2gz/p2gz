@@ -1,6 +1,10 @@
 #include <p2gz/TreasureEditor.h>
 #include <p2gz/FreeCam.h>
+#include <Game/Entities/BigTreasure.h>
 #include <Game/Entities/ItemTreasure.h>
+#include <Game/Entities/Nest.h>
+#include <Game/Entities/OtakaraBase.h>
+#include <Game/Entities/PanModokiBase.h>
 #include <Game/Entities/PelletItem.h>
 #include <Game/Entities/PelletOtakara.h>
 #include <Game/generalEnemyMgr.h>
@@ -15,11 +19,9 @@ void TreasureEditor::init()
 	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("map/treasures")->get_sub_menu());
 }
 
-void TreasureEditor::enable()
+void TreasureEditor::find_treasure()
 {
-	enabled = true;
-
-	Game::Pellet* target = nullptr;
+	active_treasure = nullptr;
 
 	// normal treasures
 	Iterator<Game::PelletOtakara::Object> treasureIterator(Game::PelletOtakara::mgr);
@@ -27,7 +29,7 @@ void TreasureEditor::enable()
 	{
 		Game::PelletOtakara::Object* treasure = *treasureIterator;
 		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
-			target = treasure;
+			active_treasure = treasure;
 		}
 		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 	}
@@ -38,12 +40,12 @@ void TreasureEditor::enable()
 	{
 		Game::PelletItem::Object* treasure = *upgradeIterator;
 		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
-			target = treasure;
+			active_treasure = treasure;
 		}
 		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 	}
 
-	// treasures inside enemies
+	// treasures held or captured by enemies
 	GeneralMgrIterator<Game::EnemyBase> enemyIterator(Game::generalEnemyMgr);
 	CI_LOOP(enemyIterator)
 	{
@@ -52,13 +54,16 @@ void TreasureEditor::enable()
 			continue;
 		}
 
+		handle_breadbug(enemy);
+		handle_dweevil(enemy);
+
 		if (enemy->mPelletDropCode != 0) {
 			Game::PelletInitArg arg;
 			Game::pelletMgr->makePelletInitArg(arg, enemy->mPelletDropCode);
 			if (strcmp(arg.mTextIdentifier, treasures->cur_option()->title) == 0) {
 				enemy->throwupItem();
-				target = enemy->mHeldPellet;
-				target->mLod.setFlag(AILOD_IsVisibleBoth);
+				active_treasure = enemy->mHeldPellet;
+				active_treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 
 				Game::CreatureKillArg killArg(Game::CKILL_LeaveNoCarcass);
 				enemy->kill(&killArg);
@@ -66,29 +71,118 @@ void TreasureEditor::enable()
 		}
 	}
 
-	GZASSERTLINE(target);
+	GZASSERTLINE(active_treasure);
 
-	// release target if buried
+	// release treasure if buried
 	Iterator<Game::BaseItem> buriedIterator(Game::ItemTreasure::mgr);
 	CI_LOOP(buriedIterator)
 	{
 		Game::ItemTreasure::Item* item = static_cast<Game::ItemTreasure::Item*>(*buriedIterator);
+		// ItemTreasures still exist after releasing their pellets.
 		if (!item->mPellet) {
 			continue;
 		}
 
-		if (strcmp(target->getConfigName(), item->mPellet->getConfigName()) == 0) {
+		if (strcmp(active_treasure->getConfigName(), item->mPellet->getConfigName()) == 0) {
 			item->mTotalLife = 0.0f;
 			item->releasePellet();
 		}
 	}
+}
 
-	active_treasure  = target;
-	initial_position = target->getPosition();
+void TreasureEditor::handle_breadbug(Game::EnemyBase* enemy)
+{
+	Game::EnemyTypeID::EEnemyTypeID id = enemy->getEnemyTypeID();
+	if (id != Game::EnemyTypeID::EnemyID_PanModoki && id != Game::EnemyTypeID::EnemyID_OoPanModoki) {
+		return;
+	}
+
+	Game::PanModokiBase::Obj* breadbug = static_cast<Game::PanModokiBase::Obj*>(enemy);
+	for (int i = 0; i < breadbug->mHeldTreasureNum; i++) {
+		if (strcmp(breadbug->mHeldTreasures[i]->getConfigName(), treasures->cur_option()->title) == 0) {
+			if (breadbug->mHeldTreasures[0]) {
+				Game::PelletKillArg killArg;
+				breadbug->mHeldTreasures[0]->kill(&killArg);
+			}
+
+			Game::PelletInitArg initArg;
+			if (Game::pelletMgr->makePelletInitArg(initArg, breadbug->mHeldTreasures[i]->getConfigName())) {
+				Game::Pellet* pellet = breadbug->mHeldTreasures[i];
+				if (pellet) {
+					pellet->mMgr->setComeAlive(pellet);
+					initArg.mState             = Game::PelBirthType_Normal;
+					initArg.mDoSkipCreateModel = 1;
+					pellet->init(&initArg);
+
+					Vector3f pos = breadbug->mHomePosition;
+					pos.y += 10.0f;
+					pellet->setPosition(pos, false);
+
+					active_treasure = pellet;
+
+					breadbug->mHeldTreasureNum--;
+					breadbug->mHeldTreasures[i] = nullptr;
+				}
+			}
+			break;
+		}
+	}
+}
+
+void TreasureEditor::handle_dweevil(Game::EnemyBase* enemy)
+{
+	Game::EnemyTypeID::EEnemyTypeID id = enemy->getEnemyTypeID();
+	if (id != Game::EnemyTypeID::EnemyID_FireOtakara && id != Game::EnemyTypeID::EnemyID_WaterOtakara
+	    && id != Game::EnemyTypeID::EnemyID_GasOtakara && id != Game::EnemyTypeID::EnemyID_ElecOtakara
+	    && id != Game::EnemyTypeID::EnemyID_BigTreasure) {
+		return;
+	}
+
+	if (id == Game::EnemyTypeID::EnemyID_BigTreasure) {
+		Game::BigTreasure::Obj* titan = static_cast<Game::BigTreasure::Obj*>(enemy);
+		if (strcmp(treasures->cur_option()->title, "elec") == 0) {
+			active_treasure           = titan->mTreasures[0];
+			titan->mTreasureHealth[0] = 0.0f;
+			titan->updateTreasure();
+		} else if (strcmp(treasures->cur_option()->title, "fire") == 0) {
+			active_treasure           = titan->mTreasures[1];
+			titan->mTreasureHealth[1] = 0.0f;
+			titan->updateTreasure();
+		} else if (strcmp(treasures->cur_option()->title, "gas") == 0) {
+			active_treasure           = titan->mTreasures[2];
+			titan->mTreasureHealth[2] = 0.0f;
+			titan->updateTreasure();
+		} else if (strcmp(treasures->cur_option()->title, "water") == 0) {
+			active_treasure           = titan->mTreasures[3];
+			titan->mTreasureHealth[3] = 0.0f;
+			titan->updateTreasure();
+		} else if (strcmp(treasures->cur_option()->title, "loozy") == 0) {
+			active_treasure = titan->mLouie;
+			titan->releaseItemLoozy();
+		}
+		return;
+	}
+
+	Game::OtakaraBase::Obj* dweevil = static_cast<Game::OtakaraBase::Obj*>(enemy);
+	if (dweevil->mTreasure && dweevil->mTreasure->getObjType() == OBJTYPE_Pellet) {
+		Game::Pellet* treasure = static_cast<Game::Pellet*>(dweevil->mTreasure);
+		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
+			active_treasure = treasure;
+			dweevil->fallTreasure(false);
+		}
+	}
+}
+
+void TreasureEditor::enable()
+{
+	enabled = true;
+
+	find_treasure();
+	initial_position = active_treasure->getPosition();
 
 	p2gz->waypoint_viewer->toggle(true);
 	p2gz->freecam->enable();
-	p2gz->freecam->set_position(target->getPosition());
+	p2gz->freecam->set_position(active_treasure->getPosition());
 }
 
 void TreasureEditor::snap_to_nearest_waypoint()
@@ -116,6 +210,7 @@ void TreasureEditor::snap_to_nearest_waypoint()
 	p2gz->freecam->set_position(pos);
 }
 
+// Add a submenu for the given treasure.
 void TreasureEditor::add(Game::Pellet* pellet)
 {
 	Game::PelletItem::Object* treasure = static_cast<Game::PelletItem::Object*>(pellet);
@@ -134,18 +229,22 @@ void TreasureEditor::add(Game::Pellet* pellet)
 	// clang-format on
 }
 
-void TreasureEditor::remove(Game::Pellet* pellet)
+// Toggle whether the given treasure is collected. Disables move and sets collected.
+void TreasureEditor::set_collected(Game::Pellet* pellet, bool collected)
 {
 	Game::PelletItem::Object* treasure = static_cast<Game::PelletItem::Object*>(pellet);
 	for (int i = 0; i < treasures->options.len(); i++) {
 		if (strcmp(treasures->options[i]->title, treasure->getConfigName()) == 0) {
-			treasures->options.removeAt(i);
+			ListMenu* menu                    = static_cast<ListMenu*>(treasures->get_option(treasure->getConfigName())->get_sub_menu());
+			menu->get_option("move")->visible = !collected;
+			static_cast<ToggleMenuOption*>(menu->get_option("collected"))->set_selection(collected);
 			return;
 		}
 	}
 	GZASSERTLINE(false);
 }
 
+// Clear all treasures on transit.
 void TreasureEditor::clear_treasures()
 {
 	if (treasures) {
@@ -336,64 +435,6 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	// @P2GZ: treasure editor
 	if (getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) {
 		p2gz->treasure_editor->add(this);
-	}
-}
-
-void Pellet::onKill(CreatureKillArg* killArg)
-{
-	if (gameSystem->isVersusMode()) {
-		mPelletSM->start(this, 0, nullptr);
-	}
-
-	setAlive(false);
-
-	if (shadowMgr) {
-		shadowMgr->delShadow(this);
-	}
-
-	if (gameSystem->isVersusMode()) {
-		GameMessagePelletDead msg(this);
-		gameSystem->mSection->sendMessage(msg);
-	}
-
-	Vector3f scale(1.0f);
-	Vector3f rotation(0.0f);
-	Vector3f translation(0.0f);
-	mBaseTrMatrix.makeSRT(scale, rotation, translation);
-
-	if (mModel) {
-		mLodSphere.mPosition = Vector3f(0.0f);
-		mLodSphere.mRadius   = FLOAT_DIST_MAX;
-		mScale               = Vector3f(1.0f);
-		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
-		mScale.set(mModel->mJ3dModel->mModelScale);
-		mModel->clearAnimatorAll();
-		mModel->mJ3dModel->calc();
-	}
-
-	releaseParticles();
-	mCollTree->release();
-	mMgr->kill(this);
-
-	if ((killArg && static_cast<PelletKillArg*>(killArg)->mDoRevive) || (gameSystem->isVersusMode() && mPelletFlag == FLAG_VS_CHERRY)) {
-		mMgr->setRevival(this);
-	}
-
-	finishDisplayCarryInfo();
-
-	if (mPelletView) {
-		mPelletView->viewOnPelletKilled();
-		mPelletView->mPellet = nullptr;
-		mPelletView          = nullptr;
-	}
-
-	if (getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) {
-		Radar::Mgr::exit(this);
-
-		OSReport("killed %s\n", getConfigName());
-
-		// @P2GZ: treasure editor
-		p2gz->treasure_editor->remove(this);
 	}
 }
 } // namespace Game

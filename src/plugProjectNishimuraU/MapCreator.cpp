@@ -36,6 +36,9 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	Cave::randMapMgr->loadResource(muiArray, p2, floorInfo, lastFloor, unit);
 	Cave::randMapMgr->create();
 
+	// @P2GZ - register spawn points for debug drawing
+	p2gz->cave_debug_info->register_spawn_points();
+
 	const int numRooms = Cave::randMapMgr->getNumRooms();
 	for (int i = 0; i < numRooms; i++) {
 		char* name = Cave::randMapMgr->getUseUnitName(i);

@@ -1325,7 +1325,7 @@ config.libs = [
             Object(Equivalent, "plugProjectKandoU/gamePlayData.cpp"),
             Object(Equivalent, "plugProjectKandoU/itemCave.cpp"),
             Object(Matching, "plugProjectKandoU/itemBigFountain.cpp"),
-            Object(NonMatching, "plugProjectKandoU/itemBridge.cpp"),
+            Object(Equivalent, "plugProjectKandoU/itemBridge.cpp"),
             Object(Matching, "plugProjectKandoU/pikiContainer.cpp"),
             Object(Matching, "plugProjectKandoU/gameGeneratorCache.cpp"),
             Object(Matching, "plugProjectKandoU/itemTreasure.cpp"),

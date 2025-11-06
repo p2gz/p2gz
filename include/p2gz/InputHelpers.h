@@ -2,6 +2,8 @@
 #define _GZ_INPUT_HELPERS_H
 
 #include <Controller.h>
+#include <System.h>
+#include <p2gz/HelperInlines.h>
 
 namespace gz {
 
@@ -24,7 +26,7 @@ public:
 			if (frames_left > 0) {
 				return true;
 			}
-			frames_left = window;
+			frames_left = is_30_fps() ? window : window * 2;
 		}
 
 		return false;
@@ -57,9 +59,9 @@ public:
 		if (controller->getButton() & button) {
 			if (frames_left == 0) {
 				if (repeating) {
-					frames_left = repeat_delay;
+					frames_left = is_30_fps() ? repeat_delay : repeat_delay * 2;
 				} else {
-					frames_left = initial_repeat_delay;
+					frames_left = is_30_fps() ? initial_repeat_delay : initial_repeat_delay * 2;
 					repeating   = true;
 				}
 				return true;

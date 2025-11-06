@@ -4,6 +4,7 @@
 #include <types.h>
 #include <p2gz/Preset.h>
 #include <Game/SingleGameSection.h>
+#include <Game/Entities/ItemCave.h>
 
 namespace gz {
 
@@ -20,16 +21,23 @@ public:
 
 	~WarpDestination() { }
 
-	u32 area;
-	u32 cave;
-	u32 sublevel;
-	u32 day;
+	u8 area;
+	u8 cave;
+	u8 sublevel;
+	u8 day;
 	u32 seed;
 	bool use_set_seed;
 
 	// whether to do the falling animation or the ship fly-in animation when warping to AG
 	size_t enter_area_type;
 };
+
+typedef enum PresetStatus {
+	PS_Stale     = 0,
+	PS_Generated = 1,
+	PS_Suggested = 2,
+	PS_Chosen    = 3,
+} PresetStatus;
 
 struct Warp {
 public:
@@ -50,16 +58,26 @@ public:
 	void set_seed(u32);
 	void set_random_seed() { dest.use_set_seed = false; }
 
-	void set_preset(Preset* preset);
-	void set_chosen_preset(Preset* preset);
-	Preset* get_effective_preset();
+	void set_preset(Preset* preset, int preset_status);
+	Preset* get_preset() { return preset; }
 
 	bool using_set_seed() { return dest.use_set_seed; }
 	u32 get_seed() { return dest.seed; }
 
 	void do_warp();
+	void do_post_warp();
+
+	bool is_warp_lockout() { return lockout_frames > 0; }
+	void set_lockout_frames(u8 frames) { lockout_frames = frames; }
+	void update_lockout_frames()
+	{
+		if (lockout_frames > 0) {
+			lockout_frames--;
+		}
+	}
 
 	bool allow_zero_pikmin_in_caves;
+	bool warping_from_menu;
 
 private:
 	void update_cave_opt();
@@ -70,14 +88,9 @@ private:
 	void save_pikmin();
 	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
+	Preset* preset;
+	PresetStatus preset_status;
 	WarpDestination dest;
-
-	/// The preset chosen in the menu.
-	Preset* chosen_preset;
-
-	/// The preset that will actually be used for the next warp. May differ
-	/// from chosen_preset if set by another feature, e.g. sublevel retry.
-	Preset* current_preset;
 
 	RadioMenuOption* area_opt;
 	RangeMenuOption* sublevel_opt;
@@ -86,6 +99,14 @@ private:
 	RadioMenuOption* enter_area_type_opt;
 	HexInputOption* seed_opt;
 	PresetMenuOption* preset_opt;
+
+	Game::ItemCave::Item* cave;
+
+	bool needs_post_load_action;
+
+	// some instances (such as caveresult and day end result) crash when you warp within the 1st frame of everything
+	// being loaded, so this prevents that by adding some frames where warp can't happen
+	u8 lockout_frames;
 };
 
 }; // namespace gz
