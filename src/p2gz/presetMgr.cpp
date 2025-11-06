@@ -560,7 +560,7 @@ Preset* PresetMgr::create()
 	CI_LOOP(iterator)
 	{
 		Piki* piki = *iterator;
-		if (piki->isAlive() && !piki->isZikatu()) {
+		if (piki->isAlive() && !piki->isZikatu() && !piki->isWildBulbmin()) {
 			preset->squad(piki)++;
 		}
 	}
