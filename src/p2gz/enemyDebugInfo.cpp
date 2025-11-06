@@ -259,16 +259,15 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	// Setup sphere draw next (drawing shapes vs. text needs a different init call)
 	gfx->initPrimDraw(nullptr);
 
-	// Debug collision draw
 	if (draw_collision) {
-		// Start our recursive drawing with the root; the 0 tells the recursion this is the root and not to draw the root collision
+		// Set depth to 0 at start to prevent drawing the root collision sphere
 		recursive_draw_coll_sphere(enemy, gfx, 0, enemy->mCollTree->mPart);
 	}
 }
 
 /**
  * Uses both recursive and non-recursive iteration to draw all collision spheres in the colltree of an enemy
- * Collision in an enemy can be visualized as follows:
+ * Collision tree in an enemy can be visualized as follows:
  * root
  * 		A
  * 		B
@@ -284,13 +283,10 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
  */
 void EnemyDebugInfo::recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* curPart)
 {
-	// While loop checks for collision parts in the same level; once this is null, no more coll parts on this level of the tree
 	while (curPart) {
 		// Don't draw the root collision
 		if (depth) {
-
 			Vector3f pos = curPart->mPosition;
-			// The collision sphere will be different colors based on which type of collision it is //
 			if (curPart->mSpecialID.match('s***', '*')) { // includes 'st__' and 's___' collparts (latter used only by bulborbs grrrrrr)
 				// Green for Collparts that are stickable (most damage)
 				gfx->mDrawColor = Color4(0, 255, 0, 255);
@@ -303,9 +299,7 @@ void EnemyDebugInfo::recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics
 			}
 			gfx->drawSphere(pos, curPart->mRadius);
 		}
-		// Recursively call this function go down the collision tree, to draw children
 		recursive_draw_coll_sphere(enemy, gfx, depth + 1, curPart->getChild());
-		// Meanwhile, in this iteration, get the next sphere within the same level to draw (or null to end the function)
 		curPart = curPart->getNext();
 	}
 }
