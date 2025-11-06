@@ -291,7 +291,7 @@ void Timer::set_sub_timer_enabled(bool on)
 	sub_timer_enabled = on;
 }
 
-// Yeehaw the follow code from hurryUp2D.cpp since it's not matching and we need it
+// @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv
 
 namespace Morimura {
 
