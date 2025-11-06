@@ -10,23 +10,25 @@ public:
 	TreasureEditor() { }
 	~TreasureEditor() { }
 
-	bool is_enabled() { return enabled; }
-	Game::Pellet* get_active_treasure() { return active_treasure; }
-
 	void disable() { enabled = false; }
+	Game::Pellet* get_active_treasure() { return active_treasure; }
+	bool is_enabled() { return enabled; }
+
+	void add(Game::Pellet*);
 	void enable();
 	void init();
-	void add(Game::Pellet*);
-	void set_collected(Game::Pellet*, bool);
+
+private:
+	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }
+	void toggle_collected(bool) { }
+
+	void clear_treasures();
 	void find_treasure();
 	void handle_breadbug(Game::EnemyBase*);
 	void handle_dweevil(Game::EnemyBase*);
-	void clear_treasures();
-	void toggle_collected(bool) { }
-	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }
+	void set_collected(Game::Pellet*, bool);
 	void snap_to_nearest_waypoint();
 
-private:
 	ListMenu* treasures;
 	Game::Pellet* active_treasure;
 	Vector3f initial_position;
