@@ -95,6 +95,7 @@ void FreeCam::update()
 			disable();
 		} else {
 			warp_to_current_position();
+			Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
 		}
 		return;
 	}

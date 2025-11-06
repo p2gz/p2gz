@@ -563,7 +563,9 @@ void PelletGoalState::exec(Pellet* pelt)
 	p2gz->skippable_treasure_cutscenes->set_collected();
 
 	// @P2GZ: treasure editor
-	p2gz->treasure_editor->set_collected(pelt, true);
+	if (pelt->getKind() == PelletType::Treasure || pelt->getKind() == PelletType::Upgrade) {
+		p2gz->treasure_editor->set_collected(pelt, true);
+	}
 
 	if (Radar::mgr) {
 		Radar::Mgr::getNumOtakaraItems();
