@@ -40,8 +40,6 @@ public:
 	void clear() { spawn_points.clear(); }
 
 private:
-	void draw_circle(Vector3f position, f32 radius, Color4 color);
-
 	bool draw_spawn_points;
 	Vec<SpawnPoint> spawn_points;
 };

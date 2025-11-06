@@ -1,5 +1,5 @@
 #include <p2gz/CaveDebugInfo.h>
-#include <Graphics.h>
+#include <p2gz/DrawHelpers.h>
 #include <Game/Cave/RandMapMgr.h>
 
 using namespace gz;
@@ -58,16 +58,14 @@ void CaveDebugInfo::register_spawn_points()
 
 void CaveDebugInfo::draw()
 {
-	Graphics* gfx = sys->getGfx();
 	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
-	gfx->mDrawColor = Color4(0, 0, 0, 255);
 
 	if (draw_spawn_points) {
 		for (size_t i = 0; i < spawn_points.len(); i++) {
 			Vector3f position = spawn_points[i].pos;
 			const f32 radius  = spawn_points[i].radius;
 			Color4 color(255, 255, 255, 255);
-			f32 vertical_offset = 0.0f;
+			f32 vertical_offset = 1.0f;
 
 			// Same colors as Caveripper
 			switch (spawn_points[i].kind) {
@@ -76,24 +74,23 @@ void CaveDebugInfo::draw()
 				break;
 			case Game::Cave::BaseGen::CGT_EnemyHard:
 				color           = Color4(201, 2, 52, 255);
-				vertical_offset = 1.0f;
+				vertical_offset = 2.5f;
 				break;
 			case Game::Cave::BaseGen::CGT_TreasureItem:
 				color           = Color4(230, 115, 0, 255);
-				vertical_offset = 2.0f;
+				vertical_offset = 3.5f;
 				break;
 			case Game::Cave::BaseGen::CGT_HoleOrGeyser:
 			case Game::Cave::BaseGen::CGT_DoorSeam:
-				color           = Color4(130, 130, 130, 255);
-				vertical_offset = -1.0f;
+				color = Color4(130, 130, 130, 255);
 				break;
 			case Game::Cave::BaseGen::CGT_Plant:
 				color           = Color4(59, 148, 90, 255);
-				vertical_offset = 0.5f;
+				vertical_offset = 2.0f;
 				break;
 			case Game::Cave::BaseGen::CGT_Start:
 				color           = Color4(230, 50, 86, 255);
-				vertical_offset = -1.0f;
+				vertical_offset = 1.5f;
 				break;
 			case Game::Cave::BaseGen::CGT_EnemySpecial:
 				color           = Color4(89, 6, 138, 255);
@@ -103,35 +100,13 @@ void CaveDebugInfo::draw()
 				continue;
 			}
 
-			draw_circle(position + Vector3f(0.0, vertical_offset, 0.0f), radius, color);
+			if (spawn_points[i].kind == Game::Cave::BaseGen::CGT_EnemyEasy) {
+				draw_ring(position, radius, color, vertical_offset);
+				draw_ring(position, radius - 5.0f, color, vertical_offset);
+				draw_ring(position, radius - 10.0f, color, vertical_offset);
+			} else {
+				draw_circle(position, radius, color, vertical_offset);
+			}
 		}
-	}
-}
-
-static const f32 CIRCLE_VERTICAL_OFFSET = 3.0f;
-void CaveDebugInfo::draw_circle(Vector3f position, f32 radius, Color4 color)
-{
-	Graphics* gfx = sys->getGfx();
-	gfx->initPrimDraw(nullptr);
-
-	// Offset y position so the circle is not clipping into the ground.
-	position.y += CIRCLE_VERTICAL_OFFSET;
-
-	Vector3f vertices[3];
-	vertices[0] = position;
-
-	for (int i = 0; i < 32; i++) {
-		f32 theta   = -HALF_PI - (TAU * i / 32);
-		vertices[1] = Vector3f(radius * sinf(theta), 0.0f, radius * cosf(theta)) + position;
-
-		f32 nextTheta = -HALF_PI - (TAU * (i + 1) / 32);
-		vertices[2]   = Vector3f(radius * sinf(nextTheta), 0.0f, radius * cosf(nextTheta)) + position;
-
-		GXBegin(GX_TRIANGLEFAN, GX_VTXFMT0, 3);
-		for (int j = 0; j < 3; j++) {
-			GXPosition3f32(vertices[j].x, vertices[j].y, vertices[j].z);
-			GXColor4u8(color.r, color.g, color.b, color.a);
-		}
-		GXEnd();
 	}
 }

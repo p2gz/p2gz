@@ -13,18 +13,6 @@ inline bool is_30_fps()
 	return sys && (sys->mFrameRate == 2.0f);
 }
 
-inline f32 get_min_Y_clamped(Vector3f& pos, Vector3f& ref_pos, f32 max_height_diff, f32 offset_above_floor)
-{
-	// clamps pos's height toward the floor, but vertically no further than max_height_diff away from ref_pos
-	f32 minY = Game::mapMgr->getMinY(pos);
-	if (fabs(ref_pos.y - minY) > max_height_diff) {
-		minY = (ref_pos.y > minY) ? ref_pos.y - max_height_diff : ref_pos.y + max_height_diff;
-	}
-
-	// offset up a bit so we're not clipped into the floor
-	return minY + offset_above_floor;
-}
-
 inline bool in_boot_up()
 {
 	// make sure gameflow is in boot up state
