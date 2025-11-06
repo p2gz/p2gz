@@ -16,6 +16,7 @@
 #include "kh/khCaveResult.h"
 #include "Controller.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace SingleGame {
@@ -43,6 +44,13 @@ CaveResultState::CaveResultState()
  */
 void CaveResultState::init(SingleGameSection* section, StateArg* arg)
 {
+
+	// @P2GZ pause-loading-fix: set this to true, needs to be so for warping from cave result to not crash
+	// (stops some cache stuff from being loaded)
+	if (p2gz) {
+		p2gz->warp->warping_from_menu = true;
+	}
+
 	playData->mCavePokoCount = 0;
 	gameSystem->detachObjectMgr(generalEnemyMgr);
 	gameSystem->detachObjectMgr(mapMgr);
@@ -300,6 +308,11 @@ void CaveResultState::open2D(Game::SingleGameSection* section)
  */
 void CaveResultState::exec(SingleGameSection* section)
 {
+	// @P2GZ pause-loading-fix: pause cave result when p2gz is open, so players can warp without accidentally letting the game continue
+	if (p2gz && p2gz->menu->is_open()) {
+		return;
+	}
+
 	switch (mStatus) {
 	case 0:
 		section->clearHeap();

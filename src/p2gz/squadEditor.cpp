@@ -114,10 +114,8 @@ void SquadEditor::clear_all_pikmin()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (!piki->isZikatu()) {
-			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-			piki->kill(&arg);
-		}
+		Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+		piki->kill(&arg);
 	}
 
 	if (Game::ItemPikihead::mgr) {

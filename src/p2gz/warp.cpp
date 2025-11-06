@@ -60,6 +60,7 @@ Warp::Warp()
 	needs_post_load_action     = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
+	lockout_frames             = 0;
 }
 
 void Warp::init()

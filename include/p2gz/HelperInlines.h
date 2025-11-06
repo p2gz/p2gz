@@ -3,6 +3,7 @@
 
 #include <Game/GameSystem.h>
 #include <Game/SingleGame.h>
+#include <Game/MapMgr.h>
 #include <GameFlow.h>
 
 namespace gz {
@@ -10,6 +11,18 @@ namespace gz {
 inline bool is_30_fps()
 {
 	return sys && (sys->mFrameRate == 2.0f);
+}
+
+inline f32 get_min_Y_clamped(Vector3f& pos, Vector3f& ref_pos, f32 max_height_diff, f32 offset_above_floor)
+{
+	// clamps pos's height toward the floor, but vertically no further than max_height_diff away from ref_pos
+	f32 minY = Game::mapMgr->getMinY(pos);
+	if (fabs(ref_pos.y - minY) > max_height_diff) {
+		minY = (ref_pos.y > minY) ? ref_pos.y - max_height_diff : ref_pos.y + max_height_diff;
+	}
+
+	// offset up a bit so we're not clipped into the floor
+	return minY + offset_above_floor;
 }
 
 inline bool in_boot_up()
@@ -112,7 +125,25 @@ inline bool in_cave_play()
 	return true;
 }
 
-inline bool in_end_of_day()
+inline bool in_day_end_sunset()
+{
+	// must be in single player mode
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs) {
+		return false;
+	}
+	Game::SingleGame::State* state = sgs->getCurrState();
+	if (!state) {
+		return false;
+	}
+	// check we're in the correct state - this is day ending cutscene (returning to onyons + ship)
+	if (state->getCurrStateID() != Game::SingleGame::SGS_DayEnd) {
+		return false;
+	}
+	return true;
+}
+
+inline bool in_end_of_day_result()
 {
 	// must be in single player mode
 	Game::SingleGameSection* sgs = get_SGS();
@@ -125,6 +156,26 @@ inline bool in_end_of_day()
 	}
 	// check we're in the correct state - this is end of day results
 	if (state->getCurrStateID() != Game::SingleGame::SGS_MainResult) {
+		return false;
+	}
+	return true;
+}
+
+// Similar to above, but used for warping - must not be loading any BLO stuff, or else we get weird crashes
+inline bool in_end_of_day_result_safe_to_warp()
+{
+	// must be in day end results (duh)
+	if (!in_end_of_day_result()) {
+		return false;
+	}
+
+	Game::SingleGameSection* sgs                  = get_SGS();
+	Game::SingleGame::State* state                = sgs->getCurrState();
+	Game::SingleGame::MainResultState* resultCast = static_cast<Game::SingleGame::MainResultState*>(state);
+
+	// State 3 is the regular state; states 0 relate to loading BLOs and prepartions stuff, not safe
+	if (resultCast->mStatus != Game::SingleGame::MainResultState::Result_ScreenActive
+	    && resultCast->mStatus != Game::SingleGame::MainResultState::Result_OpenWait) {
 		return false;
 	}
 	return true;
@@ -143,6 +194,30 @@ inline bool in_cave_results()
 	}
 	// check we're in the correct state - this is cave results
 	if (state->getCurrStateID() != Game::SingleGame::SGS_CaveResult) {
+		return false;
+	}
+	return true;
+}
+
+// Similar to above, but used for warping - must not be loading any BLO stuff, or else we get lockout crash
+inline bool in_cave_results_safe_to_warp()
+{
+	// must be in single player mode
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs) {
+		return false;
+	}
+	Game::SingleGame::State* state = sgs->getCurrState();
+	if (!state) {
+		return false;
+	}
+	// check we're in the correct state - this is cave results
+	if (state->getCurrStateID() != Game::SingleGame::SGS_CaveResult) {
+		return false;
+	}
+	Game::SingleGame::CaveResultState* caveCast = static_cast<Game::SingleGame::CaveResultState*>(state);
+	// State 3 is the regular state; states 0 and 1 related to loading BLOs and prepartions stuff, not safe
+	if (caveCast->mStatus != 3) {
 		return false;
 	}
 	return true;
