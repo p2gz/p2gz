@@ -1,3 +1,6 @@
+#ifndef _GZ_BOUND_DELEGATE_H
+#define _GZ_BOUND_DELEGATE_H
+
 #include <IDelegate.h>
 
 /// A Delegate1 that has a pre-bound argument for its function
@@ -51,3 +54,20 @@ struct CurriedDelegate1 : public IDelegate1<B> {
 	A arg1;
 	void (T::*func)(A, B);
 };
+
+template <typename R>
+struct IDelegateR {
+	virtual R invoke() = 0; // _08
+};
+
+/// A Delegate that can return an argument
+template <typename R>
+struct FreeDelegateR : public IDelegateR<R> {
+	inline FreeDelegateR(R (*func_)()) { func = func_; }
+
+	virtual R invoke() { return (func)(); }
+
+	R (*func)();
+};
+
+#endif

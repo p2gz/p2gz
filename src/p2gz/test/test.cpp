@@ -16,23 +16,7 @@ TestRunner::TestRunner()
 void TestRunner::init()
 {
 	OSReport("GZTest: initializing\n");
-
-	tests.push(new Test("open menu and warp", 11,
-	                    (TestOp* [11]) {
-	                        new Wait(300),
-	                        new ButtonInput(PAD_BUTTON_LEFT),
-	                        new Wait(1),
-	                        new ButtonInput(PAD_BUTTON_LEFT),
-	                        new Wait(1),
-	                        new ButtonInput(PAD_BUTTON_A),
-	                        new Wait(1),
-	                        new ButtonInput(PAD_BUTTON_UP),
-	                        new Wait(1),
-	                        new ButtonInput(PAD_BUTTON_A),
-	                        new Wait(1),
-	                        // new Wait(300),
-	                    }));
-
+	create_all_tests();
 	inited = true;
 }
 
@@ -107,12 +91,53 @@ bool Wait::execute()
 	return false;
 }
 
+CompoundOp::CompoundOp(size_t num_, TestOp** ops_)
+    : num(num_)
+    , ops(num_)
+{
+	cur_op = 0;
+	for (size_t i = 0; i < num; i++) {
+		ops.push(ops_[i]);
+	}
+}
+
+bool CompoundOp::execute()
+{
+	if (cur_op >= num) {
+		return true;
+	}
+
+	if (ops[cur_op]->execute()) {
+		cur_op += 1;
+	}
+
+	return false;
+}
+
+bool DoN::execute()
+{
+	if (n > 0) {
+		if (other->execute()) {
+			n -= 1;
+			other->restart();
+		}
+		return false;
+	}
+	return true;
+}
+
 bool ButtonInput::execute()
 {
+	OSReport("pressing %d\n", button);
 	hold_frames -= 1;
 	p2gz->test_runner->gamepad->status.button |= button;
 	if (hold_frames <= 0) {
 		return true;
 	}
 	return false;
+}
+
+bool WaitForState::execute()
+{
+	return is_in_state->invoke();
 }
