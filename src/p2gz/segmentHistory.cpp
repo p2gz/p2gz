@@ -94,7 +94,6 @@ void SegmentHistory::update()
 				if (this_segment->dest.cave == current_dest.cave) {
 					if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
 						floor0_segment = this_segment;
-
 						break;
 					}
 				} else {

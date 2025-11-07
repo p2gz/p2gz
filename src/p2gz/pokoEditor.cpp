@@ -18,7 +18,7 @@ void PokoEditor::sync()
 
 void PokoEditor::apply_cave_pokos()
 {
-	Game::playData->mPokoCount     = get_pokos();
+	Game::playData->mPokoCount     = Game::playData->mPokoCount + Game::playData->mCavePokoCount;
 	Game::playData->mCavePokoCount = 0;
 	sync();
 }

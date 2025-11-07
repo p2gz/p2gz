@@ -568,7 +568,7 @@ Preset* PresetMgr::create()
 	preset->onion_pikis.clear();
 	preset->onion_pikis = Game::playData->mPikiContainer;
 
-	preset->pokos = p2gz->poko_editor->get_pokos();
+	preset->set_pokos(p2gz->poko_editor->get_pokos());
 
 	if (!last_used_preset) {
 		last_used_preset = p2gz->preset_mgr->suggested_preset(Warp::current_dest(), PoD);
