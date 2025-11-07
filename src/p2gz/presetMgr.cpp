@@ -568,6 +568,8 @@ Preset* PresetMgr::create()
 	preset->onion_pikis.clear();
 	preset->onion_pikis = Game::playData->mPikiContainer;
 
+	preset->pokos = p2gz->poko_editor->get_pokos();
+
 	if (!last_used_preset) {
 		last_used_preset = p2gz->preset_mgr->suggested_preset(Warp::current_dest(), PoD);
 	}
@@ -575,6 +577,7 @@ Preset* PresetMgr::create()
 		copy_vec(preset->cutscene_flags, last_used_preset->cutscene_flags);
 		copy_vec(preset->destroyed_gates, last_used_preset->destroyed_gates);
 		copy_vec(preset->upgrades, last_used_preset->upgrades);
+		preset->enter_kind = last_used_preset->enter_kind;
 	}
 
 	prev_heap->becomeCurrentHeap();

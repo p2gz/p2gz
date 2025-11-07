@@ -29,7 +29,7 @@ public:
 	bool use_set_seed;
 
 	// whether to do the falling animation or the ship fly-in animation when warping to AG
-	size_t enter_area_type;
+	EnterAreaKind enter_area_type;
 };
 
 typedef enum PresetStatus {
@@ -54,7 +54,11 @@ public:
 	void set_warp_sublevel(s32 sublevel);
 	void set_warp_day(s32 day) { dest.day = day - 1; }
 	void set_allow_zero_piki_in_caves(bool allow) { allow_zero_pikmin_in_caves = allow; }
-	void set_enter_area_type(size_t type) { dest.enter_area_type = type == 1; }
+	void set_enter_area_type(size_t type)
+	{
+		GZASSERTLINE(type <= FirstEnter);
+		dest.enter_area_type = static_cast<EnterAreaKind>(type);
+	}
 	void set_seed(u32);
 	void set_random_seed() { dest.use_set_seed = false; }
 

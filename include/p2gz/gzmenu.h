@@ -210,7 +210,8 @@ private:
 
 struct DecimalInputOption : public MenuOption {
 public:
-	DecimalInputOption(const char* title_, const char* image_name_ = nullptr, bool image_only_ = false);
+	DecimalInputOption(const char* title_, IDelegate1<u32>* on_selected, IDelegate* on_opened = nullptr, const char* image_name_ = nullptr,
+	                   bool image_only_ = false);
 
 	virtual MenuLayer* get_sub_menu();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
@@ -223,6 +224,7 @@ public:
 
 private:
 	DecimalKeypad* keypad;
+	IDelegate* sync_value;
 };
 
 /// Base class for different types of menus
@@ -382,7 +384,7 @@ private:
 
 struct DecimalKeypad : public MenuLayer {
 public:
-	DecimalKeypad(const char* title_);
+	DecimalKeypad(const char* title_, IDelegate1<u32>* on_selected_, IDelegate* on_opened_ = nullptr);
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -393,7 +395,13 @@ public:
 	}
 
 	u32 get_value() { return value; }
-	void set_value(u32 value_) { value = value_; }
+	void set_value(u32 value_)
+	{
+		value = value_;
+		if (on_selected) {
+			on_selected->invoke(value);
+		}
+	}
 
 	bool is_unselected;
 
@@ -405,6 +413,7 @@ private:
 	GridMenu* keypad;
 	u32 value;
 	u8 cur_digit;
+	IDelegate1<u32>* on_selected;
 };
 
 struct GZMenu {

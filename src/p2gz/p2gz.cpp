@@ -95,7 +95,6 @@ void P2GZ::update()
 	cutscene_mgr->update();
 	segment_history->update();
 	dismiss_positions->update();
-	poko_editor->update();
 	navi_tools->update();
 
 	warp->update_lockout_frames();

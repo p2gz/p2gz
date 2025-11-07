@@ -16,6 +16,8 @@ struct WarpDestination;
 
 enum PresetCategory { PoD, AT, General, Generated };
 
+enum EnterAreaKind { FromCave = 0, FromMap = 1, FirstEnter = 2 };
+
 struct Preset {
 public:
 	Preset(const char* name_, PresetCategory category_);
@@ -32,6 +34,8 @@ public:
 	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
 	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
 	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
+	Preset* set_enter_kind(EnterAreaKind kind);
+	Preset* set_pokos(int pokos_);
 
 	PresetCategory category;
 	const char* name;
@@ -45,6 +49,9 @@ public:
 	Vec<Game::DemoFlags> cutscene_flags;
 	Vec<Game::OlimarData::ItemIndex> upgrades;
 	Vec<const char*> destroyed_gates; // Will we need a way to store stages?
+	EnterAreaKind enter_kind;
+	bool apply_pokos;
+	int pokos;
 };
 
 struct PresetMgr {
@@ -72,7 +79,7 @@ public:
 	Preset* current_preset;
 
 private:
-	void select_current_preset(ListMenu* menu);
+	void select_current_preset(ListMenu* menu, PresetCategory cat);
 
 	ListMenu* preset_category_list;
 	ListMenu* pod_presets_menu;
