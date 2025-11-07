@@ -102,7 +102,9 @@ struct Obj : public EnemyBase {
 	EnemyBase* mCarrier;            // _2CC, enemy carrying the bomb (dweevil, dirigibug)
 	FSM* mFsm;                      // _2D0
 	efx::TBombrockLight* mEfxLight; // _2D4
-	                                // _2D8 = PelletView
+
+	// @P2GZ: enemy debug info
+	bool forced;
 };
 
 struct Mgr : public EnemyMgrBase {

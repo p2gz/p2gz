@@ -8,6 +8,9 @@
 #include <P2JME/P2JME.h>
 #include <Game/MoviePlayer.h>
 #include <Game/generalEnemyMgr.h>
+#include <Game/Entities/Bomb.h>
+#include <Game/Entities/ElecHiba.h>
+#include <Game/Entities/Hiba.h>
 
 using namespace gz;
 
@@ -28,6 +31,7 @@ EnemyDebugInfo::EnemyDebugInfo()
 	draw_cur_state   = true;
 	draw_flick_count = true;
 	draw_position    = false;
+	draw_timers      = false;
 }
 
 void EnemyDebugInfo::set_size(s32 size)
@@ -69,7 +73,8 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		return;
 	}
 
-	if (enemy->mHealth <= 0.0f || !enemy->mLod.isFlag(AILOD_IsVisible)) {
+	// Bomb rocks explode after 10 frames of being "dead".
+	if ((enemy->mHealth <= 0.0f && enemy->getEnemyTypeID() != Game::EnemyTypeID::EnemyID_Bomb) || !enemy->mLod.isFlag(AILOD_IsVisible)) {
 		return;
 	}
 
@@ -233,6 +238,19 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	case Game::EnemyTypeID::EnemyID_DangoMushi:
 		pos.y += 100.0f;
 		break;
+
+	case Game::EnemyTypeID::EnemyID_ElecHiba:
+		// Electrical wires are two separate enemies linked together via a TeamList object.
+		// However, only one of them actually changes state, so, to reduce visual noise,
+		// we will only draw the primary ElecHiba's state at the midpoint of the two.
+		Game::ElecHiba::Obj* electrical_wire = static_cast<Game::ElecHiba::Obj*>(enemy);
+		if (!electrical_wire->is_primary) {
+			return;
+		} else if (electrical_wire->getChildObjPtr()) {
+			Vector3f adjustedChildPos = electrical_wire->getChildObjPtr()->getPosition()
+			                          + Vector3f(0, static_cast<Game::EnemyParmsBase*>(enemy->mParms)->mGeneral.mLifeMeterHeight, 0);
+			pos = (pos + adjustedChildPos) / 2;
+		}
 	}
 
 	// Debug prints
@@ -251,5 +269,58 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	if (draw_flick_count) {
 		gfx->perspPrintf(info, pos, "flick: %d", (int)enemy->mFlickTimer);
 		info.mPerspectiveOffsetY += line_height;
+	}
+	if (draw_timers) {
+		if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Hiba) {
+			Game::Hiba::Obj* fire_geyser = static_cast<Game::Hiba::Obj*>(enemy);
+			if (fire_geyser->getStateID() == Game::Hiba::HIBA_Wait) {
+				gfx->perspPrintf(info, pos, "timer: %.2f",
+				                 (static_cast<Game::Hiba::Parms*>(fire_geyser->mParms))->mProperParms.mWaitTime.mValue
+				                     - fire_geyser->mTimer);
+			} else if (fire_geyser->getStateID() == Game::Hiba::HIBA_Attack) {
+				gfx->perspPrintf(info, pos, "timer: %.2f",
+				                 (static_cast<Game::Hiba::Parms*>(fire_geyser->mParms))->mProperParms.mActiveTime.mValue
+				                     - fire_geyser->mTimer);
+			}
+		}
+
+		if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_ElecHiba) {
+			Game::ElecHiba::Obj* electrical_wire = static_cast<Game::ElecHiba::Obj*>(enemy);
+			if (electrical_wire->getStateID() == Game::ElecHiba::ELECHIBA_Wait) {
+				gfx->perspPrintf(info, pos, "timer: %.2f",
+				                 (static_cast<Game::ElecHiba::Parms*>(electrical_wire->mParms))->mProperParms.mWaitTime.mValue
+				                     - electrical_wire->mWaitTimer);
+			} else if (electrical_wire->getStateID() == Game::ElecHiba::ELECHIBA_Sign) {
+				gfx->perspPrintf(info, pos, "timer: %.2f",
+				                 (static_cast<Game::ElecHiba::Parms*>(electrical_wire->mParms))->mProperParms.mWarningTime.mValue
+				                     - electrical_wire->mWaitTimer);
+			} else if (electrical_wire->getStateID() == Game::ElecHiba::ELECHIBA_Attack) {
+				gfx->perspPrintf(info, pos, "timer: %.2f",
+				                 (static_cast<Game::ElecHiba::Parms*>(electrical_wire->mParms))->mProperParms.mActiveTime.mValue
+				                     - electrical_wire->mWaitTimer);
+			}
+		}
+
+		if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Bomb) {
+			Game::Bomb::Obj* bomb_rock = static_cast<Game::Bomb::Obj*>(enemy);
+
+			// Bombs use their health as a timer. There is an additional delay of 10 frames
+			// after their health reaches zero before they explode.
+			int explode_timer = 0;
+			if (bomb_rock->getStateID() == Game::Bomb::BOMB_Bomb) {
+				explode_timer = static_cast<Game::Bomb::StateBomb*>(bomb_rock->mCurrentLifecycleState)->mExplodeDelayTimer;
+			}
+
+			// If they were detonated by a purple hipdrop, then their health is immediately set to zero,
+			// but there is still a delay of one second before the transit to StateBomb occurs.
+			int forced_delay = 0;
+			if (bomb_rock->forced) {
+				OSReport("fart\n");
+				forced_delay = (30.0f - bomb_rock->mFlickTimer) * sys->mDeltaTime;
+			}
+
+			gfx->perspPrintf(info, pos, "timer: %.2f",
+			                 (10.0f * sys->mDeltaTime) + bomb_rock->mHealth + forced_delay - (explode_timer * sys->mDeltaTime));
+		}
 	}
 }

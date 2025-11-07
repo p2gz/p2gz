@@ -130,6 +130,7 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("draw current state", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_cur_state_enabled)))
 				->push(new ToggleMenuOption("draw flick count", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_flick_count_enabled)))
 				->push(new ToggleMenuOption("draw position", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_position_enabled)))
+				->push(new ToggleMenuOption("draw timers", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_timers_enabled)))
 			))
 			->push(new OpenSubMenuOption("time controls", (new ListMenu())
 				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
@@ -749,8 +750,8 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 }
 
@@ -846,8 +847,8 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 }
 
