@@ -428,13 +428,12 @@ void ListMenu::update()
 	}
 
 	// handle inputs
-
 	if (pah_up.check(p2gz->controller)) {
 		if (selected == 0) {
 			selected = options.len();
 		}
 		do {
-			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap;
+			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap
 		} while (!options[selected]->visible);
 	}
 	if (pah_down.check(p2gz->controller) && options.len() > 0) {
@@ -445,7 +444,6 @@ void ListMenu::update()
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
-
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
 	}
