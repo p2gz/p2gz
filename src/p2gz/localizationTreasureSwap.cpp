@@ -513,6 +513,303 @@ LocalizationTreasureSwap treasureMap[] = {
 	    172,                            // index in piklopedia
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
+	{
+	    // Stupendous Lens
+	    System::LANG_English,            // region
+	    "bey_goma",                      // internal name
+	    "bey_goma.szs",                  // archive filename
+	    "us_musi_lens.bmd",              // bmd filename
+	    "animmgr.txt",                   // anmmgr filename
+	    "collInfo.txt",                  // collinfo filename
+	    25.0,                            // radius
+	    25.0,                            // pradius
+	    12.0,                            // height
+	    250.0,                           // inertial scaling
+	    "simple",                        // particle type
+	    8,                               // number of particle
+	    1.0,                             // particle size
+	    0.1,                             // friction
+	    10,                              // min carry
+	    15,                              // max carry
+	    "lod",                           // dynamics
+	    120,                             // poko value
+	    "yes",                           // unqiue
+	    "yes",                           // indirect
+	    0,                               // num of pmotions
+	    0.0,                             // depth (for burying stuff)
+	    12.0,                            // max depth (for burying stuff)
+	    10.0,                            // depth A (for burying stuff)
+	    50.0,                            // depth B (for burying stuff)
+	    50.0,                            // depth C (for burying stuff)
+	    50.0,                            // depth D (for burying stuff)
+	    0,                               // code (special properties)
+	    172,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_Yes // indirect state
+	},
+	{
+	    // Stupendous Lens
+	    System::LANG_French,            // region
+	    "bey_goma",                     // internal name
+	    "bey_goma.szs",                 // archive filename
+	    "us_kani.bmd",                  // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    25.0,                           // radius
+	    18.0,                           // pradius
+	    15.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    8,                              // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    150,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    5.0,                            // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    136,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Stupendous Lens
+	    System::LANG_Japanese,          // region
+	    "bey_goma",                     // internal name
+	    "bey_goma.szs",                 // archive filename
+	    "bey_goma.bmd",                 // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    18.0,                           // radius
+	    18.0,                           // pradius
+	    12.0,                           // height
+	    100.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    10,                             // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    120,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    12.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    136,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Salivtrix
+	    System::LANG_English,           // region
+	    "g_futa_kyodo",                 // internal name
+	    "g_futa_kyodo.szs",             // archive filename
+	    "us_futa_dannon.bmd",           // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    42.0,                           // radius
+	    42.0,                           // pradius
+	    10.0,                           // height
+	    300.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    20,                             // min carry
+	    30,                             // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    10.0,                           // max depth (for burying stuff)
+	    20.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    173,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Salivtrix
+	    System::LANG_Japanese,          // region
+	    "g_futa_kyodo",                 // internal name
+	    "g_futa_kyodo.szs",             // archive filename
+	    "g_futa_kyodo.bmd",             // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    20.0,                           // radius
+	    20.0,                           // pradius
+	    5.0,                            // height
+	    200.0,                          // inertial scaling
+	    "complex",                      // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    10.0,                           // max depth (for burying stuff)
+	    20.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    168,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Salivtrix
+	    System::LANG_French,            // region
+	    "g_futa_kyodo",                 // internal name
+	    "g_futa_kyodo.szs",             // archive filename
+	    "us_futa_dannon.bmd",           // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    42.0,                           // radius
+	    42.0,                           // pradius
+	    10.0,                           // height
+	    300.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    20,                             // min carry
+	    30,                             // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    10.0,                           // max depth (for burying stuff)
+	    20.0,                           // depth A (for burying stuff)
+	    20.0,                           // depth B (for burying stuff)
+	    20.0,                           // depth C (for burying stuff)
+	    20.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    173,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Thirst Activator
+	    System::LANG_English,           // region
+	    "denchi_1_black",               // internal name
+	    "denchi_1_black.szs",           // archive filename
+	    "us_futa_treetop.bmd",          // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    35.0,                           // radius
+	    35.0,                           // pradius
+	    10.0,                           // height
+	    260.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    20,                             // min carry
+	    35,                             // max carry
+	    "lod",                          // dynamics
+	    300,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    14.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    10.0,                           // depth B (for burying stuff)
+	    10.0,                           // depth C (for burying stuff)
+	    10.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    171,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Thirst Activator
+	    System::LANG_French,            // region
+	    "denchi_1_black",               // internal name
+	    "denchi_1_black.szs",           // archive filename
+	    "us_kan_beachcliff.bmd",        // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    57.0,                           // radius
+	    57.0,                           // pradius
+	    10.0,                           // height
+	    500.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    16,                             // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    20,                             // min carry
+	    30,                             // max carry
+	    "lod",                          // dynamics
+	    130,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    20.0,                           // max depth (for burying stuff)
+	    55.0,                           // depth A (for burying stuff)
+	    55.0,                           // depth B (for burying stuff)
+	    55.0,                           // depth C (for burying stuff)
+	    55.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    160,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Thirst Activator
+	    System::LANG_Japanese,          // region
+	    "denchi_1_black",               // internal name
+	    "denchi_1_black.szs",           // archive filename
+	    "denchi_1_black.bmd",           // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    25.0,                           // radius
+	    22.0,                           // pradius
+	    10.0,                           // height
+	    400.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    20,                             // min carry
+	    35,                             // max carry
+	    "lod",                          // dynamics
+	    300,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    14.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    10.0,                           // depth B (for burying stuff)
+	    10.0,                           // depth C (for burying stuff)
+	    10.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    160,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
 };
 
 namespace LocalizationTreasureSwapFunc {
@@ -533,38 +830,30 @@ char* gk2TreasureNameSwap(char* oldTreasureName)
 		if (roomMgr && roomMgr->mCaveInfo) {
 			// If GK2
 			if (section->getCurrFloor() + 1 == 2) {
-				// If PAL version
 				if (global_language_swap->get_treasure_region() == System::LANG_French) {
-					// If the current treasure name is the US/JP internal name
+					// If the current treasure name is the US/JP internal name, return PAL name
 					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
-						// Return PAL name
 						return "g_futa_sikoku";
 					}
-				}
-				// Otherwise (US/JP version)
-				else {
-					// If the current treasure name is the PAL internal name
+				} else {
+					// If the current treasure name is the PAL internal name, return US/JP name
 					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
-						// Return US/JP name
 						return "g_futa_kyusyu";
 					}
 				}
 			}
 			// If GK4
 			else if (section->getCurrFloor() + 1 == 4) {
-				// If PAL version
 				if (global_language_swap->get_treasure_region() == System::LANG_French) {
-					// If the current treasure name is the US/JP internal name
+					// If the current treasure name is the US/JP internal name, return PAL name
 					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
-						// Return PAL name
 						return "g_futa_kyusyu";
 					}
 				}
 				// Otherwise (US/JP version)
 				else {
-					// If the current treasure name is the PAL internal name
+					// If the current treasure name is the PAL internal name, return US/JP name
 					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
-						// Return US/JP name
 						return "g_futa_sikoku";
 					}
 				}
