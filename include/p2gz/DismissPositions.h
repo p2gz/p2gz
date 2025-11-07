@@ -17,8 +17,6 @@ public:
 	void update();
 
 private:
-	void draw_circle(Vector3f position, f32 radius, Color4 color);
-
 	bool enabled;
 	bool dismissed;
 	Vector3f positions[8];

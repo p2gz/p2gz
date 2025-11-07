@@ -20,6 +20,7 @@
 #include <string.h>
 #include <IDelegate.h>
 #include <Graphics.h>
+#include <Game/MoviePlayer.h>
 
 using namespace gz;
 
@@ -57,30 +58,30 @@ void GZMenu::init_menu()
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
-			->push(new OpenSubMenuOption("squad", (new GridMenu(128.0))
-				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f))
+				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_leaf", true))
+				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_bud", true))
+				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_flower", true))
 				->end_row()
-				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "red_leaf", true))
+				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "red_bud", true))
+				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "red_flower", true))
 				->end_row()
-				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "yellow_leaf", true))
+				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "yellow_bud", true))
+				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "yellow_flower", true))
 				->end_row()
-				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "purple_leaf", true))
+				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "purple_bud", true))
+				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "purple_flower", true))
 				->end_row()
-				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "white_leaf", true))
+				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "white_bud", true))
+				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "white_flower", true))
 				->end_row()
-				->push_to_row(new RangeMenuOption("cl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("cb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
-				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad)))
+				->push_to_row(new RangeMenuOption("cl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_leaf", true))
+				->push_to_row(new RangeMenuOption("cb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_bud", true))
+				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_flower", true))
 			))
 		))
 		->push(new OpenSubMenuOption("items", (new ListMenu())
@@ -93,9 +94,10 @@ void GZMenu::init_menu()
 			))
 			->push(new OpenSubMenuOption("upgrades", new ListMenu(new Delegate<EKEditor>(p2gz->ek_editor, &EKEditor::check_upgrades))))
 		))
-        ->push(new OpenSubMenuOption("captain", (new ListMenu())
+        ->push(new OpenSubMenuOption("captain", (new ListMenu(new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::sync)))
+			->push(new ToggleMenuOption("boing mode", false, new Delegate1<NaviTools, bool>(p2gz->navi_tools, &NaviTools::set_boing_mode)))
+			->push(new FloatRangeMenuOption("health", 0.1f, 50.0f, 50.0f, new Delegate1<NaviTools, f32>(p2gz->navi_tools, &NaviTools::set_active_navi_hp)))
             ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
-            ->push(new PerformActionMenuOption("boing", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::jump)))
         ))
 		->push(new OpenSubMenuOption("map", (new ListMenu())
 			->push(new OpenSubMenuOption("structures", (new ListMenu())
@@ -103,8 +105,10 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("show gate debug info", false,
 	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
 			))
+			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
 		))
 		->push(new OpenSubMenuOption("settings", (new ListMenu())
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
@@ -231,6 +235,19 @@ void GZMenu::open()
 	// If freecam is active, don't open the menu
 	if (p2gz->freecam && p2gz->freecam->is_enabled())
 		return;
+  
+	// Don't open P2GZ menu during the following:
+	// - cutscenes (causes gameplay desync) - One exception:
+	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
+	// - loading (causes gameplay desync)
+	// - end of day (causes gameplay desync)
+	// - cave results but only in the very beginning before the blo loads (crashes when warping out)
+	// - day results but only in the very beginning before the blo loads (crashes when warping out)
+	if ((!in_end_of_day_result() && Game::moviePlayer->isFlag(Game::MVP_IsActive))
+	    || (in_end_of_day_result() && !in_end_of_day_result_safe_to_warp()) || in_day_end_sunset() || in_load()
+	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || p2gz->warp->is_warp_lockout()) {
+		return;
+	}
 
 	layer = root_layer;
 	layer->reset_selection();
@@ -248,7 +265,12 @@ void GZMenu::close()
 		return;
 
 	enabled = false;
-	Game::gameSystem->setPause(false, "gzmenu", 3);
+	// Don't unpause the game if we're in the enter cave/escape cave submenues
+	Game::SingleGameSection* gameSec = get_SGS();
+	if (!gameSec->mOpenMenuFlags) { // if nonzero, we're in at least one of the menus
+		Game::gameSystem->setPause(false, "gzmenu", 3);
+	}
+
 	// don't unpause timer if we're in freecam mode (until we exit that mode)
 	if (!p2gz->timer->is_freecam_mode()) {
 		p2gz->timer->unpause();
@@ -390,12 +412,32 @@ void ListMenu::update()
 		selected = scroll;
 	}
 
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_B) {
+		p2gz->menu->pop_layer();
+		return;
+	}
+
+	// Adjust selection if currently selected option is hidden
+	size_t num_checks = 0;
+	while (options.len() > 0 && !options[selected]->visible) {
+		selected = selected + 1;
+		if (selected >= options.len()) {
+			selected = 0;
+		}
+		num_checks += 1;
+		if (num_checks >= options.len()) {
+			return;
+		}
+	}
+
+	// handle inputs
 	if (pah_up.check(p2gz->controller)) {
 		if (selected == 0) {
 			selected = options.len();
 		}
 		do {
-			selected -= 1;
+			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap
 		} while (!options[selected]->visible);
 	}
 	if (pah_down.check(p2gz->controller) && options.len() > 0) {
@@ -406,13 +448,8 @@ void ListMenu::update()
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
-
-	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
-	}
-	if (btn & Controller::PRESS_B) {
-		p2gz->menu->pop_layer();
 	}
 
 	// ... but if we scrolled off the edge deliberately, adjust the scroll
@@ -420,7 +457,7 @@ void ListMenu::update()
 		scroll = selected;
 	}
 
-	if (options.len() > 0 && selected < options.len()) {
+	if (options.len() > 0 && selected < options.len() && options[selected]->visible) {
 		options[selected]->update();
 	}
 }
@@ -548,10 +585,10 @@ void GridMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 
 			const f32 col_start_x = x;
 			option->draw(j2d, x, z, is_selected);
-			x = col_start_x + column_width;
+			x = col_start_x + opt_width;
 		}
 		x = start_x;
-		z += p2gz->menu->line_height;
+		z += opt_height;
 	}
 }
 
@@ -634,7 +671,7 @@ HexKeypad::HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u3
 	on_unselected = on_unselected_;
 
 	// clang-format off
-	keypad = (new GridMenu(16.0f))
+	keypad = (new GridMenu(16.0f, p2gz->menu->line_height))
 		->push_to_row(new PerformActionMenuOption("0", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x0)))
 		->push_to_row(new PerformActionMenuOption("1", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x1)))
 		->push_to_row(new PerformActionMenuOption("2", new BoundDelegate1<HexKeypad, u32>(this, &select_digit, 0x2)))
@@ -732,7 +769,7 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->column_width = p2gz->menu->line_height;
+	keypad->opt_width    = p2gz->menu->line_height;
 	x                    = initial_x;
 	keypad->draw(j2d, x, z);
 }
@@ -745,7 +782,7 @@ DecimalKeypad::DecimalKeypad(const char* title_)
 	is_unselected = true;
 
 	// clang-format off
-	keypad = (new GridMenu(16.0f))
+	keypad = (new GridMenu(16.0f, p2gz->menu->line_height))
 		->push_to_row(new PerformActionMenuOption("0", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 0)))
 		->push_to_row(new PerformActionMenuOption("1", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 1)))
 		->push_to_row(new PerformActionMenuOption("2", new BoundDelegate1<DecimalKeypad, u32>(this, &select_digit, 2)))
@@ -829,7 +866,7 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->column_width = p2gz->menu->line_height;
+	keypad->opt_width    = p2gz->menu->line_height;
 	x                    = initial_x;
 	keypad->draw(j2d, x, z);
 }
@@ -838,7 +875,7 @@ void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
 		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
@@ -852,12 +889,15 @@ void ToggleMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
 		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
-	if (title && !image_only) {
+
+	if (image_only) {
+		x += j2d.print(x, z, "%s", on ? "true" : "false");
+	} else if (title) {
 		x += j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
 	}
 }
@@ -916,13 +956,17 @@ void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
 		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
-	if (title && !image_only) {
-		x += j2d.print(x, z, "%s: < ", title);
+	if (title) {
+		if (image_only) {
+			x += j2d.print(x, z, " < ");
+		} else {
+			x += j2d.print(x, z, "%s: < ", title);
+		}
 
 		j2d.mCharColor.set(p2gz->menu->color_std);
 		j2d.mGradientColor.set(p2gz->menu->color_std);
@@ -993,13 +1037,15 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
 		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
-	if (title && !image_only) {
-		x += j2d.print(x, z, "%s: ", title);
+	if (title) {
+		if (!image_only) {
+			x += j2d.print(x, z, "%s: ", title);
+		}
 
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val > min) {
 			x += j2d.print(x, z, "< ");
@@ -1069,12 +1115,13 @@ void FloatRangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {
 		// image drawing is from top-left, font is bottom-left, so need to shift image up
-		x += p2gz->images->draw(image_name, x, z - p2gz->images->height());
+		x += p2gz->images->draw(image_name, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
 		x += p2gz->images->spacing();
 		// re-initialise the text printer to prevent the GPU dying
 		j2d.initiate();
 	}
-	if (title && !image_only) {
+
+	if (title) {
 		x += j2d.print(x, z, "%s: ", title);
 
 		if (selected_val > min) {

@@ -287,9 +287,10 @@ private:
 
 struct GridMenu : public MenuLayer {
 public:
-	GridMenu(f32 column_width_, IDelegate* on_opened_ = nullptr)
+	GridMenu(f32 opt_width_, f32 opt_height_, IDelegate* on_opened_ = nullptr)
 	    : MenuLayer(on_opened_)
-	    , column_width(column_width_)
+	    , opt_width(opt_width_)
+	    , opt_height(opt_height_)
 	    , selected_row(0)
 	    , selected_col(0)
 	    , pah_up(Controller::PRESS_DPAD_UP)
@@ -333,7 +334,8 @@ public:
 	Vec<Vec<MenuOption*>*> options;
 	size_t selected_row;
 	size_t selected_col;
-	f32 column_width;
+	f32 opt_width;
+	f32 opt_height;
 	bool editing_range;
 
 private:

@@ -67,6 +67,15 @@ public:
 	void do_warp();
 	void do_post_warp();
 
+	bool is_warp_lockout() { return lockout_frames > 0; }
+	void set_lockout_frames(u8 frames) { lockout_frames = frames; }
+	void update_lockout_frames()
+	{
+		if (lockout_frames > 0) {
+			lockout_frames--;
+		}
+	}
+
 	bool allow_zero_pikmin_in_caves;
 	bool warping_from_menu;
 
@@ -94,6 +103,10 @@ private:
 	Game::ItemCave::Item* cave;
 
 	bool needs_post_load_action;
+
+	// some instances (such as caveresult and day end result) crash when you warp within the 1st frame of everything
+	// being loaded, so this prevents that by adding some frames where warp can't happen
+	u8 lockout_frames;
 };
 
 }; // namespace gz

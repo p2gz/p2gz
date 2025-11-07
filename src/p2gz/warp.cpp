@@ -60,6 +60,7 @@ Warp::Warp()
 	needs_post_load_action     = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
+	lockout_frames             = 0;
 }
 
 void Warp::init()
@@ -220,6 +221,12 @@ void Warp::do_warp()
 		warp_to_area(game);
 	} else {
 		warp_to_cave(game);
+	}
+
+	// Warping revives captains, but because it skips the normal load sequence, any dead captains
+	// are still considered dead even after being revived. This informs naviMgr that they're both alive again.
+	if (Game::naviMgr) {
+		Game::naviMgr->clearDeadCount();
 	}
 
 	// Disable the option for skipping save prompts and force it to be on

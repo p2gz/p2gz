@@ -11,6 +11,7 @@
 #include <p2gz/SquadEditor.h>
 #include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
+#include <p2gz/TreasureEditor.h>
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
 #include <IDelegate.h>
@@ -42,12 +43,14 @@ P2GZ::P2GZ()
 	spray_editor                 = new SprayEditor();
 	segment_history              = new SegmentHistory();
 	enemy_debug_info             = new EnemyDebugInfo();
+	cave_debug_info              = new CaveDebugInfo();
 	squad_editor                 = new SquadEditor();
 	preset_mgr                   = new PresetMgr();
 	cutscene_mgr                 = new CutsceneMgr();
 	dismiss_positions            = new DismissPositions();
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
+	treasure_editor              = new TreasureEditor();
 
 	prev_heap->becomeCurrentHeap();
 }
@@ -73,6 +76,7 @@ void P2GZ::init()
 	cutscene_mgr->init();
 	poko_editor->init();
 	ek_editor->init();
+	treasure_editor->init();
 
 	inited = true;
 	prev_heap->becomeCurrentHeap();
@@ -92,6 +96,9 @@ void P2GZ::update()
 	segment_history->update();
 	dismiss_positions->update();
 	poko_editor->update();
+	navi_tools->update();
+
+	warp->update_lockout_frames();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
@@ -120,6 +127,7 @@ void P2GZ::draw()
 
 	freecam->draw();
 	enemy_debug_info->draw();
+	cave_debug_info->draw();
 	structure_editor->draw();
 	dismiss_positions->draw();
 }

@@ -3,6 +3,7 @@
 
 #include <Game/CameraMgr.h>
 #include <Game/Navi.h>
+#include <p2gz/gzMacros.h>
 
 namespace gz {
 struct FreeCam {
@@ -20,6 +21,16 @@ public:
 	~FreeCam() { }
 
 	bool is_enabled() { return enabled; }
+	void set_position(Vector3f position)
+	{
+		GZASSERTLINE(camera);
+		camera->mGoalPosition = position;
+	}
+	Vector3f get_position()
+	{
+		GZASSERTLINE(camera);
+		return camera->mGoalPosition;
+	}
 
 	void disable(bool doUnpause);
 	void enable();

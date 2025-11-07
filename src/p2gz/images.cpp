@@ -61,6 +61,10 @@ void ImageMgr::init()
 	push(new Image(getImageFile(image_arc, "blp_b64.bti"), "purple_bud"));
 	push(new Image(getImageFile(image_arc, "blp_f64.bti"), "purple_flower"));
 
+	push(new Image(getImageFile(image_arc, "cha_l.bti"), "bulbmin_leaf"));
+	push(new Image(getImageFile(image_arc, "cha_b.bti"), "bulbmin_bud"));
+	push(new Image(getImageFile(image_arc, "cha_f.bti"), "bulbmin_flower"));
+
 	push(new Image(getImageFile(image_arc, "onion_blue.bti"), "onion_blue"));
 	push(new Image(getImageFile(image_arc, "onion_red.bti"), "onion_red"));
 	push(new Image(getImageFile(image_arc, "onion_yellow.bti"), "onion_yellow"));
