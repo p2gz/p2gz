@@ -27,6 +27,7 @@
 #include <p2gz/EKEditor.h>
 #include <p2gz/CaveDebugInfo.h>
 #include <p2gz/TreasureEditor.h>
+#include <p2gz/GeneratorDebugInfo.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha2"
@@ -56,6 +57,7 @@ public:
 	gz::Warp* warp;
 	gz::SkippableCutscenes* skippable_cutscenes;
 	gz::EnemyDebugInfo* enemy_debug_info;
+	gz::GeneratorDebugInfo* generator_debug_info;
 	gz::DayEditor* day_editor;
 	gz::HeapBarToggle* heap_bar_toggle;
 	gz::ImageMgr* images;

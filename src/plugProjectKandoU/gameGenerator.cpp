@@ -8,6 +8,7 @@
 #include "JSystem/JUtility/JUTException.h"
 #include "nans.h"
 #include "Parameters.h"
+#include <p2gz/p2gz.h>
 
 u32 GeneratorCurrentVersion = 'v0.3';
 
@@ -265,11 +266,14 @@ bool Generator::need_saveCreature()
 	if (mCreature == nullptr) {
 		shouldSave = true;
 	} else {
-		if ((!mCreature->isAlive() && mCreature->isPellet())) {
-			shouldSave = false;
-		} else {
-			shouldSave = true;
-		}
+		// @P2GZ - save pellets even if they're dead
+		// if ((!mCreature->isAlive() && mCreature->isPellet())) {
+		// 	shouldSave = false;
+		// }
+		// else
+		// {
+		shouldSave = true;
+		// }
 	}
 	return shouldSave;
 }
@@ -305,6 +309,23 @@ void Generator::saveCreature(Stream& output)
  */
 void Generator::generate()
 {
+	// @P2GZ - apply spawn overrides from preset if warping
+	gz::Preset* preset = p2gz->warp->get_preset();
+	if (p2gz->warp->warping && preset) {
+		gz::GenSpawnOverride spawn_override = preset->get_enemy_gen_override(this);
+		if (spawn_override == gz::PSO_DontSpawn) {
+			return;
+		} else if (spawn_override == gz::PSO_Spawn) {
+			mDayNum     = gameSystem->mTimeMgr->mDayCount;
+			mDeathCount = 0;
+			mCreature   = mObject->generate(this);
+			if (mCreature) {
+				mCreature->mGenerator = this;
+			}
+			return;
+		}
+	}
+
 	if (isExpired()) {
 		mUnusedVal = 0;
 		mCreature  = nullptr;

@@ -200,7 +200,8 @@ Creature* GenPellet::birth(Game::GenArg* arg)
 		if (pelt) {
 			pelt->allocateTexCaster();
 		} else {
-			JUT_PANICLINE(245, "GENERATOR ERR\n");
+			// @P2GZ - don't panic when we fail to spawn a pellet. it's intended from treasure presets
+			// JUT_PANICLINE(245, "GENERATOR ERR\n");
 		}
 	}
 	return pelt;

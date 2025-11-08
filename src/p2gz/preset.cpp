@@ -7,6 +7,7 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
+#include <Game/Entities/PelletOtakara.h>
 
 using namespace gz;
 
@@ -14,6 +15,8 @@ Preset::Preset(const char* name_, PresetCategory category_)
     : destroyed_gates(0)
     , finished_bridges(0)
     , bags_flattened(0)
+    , enemy_spawn_overrides(0)
+    , treasure_spawn_overrides(0)
 {
 	name             = name_;
 	category         = category_;
@@ -46,7 +49,7 @@ Preset::Preset(Preset& other)
 	day              = other.day;
 	apply_pokos      = false;
 	pokos            = 0;
-	enter_kind       = FromCave;
+	enter_kind       = PEK_FromCave;
 	plug_destroyed   = other.plug_destroyed;
 	upgrades         = other.upgrades;
 	cutscene_flags1  = other.cutscene_flags1;
@@ -66,6 +69,55 @@ Preset::Preset(Preset& other)
 	for (size_t i = 0; i < other.bags_flattened.len(); i++) {
 		bags_flattened.push(other.bags_flattened[i]);
 	}
+
+	enemy_spawn_overrides.expandCapacityTo(other.enemy_spawn_overrides.len());
+	for (size_t i = 0; i < other.enemy_spawn_overrides.len(); i++) {
+		enemy_spawn_overrides.push(other.enemy_spawn_overrides[i]);
+	}
+
+	treasure_spawn_overrides.expandCapacityTo(other.treasure_spawn_overrides.len());
+	for (size_t i = 0; i < other.treasure_spawn_overrides.len(); i++) {
+		treasure_spawn_overrides.push(other.treasure_spawn_overrides[i]);
+	}
+}
+
+Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
+                                                     GenSpawnOverride spawn_override_)
+{
+	enemy_id       = enemy_id_;
+	gen_pos        = gen_pos_;
+	spawn_override = spawn_override_;
+}
+
+Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_)
+{
+	id             = id_;
+	spawn_override = spawn_override_;
+}
+
+GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
+{
+	if (gen->mObject->mTypeID == 'teki') {
+		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
+		for (size_t i = 0; i < enemy_spawn_overrides.len(); i++) {
+			EnemyGenSpawnOverride& oride = enemy_spawn_overrides[i];
+			if (oride.enemy_id == gen_obj_enemy->mEnemyID && absF(oride.gen_pos.sqrDistance(gen->mPosition)) < 25.0f) {
+				return oride.spawn_override;
+			}
+		}
+	}
+	return PSO_Ignore;
+}
+
+GenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
+{
+	for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+		TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+		if (treasure_id == oride.id) {
+			return oride.spawn_override;
+		}
+	}
+	return PSO_Ignore;
 }
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
@@ -170,6 +222,23 @@ Preset* Preset::set_pokos(int pokos_)
 Preset* Preset::set_day(u8 day_)
 {
 	day = day_;
+}
+
+Preset* Preset::set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[])
+{
+	enemy_spawn_overrides.expandCapacityTo(enemy_spawn_overrides.len() + num_spawns);
+	for (size_t i = 0; i < num_spawns; i++) {
+		enemy_spawn_overrides.push(overrides[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[])
+{
+	treasure_spawn_overrides.expandCapacityTo(treasure_spawn_overrides.len() + num_spawns);
+	for (size_t i = 0; i < num_spawns; i++) {
+		treasure_spawn_overrides.push(overrides[i]);
+	}
 	return this;
 }
 

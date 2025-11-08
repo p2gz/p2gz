@@ -4,6 +4,8 @@
 #include <Game/Piki.h>
 #include <System.h>
 #include <Game/PikiMgr.h>
+#include <types.h>
+#include <Vector3.h>
 
 using namespace gz;
 using namespace Game;
@@ -56,6 +58,100 @@ using namespace Game;
 #define NUM_GK_DEMO_FLAGS NUM_COS_DEMO_FLAGS + 1
 #define GK_DEMO_FLAGS     COS_DEMO_FLAGS, DEMO_Find_Yellow_Onion
 
+// Treasures
+#define T_SPAWN_ALL                                                                                           \
+	ARR(Preset::TreasureGenSpawnOverride, Preset::TreasureGenSpawnOverride(42, PSO_Spawn), /* ichigo */       \
+	    Preset::TreasureGenSpawnOverride(130, PSO_Spawn),                                  /* pilgrim bulb */ \
+	    Preset::TreasureGenSpawnOverride(11, PSO_Spawn),                                   /* globe */        \
+	    Preset::TreasureGenSpawnOverride(155, PSO_Spawn),                                  /* dice */         \
+	    Preset::TreasureGenSpawnOverride(173, PSO_Spawn),                                  /* healing cask */ \
+	    Preset::TreasureGenSpawnOverride(142, PSO_Spawn),                                  /* battery */      \
+	    Preset::TreasureGenSpawnOverride(62, PSO_Spawn),                                   /* ring */         \
+	    Preset::TreasureGenSpawnOverride(87, PSO_Spawn),                                   /* scrap */        \
+	    Preset::TreasureGenSpawnOverride(157, PSO_Spawn),                                  /* SAT */          \
+	    Preset::TreasureGenSpawnOverride(47, PSO_Spawn)                                    /* ursidae */      \
+	)
+
+#define T_POST_EB                                                                                             \
+	ARR(Preset::TreasureGenSpawnOverride, Preset::TreasureGenSpawnOverride(42, PSO_Spawn), /* ichigo */       \
+	    Preset::TreasureGenSpawnOverride(130, PSO_Spawn),                                  /* pilgrim bulb */ \
+	    Preset::TreasureGenSpawnOverride(11, PSO_Spawn),                                   /* globe */        \
+	    Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn),                              /* dice */         \
+	    Preset::TreasureGenSpawnOverride(173, PSO_Spawn),                                  /* healing cask */ \
+	    Preset::TreasureGenSpawnOverride(142, PSO_Spawn),                                  /* battery */      \
+	    Preset::TreasureGenSpawnOverride(62, PSO_Spawn),                                   /* ring */         \
+	    Preset::TreasureGenSpawnOverride(87, PSO_Spawn),                                   /* scrap */        \
+	    Preset::TreasureGenSpawnOverride(157, PSO_Spawn),                                  /* SAT */          \
+	    Preset::TreasureGenSpawnOverride(47, PSO_Spawn)                                    /* ursidae */      \
+	)
+
+#define T_POST_ENTER_BK                                                                                           \
+	ARR(Preset::TreasureGenSpawnOverride, Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn), /* ichigo */       \
+	    Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn),                                  /* pilgrim bulb */ \
+	    Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),                                   /* globe */        \
+	    Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn),                                  /* dice */         \
+	    Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn),                                  /* healing cask */ \
+	    Preset::TreasureGenSpawnOverride(142, PSO_Spawn),                                      /* battery */      \
+	    Preset::TreasureGenSpawnOverride(62, PSO_Spawn),                                       /* ring */         \
+	    Preset::TreasureGenSpawnOverride(87, PSO_Spawn),                                       /* scrap */        \
+	    Preset::TreasureGenSpawnOverride(157, PSO_Spawn),                                      /* SAT */          \
+	    Preset::TreasureGenSpawnOverride(47, PSO_Spawn)                                        /* ursidae */      \
+	)
+
+#define T_POST_DAY_6                                                                                              \
+	ARR(Preset::TreasureGenSpawnOverride, Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn), /* ichigo */       \
+	    Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn),                                  /* pilgrim bulb */ \
+	    Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),                                   /* globe */        \
+	    Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn),                                  /* dice */         \
+	    Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn),                                  /* healing cask */ \
+	    Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn),                                  /* battery */      \
+	    Preset::TreasureGenSpawnOverride(62, PSO_Spawn),                                       /* ring */         \
+	    Preset::TreasureGenSpawnOverride(87, PSO_Spawn),                                       /* scrap */        \
+	    Preset::TreasureGenSpawnOverride(157, PSO_Spawn),                                      /* SAT */          \
+	    Preset::TreasureGenSpawnOverride(47, PSO_Spawn)                                        /* ursidae */      \
+	)
+
+#define T_POST_ENTER_SCX                                                                                          \
+	ARR(Preset::TreasureGenSpawnOverride, Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn), /* ichigo */       \
+	    Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn),                                  /* pilgrim bulb */ \
+	    Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),                                   /* globe */        \
+	    Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn),                                  /* dice */         \
+	    Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn),                                  /* healing cask */ \
+	    Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn),                                  /* battery */      \
+	    Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),                                   /* ring */         \
+	    Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),                                   /* scrap */        \
+	    Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn),                                  /* SAT */          \
+	    Preset::TreasureGenSpawnOverride(47, PSO_Ignore)                                       /* ursidae */      \
+	)
+
+#define T_POST_ENTER_FC                                                                                           \
+	ARR(Preset::TreasureGenSpawnOverride, Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn), /* ichigo */       \
+	    Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn),                                  /* pilgrim bulb */ \
+	    Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),                                   /* globe */        \
+	    Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn),                                  /* dice */         \
+	    Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn),                                  /* healing cask */ \
+	    Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn),                                  /* battery */      \
+	    Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),                                   /* ring */         \
+	    Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),                                   /* scrap */        \
+	    Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn),                                  /* SAT */          \
+	    Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn)                                    /* ursidae */      \
+	)
+
+// Enemies
+#define E_ENTER_BK                                                                                                        \
+	ARR(Preset::EnemyGenSpawnOverride,                                                                                    \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn))
+
+#define E_ENTER_SCX                                                                                                      \
+	ARR(Preset::EnemyGenSpawnOverride,                                                                                   \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn), \
+	    Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-548.0f, 100.0f, 546.0f), PSO_Spawn))
+
 PresetMgr::PresetMgr()
 {
 	last_used_preset = nullptr;
@@ -95,98 +191,79 @@ PresetMgr::PresetMgr()
 	                 ->set_day(4)
 	                 ->set_cutscene_flags(NUM_EC2_DEMO_FLAGS, (DemoFlags[NUM_EC2_DEMO_FLAGS]) { EC2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" })
-	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)"))
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
 	                 ->set_onion_pikmin(Leaf, Purple, 10)
 	                 ->set_day(5)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas))
 	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS })
 	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" })
-	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)"))
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("HoB1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_time(8.0f)
 	                 ->set_day(5)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas))
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
-	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)"))
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("HoB3-4", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_pikmin(Leaf, Purple, 10)
 	                 ->set_time(8.0f)
 	                 ->set_day(5)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                })
-	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
-	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas))
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("HoB5", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
 	                 ->set_day(5)
-	                 ->set_upgrades(1,
-	                                (OlimarData::ItemIndex[1]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas))
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
-	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)"))
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
 	                 ->set_day(5)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector))
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("WFG4-WFG5", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.0f)
 	                 ->set_day(5)
-	                 ->set_upgrades(2,
-	                                (OlimarData::ItemIndex[2]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector))
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("enter SH", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.5f)
 	                 ->set_day(5)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack))
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
 	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_SPAWN_ALL));
 	presets.push((new Preset("SH1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 35)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -196,15 +273,12 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
 	                 ->set_day(5)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_POST_EB));
 	presets.push((new Preset("SH3-7", PoD))
 	                 ->set_pikmin(Flower, Red, 30)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -215,15 +289,12 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
 	                 ->set_day(5)
-	                 ->set_upgrades(3,
-	                                (OlimarData::ItemIndex[3]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_POST_EB));
 	presets.push((new Preset("enter BK (15/5w)", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -234,16 +305,12 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
 	                 ->set_day(5)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_POST_EB));
 	presets.push((new Preset("enter BK (20w)", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -253,16 +320,12 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
 	                 ->set_day(5)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
-	                 ->set_bags_flattened(ALL_BAGS));
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_treasure_spawn_overrides(T_POST_EB));
 	presets.push((new Preset("enter BK (25w)", PoD))
 	                 ->set_pikmin(Flower, Red, 22)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -272,13 +335,8 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
 	                 ->set_day(5)
-	                 ->set_upgrades(4,
-	                                (OlimarData::ItemIndex[4]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS));
@@ -303,7 +361,8 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_BK));
 	presets.push((new Preset("BK (25w)", PoD))
 	                 ->set_pikmin(Flower, Red, 22)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -325,64 +384,51 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge"))
+	                 ->set_enemy_spawn_overrides(E_ENTER_BK)
+	                 ->set_treasure_spawn_overrides(T_POST_EB));
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_day(6)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_BK));
 	presets.push((new Preset("day 6 CR (25w)", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, White, 25)
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_day(6)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_BK));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_DAY_6));
 	presets.push((new Preset("enter SCx (25w)", PoD))
 	                 ->set_onion_pikmin(Flower, White, 25)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -390,19 +436,15 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge"))
+	                 ->set_enemy_spawn_overrides(E_ENTER_SCX)
+	                 ->set_treasure_spawn_overrides(T_POST_DAY_6));
 	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -410,19 +452,15 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge"))
+	                 ->set_enemy_spawn_overrides(E_ENTER_SCX)
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_SCX));
 	presets.push((new Preset("SCx1-4 (25w)", PoD))
 	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -431,19 +469,14 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_SCX));
 	presets.push((new Preset("SCx5-8", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -451,19 +484,15 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge"))
+	                 ->set_enemy_spawn_overrides(E_ENTER_SCX)
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_SCX));
 	presets.push((new Preset("SCx5-8 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -472,19 +501,15 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge"))
+	                 ->set_enemy_spawn_overrides(E_ENTER_SCX)
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_SCX));
 	presets.push((new Preset("FC1-5", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -493,20 +518,15 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(9.5f)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
 	                 ->set_plug_destroyed(true)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_SCX));
 	presets.push((new Preset("FC1-5 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -516,20 +536,15 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
 	                 ->set_day(7)
-	                 ->set_upgrades(6,
-	                                (OlimarData::ItemIndex[6]) {
-	                                    OlimarData::ODII_SphericalAtlas,
-	                                    OlimarData::ODII_PrototypeDetector,
-	                                    OlimarData::ODII_FiveManNapsack,
-	                                    OlimarData::ODII_JusticeAlloy,
-	                                    OlimarData::ODII_GeographicProjection,
-	                                    OlimarData::ODII_ForgedCourage,
-	                                })
+	                 ->set_upgrades(ARR(OlimarData::ItemIndex, OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+	                                    OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
+	                                    OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage))
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
 	                 ->set_plug_destroyed(true)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 	presets.push((new Preset("FC6-7", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -552,7 +567,8 @@ PresetMgr::PresetMgr()
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
 	                 ->set_plug_destroyed(true)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 	presets.push((new Preset("FC6-7 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -576,7 +592,8 @@ PresetMgr::PresetMgr()
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
 	                 ->set_plug_destroyed(true)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -597,7 +614,8 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 	presets.push((new Preset("CoS (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -619,7 +637,8 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -641,7 +660,8 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 	presets.push((new Preset("GK (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -664,7 +684,8 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
 	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
 	                 ->set_bags_flattened(ALL_BAGS)
-	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge"))
+	                 ->set_treasure_spawn_overrides(T_POST_ENTER_FC));
 }
 
 Preset* PresetMgr::create()
