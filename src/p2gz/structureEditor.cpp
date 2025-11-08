@@ -420,10 +420,12 @@ void StructureEditor::PlugWrapper::set_plug_state(bool alive)
 			if (strcmp(map.name, name) != 0) {
 				continue;
 			}
-			plug->mWaterbox->mBounds.mMin   = map.min_bounds;
-			plug->mWaterbox->mBounds.mMax   = map.max_bounds;
-			plug->mWaterbox->mLoweredAmount = 0.0f;
-			plug->mWaterbox->mState         = Game::AABBWaterBox::WaterBox_Active;
+			if (plug->mWaterbox) {
+				plug->mWaterbox->mBounds.mMin   = map.min_bounds;
+				plug->mWaterbox->mBounds.mMax   = map.max_bounds;
+				plug->mWaterbox->mLoweredAmount = 0.0f;
+				plug->mWaterbox->mState         = Game::AABBWaterBox::WaterBox_Active;
+			}
 		}
 
 		if (in_cave_play()) {
@@ -449,12 +451,13 @@ void StructureEditor::PlugWrapper::set_plug_state(bool alive)
 
 	} else {
 		// if we're alive, kill the plug.
-		if (plug && plug->getCurrState()->getCurrStateID() != Game::ItemBarrel::BARREL_Dead) {
-			plug->mSkipDeathEfx = true;
-			plug->mFsm->transit(plug, Game::ItemBarrel::BARREL_Dead, nullptr);
-
+		if (plug) {
+			plug->mSkipDeathEfx    = true;
 			ListMenu* plug_submenu = static_cast<ListMenu*>(p2gz->structure_editor->plug_menu->get_option(name)->get_sub_menu());
 			static_cast<FloatRangeMenuOption*>(plug_submenu->get_option("plug health"))->set_selection(0.0f);
+			if (plug->getCurrState()->getCurrStateID() != Game::ItemBarrel::BARREL_Dead) {
+				plug->mFsm->transit(plug, Game::ItemBarrel::BARREL_Dead, nullptr);
+			}
 		}
 	}
 }

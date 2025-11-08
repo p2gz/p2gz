@@ -137,14 +137,8 @@ void DeadState::onDamage(Item*, f32)
  */
 void DeadState::onKeyEvent(Item* item, SysShape::KeyEvent const& event)
 {
-	WaterBox* waterbox = mapMgr->findWater(item->mBoundingSphere);
-
 	// @P2GZ - store waterbox for future use
-	if (waterbox) {
-		item->mWaterbox = static_cast<AABBWaterBox*>(waterbox);
-	}
-
-	if (waterbox && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
+	if (item->mWaterbox && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
 		// @P2GZ: plug editor
 		// don't play the movie every time we spawn with a plug already killed
 		if (!item->mSkipDeathEfx) {
@@ -153,7 +147,7 @@ void DeadState::onKeyEvent(Item* item, SysShape::KeyEvent const& event)
 			moviePlayer->mTargetObject = item;
 			moviePlayer->play(movieArg);
 			item->mSoundObj->startSound(PSSE_EV_WATER_OUT, 0);
-			waterbox->startDown(-100.0f);
+			item->mWaterbox->startDown(-100.0f);
 		}
 	}
 	item->mAnimSpeed = 0.0f;
@@ -255,6 +249,7 @@ Item::Item()
 	mMass = 0.0f;
 	// @P2GZ: plug editor
 	mSkipDeathEfx = false;
+	mWaterbox     = nullptr;
 }
 
 /**
@@ -301,6 +296,13 @@ void Item::onSetPosition()
 	// Done in onSetPosition because StructureEditor uses
 	// coords to determine the name for the plug.
 	p2gz->structure_editor->add_plug(this);
+
+	// @P2GZ: plug editor
+	// make sure plug can always find its waterbox so we can toggle the height
+	AABBWaterBox* wbox = static_cast<AABBWaterBox*>(mapMgr->findWater(mBoundingSphere));
+	if (wbox) {
+		mWaterbox = wbox;
+	}
 }
 
 /**
