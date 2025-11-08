@@ -147,7 +147,7 @@ struct Item : public WorkItem<Item, FSM, State> {
 			return 0.0f;
 		}
 		f32 health = 0.0f;
-		for (int i = 0; i < (mStageCount - mCurrStageIdx); i++) {
+		for (int i = mCurrStageIdx; i < mStageCount; i++) {
 			health += (mStageHealths[i] > 0.0f) ? mStageHealths[i] : 0.0f;
 		}
 		return health;

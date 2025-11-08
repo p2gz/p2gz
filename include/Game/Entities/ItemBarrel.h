@@ -159,6 +159,9 @@ struct Item : public WorkItem<Item, FSM, State> {
 	f32 mStoredDamage;  // _1F4, gets added here, then applied in NormalState::OnDamage (then reset)
 	u32 mBuffer;        // _1F8, never used/referenced, only here for size.
 	bool mSkipDeathEfx; // _1FC, @P2GZ: plug editor - make it so we can skip death effects if we force kill the plug
+
+	// @P2GZ - store waterbox for respawning plugs
+	AABBWaterBox* mWaterbox;
 };
 
 /**

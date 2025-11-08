@@ -294,6 +294,9 @@ void StructureEditor::BridgeWrapper::set_bridge_segments(s32 segments)
 			bridge->mEndWP->setWater(false);
 		}
 	}
+
+	ListMenu* bridge_submenu = static_cast<ListMenu*>(p2gz->structure_editor->bridge_menu->get_option(name)->get_sub_menu());
+	static_cast<FloatRangeMenuOption*>(bridge_submenu->get_option("segment health"))->set_selection(bridge->getCurrentStageHealth());
 }
 
 void StructureEditor::BridgeWrapper::set_bridge_segment_health(f32 health)
@@ -312,6 +315,9 @@ void StructureEditor::BridgeWrapper::set_bridge_glitch(bool glitched)
 			bridge->mStageHealths[i] = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth();
 		}
 	}
+
+	ListMenu* bridge_submenu = static_cast<ListMenu*>(p2gz->structure_editor->bridge_menu->get_option(name)->get_sub_menu());
+	static_cast<FloatRangeMenuOption*>(bridge_submenu->get_option("segment health"))->set_selection(bridge->getCurrentStageHealth());
 }
 
 void StructureEditor::sync_bridges()
@@ -351,6 +357,7 @@ void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
 	PlugWrapper* wrapper = new PlugWrapper();
 	wrapper->plug        = plug;
 	wrapper->name        = plug_name;
+	wrapper->pos         = plug->mPosition;
 	plugs.push(wrapper);
 
 	Game::ItemBarrel::Mgr* mgr = Game::ItemBarrel::mgr;
@@ -399,22 +406,25 @@ void StructureEditor::PlugWrapper::set_plug_health(f32 health)
 void StructureEditor::PlugWrapper::set_plug_state(bool alive)
 {
 	if (alive) {
-		plug->mPosition.y += 100.0f;
-		plug->mModel->mJ3dModel->calc();
-		plug->mModel->mJ3dModel->calcMaterial();
-		plug->mModel->mJ3dModel->makeDL();
-		plug->mModel->mJ3dModel->lock();
 		plug->mFsm->transit(plug, Game::ItemBarrel::BARREL_Normal, nullptr);
 		plug->setAlive(true);
 		plug->createBarrel();
 		plug->mAnimSpeed         = 0.0f;
 		plug->mAnimator.mAnimMgr = Game::ItemBarrel::mgr->mAnimMgr;
 		plug->mAnimator.startAnim(1, plug);
-		plug->mCollTree->createFromFactory(plug->mModel, Game::ItemBarrel::mgr->mCollPartFactory, nullptr);
 		plug->mStoredDamage = 0.0f;
+		plug->setPosition(pos, false);
 
-		// if we're dead, respawn the plug and increase the water
-		create_water_box();
+		for (size_t i = 0; i < NUM_PLUG_NAMES; i++) {
+			WaterBoxMap map = PLUG_NAME_TO_WATERBOX[i];
+			if (strcmp(map.name, name) != 0) {
+				continue;
+			}
+			plug->mWaterbox->mBounds.mMin   = map.min_bounds;
+			plug->mWaterbox->mBounds.mMax   = map.max_bounds;
+			plug->mWaterbox->mLoweredAmount = 0.0f;
+			plug->mWaterbox->mState         = Game::AABBWaterBox::WaterBox_Active;
+		}
 
 		if (in_cave_play()) {
 			// check if there's a hole to cover with this plug
@@ -433,41 +443,19 @@ void StructureEditor::PlugWrapper::set_plug_state(bool alive)
 			}
 		}
 		plug->mSkipDeathEfx = false;
-		p2gz->menu->close();
+
+		ListMenu* plug_submenu = static_cast<ListMenu*>(p2gz->structure_editor->plug_menu->get_option(name)->get_sub_menu());
+		static_cast<FloatRangeMenuOption*>(plug_submenu->get_option("plug health"))->set_selection(plug->mHealth);
 
 	} else {
 		// if we're alive, kill the plug.
 		if (plug && plug->getCurrState()->getCurrStateID() != Game::ItemBarrel::BARREL_Dead) {
 			plug->mSkipDeathEfx = true;
 			plug->mFsm->transit(plug, Game::ItemBarrel::BARREL_Dead, nullptr);
-			p2gz->menu->close();
-		}
-	}
-}
 
-void StructureEditor::PlugWrapper::create_water_box()
-{
-	for (size_t i = 0; i < NUM_PLUG_NAMES; i++) {
-		WaterBoxMap map = PLUG_NAME_TO_WATERBOX[i];
-		if (strcmp(map.name, name) != 0) {
-			continue;
+			ListMenu* plug_submenu = static_cast<ListMenu*>(p2gz->structure_editor->plug_menu->get_option(name)->get_sub_menu());
+			static_cast<FloatRangeMenuOption*>(plug_submenu->get_option("plug health"))->set_selection(0.0f);
 		}
-
-		BoundBox boundBox;
-		boundBox.mMin          = map.min_bounds;
-		boundBox.mMax          = map.max_bounds;
-		Game::AABBWaterBox* wb = new Game::AABBWaterBox;
-		boundBox.mMin.y -= 1000.0f;
-		wb->mBounds                       = boundBox;
-		wb->mWaterTop                     = boundBox.mMax.y;
-		wb->mState                        = Game::AABBWaterBox::WaterBox_Active;
-		wb->mLoweredAmount                = 0.0f;
-		wb->_14                           = 0.0f;
-		TObjectNode<Game::WaterBox>* node = new TObjectNode<Game::WaterBox>;
-		node->mContents                   = wb;
-		wb->attachModel(*Game::mapMgr->mSeaMgr->mModelData, Game::mapMgr->mSeaMgr->mAnimations, 100.0f);
-		Game::mapMgr->mSeaMgr->mNode.add(node);
-		return;
 	}
 }
 
@@ -707,6 +695,13 @@ void StructureEditor::draw_bridge_debug(Game::ItemBridge::Item* bridge, const ch
 	} else {
 		maxHealth = Game::ItemBridge::mgr->mParms->mBridgeParms.mHealth() * bridge->mStageCount;
 	}
+
+	// When burrownits or sheargrubs destroy a bridge, it effectively undoes bridge glitch,
+	// so max health needs to reflect that.
+	if (maxHealth < bridge->getBridgeHealth()) {
+		maxHealth = bridge->getBridgeHealth();
+	}
+
 	gfx->perspPrintf(info, pos, "max health: %.0f", maxHealth);
 	info.mPerspectiveOffsetY += line_height;
 }

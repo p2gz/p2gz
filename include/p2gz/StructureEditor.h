@@ -48,10 +48,10 @@ struct StructureEditor {
 
 		Game::ItemBarrel::Item* plug;
 		const char* name;
+		Vector3f pos;
 
 		void set_plug_state(bool alive);
 		void set_plug_health(f32 health);
-		void create_water_box();
 	};
 
 	struct BagWrapper {
