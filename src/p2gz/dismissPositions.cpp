@@ -7,6 +7,7 @@
 #include <Game/MapMgr.h>
 #include <p2gz/HelperInlines.h>
 #include <p2gz/DrawHelpers.h>
+#include <PikiAI.h>
 
 using namespace gz;
 
@@ -75,8 +76,9 @@ void DismissPositions::update()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if ((!piki->mCurrentState || piki->mCurrentState->releasable()) && piki->isAlive()
-		    && piki->mNavi == Game::naviMgr->getActiveNavi()) {
+		if ((!piki->mCurrentState || piki->mCurrentState->releasable()) && piki->isAlive() && piki->mNavi == Game::naviMgr->getActiveNavi()
+		    && piki->getCurrActionID() != PikiAI::ACT_BreakGate && piki->getCurrActionID() != PikiAI::ACT_BreakRock
+		    && piki->getCurrActionID() != PikiAI::ACT_Bridge && piki->getCurrActionID() != PikiAI::ACT_Transport) {
 			buffer[pikis++] = *iterator;
 		}
 	}
