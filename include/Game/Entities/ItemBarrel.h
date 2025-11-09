@@ -154,10 +154,14 @@ struct Item : public WorkItem<Item, FSM, State> {
 
 	// _00      = VTBL
 	// _00-_1EC = WorkItem
-	f32 mHealth;       // _1EC
-	f32 mBackupHealth; // _1F0, set to same value as mHealth in createBarrel then never used
-	f32 mStoredDamage; // _1F4, gets added here, then applied in NormalState::OnDamage (then reset)
-	u32 mBuffer;       // _1F8, never used/referenced, only here for size.
+	f32 mHealth;        // _1EC
+	f32 mBackupHealth;  // _1F0, set to same value as mHealth in createBarrel then never used
+	f32 mStoredDamage;  // _1F4, gets added here, then applied in NormalState::OnDamage (then reset)
+	u32 mBuffer;        // _1F8, never used/referenced, only here for size.
+	bool mSkipDeathEfx; // _1FC, @P2GZ: plug editor - make it so we can skip death effects if we force kill the plug
+
+	// @P2GZ - store waterbox for respawning plugs
+	AABBWaterBox* mWaterbox;
 };
 
 /**
