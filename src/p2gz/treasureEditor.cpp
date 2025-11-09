@@ -32,7 +32,6 @@ void TreasureEditor::find_treasure()
 		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
 			active_treasure = treasure;
 		}
-		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 	}
 
 	// exploration kit upgrades are different for some reason
@@ -43,7 +42,6 @@ void TreasureEditor::find_treasure()
 		if (strcmp(treasure->getConfigName(), treasures->cur_option()->title) == 0) {
 			active_treasure = treasure;
 		}
-		treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 	}
 
 	// treasures held or captured by enemies
@@ -64,7 +62,6 @@ void TreasureEditor::find_treasure()
 			if (strcmp(arg.mTextIdentifier, treasures->cur_option()->title) == 0) {
 				enemy->throwupItem();
 				active_treasure = enemy->mHeldPellet;
-				active_treasure->mLod.setFlag(AILOD_IsVisibleBoth);
 
 				Game::CreatureKillArg killArg(Game::CKILL_LeaveNoCarcass);
 				enemy->kill(&killArg);
