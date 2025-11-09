@@ -30,12 +30,13 @@ public:
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 
-	virtual void select()
+	virtual bool select()
 	{
 		on = !on;
 		if (on_selected) {
 			on_selected->invoke(on);
 		}
+		return false;
 	}
 
 	void set_selection(bool selected) { on = selected; }

@@ -40,6 +40,11 @@ void ImageMgr::init()
 	push(new Image(getImageFile(image_arc, "r_btn.bti"), "r_btn"));
 	push(new Image(getImageFile(image_arc, "x_btn.bti"), "x_btn"));
 	push(new Image(getImageFile(image_arc, "y_btn.bti"), "y_btn"));
+	push(new Image(getImageFile(image_arc, "a_btn.bti"), "a_btn"));
+	push(new Image(getImageFile(image_arc, "b_btn.bti"), "b_btn"));
+	push(new Image(getImageFile(image_arc, "z_btn.bti"), "z_btn"));
+	push(new Image(getImageFile(image_arc, "dpad_leftright.bti"), "dpad_leftright"));
+	push(new Image(getImageFile(image_arc, "dpad_updown.bti"), "dpad_updown"));
 
 	push(new Image(getImageFile(image_arc, "rp_l64.bti"), "red_leaf"));
 	push(new Image(getImageFile(image_arc, "rp_b64.bti"), "red_bud"));

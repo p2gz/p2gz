@@ -215,6 +215,10 @@ void CutsceneMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	if (title && !image_only) {
 		x += j2d.print(x, z, "%s: %s", title, on ? "already played" : "not yet played");
 	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "toggle played");
+	}
 }
 
 void CutsceneToggle::set_cutscene_flag(bool played)

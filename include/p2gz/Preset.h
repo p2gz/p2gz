@@ -73,7 +73,7 @@ public:
 
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
-	virtual void select();
+	virtual bool select();
 	void do_on_preset_selected(Preset*);
 
 	Preset* current_preset;
@@ -93,7 +93,7 @@ struct PresetPreviewMenuOption : public MenuOption {
 	PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_);
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
-	virtual void select();
+	virtual bool select();
 
 	Preset* preset;
 	PresetMenuOption* parent;

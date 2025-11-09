@@ -355,11 +355,16 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	} else {
 		x += j2d.print(x, z, "none");
 	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open presets menu");
+	}
 }
 
-void PresetMenuOption::select()
+bool PresetMenuOption::select()
 {
 	p2gz->menu->push_layer(preset_category_list);
+	return false;
 }
 
 void PresetMenuOption::do_on_preset_selected(Preset* preset)
@@ -378,7 +383,7 @@ PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOpti
 	parent = parent_;
 }
 
-void PresetPreviewMenuOption::select()
+bool PresetPreviewMenuOption::select()
 {
 	parent->current_preset = preset;
 	parent->do_on_preset_selected(preset);
@@ -386,6 +391,7 @@ void PresetPreviewMenuOption::select()
 	while (p2gz->menu->get_active_layer() != warp_menu) {
 		p2gz->menu->pop_layer();
 	}
+	return false;
 }
 
 void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -400,5 +406,9 @@ void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 	} else {
 		x += j2d.print(x, z, "no preset (use current squad)");
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "use this preset");
 	}
 }
