@@ -4,8 +4,6 @@
 #include "Game/MapMgr.h"
 #include "PSM/Otakara.h"
 #include "nans.h"
-#include <p2gz/Preset.h>
-#include <p2gz/p2gz.h>
 namespace Game {
 namespace PelletOtakara {
 
