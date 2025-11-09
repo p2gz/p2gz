@@ -346,6 +346,27 @@ void Preset::apply_post_load()
 			}
 		}
 	}
+
+	// Force spawn or despawn treasures
+	FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+	{
+		if (gen->mObject->mTypeID == 'pelt') {
+			Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+			int treasure_id             = gen_pellet->mGenParm->mIndex;
+			int kind                    = gen_pellet->mPelType;
+			for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+				if (oride.id == treasure_id) {
+					if (oride.spawn_override == PSO_Spawn && gen->mCreature == nullptr) {
+						gen->generate();
+					} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
+						Game::PelletKillArg arg;
+						gen->mCreature->kill(&arg);
+					}
+				}
+			}
+		}
+	}
 }
 
 PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)

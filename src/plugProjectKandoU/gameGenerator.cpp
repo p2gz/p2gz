@@ -266,14 +266,11 @@ bool Generator::need_saveCreature()
 	if (mCreature == nullptr) {
 		shouldSave = true;
 	} else {
-		// @P2GZ - save pellets even if they're dead
-		// if ((!mCreature->isAlive() && mCreature->isPellet())) {
-		// 	shouldSave = false;
-		// }
-		// else
-		// {
-		shouldSave = true;
-		// }
+		if ((!mCreature->isAlive() && mCreature->isPellet())) {
+			shouldSave = false;
+		} else {
+			shouldSave = true;
+		}
 	}
 	return shouldSave;
 }

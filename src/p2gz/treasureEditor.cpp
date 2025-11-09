@@ -212,6 +212,23 @@ void TreasureEditor::snap_to_nearest_waypoint()
 	p2gz->freecam->set_position(pos);
 }
 
+void TreasureEditor::sync()
+{
+	Iterator<Game::PelletOtakara::Object> treasureIterator(Game::PelletOtakara::mgr);
+	CI_LOOP(treasureIterator)
+	{
+		Game::PelletOtakara::Object* treasure = *treasureIterator;
+		add(treasure);
+	}
+
+	Iterator<Game::PelletItem::Object> upgradeIterator(Game::PelletItem::mgr);
+	CI_LOOP(upgradeIterator)
+	{
+		Game::PelletItem::Object* treasure = *upgradeIterator;
+		add(treasure);
+	}
+}
+
 // Add a submenu for the given treasure.
 void TreasureEditor::add(Game::Pellet* pellet)
 {

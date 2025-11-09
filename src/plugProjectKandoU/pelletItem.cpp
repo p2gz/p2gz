@@ -123,18 +123,6 @@ Pellet* Mgr::generatorBirth(Vector3f& pos, Vector3f& rot, GenPelletParm* genParm
 	arg.mPelletIndex    = genParm->mIndex;
 	arg.mPelView        = nullptr;
 
-	// @P2GZ - control treasure spawns from presets
-	gz::Preset* preset = p2gz->warp->get_preset();
-	bool kill          = false;
-	if (p2gz->warp->warping && preset) {
-		gz::GenSpawnOverride spawn_override = preset->get_treasure_gen_override(genParm->mIndex, PelletType::Upgrade);
-		if (spawn_override == gz::PSO_Spawn) {
-			arg.mDontCheckCollected = true;
-		} else if (spawn_override == gz::PSO_DontSpawn) {
-			kill = true;
-		}
-	}
-
 	Pellet* obj = pelletMgr->birth(&arg);
 	if (obj) {
 		if (mapMgr) {
@@ -145,12 +133,6 @@ Pellet* Mgr::generatorBirth(Vector3f& pos, Vector3f& rot, GenPelletParm* genParm
 		Matrixf mtx;
 		mtx.makeTR(pos, rot);
 		obj->setOrientation(mtx);
-
-		// @P2GZ - flag this pellet to be killed immediately when done loading
-		if (kill) {
-			PelletKillArg kill_arg;
-			obj->kill(&kill_arg);
-		}
 	}
 	return obj;
 }

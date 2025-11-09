@@ -81,8 +81,8 @@ public:
 	bool bitters_unlocked;
 	bool spicies_unlocked;
 	u16 upgrades; // bitflags
-	int num_bitters;
-	int num_spicies;
+	u8 num_bitters;
+	u8 num_spicies;
 	f32 time;
 	u32 cutscene_flags1; // bitflags
 	u32 cutscene_flags2; // bitflags

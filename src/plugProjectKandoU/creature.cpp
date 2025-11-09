@@ -91,14 +91,6 @@ void Creature::kill(CreatureKillArg* arg)
 	onKill(arg);
 
 	if (mGenerator) {
-		// @P2GZ - don't inform generator when a pellet is collected so we can respawn treasures
-		if (mGenerator->mObject->mTypeID == 'pelt') {
-			GenPellet* pellet = static_cast<GenPellet*>(mGenerator->mObject);
-			if (pellet->mPelType == PelletList::PLK_Otakara || pellet->mPelType == PelletList::PLK_Item) {
-				setPosition(mGenerator->mPosition, true); // restore default pos
-				return;
-			}
-		}
 		mGenerator->informDeath(this);
 		mGenerator = nullptr;
 	}
