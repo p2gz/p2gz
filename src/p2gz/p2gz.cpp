@@ -59,6 +59,7 @@ P2GZ::P2GZ()
 	poko_editor          = new PokoEditor();
 	ek_editor            = new EKEditor();
 	treasure_editor      = new TreasureEditor();
+	onion_editor         = new OnionEditor();
 	localization_op      = new Localization();
 	empress_trainer      = new EmpressTrainer();
 
@@ -91,11 +92,14 @@ void P2GZ::init()
 	poko_editor->init();
 	ek_editor->init();
 	treasure_editor->init();
+<<<<<<< HEAD
 	localization_op->init_menu();
 
 #ifdef GZ_TEST
 	test_runner->init();
 #endif
+	== == == = onion_editor->init();
+>>>>>>> 21b3dfe (start)
 
 	inited = true;
 	prev_heap->becomeCurrentHeap();
@@ -119,7 +123,10 @@ void P2GZ::update()
 	segment_history->update();
 	dismiss_positions->update();
 	navi_tools->update();
+<<<<<<< HEAD
 	empress_trainer->update();
+	== == == = onion_editor->update();
+>>>>>>> 21b3dfe (start)
 
 	warp->update_lockout_frames();
 

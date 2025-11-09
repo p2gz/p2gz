@@ -30,6 +30,7 @@
 #include <p2gz/GeneratorDebugInfo.h>
 #include <p2gz/Test.h>
 #include <p2gz/Trainers.h>
+#include <p2gz/OnionEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha4"
@@ -78,6 +79,7 @@ public:
 	gz::TreasureEditor* treasure_editor;
 	gz::Localization* localization_op;
 	gz::EmpressTrainer* empress_trainer;
+	gz::OnionEditor* onion_editor;
 
 	gz::test::TestRunner* test_runner;
 

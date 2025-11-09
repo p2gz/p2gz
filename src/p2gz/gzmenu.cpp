@@ -12,6 +12,7 @@
 #include <p2gz/Preset.h>
 #include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
+#include <p2gz/OnionEditor.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -66,6 +67,32 @@ void GZMenu::init_menu()
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
 			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f, new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::sync)))))
 			->push(new PerformActionMenuOption("clear all", new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::clear_field_pikmin)))
+			->push(new OpenSubMenuOption("onions", (new GridMenu(100.0f, 36.0f))
+				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "blue_leaf", true))
+				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "blue_bud", true))
+				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "blue_flower", true))
+				->push_to_row(new ToggleMenuOption("bo", false, new Delegate1<OnionEditor, bool>(p2gz->onion_editor, &OnionEditor::set_unlocked), "onion_blue", true))
+				->end_row()
+				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "red_leaf", true))
+				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "red_bud", true))
+				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "red_flower", true))
+				->push_to_row(new ToggleMenuOption("bo", false, new Delegate1<OnionEditor, bool>(p2gz->onion_editor, &OnionEditor::set_unlocked), "onion_red", true))
+				->end_row()
+				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "yellow_leaf", true))
+				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "yellow_bud", true))
+				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "yellow_flower", true))
+				->push_to_row(new ToggleMenuOption("bo", false, new Delegate1<OnionEditor, bool>(p2gz->onion_editor, &OnionEditor::set_unlocked), "onion_yellow", true))
+				->end_row()
+				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "purple_leaf", true))
+				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "purple_bud", true))
+				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "purple_flower", true))
+				->push_to_row(new ToggleMenuOption("bo", false, new Delegate1<OnionEditor, bool>(p2gz->onion_editor, &OnionEditor::set_unlocked), "ship_purple", true))
+				->end_row()
+				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "white_leaf", true))
+				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "white_bud", true))
+				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<OnionEditor, s32>(p2gz->onion_editor, &OnionEditor::set_count), "white_flower", true))
+				->push_to_row(new ToggleMenuOption("bo", false, new Delegate1<OnionEditor, bool>(p2gz->onion_editor, &OnionEditor::set_unlocked), "ship_white", true))
+			))
 		))
 		->push(new OpenSubMenuOption("trainers", (new ListMenu())
 			->push(new PerformActionMenuOption("fast empress", new Delegate<EmpressTrainer>(p2gz->empress_trainer, &EmpressTrainer::start)))

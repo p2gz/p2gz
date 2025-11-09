@@ -102,6 +102,7 @@ public:
 		return false;
 	}
 
+	bool get_selection() { return on; }
 	void set_selection(bool selected) { on = selected; }
 
 private:
