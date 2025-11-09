@@ -48,9 +48,10 @@ static const size_t NUM_FLOORS[4][4] = {
 	{ 5, 6, 7, 5 },
 	{ 10, 15, 14, 0 },
 };
-static const char* ENTER_KINDS[2] = {
+static const char* ENTER_KINDS[3] = {
 	"from cave",
 	"from map screen",
+	"first enter from map",
 };
 
 Warp::Warp()
@@ -76,7 +77,7 @@ void Warp::init()
 	for (size_t i = 0; i < 4; i++) {
 		area_opt->options.push(AREA_NAMES[i]);
 	}
-	for (size_t i = 0; i < 2; i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(ENTER_KINDS); i++) {
 		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
 
@@ -217,6 +218,8 @@ void Warp::do_warp()
 	}
 
 	reset_cave_treasure_collections(game);
+	p2gz->poko_editor->apply_cave_pokos();
+
 	if (dest.cave == 0) {
 		warp_to_area(game);
 	} else {

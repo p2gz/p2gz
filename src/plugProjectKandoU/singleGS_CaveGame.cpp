@@ -122,13 +122,6 @@ void CaveState::gameStart(SingleGameSection* game)
 		PSSystem::checkGameScene(scene);
 		scene->stopPollutionSe();
 	}
-
-	// @P2GZ - post-load actions on warp
-	p2gz->warp->do_post_warp();
-
-	// @P2GZ - save current squad to history when starting a sublevel
-	gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
-	seg->preset      = p2gz->preset_mgr->create();
 }
 
 /**
@@ -630,12 +623,15 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		bool isFinal       = (cFloor == maxFloor);
 		disp.mIsFinalFloor = isFinal;
 
+		// @P2GZ - post-load actions on warp
+		p2gz->warp->do_post_warp();
+
+		// @P2GZ - save current squad to history when starting a sublevel
+		gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
+		seg->preset      = p2gz->preset_mgr->create();
+
 		if (isFinal) {
 			Screen::gGame2DMgr->open_GameCave(disp, 2);
-
-			// @P2GZ - post-load actions on warp
-			p2gz->warp->do_post_warp();
-
 			return;
 		}
 
@@ -654,6 +650,13 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 			piki->mVelocity       = 0.0f;
 			piki->mTargetVelocity = 0.0f;
 		}
+
+		// @P2GZ - post-load actions on warp
+		p2gz->warp->do_post_warp();
+
+		// @P2GZ - save current squad to history when starting a sublevel
+		gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
+		seg->preset      = p2gz->preset_mgr->create();
 
 		if (!playData->isDemoFlag(DEMO_First_Cave_Enter)) {
 			playData->setDemoFlag(DEMO_First_Cave_Enter);
@@ -676,10 +679,6 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 
 			if (isFinal) {
 				Screen::gGame2DMgr->open_GameCave(disp, 2);
-
-				// @P2GZ - post-load actions on warp
-				p2gz->warp->do_post_warp();
-
 				return;
 			}
 

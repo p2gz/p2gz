@@ -94,7 +94,6 @@ void SegmentHistory::update()
 				if (this_segment->dest.cave == current_dest.cave) {
 					if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
 						floor0_segment = this_segment;
-
 						break;
 					}
 				} else {
@@ -116,13 +115,14 @@ void SegmentHistory::update()
 				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
 					cat = floor0_segment->preset->category;
 				}
+				p2gz->warp->set_dest(floor0_dest);
 				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
 			} else {
+				p2gz->warp->set_dest(floor0_dest);
 				p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
 			}
-			p2gz->warp->set_dest(floor0_dest);
-			p2gz->warp->do_warp();
 
+			p2gz->warp->do_warp();
 			entering_next_sublevel = false;
 			return;
 		}

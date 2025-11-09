@@ -85,7 +85,7 @@ void GZMenu::init_menu()
 			))
 		))
 		->push(new OpenSubMenuOption("items", (new ListMenu())
-			->push(new DecimalInputOption("pokos"))
+			->push(new DecimalInputOption("pokos", new Delegate1<PokoEditor, u32>(p2gz->poko_editor, &PokoEditor::set_pokos), new Delegate<PokoEditor>(p2gz->poko_editor, &PokoEditor::sync)))
 			->push(new OpenSubMenuOption("sprays", (new ListMenu())
 				->push(new RangeMenuOption("bitters", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_bitters)))
 				->push(new RangeMenuOption("spicies", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_spicies)))
@@ -770,12 +770,14 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	keypad->draw(j2d, x, z);
 }
 
-DecimalKeypad::DecimalKeypad(const char* title_)
+DecimalKeypad::DecimalKeypad(const char* title_, IDelegate1<u32>* on_selected_, IDelegate* on_opened_)
+    : MenuLayer(on_opened_)
 {
 	title         = title_;
 	value         = 0;
 	cur_digit     = 0;
 	is_unselected = true;
+	on_selected   = on_selected_;
 
 	// clang-format off
 	keypad = (new GridMenu(16.0f, p2gz->menu->line_height))
@@ -806,6 +808,10 @@ void DecimalKeypad::select_digit(u32 digit)
 	if (cur_digit < 4) {
 		cur_digit += 1;
 	}
+
+	if (on_selected) {
+		on_selected->invoke(value);
+	}
 }
 
 void DecimalKeypad::set_unselected()
@@ -817,6 +823,9 @@ void DecimalKeypad::set_unselected()
 void DecimalKeypad::submit()
 {
 	is_unselected = false;
+	if (on_selected) {
+		on_selected->invoke(value);
+	}
 	p2gz->menu->pop_layer();
 }
 
@@ -1183,10 +1192,12 @@ void HexInputOption::set_selected_val(u32 val)
 	keypad->set_value(val);
 }
 
-DecimalInputOption::DecimalInputOption(const char* title_, const char* image_name_, bool image_only_)
+DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_selected, IDelegate* on_opened, const char* image_name_,
+                                       bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad = new DecimalKeypad(title_);
+	keypad = new DecimalKeypad(title_, on_selected, on_opened);
+	sync_value = on_opened;
 }
 
 MenuLayer* DecimalInputOption::get_sub_menu()
@@ -1201,6 +1212,9 @@ void DecimalInputOption::select()
 
 void DecimalInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
+	if (sync_value) {
+		sync_value->invoke();
+	}
 	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": %05u", keypad->get_value());
 }

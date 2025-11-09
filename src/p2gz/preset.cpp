@@ -37,6 +37,9 @@ Preset::Preset(Preset& other)
 	squad            = other.squad;
 	onion_pikis      = other.onion_pikis;
 	time             = other.time;
+	apply_pokos      = false;
+	pokos            = 0;
+	enter_kind       = FromCave;
 
 	upgrades.expandCapacityTo(other.upgrades.len());
 	for (size_t i = 0; i < other.upgrades.len(); i++) {
@@ -104,6 +107,19 @@ Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
 	return this;
 }
 
+Preset* Preset::set_enter_kind(EnterAreaKind kind)
+{
+	enter_kind = kind;
+	return this;
+}
+
+Preset* Preset::set_pokos(int pokos_)
+{
+	pokos       = pokos_;
+	apply_pokos = true;
+	return this;
+}
+
 void Preset::apply()
 {
 	// TODO: is this necessary?
@@ -166,6 +182,12 @@ void Preset::apply()
 			cutscene_toggle->set_cutscene_flag(true);
 		}
 	}
+
+	p2gz->warp->set_enter_area_type(enter_kind);
+
+	if (apply_pokos) {
+		p2gz->poko_editor->set_pokos(pokos);
+	}
 }
 
 void Preset::apply_post_load()
@@ -191,11 +213,14 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 {
 	on_select            = on_select_;
 	pod_presets_menu                = new ListMenu();
-	pod_presets_menu->on_opened     = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, pod_presets_menu);
+	pod_presets_menu->on_opened
+	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, pod_presets_menu, PoD);
 	at_presets_menu                 = new ListMenu();
-	at_presets_menu->on_opened      = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, at_presets_menu);
+	at_presets_menu->on_opened
+	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, at_presets_menu, AT);
 	general_presets_menu            = new ListMenu();
-	general_presets_menu->on_opened = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, general_presets_menu);
+	general_presets_menu->on_opened
+	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, general_presets_menu, General);
 
 	preset_category_list = (new ListMenu())
 	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
@@ -230,9 +255,9 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 }
 
 /// Adjusts the selection of a category menu when it's opened so the current preset is highlighted
-void PresetMenuOption::select_current_preset(ListMenu* menu)
+void PresetMenuOption::select_current_preset(ListMenu* menu, PresetCategory cat)
 {
-	if (!current_preset || !menu) {
+	if (!current_preset || current_preset->category != cat || !menu) {
 		return;
 	}
 
