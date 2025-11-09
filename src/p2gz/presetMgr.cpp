@@ -155,7 +155,6 @@ using namespace Game;
 PresetMgr::PresetMgr()
 {
 	last_used_preset = nullptr;
-	OSReport("sizeof(Preset) = %d", sizeof(Preset));
 
 	presets.push((new Preset("everything", General))
 	                 ->set_pikmin(Flower, Red, 20)

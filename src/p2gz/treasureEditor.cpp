@@ -240,11 +240,13 @@ void TreasureEditor::add(Game::Pellet* pellet)
 		}
 	}
 
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	// clang-format off
 	treasures->push(new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu())
 		->push(new PerformActionMenuOption("move", new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::enable)))
 		->push(new ToggleMenuOption("collected", false, new Delegate1<TreasureEditor, bool>(p2gz->treasure_editor, &TreasureEditor::toggle_collected)))
 	));
+	prev_heap->becomeCurrentHeap();
 	// clang-format on
 }
 
