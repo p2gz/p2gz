@@ -11,8 +11,11 @@
 using namespace gz;
 
 Preset::Preset(const char* name_, PresetCategory category_)
-    : upgrades(1)
-    , cutscene_flags(1)
+    : upgrades(0)
+    , cutscene_flags(0)
+    , destroyed_gates(0)
+    , finished_bridges(0)
+    , bags_flattened(0)
 {
 	name             = name_;
 	category         = category_;
@@ -21,6 +24,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	num_bitters      = 0;
 	num_spicies      = 0;
 	time             = 7.0f;
+	plug_destroyed   = false;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -40,6 +44,7 @@ Preset::Preset(Preset& other)
 	apply_pokos      = false;
 	pokos            = 0;
 	enter_kind       = FromCave;
+	plug_destroyed   = other.plug_destroyed;
 
 	upgrades.expandCapacityTo(other.upgrades.len());
 	for (size_t i = 0; i < other.upgrades.len(); i++) {
@@ -49,6 +54,21 @@ Preset::Preset(Preset& other)
 	cutscene_flags.expandCapacityTo(other.cutscene_flags.len());
 	for (size_t i = 0; i < other.cutscene_flags.len(); i++) {
 		cutscene_flags.push(other.cutscene_flags[i]);
+	}
+
+	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
+	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
+		destroyed_gates.push(other.destroyed_gates[i]);
+	}
+
+	finished_bridges.expandCapacityTo(other.finished_bridges.len());
+	for (size_t i = 0; i < other.finished_bridges.len(); i++) {
+		finished_bridges.push(other.finished_bridges[i]);
+	}
+
+	bags_flattened.expandCapacityTo(other.bags_flattened.len());
+	for (size_t i = 0; i < other.bags_flattened.len(); i++) {
+		bags_flattened.push(other.bags_flattened[i]);
 	}
 }
 
@@ -104,6 +124,32 @@ Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
 		GZASSERTLINE(gates[i]);
 		destroyed_gates.push(gates[i]);
 	}
+	return this;
+}
+
+Preset* Preset::set_finished_bridges(size_t num_bridges, const char* bridges[])
+{
+	finished_bridges.expandCapacityTo(finished_bridges.len() + num_bridges);
+	for (size_t i = 0; i < num_bridges; i++) {
+		GZASSERTLINE(bridges[i]);
+		finished_bridges.push(bridges[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_bags_flattened(size_t num_bags, const char* bags[])
+{
+	bags_flattened.expandCapacityTo(bags_flattened.len() + num_bags);
+	for (size_t i = 0; i < num_bags; i++) {
+		GZASSERTLINE(bags[i]);
+		bags_flattened.push(bags[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_plug_destroyed(bool destroyed)
+{
+	plug_destroyed = destroyed;
 	return this;
 }
 
@@ -192,9 +238,19 @@ void Preset::apply()
 
 void Preset::apply_post_load()
 {
-	// Destroy gates
+	p2gz->structure_editor->reset_all_structures();
+
 	for (size_t i = 0; i < destroyed_gates.len(); i++) {
 		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
+	}
+	for (size_t i = 0; i < finished_bridges.len(); i++) {
+		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i], 0);
+	}
+	for (size_t i = 0; i < bags_flattened.len(); i++) {
+		p2gz->structure_editor->set_bag_flattened(bags_flattened[i], true);
+	}
+	if (plug_destroyed) {
+		p2gz->structure_editor->set_plug_destroyed(true);
 	}
 
 	// Make sure all navi have max health

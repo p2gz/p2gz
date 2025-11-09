@@ -34,6 +34,9 @@ public:
 	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
 	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
 	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
+	Preset* set_finished_bridges(size_t num_bridges, const char* bridges[]);
+	Preset* set_bags_flattened(size_t num_bags, const char* bags[]);
+	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
 
@@ -48,7 +51,10 @@ public:
 	f32 time;
 	Vec<Game::DemoFlags> cutscene_flags;
 	Vec<Game::OlimarData::ItemIndex> upgrades;
-	Vec<const char*> destroyed_gates; // Will we need a way to store stages?
+	Vec<const char*> destroyed_gates;
+	Vec<const char*> finished_bridges;
+	Vec<const char*> bags_flattened;
+	bool plug_destroyed; // no more than one plug per level
 	EnterAreaKind enter_kind;
 	bool apply_pokos;
 	int pokos;
