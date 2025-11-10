@@ -1,5 +1,6 @@
 #include <p2gz/OnionEditor.h>
 #include <Game/Entities/ItemOnyon.h>
+#include <Game/PikiMgr.h>
 #include <Game/SingleGameSection.h>
 #include <p2gz/p2gz.h>
 
@@ -56,6 +57,19 @@ void OnionEditor::update()
 	for (int color = 0; color < 5; color++) {
 		Vec<MenuOption*>* row = onion_menu->options[color];
 		static_cast<ToggleMenuOption*>((*row)[3])->set_selection(Game::playData->hasContainer(color));
+		static_cast<ToggleMenuOption*>((*row)[4])->visible = false;
+
+		Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+		if (!game->mInCave) {
+			int area           = game->mCurrentCourseInfo->mCourseIndex;
+			Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(color);
+			if (onion && ((color == 0 && area == 1) || (color == 1 && area == 0) || (color == 2 && area == 2))) {
+				Vector3f lockedPos = ONION_CONFIG[area][color].locked_position;
+				Vector3f onionPos  = onion->getPosition();
+				static_cast<ToggleMenuOption*>((*row)[4])->set_selection(sqrDistanceXZ(lockedPos, onionPos) < 5.0f);
+				static_cast<ToggleMenuOption*>((*row)[4])->visible = true;
+			}
+		}
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
 			opt->set_selection(Game::playData->mPikiContainer.getCount(color, stage));
@@ -85,17 +99,21 @@ void OnionEditor::move_onion(int color, int area, bool unlocked)
 		pos      = unlocked ? ONION_CONFIG[area][color].unlocked_position : ONION_CONFIG[area][color].locked_position;
 		rotation = unlocked ? ONION_CONFIG[area][color].unlocked_rotation : ONION_CONFIG[area][color].locked_rotation;
 	} else if (!unlocked && onion != nullptr) {
-		// `onKill` is not implemented for onions since that never happens in vanilla, so we don't have an easy way to get rid of them.
+		// onKill is not implemented for onions since that never happens in vanilla, so we don't have an easy way to get rid of them.
 		// This is a dumb hack, but it works.
 		onion->mPosition.y -= 300.0f;
 		onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
 		onion->startWaitMotion();
+		onion->mGoalWayPoint->setFlag(Game::WPF_Closed);
 		return;
 	}
 
 	GZASSERTLINE(pos != Vector3f::zero);
 	onion->setPosition(pos, false);
 	onion->mFaceDir = rotation;
+	onion->onSetPosition();
+	onion->mGoalWayPoint->mFlags &= ~Game::WPF_Closed;
+
 	onion->setSpotState(Game::Onyon::SPOTSTATE_Opened);
 	onion->startWaitMotion();
 }
@@ -114,26 +132,27 @@ void OnionEditor::set_unlocked(bool _)
 		if (unlocked) {
 			p2gz->squad_editor->set_demo_flags_for_color(static_cast<Game::EPikiKind>(color));
 		} else {
-			Game::playData->mHasBootContainerFlags &= ~(1 << color);
+			Iterator<Game::Piki> iterator(Game::pikiMgr);
+			CI_LOOP(iterator)
+			{
+				Game::Piki* piki = *iterator;
+				if (piki->mPikiKind == color && !piki->isZikatu()) {
+					Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+					piki->kill(&arg);
+				}
+			}
+
+			if (color != Game::Purple && color != Game::White) {
+				Game::playData->mHasBootContainerFlags &= ~(1 << color);
+			}
 			Game::playData->mHasContainerFlags &= ~(1 << color);
+			Game::playData->mMeetPikminFlags &= ~(1 << color);
+
 			for (int stage = 0; stage < 3; stage++) {
 				Game::playData->mPikiContainer.getCount(color, stage) = 0;
 				static_cast<RangeMenuOption*>((*row)[stage])->set_selection(0);
 			}
 		}
-
-		// Purple and white Pikmin don't have onions.
-		if (color > 2) {
-			continue;
-		}
-
-		// Can't move onions in caves.
-		Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
-		if (game->mInCave) {
-			continue;
-		}
-
-		move_onion(color, game->mCurrentCourseInfo->mCourseIndex, unlocked);
 	}
 }
 
