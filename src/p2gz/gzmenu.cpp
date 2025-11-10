@@ -24,6 +24,10 @@
 
 using namespace gz;
 
+#define COLOR(color)           \
+	j2d.mCharColor.set(color); \
+	j2d.mGradientColor.set(color)
+
 GZMenu::GZMenu()
     : open_close_action(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
     , enabled(false)
@@ -38,8 +42,8 @@ GZMenu::GZMenu()
 	line_height               = 22.0f;
 
 	color_std         = JUtility::TColor(255, 255, 255, 255);
-	color_highlight   = JUtility::TColor(255, 40, 40, 255);
-	color_breadcrumbs = JUtility::TColor(226, 192, 116, 255);
+	color_highlight   = JUtility::TColor(232, 40, 40, 255);
+	color_breadcrumbs = JUtility::TColor(247, 197, 86, 255);
 }
 
 void GZMenu::init_menu()
@@ -287,6 +291,8 @@ void GZMenu::draw()
 		return;
 	}
 
+	controls.reset();
+
 	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
 	j2d.initiate();
 	j2d.mGlyphWidth  = glyph_width;
@@ -297,12 +303,10 @@ void GZMenu::draw()
 
 	if (breadcrumbs.len() > 0) {
 		for (size_t i = 0; i < breadcrumbs.len(); i++) {
-			j2d.mCharColor.set(color_std);
-			j2d.mGradientColor.set(color_std);
+			COLOR(color_std);
 			x += j2d.print(x, z, " > ");
 
-			j2d.mCharColor.set(color_breadcrumbs);
-			j2d.mGradientColor.set(color_breadcrumbs);
+			COLOR(color_breadcrumbs);
 			x += j2d.print(x, z, breadcrumbs[i]);
 		}
 		z += line_height;
@@ -478,11 +482,9 @@ void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 		bool is_selected = i == selected;
 
 		if (is_selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		} else {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
+			COLOR(p2gz->menu->color_std);
 		}
 
 		options[i]->draw(j2d, x, z, i == selected);
@@ -497,75 +499,85 @@ void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 			break;
 		}
 	}
+
+	p2gz->menu->draw_control(j2d, Controller::PRESS_B, "back");
+}
+
+GridMenu* GridMenu::push_to_row(MenuOption* option)
+{
+	options[selected_row]->push(option);
+	MenuLayer* sub_menu = option->get_sub_menu();
+	if (sub_menu) {
+		sub_menu->parent = this;
+	}
+	return this;
+}
+
+GridMenu* GridMenu::end_row()
+{
+	selected_row += 1;
+	options.push(new Vec<MenuOption*>);
+	return this;
 }
 
 void GridMenu::update()
 {
 	p2gz->menu->block_open_close_action();
 
-	if (pah_up.check(p2gz->controller) && !editing_range) {
-		if (selected_row == 0) {
-			selected_row = options.len();
-		}
-		do {
-			selected_row -= 1;
-			if (options[selected_row]->len() <= selected_col) {
-				selected_col = options[selected_row]->len() - 1;
-			}
-		} while (!cur_option()->visible);
-	}
-	if (pah_down.check(p2gz->controller) && options.len() > 0 && !editing_range) {
-		if (selected_row >= options.len() - 1) {
-			selected_row = -1;
-		}
-		do {
-			selected_row += 1;
-			if (options[selected_row]->len() <= selected_col) {
-				selected_col = options[selected_row]->len() - 1;
-			}
-		} while (!cur_option()->visible);
-	}
-	if (pah_left.check(p2gz->controller) && !editing_range) {
-		if (selected_col == 0) {
-			selected_col = options[selected_row]->len();
-		}
-		do {
-			selected_col -= 1;
-		} while (!cur_option()->visible);
-	}
-	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && !editing_range) {
-		if (selected_col >= options[selected_row]->len() - 1) {
-			selected_col = -1;
-		}
-		do {
-			selected_col += 1;
-		} while (!cur_option()->visible);
-	}
-
 	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_A) {
-		if (cur_option()->is_range_option()) {
-			editing_range = !editing_range;
-			cur_option()->set_editing_in_grid(editing_range);
-			return;
+	if (editing_option) {
+		if (btn & Controller::PRESS_A || btn & Controller::PRESS_B) {
+			editing_option = false;
+		} else {
+			cur_option()->update();
 		}
-		cur_option()->select();
-	}
-	if (btn & Controller::PRESS_B) {
-		if (cur_option()->is_range_option()) {
-			if (editing_range) {
-				editing_range = false;
-				cur_option()->set_editing_in_grid(editing_range);
-				return;
+	} else {
+		if (pah_up.check(p2gz->controller)) {
+			if (selected_row == 0) {
+				selected_row = options.len();
 			}
+			do {
+				selected_row -= 1;
+				if (options[selected_row]->len() <= selected_col) {
+					selected_col = options[selected_row]->len() - 1;
+				}
+			} while (!cur_option()->visible);
 		}
-		p2gz->menu->pop_layer();
-	}
+		if (pah_down.check(p2gz->controller) && options.len() > 0) {
+			if (selected_row >= options.len() - 1) {
+				selected_row = -1;
+			}
+			do {
+				selected_row += 1;
+				if (options[selected_row]->len() <= selected_col) {
+					selected_col = options[selected_row]->len() - 1;
+				}
+			} while (!cur_option()->visible);
+		}
+		if (pah_left.check(p2gz->controller)) {
+			if (selected_col == 0) {
+				selected_col = options[selected_row]->len();
+			}
+			do {
+				selected_col -= 1;
+			} while (!cur_option()->visible);
+		}
+		if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0) {
+			if (selected_col >= options[selected_row]->len() - 1) {
+				selected_col = -1;
+			}
+			do {
+				selected_col += 1;
+			} while (!cur_option()->visible);
+		}
 
-	if (cur_option()->is_range_option() && !editing_range) {
-		return;
+		if (btn & Controller::PRESS_A) {
+			editing_option = cur_option()->select();
+		}
+		if (btn & Controller::PRESS_B) {
+			p2gz->menu->pop_layer();
+		}
 	}
-	cur_option()->update();
 }
 
 void GridMenu::draw(J2DPrint& j2d, f32& x, f32& z)
@@ -580,19 +592,28 @@ void GridMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 			bool is_selected = col_idx == selected_col && row_idx == selected_row;
 
 			if (is_selected) {
-				j2d.mCharColor.set(p2gz->menu->color_highlight);
-				j2d.mGradientColor.set(p2gz->menu->color_highlight);
+				if (editing_option) {
+					COLOR(p2gz->menu->color_highlight);
+				} else {
+					COLOR(p2gz->menu->color_breadcrumbs);
+				}
 			} else {
-				j2d.mCharColor.set(p2gz->menu->color_std);
-				j2d.mGradientColor.set(p2gz->menu->color_std);
+				COLOR(p2gz->menu->color_std);
 			}
 
 			const f32 col_start_x = x;
-			option->draw(j2d, x, z, is_selected);
+			option->draw(j2d, x, z, is_selected && editing_option);
 			x = col_start_x + opt_width;
 		}
 		x = start_x;
 		z += opt_height;
+	}
+
+	if (!editing_option) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "select");
+		p2gz->menu->draw_control(j2d, Controller::PRESS_B, "back");
+	} else {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "done");
 	}
 }
 
@@ -761,11 +782,9 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	for (u8 i = 0; i < 8; i++) {
 		bool is_selected = i == cur_digit;
 		if (is_selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		} else {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
+			COLOR(p2gz->menu->color_std);
 		}
 
 		u8 digit = (value >> ((7 - i) * 4)) & 0xF;
@@ -776,6 +795,9 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	keypad->opt_width    = p2gz->menu->line_height;
 	x                    = initial_x;
 	keypad->draw(j2d, x, z);
+
+	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
+	p2gz->menu->draw_control(j2d, Controller::PRESS_R, "move cursor");
 }
 
 DecimalKeypad::DecimalKeypad(const char* title_, IDelegate1<u32>* on_selected_, IDelegate* on_opened_)
@@ -867,11 +889,9 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	for (u8 i = 0; i < 5; i++) {
 		bool is_selected = i == cur_digit;
 		if (is_selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		} else {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
+			COLOR(p2gz->menu->color_std);
 		}
 
 		u8 digit = (value % 100000 / pow10[i]) % 10;
@@ -882,6 +902,9 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	keypad->opt_width    = p2gz->menu->line_height;
 	x                    = initial_x;
 	keypad->draw(j2d, x, z);
+
+	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
+	p2gz->menu->draw_control(j2d, Controller::PRESS_R, "move cursor");
 }
 
 void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -913,6 +936,10 @@ void ToggleMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	} else if (title) {
 		x += j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
 	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "toggle");
+	}
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
@@ -924,10 +951,29 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 	}
 }
 
-void OpenSubMenuOption::select()
+bool OpenSubMenuOption::select()
 {
 	if (sub_menu) {
 		p2gz->menu->push_layer(sub_menu);
+	}
+	return false;
+}
+
+void OpenSubMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
+{
+	MenuOption::draw(j2d, x, z, selected);
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
+	}
+}
+
+void PerformActionMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
+{
+	MenuOption::draw(j2d, x, z, selected);
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "select");
 	}
 }
 
@@ -958,11 +1004,12 @@ void RadioMenuOption::update()
 	}
 }
 
-void RadioMenuOption::select()
+bool RadioMenuOption::select()
 {
 	if (on_selected) {
 		on_selected->invoke(selected_idx);
 	}
+	return true;
 }
 
 void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -981,15 +1028,17 @@ void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 			x += j2d.print(x, z, "%s: < ", title);
 		}
 
-		j2d.mCharColor.set(p2gz->menu->color_std);
-		j2d.mGradientColor.set(p2gz->menu->color_std);
+		COLOR(p2gz->menu->color_std);
 		x += j2d.print(x, z, options[selected_idx]);
 
 		if (selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		}
 		x += j2d.print(x, z, " >");
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
 	}
 }
 
@@ -1022,11 +1071,12 @@ void RangeMenuOption::update()
 	}
 }
 
-void RangeMenuOption::select()
+bool RangeMenuOption::select()
 {
 	if (on_selected) {
 		on_selected->invoke(selected_val);
 	}
+	return true;
 }
 
 void RangeMenuOption::check_overflow()
@@ -1056,6 +1106,8 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 		j2d.initiate();
 	}
 	if (title) {
+		JUtility::TColor arrow_color = j2d.mCharColor;
+
 		if (!image_only) {
 			x += j2d.print(x, z, "%s: ", title);
 		}
@@ -1064,19 +1116,18 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 			x += j2d.print(x, z, "< ");
 		}
 
-		if (!editing_in_grid) {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
-		}
+		COLOR(p2gz->menu->color_std);
 		x += j2d.print(x, z, "%d", selected_val);
 
-		if (selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
-		}
+		COLOR(arrow_color);
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
 			x += j2d.print(x, z, " >");
 		}
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
+		p2gz->menu->draw_control(j2d, Controller::PRESS_X, "(hold) x10");
 	}
 }
 
@@ -1108,11 +1159,12 @@ void FloatRangeMenuOption::update()
 	}
 }
 
-void FloatRangeMenuOption::select()
+bool FloatRangeMenuOption::select()
 {
 	if (on_selected) {
 		on_selected->invoke(selected_val);
 	}
+	return true;
 }
 
 void FloatRangeMenuOption::check_overflow()
@@ -1135,25 +1187,26 @@ void FloatRangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 
 	if (title) {
+		JUtility::TColor arrow_color = j2d.mCharColor;
+
 		x += j2d.print(x, z, "%s: ", title);
 
 		if (selected_val > min) {
 			x += j2d.print(x, z, "< ");
 		}
 
-		if (!editing_in_grid) {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
-		}
+		COLOR(p2gz->menu->color_std);
 		x += j2d.print(x, z, "%.2f", selected_val);
 
-		if (selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
-		}
+		COLOR(arrow_color);
 		if (selected_val < max) {
 			x += j2d.print(x, z, " >");
 		}
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
+		p2gz->menu->draw_control(j2d, Controller::PRESS_X, "(hold) change faster");
 	}
 }
 
@@ -1170,9 +1223,10 @@ MenuLayer* HexInputOption::get_sub_menu()
 	return keypad;
 }
 
-void HexInputOption::select()
+bool HexInputOption::select()
 {
 	p2gz->menu->push_layer(keypad);
+	return false;
 }
 
 void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -1182,6 +1236,10 @@ void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 		x += j2d.print(x, z, ": %s", value_if_unselected);
 	} else {
 		x += j2d.print(x, z, ": %08X", keypad->get_value());
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
 	}
 }
 
@@ -1213,9 +1271,10 @@ MenuLayer* DecimalInputOption::get_sub_menu()
 	return keypad;
 }
 
-void DecimalInputOption::select()
+bool DecimalInputOption::select()
 {
 	p2gz->menu->push_layer(keypad);
+	return false;
 }
 
 void DecimalInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -1225,6 +1284,10 @@ void DecimalInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": %05u", keypad->get_value());
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
+	}
 }
 
 bool DecimalInputOption::is_selected()
@@ -1240,4 +1303,54 @@ u32 DecimalInputOption::get_selected_val()
 void DecimalInputOption::set_selected_val(u32 val)
 {
 	keypad->set_value(val);
+}
+
+void BottomControlsDisplay::draw_ctrl(J2DPrint& j2d, Controller::EButton button, const char* action)
+{
+	const char* button_img = nullptr;
+	switch (button) {
+	case Controller::PRESS_L:
+		button_img = "l_btn";
+		break;
+	case Controller::PRESS_R:
+		button_img = "r_btn";
+		break;
+	case Controller::PRESS_X:
+		button_img = "x_btn";
+		break;
+	case Controller::PRESS_Y:
+		button_img = "y_btn";
+		break;
+	case Controller::PRESS_A:
+		button_img = "a_btn";
+		break;
+	case Controller::PRESS_B:
+		button_img = "b_btn";
+		break;
+	case Controller::PRESS_DPAD_DOWN:
+	case Controller::PRESS_DPAD_UP:
+		button_img = "dpad_updown";
+		break;
+	case Controller::PRESS_DPAD_LEFT:
+	case Controller::PRESS_DPAD_RIGHT:
+		button_img = "dpad_leftright";
+		break;
+	case Controller::PRESS_Z:
+		button_img = "z_btn";
+		break;
+	}
+
+	if (!button_img) {
+		OSReport("no menu image for button %X\n", button);
+		return;
+	}
+
+	COLOR(p2gz->menu->color_std);
+
+	x += p2gz->images->draw(button_img, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
+	x += p2gz->images->spacing() / 2.0f;
+	j2d.initiate();
+
+	x += j2d.print(x, z, "%s", action);
+	x += margin;
 }

@@ -6,6 +6,7 @@
 #include <og/Sound.h>
 #include <Game/MapMgr.h>
 #include <Game/PikiMgr.h>
+#include <P2JME/P2JME.h>
 
 using namespace gz;
 
@@ -71,6 +72,23 @@ void FreeCam::disable()
 	camera = nullptr;
 }
 
+void draw_controls()
+{
+	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
+	j2d.initiate();
+	j2d.mGlyphWidth  = p2gz->menu->glyph_width;
+	j2d.mGlyphHeight = p2gz->menu->glyph_height;
+
+	BottomControlsDisplay controls;
+	controls.draw_ctrl(j2d, Controller::PRESS_A, "teleport");
+	controls.draw_ctrl(j2d, Controller::PRESS_B, "close");
+	if (p2gz->treasure_editor->is_enabled()) {
+		controls.draw_ctrl(j2d, Controller::PRESS_X, "snap to waypoint");
+	} else {
+		controls.draw_ctrl(j2d, Controller::PRESS_Y, "switch captain");
+	}
+}
+
 // Perform all updates to the freecam based on the controller inputs on this frame.
 void FreeCam::update()
 {
@@ -81,6 +99,9 @@ void FreeCam::update()
 	if (navi == nullptr) {
 		return;
 	}
+
+	draw_controls();
+
 	camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
 
 	update_position();
