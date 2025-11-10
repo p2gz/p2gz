@@ -49,8 +49,9 @@ public:
 	int num_bitters;
 	int num_spicies;
 	f32 time;
-	Vec<Game::DemoFlags> cutscene_flags;
-	Vec<Game::OlimarData::ItemIndex> upgrades;
+	u32 cutscene_flags1; // bitflags
+	u32 cutscene_flags2; // bitflags
+	u16 upgrades;        // bitflags
 	Vec<const char*> destroyed_gates;
 	Vec<const char*> finished_bridges;
 	Vec<const char*> bags_flattened;

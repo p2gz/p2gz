@@ -11,9 +11,7 @@
 using namespace gz;
 
 Preset::Preset(const char* name_, PresetCategory category_)
-    : upgrades(0)
-    , cutscene_flags(0)
-    , destroyed_gates(0)
+    : destroyed_gates(0)
     , finished_bridges(0)
     , bags_flattened(0)
 {
@@ -25,6 +23,9 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	num_spicies      = 0;
 	time             = 7.0f;
 	plug_destroyed   = false;
+	upgrades         = 0;
+	cutscene_flags1  = 0;
+	cutscene_flags2  = 0;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -45,16 +46,9 @@ Preset::Preset(Preset& other)
 	pokos            = 0;
 	enter_kind       = FromCave;
 	plug_destroyed   = other.plug_destroyed;
-
-	upgrades.expandCapacityTo(other.upgrades.len());
-	for (size_t i = 0; i < other.upgrades.len(); i++) {
-		upgrades.push(other.upgrades[i]);
-	}
-
-	cutscene_flags.expandCapacityTo(other.cutscene_flags.len());
-	for (size_t i = 0; i < other.cutscene_flags.len(); i++) {
-		cutscene_flags.push(other.cutscene_flags[i]);
-	}
+	upgrades         = other.upgrades;
+	cutscene_flags1  = other.cutscene_flags1;
+	cutscene_flags2  = other.cutscene_flags2;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -101,18 +95,23 @@ Preset* Preset::set_time(f32 time_)
 
 Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
-	cutscene_flags.expandCapacityTo(cutscene_flags.len() + num_flags);
 	for (size_t i = 0; i < num_flags; i++) {
-		cutscene_flags.push(flags[i]);
+		if (flags[i] < 32) {
+			const u32 bit = 1 << flags[i];
+			cutscene_flags1 |= bit;
+		} else {
+			const u32 bit = 1 << (flags[i] - 32);
+			cutscene_flags2 |= bit;
+		}
 	}
 	return this;
 }
 
 Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
 {
-	upgrades.expandCapacityTo(upgrades.len() + num_upgrades);
 	for (size_t i = 0; i < num_upgrades; i++) {
-		upgrades.push(items[i]);
+		const u16 bit = 1 << items[i];
+		upgrades |= bit;
 	}
 	return this;
 }
@@ -214,18 +213,27 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
 	// Apply upgrades
-	p2gz->ek_editor->reset_all();
-	for (size_t i = 0; i < upgrades.len(); i++) {
-		p2gz->ek_editor->set_upgrade(upgrades[i], true);
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+		const u16 mask = 1 << i;
+		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades & mask);
 	}
 
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
-	for (size_t i = 0; i < cutscene_flags.len(); i++) {
-		Game::DemoFlags flag            = cutscene_flags[i];
-		CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
-		if (cutscene_toggle) {
-			cutscene_toggle->set_cutscene_flag(true);
+	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
+		bool flag_set = false;
+		if (i < 32) {
+			flag_set = cutscene_flags1 & (1 << i);
+		} else {
+			flag_set = cutscene_flags2 & (1 << (i - 32));
+		}
+		if (flag_set) {
+			const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
+			OSReport("setting cutscene flag %d\n", flag);
+			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
+			if (cutscene_toggle) {
+				cutscene_toggle->set_cutscene_flag(true);
+			}
 		}
 	}
 
@@ -267,14 +275,14 @@ void Preset::apply_post_load()
 PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
     : MenuOption("preset")
 {
-	on_select            = on_select_;
-	pod_presets_menu                = new ListMenu();
+	on_select        = on_select_;
+	pod_presets_menu = new ListMenu();
 	pod_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, pod_presets_menu, PoD);
-	at_presets_menu                 = new ListMenu();
+	at_presets_menu = new ListMenu();
 	at_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, at_presets_menu, AT);
-	general_presets_menu            = new ListMenu();
+	general_presets_menu = new ListMenu();
 	general_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, general_presets_menu, General);
 
