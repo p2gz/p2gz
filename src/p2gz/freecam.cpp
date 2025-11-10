@@ -95,7 +95,7 @@ void FreeCam::update()
 			og::ogSound->setDecide();
 			p2gz->treasure_editor->disable();
 			p2gz->waypoint_viewer->toggle(false);
-			disable();
+			disable(true);
 		} else {
 			warp_to_current_position();
 			Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
@@ -106,15 +106,12 @@ void FreeCam::update()
 	if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
 		// we're still in the menu, so don't unpause the timer
 		p2gz->timer->set_freecam_mode(false);
-    
+
 		// Don't unpause the game when we exit freecam by cancelling
 		disable(false);
 
 		// Open back up the p2gz menu; this needs to be done LAST so that way we disable freecam mode first
 		// Otherwise, p2gz menu won't open since it still thinks we're in freecam mode
-		if (!p2gz->menu->is_open()) {
-			p2gz->menu->navigate_to("tools/freecam");
-		}
 		if (!p2gz->menu->is_open()) {
 			if (p2gz->treasure_editor->is_enabled()) {
 				p2gz->menu->navigate_to("map/treasures");
@@ -125,7 +122,6 @@ void FreeCam::update()
 				p2gz->menu->navigate_to("tools/freecam");
 			}
 		}
-		disable();
 		og::ogSound->setCancel();
 		return;
 	}
