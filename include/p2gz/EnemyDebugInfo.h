@@ -24,9 +24,11 @@ struct EnemyDebugInfo {
 	void set_draw_cur_state_enabled(bool enabled_) { draw_cur_state = enabled_; }
 	void set_draw_flick_count_enabled(bool enabled_) { draw_flick_count = enabled_; }
 	void set_draw_position_enabled(bool enabled_) { draw_position = enabled_; }
+	void set_draw_collision_enabled(bool enabled_) { draw_collision = enabled_; }
 
 private:
 	void draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx);
+	void recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* cp);
 
 	bool enabled;
 	f32 max_dist;    // max distance from active navi to enemy to draw debug info
@@ -38,6 +40,7 @@ private:
 	bool draw_cur_state;
 	bool draw_flick_count;
 	bool draw_position;
+	bool draw_collision;
 
 	size_t cur_color;
 };
