@@ -7,6 +7,7 @@
 #include <Game/MapMgr.h>
 #include <p2gz/HelperInlines.h>
 #include <p2gz/DrawHelpers.h>
+#include <PikiAI.h>
 
 using namespace gz;
 
@@ -20,7 +21,7 @@ const Color4 PIKMIN_COLORS[Game::PikiColorCount + 1]
 // Draw circles on the ground indicating dismiss position and radius for each color.
 void DismissPositions::draw()
 {
-	if (!enabled) {
+	if (!enabled || !draw_circles) {
 		return;
 	}
 
@@ -35,7 +36,7 @@ void DismissPositions::draw()
 
 		draw_wrapped_circle(positions[i], radii[i], PIKMIN_COLORS[i], CIRCLE_VERTICAL_OFFSET, MAX_DRAW_CIRCLE_HEIGHT);
 
-		if (dismissed) {
+		if (!draw_lines) {
 			continue;
 		}
 
@@ -75,17 +76,25 @@ void DismissPositions::update()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if ((!piki->mCurrentState || piki->mCurrentState->releasable()) && piki->isAlive()
-		    && piki->mNavi == Game::naviMgr->getActiveNavi()) {
+		if ((!piki->mCurrentState || piki->mCurrentState->releasable()) && piki->isAlive() && piki->mNavi == Game::naviMgr->getActiveNavi()
+		    && piki->getCurrActionID() != PikiAI::ACT_BreakGate && piki->getCurrActionID() != PikiAI::ACT_BreakRock
+		    && piki->getCurrActionID() != PikiAI::ACT_Bridge && piki->getCurrActionID() != PikiAI::ACT_Transport) {
 			buffer[pikis++] = *iterator;
 		}
 	}
 
 	if (pikis == 0) {
-		dismissed = true;
+		if (Game::naviMgr->getActiveNavi()->mDisbandTimer > 0) {
+			draw_circles = true;
+		} else {
+			draw_circles = false;
+		}
+		draw_lines = false;
 		return;
 	}
-	dismissed = false;
+
+	draw_circles = true;
+	draw_lines   = true;
 
 	int number[8];
 	for (int i = 0; i != 8; i++) {
