@@ -41,9 +41,10 @@ AILOD::AILOD()
  */
 void Creature::updateLOD(Game::AILODParm& parm)
 {
-	// @P2GZ: treasure editor
+	// @P2GZ: freecam
 	// force AILOD_IsVisibleBoth while enabled
-	if (p2gz->treasure_editor->is_enabled()) {
+	if (p2gz->freecam->is_enabled()) {
+		mLod.setFlag(AILOD_IsVisibleBoth);
 		return;
 	}
 
