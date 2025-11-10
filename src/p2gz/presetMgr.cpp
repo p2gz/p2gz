@@ -8,6 +8,13 @@
 using namespace gz;
 using namespace Game;
 
+// Macros
+#define ARR(type, ...) ARRAY_SIZE(((type[]) { __VA_ARGS__ })), ((type[]) { __VA_ARGS__ })
+
+// Bags
+#define ALL_BAGS ARR(const char*, "landing area bag (15)", "hubcap bag (35)", "WFG bag (200)")
+
+// Cutscene flags
 #define NUM_BASE_DEMO_FLAGS 14
 #define BASE_DEMO_FLAGS                                                                                                                   \
 	DEMO_Pluck_First_Pikmin, DEMO_Discover_Treasure, DEMO_First_Gate_Down, DEMO_Reds_In_Onion, DEMO_First_Nectar_Use, DEMO_Day_One_Start, \
@@ -54,7 +61,8 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Leaf, Red, 6)
 	                 ->set_time(8.0f)
 	                 ->set_cutscene_flags(NUM_BASE_DEMO_FLAGS, (DemoFlags[NUM_BASE_DEMO_FLAGS]) { BASE_DEMO_FLAGS })
-	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" }));
+	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" })
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
@@ -64,7 +72,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_SphericalAtlas,
 	                                })
 	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS })
-	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" }));
+	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" })
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
 	presets.push((new Preset("HoB1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
@@ -74,7 +83,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_SphericalAtlas,
 	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
 	presets.push((new Preset("HoB3-4", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 10)
@@ -85,7 +95,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_SphericalAtlas,
 	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
 	presets.push((new Preset("HoB5", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -95,7 +106,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_SphericalAtlas,
 	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -106,7 +118,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("WFG4-WFG5", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -118,7 +131,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_PrototypeDetector,
 	                                })
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("enter SH", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -131,7 +145,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
-	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" }));
+	                 ->set_destroyed_gates(2, (const char* [2]) { "EC gate", "black gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("SH1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 35)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -147,7 +162,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("SH3-7", PoD))
 	                 ->set_pikmin(Flower, Red, 30)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -164,7 +180,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_FiveManNapsack,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("enter BK (15/5w)", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -182,7 +199,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("enter BK (20w)", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -199,7 +217,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("enter BK (25w)", PoD))
 	                 ->set_pikmin(Flower, Red, 22)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -216,7 +235,8 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_JusticeAlloy,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS));
 	presets.push((new Preset("BK", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -235,7 +255,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_GeographicProjection,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
 	presets.push((new Preset("BK (25w)", PoD))
 	                 ->set_pikmin(Flower, Red, 22)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -254,7 +276,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_GeographicProjection,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -270,7 +294,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
 	presets.push((new Preset("day 6 CR (25w)", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -286,7 +312,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -302,7 +330,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
 	presets.push((new Preset("enter SCx (25w)", PoD))
 	                 ->set_onion_pikmin(Flower, White, 25)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -319,7 +349,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" }));
+	                 ->set_destroyed_gates(3, (const char* [3]) { "EC gate", "black gate", "SH gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge")));
 	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -336,7 +368,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
 	presets.push((new Preset("SCx1-4 (25w)", PoD))
 	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -354,7 +388,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
 	presets.push((new Preset("SCx5-8", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -371,7 +407,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
 	presets.push((new Preset("SCx5-8 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -389,7 +427,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge")));
 	presets.push((new Preset("FC1-5", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -407,7 +447,10 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_plug_destroyed(true)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("FC1-5 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -426,7 +469,10 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_ForgedCourage,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_plug_destroyed(true)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("FC6-7", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -445,7 +491,10 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_plug_destroyed(true)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("FC6-7 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -465,7 +514,10 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_plug_destroyed(true)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -483,7 +535,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
 	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("CoS (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -502,7 +556,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
 	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -521,7 +577,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
 	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 	presets.push((new Preset("GK (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -541,7 +599,9 @@ PresetMgr::PresetMgr()
 	                                    OlimarData::ODII_BruteKnuckles,
 	                                })
 	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
-	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" }));
+	                 ->set_destroyed_gates(4, (const char* [4]) { "EC gate", "black gate", "SH gate", "water gate" })
+	                 ->set_bags_flattened(ALL_BAGS)
+	                 ->set_finished_bridges(ARR(const char*, "globe bridge", "water bridge", "FC bridge")));
 }
 
 Preset* PresetMgr::create()

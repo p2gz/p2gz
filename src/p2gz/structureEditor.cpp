@@ -374,6 +374,13 @@ void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
 	// clang-format on
 }
 
+void StructureEditor::set_plug_destroyed(bool destroyed)
+{
+	if (plugs.len() >= 1) {
+		plugs[0]->set_plug_state(!destroyed);
+	}
+}
+
 void StructureEditor::clear_plugs()
 {
 	plugs.clear();
@@ -500,6 +507,16 @@ void StructureEditor::add_bag(Game::ItemDownFloor::Item* bag)
 		->push(new ToggleMenuOption("bag alive", true, new Delegate1<BagWrapper, bool>(bags[bags.len()-1], &BagWrapper::set_bag_state)))
     ));
 	// clang-format on
+}
+
+void StructureEditor::set_bag_flattened(const char* name, bool flattened)
+{
+	for (size_t i = 0; i < bags.len(); i++) {
+		if (strcmp(bags[i]->name, name) == 0) {
+			bags[i]->set_bag_state(!flattened);
+			return;
+		}
+	}
 }
 
 void StructureEditor::clear_bags()
@@ -746,4 +763,20 @@ void StructureEditor::draw_plug_debug(Game::ItemBarrel::Item* plug, const char* 
 	// draw total health
 	gfx->perspPrintf(info, pos, "max health: %.0f", Game::ItemBarrel::mgr->mParms->mBarrelParms.mHealth());
 	info.mPerspectiveOffsetY += line_height;
+}
+
+void StructureEditor::reset_all_structures()
+{
+	for (size_t i = 0; i < gates.len(); i++) {
+		gates[i]->set_gate_segments(3);
+	}
+	for (size_t i = 0; i < bridges.len(); i++) {
+		bridges[i]->set_bridge_segments(bridges[i]->bridge->mStageCount);
+	}
+	for (size_t i = 0; i < plugs.len(); i++) {
+		plugs[i]->set_plug_state(true);
+	}
+	for (size_t i = 0; i < bags.len(); i++) {
+		bags[i]->set_bag_state(true);
+	}
 }
