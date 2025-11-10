@@ -21,7 +21,7 @@ const Color4 PIKMIN_COLORS[Game::PikiColorCount + 1]
 // Draw circles on the ground indicating dismiss position and radius for each color.
 void DismissPositions::draw()
 {
-	if (!enabled) {
+	if (!enabled || !draw_circles) {
 		return;
 	}
 
@@ -36,7 +36,7 @@ void DismissPositions::draw()
 
 		draw_wrapped_circle(positions[i], radii[i], PIKMIN_COLORS[i], CIRCLE_VERTICAL_OFFSET, MAX_DRAW_CIRCLE_HEIGHT);
 
-		if (dismissed) {
+		if (!draw_lines) {
 			continue;
 		}
 
@@ -84,10 +84,17 @@ void DismissPositions::update()
 	}
 
 	if (pikis == 0) {
-		dismissed = true;
+		if (Game::naviMgr->getActiveNavi()->mDisbandTimer > 0) {
+			draw_circles = true;
+		} else {
+			draw_circles = false;
+		}
+		draw_lines = false;
 		return;
 	}
-	dismissed = false;
+
+	draw_circles = true;
+	draw_lines   = true;
 
 	int number[8];
 	for (int i = 0; i != 8; i++) {
