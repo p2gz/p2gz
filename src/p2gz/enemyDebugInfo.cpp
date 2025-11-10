@@ -265,22 +265,7 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	}
 }
 
-/**
- * Uses both recursive and non-recursive iteration to draw all collision spheres in the colltree of an enemy
- * Collision tree in an enemy can be visualized as follows:
- * root
- * 		A
- * 		B
- * 			C
- * 			D
- * 		E
- * 			F
- * 				G
- * 		H
- * end
- *
- * where indentation represents depth of the tree (stuff to the right is the child to stuff to the left)
- */
+// Uses a depth-first tree iterator to draw all collision spheres in the colltree of an enemy
 void EnemyDebugInfo::recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* curPart)
 {
 	while (curPart) {
