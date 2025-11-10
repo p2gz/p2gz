@@ -119,10 +119,12 @@ public:
 	void sync_bridges();
 
 	void add_plug(Game::ItemBarrel::Item* plug);
+	void set_plug_destroyed(bool destroyed);
 	void clear_plugs();
 	void sync_plugs();
 
 	void add_bag(Game::ItemDownFloor::Item* bag);
+	void set_bag_flattened(const char* name, bool flattened);
 	void clear_bags();
 	void sync_bags();
 
@@ -137,6 +139,8 @@ public:
 	void set_enabled_plug_debug(bool set) { plug_debug_enabled = set; }
 	bool is_plug_debug_enabled() { return plug_debug_enabled; }
 	void draw_plug_debug(Game::ItemBarrel::Item* plug, const char* name, Graphics* gfx);
+
+	void reset_all_structures();
 
 	ListMenu* gate_menu;
 	ListMenu* bridge_menu;

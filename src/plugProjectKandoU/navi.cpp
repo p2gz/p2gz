@@ -30,6 +30,9 @@
 #include "utilityU.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/arith.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 static const u32 fillerbytes[3] = { 0, 0, 0 };
 int numSearch;
 
@@ -1922,19 +1925,32 @@ void Navi::update()
 	mEffectsObj->update();
 
 	ItemHole::Item* hole = checkHole();
-	if (hole && mController1 && mController1->getButtonDown() & Controller::PRESS_A) {
+
+	// @P2GZ: freecam
+	// don't open hole menus when enabling freecam
+	// if (hole && mController1 && mController1->getButtonDown() & Controller::PRESS_A) {
+	if (hole && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !p2gz->freecam->is_enabled()) {
 		gameSystem->mSection->openCaveMoreMenu(hole, mController1);
 		return;
 	}
 
 	ItemCave::Item* cave = checkCave();
-	if (cave && mController1 && mController1->getButtonDown() & Controller::PRESS_A) {
+
+	// @P2GZ: freecam
+	// don't open cave menus when enabling freecam
+	// if (cave && mController1 && mController1->getButtonDown() & Controller::PRESS_A) {
+	if (cave && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !p2gz->freecam->is_enabled()) {
 		gameSystem->mSection->openCaveInMenu(cave, mNaviIndex);
 		return;
 	}
 
 	ItemBigFountain::Item* geyser = checkBigFountain();
-	if (geyser && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !geyser->isAlive()) {
+
+	// @P2GZ: freecam
+	// don't open geyser menus when enabling freecam
+	// if (geyser && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !geyser->isAlive()) {
+	if (geyser && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !geyser->isAlive()
+	    && !p2gz->freecam->is_enabled()) {
 		gameSystem->mSection->openKanketuMenu(geyser, mController1);
 		return;
 	}

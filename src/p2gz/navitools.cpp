@@ -11,7 +11,7 @@ NaviTools::NaviTools()
 
 void NaviTools::update()
 {
-	if (boing_mode_enabled) {
+	if (boing_mode_enabled && !p2gz->menu->is_open()) {
 		if (p2gz->controller->getButtonDown() & Controller::PRESS_A) {
 			active_navi()->mVelocity.add(Vector3f(0.0, 300.0, 0.0));
 		}
