@@ -215,8 +215,7 @@ void FreeCam::warp_to_current_position()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mNavi == navi && piki->getCurrActionID() != PikiAI::ACT_BreakGate && piki->getCurrActionID() != PikiAI::ACT_BreakRock
-		    && piki->getCurrActionID() != PikiAI::ACT_Bridge && piki->getCurrActionID() != PikiAI::ACT_Transport) {
+		if (piki->mNavi == navi && !is_working(piki)) {
 			piki->setPosition(naviPos, false);
 		}
 	}

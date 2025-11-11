@@ -5,12 +5,33 @@
 #include <Game/SingleGame.h>
 #include <Game/MapMgr.h>
 #include <GameFlow.h>
+#include <PikiAI.h>
 
 namespace gz {
 
 inline bool is_30_fps()
 {
 	return sys && (sys->mFrameRate == 2.0f);
+}
+
+// is given piki currently "working"
+// i.e. doing something outside your squad, but would return to squad after finishing
+inline bool is_working(Game::Piki* piki)
+{
+	if (!piki) {
+		return false;
+	}
+	PikiAI::PikiBrainAction action = (PikiAI::PikiBrainAction)piki->getCurrActionID();
+	if (action == PikiAI::ACT_BreakGate || // gates
+	    action == PikiAI::ACT_BreakRock || // plugs
+	    action == PikiAI::ACT_Bridge ||    // bridges
+	    action == PikiAI::ACT_Transport || // carrying objects
+	    action == PikiAI::ACT_Crop ||      // berry plants
+	    action == PikiAI::ACT_Weed)        // nectar grass/rocks
+	{
+		return true;
+	}
+	return false;
 }
 
 inline bool in_boot_up()
