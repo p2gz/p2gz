@@ -264,18 +264,6 @@ void BaseGameSection::init()
 	mTreasureGetState = 0;
 
 	p2gz->init(); // @P2GZ - init
-
-	// @P2GZ localization-swap: we separated the language swap obj from p2gz since it needs to init'd differently
-	// Notably, global_language_swap can only be created once per game, so don't create a new instnace if one already exists
-	if (!global_language_swap) {
-		// Becuase of the way the the current heap is setup, everything created in this function will be free'd once we re-enter the main
-		// menu We don't want our global variable to be considered "free" when we do this, so we move it to the system heap that is never
-		// free'd throughout the entire game's lifecycle and thus should keep our variable safe from memory overwriting shanigans
-		JKRHeap* preSectionHeap = JKRGetCurrentHeap();
-		sys->mSysHeap->becomeCurrentHeap();
-		global_language_swap = new LanguageSwap;
-		preSectionHeap->becomeCurrentHeap();
-	}
 }
 
 /**

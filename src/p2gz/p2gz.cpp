@@ -51,7 +51,7 @@ P2GZ::P2GZ()
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
 	treasure_editor              = new TreasureEditor();
-	language_menu_wrapper        = new LanguageSwap::LanguageSwapMenuWrapper();
+	language_menu_wrapper        = new LanguageSwap();
 
 	prev_heap->becomeCurrentHeap();
 }

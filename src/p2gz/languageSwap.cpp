@@ -5,9 +5,7 @@
 
 using namespace gz;
 
-LanguageSwap* global_language_swap;
-
-void LanguageSwap::LanguageSwapMenuWrapper::init_menu()
+void LanguageSwap::init_menu()
 {
 	JUT_ASSERTLINE(10, p2gz->menu, "no p2gz menu!\n");
 
@@ -16,11 +14,6 @@ void LanguageSwap::LanguageSwapMenuWrapper::init_menu()
 	region_opt->options.push("English");
 	region_opt->options.push("Japanese");
 	region_opt->options.push("PAL");
-}
-
-void LanguageSwap::LanguageSwapMenuWrapper::set_treasure_region(size_t new_treasure_region_id)
-{
-	global_language_swap->set_treasure_region(new_treasure_region_id);
 }
 
 void LanguageSwap::set_treasure_region(size_t new_treasure_region_id)
