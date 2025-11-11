@@ -189,7 +189,7 @@ void BasePelletMgr::load()
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
 		// @P2GZ localization-swap
 		// adjust to use p2gz region instead of system language region
-		P2ASSERTBOUNDSINCLUSIVELINE(158, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_JP);
+		P2ASSERTBOUNDSINCLUSIVELINE(158, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_PAL);
 		switch (p2gz->localization_op->get_treasure_region()) {
 		case Treasure_JP:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "jpn");
@@ -269,7 +269,7 @@ void BasePelletMgr::load_texArc(char* filename)
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
 		// @P2GZ localization-swap
 		// adjust to use p2gz region instead of system language region
-		P2ASSERTBOUNDSINCLUSIVELINE(244, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_JP);
+		P2ASSERTBOUNDSINCLUSIVELINE(244, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_PAL);
 		switch (p2gz->localization_op->get_treasure_region()) {
 		case Treasure_JP:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "jpn");
@@ -392,7 +392,7 @@ JKRArchive* BasePelletMgr::openTextArc(char* arc)
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
 		// @P2GZ localization-swap
 		// adjust to use p2gz region instead of system language region
-		P2ASSERTBOUNDSINCLUSIVELINE(350, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_JP);
+		P2ASSERTBOUNDSINCLUSIVELINE(350, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_PAL);
 		switch (p2gz->localization_op->get_treasure_region()) {
 		case Treasure_JP:
 			sprintf(directory, "/user/Abe/Pellet/%s/", "jpn");
