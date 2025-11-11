@@ -85,7 +85,7 @@ public:
 	gz::EKEditor* ek_editor;
 	gz::CaveDebugInfo* cave_debug_info;
 	gz::TreasureEditor* treasure_editor;
-	LanguageSwap* language_menu_wrapper;
+	Localization* localization_op;
 
 private:
 	bool inited;

@@ -64,7 +64,7 @@ Mgr::Mgr(JKRExpHeap* heap)
     , _2C(0)
     , mResContainer(nullptr)
     , mMsgRef(nullptr)
-// , mLanguageSwapHeap(nullptr)
+// , mLocalizationHeap(nullptr)
 {
 	P2ASSERTLINE(194, !gP2JMEMgr);
 	gP2JMEMgr = this;
@@ -92,9 +92,9 @@ Mgr::Mgr(JKRExpHeap* heap)
 	sys->heapStatusEnd("MessageMgr");
 
 	JKRHeap* currHeap = JKRGetCurrentHeap();
-	// mLanguageSwapHeap = makeExpHeap(0x60000, currHeap, false);
+	// mLocalizationHeap = makeExpHeap(0x60000, currHeap, false);
 	_2C = 0;
-	// mLanguageSwapHeap->becomeCurrentHeap();
+	// mLocalizationHeap->becomeCurrentHeap();
 	setupMessage();
 	currHeap->becomeCurrentHeap();
 	mIsLoaded = true;

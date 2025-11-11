@@ -158,9 +158,9 @@ void GZMenu::init_menu()
 		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
 			// Submenus get added in CutsceneMgr::init
 		))
-		->push(new OpenSubMenuOption("localization", (new ListMenu())
-			->push(new RadioMenuOption("treasure region", new Delegate1<LanguageSwap, size_t>
-				(p2gz->language_menu_wrapper, &LanguageSwap::set_treasure_region)))
+		->push(new OpenSubMenuOption(p2gz->localization_op->get_funni_text() ? "localization" : "localisation", (new ListMenu())
+			->push(new RadioMenuOption("treasure region", new Delegate1<Localization, size_t>
+				(p2gz->localization_op, &Localization::set_treasure_region)))
 		));
 	// clang-format on
 

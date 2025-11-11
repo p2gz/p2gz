@@ -15,6 +15,7 @@
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
 #include <IDelegate.h>
+#include "Dolphin/rand.h"
 
 using namespace gz;
 
@@ -51,7 +52,7 @@ P2GZ::P2GZ()
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
 	treasure_editor              = new TreasureEditor();
-	language_menu_wrapper        = new LanguageSwap();
+	localization_op              = new Localization(rand() % 2);
 
 	prev_heap->becomeCurrentHeap();
 }
@@ -78,7 +79,7 @@ void P2GZ::init()
 	poko_editor->init();
 	ek_editor->init();
 	treasure_editor->init();
-	language_menu_wrapper->init_menu();
+	localization_op->init_menu();
 
 	inited = true;
 	prev_heap->becomeCurrentHeap();

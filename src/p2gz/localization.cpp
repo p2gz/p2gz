@@ -28,18 +28,19 @@
 
 using namespace gz;
 
-void LanguageSwap::init_menu()
+void Localization::init_menu()
 {
 	JUT_ASSERTLINE(10, p2gz->menu, "no p2gz menu!\n");
 
 	// Setup treasure region option and 3 regions below (order of how we add them to the menu matters!!!)
-	RadioMenuOption* region_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("localization/treasure region"));
+	RadioMenuOption* region_opt = get_funni_text() ? static_cast<RadioMenuOption*>(p2gz->menu->get_option("localization/treasure region"))
+	                                               : static_cast<RadioMenuOption*>(p2gz->menu->get_option("localisation/treasure region"));
 	region_opt->options.push("English");
 	region_opt->options.push("Japanese");
 	region_opt->options.push("PAL");
 }
 
-void LanguageSwap::set_treasure_region(size_t new_treasure_region_id)
+void Localization::set_treasure_region(size_t new_treasure_region_id)
 {
 	// ID in the menu is not 1-to-1 with internal ID's, fix that here
 	switch (new_treasure_region_id) {
@@ -75,7 +76,7 @@ char* gk2TreasureNameSwap(char* oldTreasureName)
 		if (roomMgr && roomMgr->mCaveInfo) {
 			// If GK2
 			if (section->getCurrFloor() + 1 == 2) {
-				if (p2gz->language_menu_wrapper->get_treasure_region() == System::LANG_French) {
+				if (p2gz->localization_op->get_treasure_region() == System::LANG_French) {
 					// If the current treasure name is the US/JP internal name, return PAL name
 					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
 						return "g_futa_sikoku";
@@ -89,7 +90,7 @@ char* gk2TreasureNameSwap(char* oldTreasureName)
 			}
 			// If GK4
 			else if (section->getCurrFloor() + 1 == 4) {
-				if (p2gz->language_menu_wrapper->get_treasure_region() == System::LANG_French) {
+				if (p2gz->localization_op->get_treasure_region() == System::LANG_French) {
 					// If the current treasure name is the US/JP internal name, return PAL name
 					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
 						return "g_futa_kyusyu";
@@ -113,13 +114,13 @@ void updatePelletConfig(Game::PelletConfig* thisConfig)
 {
 	OSReport("Cur treasure: %s\n\n", thisConfig->mParams.mName.mData);
 	for (int i = 0; i < TREASURE_MAP_COUNT; i++) {
-		OSReport("Sys region: %d P2GZ region: %d Cur treasure map region: %d\n", sys->mRegion,
-		         p2gz->language_menu_wrapper->get_treasure_region(), treasureMap[i].region);
+		OSReport("Sys region: %d P2GZ region: %d Cur treasure map region: %d\n", sys->mRegion, p2gz->localization_op->get_treasure_region(),
+		         treasureMap[i].region);
 		OSReport("gk treasure swap: %s\n", gk2TreasureNameSwap(thisConfig->mParams.mName.mData));
 		// Loop through all treasures in the map to find the one we need to edit
 		if (!strcmp(gk2TreasureNameSwap(thisConfig->mParams.mName.mData), treasureMap[i].mName)) {
 			// This is the treasure we need; now check if it's for the right version
-			if (p2gz->language_menu_wrapper->get_treasure_region() == treasureMap[i].region) {
+			if (p2gz->localization_op->get_treasure_region() == treasureMap[i].region) {
 				OSReport("Region difference detected! Converting...\n");
 				// Update config info here
 				thisConfig->mParams.mArchive.mData        = treasureMap[i].mArchive;
@@ -170,8 +171,8 @@ void BasePelletMgr::load()
 	char* file = nullptr;
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		P2ASSERTBOUNDSINCLUSIVELINE(158, 0, p2gz->language_menu_wrapper->get_treasure_region(), System::LANG_Spanish);
-		switch (p2gz->language_menu_wrapper->get_treasure_region()) {
+		P2ASSERTBOUNDSINCLUSIVELINE(158, 0, p2gz->localization_op->get_treasure_region(), System::LANG_Spanish);
+		switch (p2gz->localization_op->get_treasure_region()) {
 		case System::LANG_Japanese:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "jpn");
 			file = buffer;
@@ -256,8 +257,8 @@ void BasePelletMgr::load_texArc(char* filename)
 	char* directory = nullptr;
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		P2ASSERTBOUNDSINCLUSIVELINE(244, 0, p2gz->language_menu_wrapper->get_treasure_region(), System::LANG_Spanish);
-		switch (p2gz->language_menu_wrapper->get_treasure_region()) {
+		P2ASSERTBOUNDSINCLUSIVELINE(244, 0, p2gz->localization_op->get_treasure_region(), System::LANG_Spanish);
+		switch (p2gz->localization_op->get_treasure_region()) {
 		case System::LANG_Japanese:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "jpn");
 			directory = buffer;
@@ -362,8 +363,8 @@ JKRArchive* BasePelletMgr::openTextArc(char* arc)
 	char directory[512];
 	char* file = nullptr;
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		P2ASSERTBOUNDSINCLUSIVELINE(350, 0, p2gz->language_menu_wrapper->get_treasure_region(), System::LANG_Spanish);
-		switch (p2gz->language_menu_wrapper->get_treasure_region()) {
+		P2ASSERTBOUNDSINCLUSIVELINE(350, 0, p2gz->localization_op->get_treasure_region(), System::LANG_Spanish);
+		switch (p2gz->localization_op->get_treasure_region()) {
 		case System::LANG_Japanese:
 			sprintf(directory, "/user/Abe/Pellet/%s/", "jpn");
 			file = directory;

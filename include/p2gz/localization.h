@@ -1,29 +1,30 @@
-#ifndef _GZ_LanguageSwap_H
-#define _GZ_LanguageSwap_H
+#ifndef _GZ_Localization_H
+#define _GZ_Localization_H
 
 #include <System.h>
 #include "Game/pelletMgr.h"
 
-struct LanguageSwap {
+struct Localization {
 
 public:
-	LanguageSwap()
-	    : need_to_change_flag(false)
-	    , treasure_region_id(System::LANG_English)
+	Localization(u8 randVal)
+	    : treasure_region_id(System::LANG_English)
 	{
+		funniMenuTextSetting = randVal == 0;
 	}
 
 	void init_menu();
 	System::LanguageID get_treasure_region() { return treasure_region_id; }
+	bool get_funni_text() { return funniMenuTextSetting; }
 
-	// Sets the region for which treasures to load
 	void set_treasure_region(size_t new_treasure_region_id);
+	void set_funni_text(u8 setting_) { funniMenuTextSetting = setting_; }
 
 private:
 	// Used to determine which treasure to spawn if it's different in a region (US vs. PAL vs. JP)
 	System::LanguageID treasure_region_id;
-	// We can only change language in title menu, so use this flag to let us know when todo that next time we enter the menu
-	bool need_to_change_flag;
+	// Funni check; 0 means menu text is localisation, 1 is menu text means localization
+	u8 funniMenuTextSetting;
 };
 
 enum TreasureRegion {
