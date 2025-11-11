@@ -228,8 +228,7 @@ void Preset::apply()
 			flag_set = cutscene_flags2 & (1 << (i - 32));
 		}
 		if (flag_set) {
-			const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
-			OSReport("setting cutscene flag %d\n", flag);
+			const Game::DemoFlags flag      = static_cast<Game::DemoFlags>(i);
 			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
 			if (cutscene_toggle) {
 				cutscene_toggle->set_cutscene_flag(true);

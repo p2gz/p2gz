@@ -79,8 +79,6 @@ void P2GZ::init()
 	treasure_editor->init();
 
 	inited = true;
-	OSReport("[P2GZ] Free space in system heap after init: %d (total: %d) bytes\n", sys->mSysHeap->getFreeSize(),
-	         sys->mSysHeap->getTotalFreeSize());
 	prev_heap->becomeCurrentHeap();
 }
 
