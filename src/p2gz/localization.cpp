@@ -41,14 +41,6 @@ void Localization::update_region()
 		return;
 	}
 
-	OSReport("[P2GZ] Swapping region %s to %s\n",
-	         active_treasure_region == Treasure_US   ? "US"
-	         : active_treasure_region == Treasure_JP ? "JP"
-	                                                 : "PAL",
-	         next_treasure_region == Treasure_US   ? "US"
-	         : next_treasure_region == Treasure_JP ? "JP"
-	                                               : "PAL");
-
 	// update treasures (i.e. not upgrades)
 	Game::PelletOtakara::Mgr* ota_mgr = Game::PelletOtakara::mgr;
 	if (ota_mgr) {

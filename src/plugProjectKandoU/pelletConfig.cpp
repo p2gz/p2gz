@@ -15,7 +15,6 @@ namespace Game {
  */
 PelletConfigList::PelletConfigList()
 {
-	OSReport("PelletConfigList created\n");
 	mConfigs   = nullptr;
 	mConfigCnt = 0;
 }
