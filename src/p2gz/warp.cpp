@@ -94,6 +94,14 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
+	// If preset is "none", we need to hide the enter option immediately since it won't update until we swap our warp target otherwise
+	if (enter_area_type_opt) {
+		if (dest.cave == 0 && preset != nullptr) {
+			enter_area_type_opt->visible = true;
+		} else {
+			enter_area_type_opt->visible = false;
+		}
+	}
 }
 
 WarpDestination Warp::current_dest()
@@ -135,7 +143,12 @@ void Warp::set_warp_cave(size_t cave)
 	update_sublevel_opt();
 	update_preset_opt();
 
-	enter_area_type_opt->visible = dest.cave == 0;
+	// For now, only allow enter area type for when no preset is selected for ag selection
+	if (dest.cave == 0 && preset != nullptr) {
+		enter_area_type_opt->visible = true;
+	} else {
+		enter_area_type_opt->visible = false;
+	}
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
