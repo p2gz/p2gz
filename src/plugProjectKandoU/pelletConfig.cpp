@@ -3,7 +3,7 @@
 #include "string.h"
 #include "TagParm.h"
 #include <p2gz/p2gz.h>
-#include <p2gz/LocalizationTreasureSwap.h>
+#include <p2gz/Localization.h>
 
 const char* className = "pelletConfig";
 
@@ -98,7 +98,7 @@ PelletConfig* PelletConfigList::getPelletConfig(char* str)
 
 		if (IS_SAME_STRING_N(pConfig->mParams.mName.mData, str, len)) {
 			// @P2GZ localization swap: update the specific config with the current version if-needed
-			LocalizationTreasureSwapFunc::updatePelletConfig(pConfig);
+			updatePelletConfig(pConfig);
 			return pConfig;
 		}
 	}

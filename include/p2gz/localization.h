@@ -1,8 +1,30 @@
-#ifndef _LOCALIZATIONTREASURESWAP_H
-#define _LOCALIZATIONTREASURESWAP_H
+#ifndef _GZ_LanguageSwap_H
+#define _GZ_LanguageSwap_H
 
-#include "Game/pelletConfig.h"
-#include <p2gz/p2gz.h>
+#include <System.h>
+#include "Game/pelletMgr.h"
+
+struct LanguageSwap {
+
+public:
+	LanguageSwap()
+	    : need_to_change_flag(false)
+	    , treasure_region_id(System::LANG_English)
+	{
+	}
+
+	void init_menu();
+	System::LanguageID get_treasure_region() { return treasure_region_id; }
+
+	// Sets the region for which treasures to load
+	void set_treasure_region(size_t new_treasure_region_id);
+
+private:
+	// Used to determine which treasure to spawn if it's different in a region (US vs. PAL vs. JP)
+	System::LanguageID treasure_region_id;
+	// We can only change language in title menu, so use this flag to let us know when todo that next time we enter the menu
+	bool need_to_change_flag;
+};
 
 enum TreasureRegion {
 	Treasure_US  = 0,
@@ -48,10 +70,10 @@ struct LocalizationTreasureSwap {
 	// s16 mIndex; // this should just be copied, all treasures ahve the same index
 	u8 mIndirectState;
 };
-namespace LocalizationTreasureSwapFunc {
 
 void updatePelletConfig(Game::PelletConfig* thisConfig);
 
-}; // namespace LocalizationTreasureSwapFunc
+extern const u32 TREASURE_MAP_COUNT;
+extern const LocalizationTreasureSwap treasureMap[];
 
 #endif

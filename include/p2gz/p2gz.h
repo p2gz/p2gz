@@ -15,7 +15,7 @@
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
-#include <p2gz/LanguageSwap.h>
+#include <p2gz/Localization.h>
 #include <p2gz/SquadEditor.h>
 #include <p2gz/StructureEditor.h>
 #include <p2gz/SegmentHistory.h>
