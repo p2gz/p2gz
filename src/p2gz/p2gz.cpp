@@ -84,6 +84,9 @@ void P2GZ::init()
 
 	inited = true;
 	prev_heap->becomeCurrentHeap();
+
+	OSReport("==== Sys heap free/total after P2GZ init: %.2f KB / %.2f KB\n", sys->mSysHeap->getTotalFreeSize() / 1024.0f,
+	         sys->mSysHeap->getHeapSize() / 1024.0f);
 }
 
 void P2GZ::update()

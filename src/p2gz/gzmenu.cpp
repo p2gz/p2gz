@@ -419,6 +419,9 @@ ListMenu* ListMenu::push(MenuOption* option)
 
 void ListMenu::clear()
 {
+	for (size_t i = 0; i < options.len(); i++) {
+		delete options[i];
+	}
 	options.clear();
 }
 
