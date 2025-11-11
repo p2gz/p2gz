@@ -244,6 +244,10 @@ void GZMenu::open()
 	if (enabled)
 		return;
 
+	// If freecam is active, don't open the menu
+	if (p2gz->freecam && p2gz->freecam->is_enabled())
+		return;
+  
 	// Don't open P2GZ menu during the following:
 	// - cutscenes (causes gameplay desync) - One exception:
 	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
