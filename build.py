@@ -25,17 +25,8 @@ P2GZ_CUSTOM_ASSETS_COMPRESSED = [
 P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Ebisawa', 'title', 'title.szs'),
+    os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'otakara_texts.szs'),
     os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
-    os.path.join(P2GZ_ASSETS, 'files', 'message', 'mesRes_fra.szs'),
-    os.path.join(P2GZ_ASSETS, 'files', 'message', 'mesRes_spa.szs'),
-    os.path.join(P2GZ_ASSETS, 'files', 'message', 'mesRes_ita.szs'),
-    os.path.join(P2GZ_ASSETS, 'files', 'message', 'mesRes_jpn.szs'),
-    os.path.join(P2GZ_ASSETS, 'files', 'message', 'mesRes_ger.szs'),
-    os.path.join(P2GZ_ASSETS, 'files', 'new_screen', 'fra'),
-    os.path.join(P2GZ_ASSETS, 'files', 'new_screen', 'spa'),
-    os.path.join(P2GZ_ASSETS, 'files', 'new_screen', 'ita'),
-    os.path.join(P2GZ_ASSETS, 'files', 'new_screen', 'jpn'),
-    os.path.join(P2GZ_ASSETS, 'files', 'new_screen', 'ger'),
 ]
 
 # argument parsing
