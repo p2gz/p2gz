@@ -2,39 +2,22 @@
 #include <p2gz/Localization.h>
 #include <System.h>
 #include <P2JME/P2JME.h>
-
-// include for ripped functions from pelletMgr.cpp
-#include "Game/GameConfig.h"
-#include "Game/gamePlayData.h"
-#include "Game/GameSystem.h"
-#include "Game/pelletMgr.h"
-#include "Game/Stickers.h"
-#include "Game/GameMessage.h"
-#include "Game/gameStat.h"
-#include "Game/DynParticle.h"
-#include "Game/PlatInstance.h"
-#include "Game/MoviePlayer.h"
-#include "Game/AIConstants.h"
-#include "Game/BaseHIO.h"
-#include "Dolphin/rand.h"
-#include "efx/TOtakara.h"
-#include "PSM/Otakara.h"
-#include "ObjectTypes.h"
-#include "CollInfo.h"
-#include "VsOtakaraName.h"
-#include "JSystem/J3D/J3DModelLoader.h"
-#include "nans.h"
+#include <Game/pelletMgr.h>
+#include <Game/GameConfig.h>
 #include <Game/SingleGameSection.h>
+#include <Game/Entities/PelletOtakara.h>
 
 using namespace gz;
 
 void Localization::init_menu()
 {
-	JUT_ASSERTLINE(10, p2gz->menu, "no p2gz menu!\n");
+	GZASSERTLINE(p2gz->menu);
 
-	// Setup treasure region option and 3 regions below (order of how we add them to the menu matters!!!)
+	// Setup treasure region option and 3 regions below
 	RadioMenuOption* region_opt = get_funni_text() ? static_cast<RadioMenuOption*>(p2gz->menu->get_option("localization/treasure region"))
 	                                               : static_cast<RadioMenuOption*>(p2gz->menu->get_option("localisation/treasure region"));
+
+	// NB: make sure this order matches the order in the TreasureRegion enum
 	region_opt->options.push("English");
 	region_opt->options.push("Japanese");
 	region_opt->options.push("PAL");
@@ -42,122 +25,154 @@ void Localization::init_menu()
 
 void Localization::set_treasure_region(size_t new_treasure_region_id)
 {
-	// ID in the menu is not 1-to-1 with internal ID's, fix that here
-	switch (new_treasure_region_id) {
-	case 0:
-	default:
-		treasure_region_id = System::LANG_English;
-		break;
-
-	case 1:
-		treasure_region_id = System::LANG_Japanese;
-		break;
-
-	// Internally, we'll have have all PAL treasures classified as french
-	case 2:
-		treasure_region_id = System::LANG_French;
-		break;
+	next_treasure_region = (TreasureRegion)new_treasure_region_id;
+	if (next_treasure_region != active_treasure_region) {
+		// update on next load
+		pending_update = true;
+	} else {
+		// no update needed
+		pending_update = false;
 	}
 }
 
-// GK2 is dumb for many reasons, but one of them is the internal name for treasues is not the
-// Same between regions (unlike every other treasure), so we check for that here
-// Replace the US/JP internal name with the PAL version, and vice versa depending on the current version
-char* gk2TreasureNameSwap(char* oldTreasureName)
+void Localization::update_region()
 {
-	// If not either of the 2 trouble treasures tied to GK, don't bother with anything below
-	if (!(!strcmp(oldTreasureName, "g_futa_kyusyu") || !strcmp(oldTreasureName, "g_futa_sikoku"))) {
-		return oldTreasureName;
+	if (!pending_update) {
+		return;
 	}
-	// Check if we are in GK
-	Game::BaseGameSection* section = Game::gameSystem->getSection();
-	if (section && section->getCaveID() == 'y_02') { // glutton's kitchen
-		Game::RoomMapMgr* roomMgr = static_cast<Game::RoomMapMgr*>(Game::mapMgr);
-		if (roomMgr && roomMgr->mCaveInfo) {
-			// If GK2
-			if (section->getCurrFloor() + 1 == 2) {
-				if (p2gz->localization_op->get_treasure_region() == System::LANG_French) {
-					// If the current treasure name is the US/JP internal name, return PAL name
-					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
-						return "g_futa_sikoku";
-					}
-				} else {
-					// If the current treasure name is the PAL internal name, return US/JP name
-					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
-						return "g_futa_kyusyu";
-					}
-				}
-			}
-			// If GK4
-			else if (section->getCurrFloor() + 1 == 4) {
-				if (p2gz->localization_op->get_treasure_region() == System::LANG_French) {
-					// If the current treasure name is the US/JP internal name, return PAL name
-					if (!strcmp(oldTreasureName, "g_futa_sikoku")) {
-						return "g_futa_kyusyu";
-					}
-				}
-				// Otherwise (US/JP version)
-				else {
-					// If the current treasure name is the PAL internal name, return US/JP name
-					if (!strcmp(oldTreasureName, "g_futa_kyusyu")) {
-						return "g_futa_sikoku";
-					}
-				}
-			}
-		}
-	}
-	// Not relevant, don't change name
-	return oldTreasureName;
-}
 
-void updatePelletConfig(Game::PelletConfig* thisConfig)
-{
-	OSReport("Cur treasure: %s\n\n", thisConfig->mParams.mName.mData);
-	for (int i = 0; i < TREASURE_MAP_COUNT; i++) {
-		OSReport("Sys region: %d P2GZ region: %d Cur treasure map region: %d\n", sys->mRegion, p2gz->localization_op->get_treasure_region(),
-		         treasureMap[i].region);
-		OSReport("gk treasure swap: %s\n", gk2TreasureNameSwap(thisConfig->mParams.mName.mData));
-		// Loop through all treasures in the map to find the one we need to edit
-		if (!strcmp(gk2TreasureNameSwap(thisConfig->mParams.mName.mData), treasureMap[i].mName)) {
-			// This is the treasure we need; now check if it's for the right version
-			if (p2gz->localization_op->get_treasure_region() == treasureMap[i].region) {
-				OSReport("Region difference detected! Converting...\n");
-				// Update config info here
-				thisConfig->mParams.mArchive.mData        = treasureMap[i].mArchive;
-				thisConfig->mParams.mBmd.mData            = treasureMap[i].mBmd;
-				thisConfig->mParams.mAnimMgr.mData        = treasureMap[i].mAnimMgr;
-				thisConfig->mParams.mColltree.mData       = treasureMap[i].mCollTree;
-				thisConfig->mParams.mRadius.mData         = treasureMap[i].mRadius;
-				thisConfig->mParams.mPRadius.mData        = treasureMap[i].mPRadius;
-				thisConfig->mParams.mHeight.mData         = treasureMap[i].mHeight;
-				thisConfig->mParams.mInertiaScaling.mData = treasureMap[i].mIntertialScaling;
-				thisConfig->mParams.mParticleType.mData   = treasureMap[i].mParticleType;
-				thisConfig->mParams.mNumParticles.mData   = treasureMap[i].mNumParticles;
-				thisConfig->mParams.mParticleSize.mData   = treasureMap[i].mParticleSize;
-				thisConfig->mParams.mFriction.mData       = treasureMap[i].mFriction;
-				thisConfig->mParams.mMin.mData            = treasureMap[i].mMin;
-				thisConfig->mParams.mMax.mData            = treasureMap[i].mMax;
-				thisConfig->mParams.mDynamics.mData       = treasureMap[i].mDynamics;
-				thisConfig->mParams.mMoney.mData          = treasureMap[i].mMoney;
-				thisConfig->mParams.mUnique.mData         = treasureMap[i].mUnique;
-				thisConfig->mParams.mIndirect.mData       = treasureMap[i].mIndirect;
-				thisConfig->mParams.mNumPMotions.mData    = treasureMap[i].mNumPMotions;
-				thisConfig->mParams.mDepth.mData          = treasureMap[i].mDepth;
-				thisConfig->mParams.mDepthMax.mData       = treasureMap[i].mDepthMax;
-				thisConfig->mParams.mDepthA.mData         = treasureMap[i].mDepthA;
-				thisConfig->mParams.mDepthB.mData         = treasureMap[i].mDepthB;
-				thisConfig->mParams.mDepthC.mData         = treasureMap[i].mDepthC;
-				thisConfig->mParams.mDepthD.mData         = treasureMap[i].mDepthD;
-				thisConfig->mParams.mCode.mData           = treasureMap[i].mCode;
-				thisConfig->mParams.mDictionary.mData     = treasureMap[i].mDictionary;
-				thisConfig->mParams.mIndirectState        = treasureMap[i].mIndirectState;
-				// We did what we need to, just end the function
-				return;
+	OSReport("[P2GZ] Swapping region %s to %s\n",
+	         active_treasure_region == Treasure_US   ? "US"
+	         : active_treasure_region == Treasure_JP ? "JP"
+	                                                 : "PAL",
+	         next_treasure_region == Treasure_US   ? "US"
+	         : next_treasure_region == Treasure_JP ? "JP"
+	                                               : "PAL");
+
+	// update treasures (i.e. not upgrades)
+	Game::PelletOtakara::Mgr* ota_mgr = Game::PelletOtakara::mgr;
+	if (ota_mgr) {
+		// update all the configs
+		int max = ota_mgr->mConfigList->mConfigCnt;
+		for (int i = 0; i < max; i++) {
+			Game::PelletConfig* config = ota_mgr->mConfigList->getPelletConfig(i);
+
+			// hot-swap GK2 and GK4 treasure names when going to or from PAL
+			// NB: this will result in entries being mismatched a bit, so need to handle that when loading the arcs
+			const char* name = config->mParams.mName.mData;
+			if ((next_treasure_region == Treasure_PAL) || (active_treasure_region == Treasure_PAL)) {
+				if (IS_SAME_STRING(name, "g_futa_kyusyu")) {
+					name = "g_futa_sikoku";
+
+				} else if (IS_SAME_STRING(name, "g_futa_sikoku")) {
+					name = "g_futa_kyusyu";
+				}
+			}
+
+			// check each config against our swap table to see if we have matches
+			for (int j = 0; j < TREASURE_MAP_COUNT; j++) {
+				const LocalizationTreasureSwap* treasure = &treasureMap[j];
+				// match regions
+				if (treasure->region != next_treasure_region) {
+					continue;
+				}
+
+				// match treasure internal name
+				if (!IS_SAME_STRING(name, treasure->internal_name)) {
+					continue;
+				}
+
+				config->mParams.mArchive.mData        = treasure->archive_name;
+				config->mParams.mBmd.mData            = treasure->bmd_name;
+				config->mParams.mAnimMgr.mData        = treasure->animMgr_name;
+				config->mParams.mColltree.mData       = treasure->collTree_name;
+				config->mParams.mRadius.mData         = treasure->bottom_radius;
+				config->mParams.mPRadius.mData        = treasure->pick_radius;
+				config->mParams.mHeight.mData         = treasure->cyl_height;
+				config->mParams.mInertiaScaling.mData = treasure->inertia_scaling;
+				config->mParams.mParticleType.mData   = treasure->ptcl_type;
+				config->mParams.mNumParticles.mData   = treasure->num_ptcls;
+				config->mParams.mParticleSize.mData   = treasure->ptcl_size;
+				config->mParams.mFriction.mData       = treasure->friction;
+				config->mParams.mMin.mData            = treasure->min_carriers;
+				config->mParams.mMax.mData            = treasure->max_carriers;
+				config->mParams.mDynamics.mData       = treasure->dyn_type;
+				config->mParams.mMoney.mData          = treasure->pokos;
+				config->mParams.mUnique.mData         = treasure->unique;
+				config->mParams.mIndirect.mData       = treasure->indirect_mats;
+				config->mParams.mNumPMotions.mData    = treasure->num_pmotions;
+				config->mParams.mDepth.mData          = treasure->bury_depth;
+				config->mParams.mDepthMax.mData       = treasure->bury_depth_max;
+				config->mParams.mDepthA.mData         = treasure->bury_radius_A;
+				config->mParams.mDepthB.mData         = treasure->bury_radius_B;
+				config->mParams.mDepthC.mData         = treasure->bury_radius_C;
+				config->mParams.mDepthD.mData         = treasure->bury_radius_D;
+				config->mParams.mCode.mData           = treasure->render_code;
+				config->mParams.mDictionary.mData     = treasure->piklopedia_num;
+				config->mParams.mIndirectState        = treasure->indirect_state;
+				break;
 			}
 		}
 	}
-	// If we make it here, treasure doesn't have a valid map (is same in all versions)
-	OSReport("No region difference\n");
+
+	// do the same for upgrades
+	// (the only two differences are the globes, but it's a short list. it's fine.)
+	Game::PelletItem::Mgr* item_mgr = Game::PelletItem::mgr;
+	if (item_mgr) {
+		// update all the configs
+		int max = item_mgr->mConfigList->mConfigCnt;
+		for (int i = 0; i < max; i++) {
+			Game::PelletConfig* config = item_mgr->mConfigList->getPelletConfig(i);
+
+			// check each config against our swap table to see if we have matches
+			for (int j = 0; j < TREASURE_MAP_COUNT; j++) {
+				const LocalizationTreasureSwap* treasure = &treasureMap[j];
+				// match regions
+				if (treasure->region != next_treasure_region) {
+					continue;
+				}
+
+				// match treasure internal name
+				if (!IS_SAME_STRING(config->mParams.mName.mData, treasure->internal_name)) {
+					continue;
+				}
+
+				config->mParams.mArchive.mData        = treasure->archive_name;
+				config->mParams.mBmd.mData            = treasure->bmd_name;
+				config->mParams.mAnimMgr.mData        = treasure->animMgr_name;
+				config->mParams.mColltree.mData       = treasure->collTree_name;
+				config->mParams.mRadius.mData         = treasure->bottom_radius;
+				config->mParams.mPRadius.mData        = treasure->pick_radius;
+				config->mParams.mHeight.mData         = treasure->cyl_height;
+				config->mParams.mInertiaScaling.mData = treasure->inertia_scaling;
+				config->mParams.mParticleType.mData   = treasure->ptcl_type;
+				config->mParams.mNumParticles.mData   = treasure->num_ptcls;
+				config->mParams.mParticleSize.mData   = treasure->ptcl_size;
+				config->mParams.mFriction.mData       = treasure->friction;
+				config->mParams.mMin.mData            = treasure->min_carriers;
+				config->mParams.mMax.mData            = treasure->max_carriers;
+				config->mParams.mDynamics.mData       = treasure->dyn_type;
+				config->mParams.mMoney.mData          = treasure->pokos;
+				config->mParams.mUnique.mData         = treasure->unique;
+				config->mParams.mIndirect.mData       = treasure->indirect_mats;
+				config->mParams.mNumPMotions.mData    = treasure->num_pmotions;
+				config->mParams.mDepth.mData          = treasure->bury_depth;
+				config->mParams.mDepthMax.mData       = treasure->bury_depth_max;
+				config->mParams.mDepthA.mData         = treasure->bury_radius_A;
+				config->mParams.mDepthB.mData         = treasure->bury_radius_B;
+				config->mParams.mDepthC.mData         = treasure->bury_radius_C;
+				config->mParams.mDepthD.mData         = treasure->bury_radius_D;
+				config->mParams.mCode.mData           = treasure->render_code;
+				config->mParams.mDictionary.mData     = treasure->piklopedia_num;
+				config->mParams.mIndirectState        = treasure->indirect_state;
+				break;
+			}
+		}
+	}
+
+	// update previous treasure region to avoid repeated updates
+	active_treasure_region = next_treasure_region;
+	pending_update         = false;
 }
 
 // Add functions from pelletMgr.cpp below that we need to change for treasure swapping; these functions are equivalent but pelletMgr.cpp is
@@ -165,27 +180,26 @@ void updatePelletConfig(Game::PelletConfig* thisConfig)
 
 namespace Game {
 
+// @Extracted: pelletMgr.s load__Q24Game13BasePelletMgrFv
 void BasePelletMgr::load()
 {
 	char buffer[512];
 	char* file = nullptr;
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		P2ASSERTBOUNDSINCLUSIVELINE(158, 0, p2gz->localization_op->get_treasure_region(), System::LANG_Spanish);
+		// @P2GZ localization-swap
+		// adjust to use p2gz region instead of system language region
+		P2ASSERTBOUNDSINCLUSIVELINE(158, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_JP);
 		switch (p2gz->localization_op->get_treasure_region()) {
-		case System::LANG_Japanese:
+		case Treasure_JP:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "jpn");
 			file = buffer;
 			break;
-		case System::LANG_English:
+		case Treasure_US:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "us");
 			file = buffer;
 			break;
-		case System::LANG_French:
-		case System::LANG_German:
-		// case System::LANG_HOL_UNUSED:
-		case System::LANG_Italian:
-		case System::LANG_Spanish:
+		case Treasure_PAL:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "pal");
 			file = buffer;
 			break;
@@ -246,32 +260,26 @@ void BasePelletMgr::load()
 	}
 }
 
-/**
- * @note Address: 0x8016C0CC
- * @note Size: 0x3E4
- */
-// WIP: https://decomp.me/scratch/Ltrad
+// @Extracted: pelletMgr.s load_texArc__Q24Game13BasePelletMgrFPc
 void BasePelletMgr::load_texArc(char* filename)
 {
 	char buffer[512];
 	char* directory = nullptr;
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		P2ASSERTBOUNDSINCLUSIVELINE(244, 0, p2gz->localization_op->get_treasure_region(), System::LANG_Spanish);
+		// @P2GZ localization-swap
+		// adjust to use p2gz region instead of system language region
+		P2ASSERTBOUNDSINCLUSIVELINE(244, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_JP);
 		switch (p2gz->localization_op->get_treasure_region()) {
-		case System::LANG_Japanese:
+		case Treasure_JP:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "jpn");
 			directory = buffer;
 			break;
-		case System::LANG_English:
+		case Treasure_US:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "us");
 			directory = buffer;
 			break;
-		case System::LANG_French:
-		case System::LANG_German:
-		// case System::LANG_HOL_UNUSED:
-		case System::LANG_Italian:
-		case System::LANG_Spanish:
+		case Treasure_PAL:
 			sprintf(buffer, "/user/Abe/Pellet/%s/", "pal");
 			directory = buffer;
 			break;
@@ -338,7 +346,18 @@ void BasePelletMgr::load_texArc(char* filename)
 			}
 
 			if (config->mParams.mAnimMgr.mData != 0) {
-				sprintf(path, "%s/%s", gk2TreasureNameSwap(config->mParams.mName.mData), config->mParams.mAnimMgr.mData);
+				// @P2GZ localization-swap
+				// PAL GK2/4 treasures have incorrect names, so swap them
+				// sprintf(path, "%s/%s", config->mParams.mName.mData, config->mParams.mAnimMgr.mData);
+				const char* name = config->mParams.mName.mData;
+				if (p2gz->localization_op->get_treasure_region() == Treasure_PAL) {
+					if (IS_SAME_STRING(name, "g_futa_kyusyu")) {
+						name = "g_futa_sikoku";
+					} else if (IS_SAME_STRING(name, "g_futa_sikoku")) {
+						name = "g_futa_kyusyu";
+					}
+				}
+				sprintf(path, "%s/%s", name, config->mParams.mAnimMgr.mData);
 				mAnimMgr[i] = SysShape::AnimMgr::load(textArc, path, data, archive, nullptr);
 				if (mAnimMgr[i] == nullptr) {
 					mAnimMgr[i] = SysShape::AnimMgr::load(textArc, path, data, archive, nullptr);
@@ -346,7 +365,18 @@ void BasePelletMgr::load_texArc(char* filename)
 			}
 
 			if (config->mParams.mColltree.mData != 0) {
-				sprintf(path, "%s/%s", gk2TreasureNameSwap(config->mParams.mName.mData), config->mParams.mColltree.mData);
+				// @P2GZ localization-swap
+				// PAL GK2/4 treasures have incorrect names, so swap them
+				// sprintf(path, "%s/%s", config->mParams.mName.mData, config->mParams.mAnimMgr.mData);
+				const char* name = config->mParams.mName.mData;
+				if (p2gz->localization_op->get_treasure_region() == Treasure_PAL) {
+					if (IS_SAME_STRING(name, "g_futa_kyusyu")) {
+						name = "g_futa_sikoku";
+					} else if (IS_SAME_STRING(name, "g_futa_sikoku")) {
+						name = "g_futa_kyusyu";
+					}
+				}
+				sprintf(path, "%s/%s", name, config->mParams.mColltree.mData);
 				mCollParts[i] = CollPartFactory::load(textArc, path);
 			}
 		}
@@ -354,30 +384,25 @@ void BasePelletMgr::load_texArc(char* filename)
 	closeTextArc(textArc);
 }
 
-/**
- * @note Address: 0x8016C4B0
- * @note Size: 0x10C
- */
+// @Extracted: pelletMgr.s openTextArc__Q24Game13BasePelletMgrFPc
 JKRArchive* BasePelletMgr::openTextArc(char* arc)
 {
 	char directory[512];
 	char* file = nullptr;
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		P2ASSERTBOUNDSINCLUSIVELINE(350, 0, p2gz->localization_op->get_treasure_region(), System::LANG_Spanish);
+		// @P2GZ localization-swap
+		// adjust to use p2gz region instead of system language region
+		P2ASSERTBOUNDSINCLUSIVELINE(350, Treasure_US, p2gz->localization_op->get_treasure_region(), Treasure_JP);
 		switch (p2gz->localization_op->get_treasure_region()) {
-		case System::LANG_Japanese:
+		case Treasure_JP:
 			sprintf(directory, "/user/Abe/Pellet/%s/", "jpn");
 			file = directory;
 			break;
-		case System::LANG_English:
+		case Treasure_US:
 			sprintf(directory, "/user/Abe/Pellet/%s/", "us");
 			file = directory;
 			break;
-		case System::LANG_French:
-		case System::LANG_German:
-		// case System::LANG_HOL_UNUSED:
-		case System::LANG_Italian:
-		case System::LANG_Spanish:
+		case Treasure_PAL:
 			sprintf(directory, "/user/Abe/Pellet/%s/", "pal");
 			file = directory;
 			break;

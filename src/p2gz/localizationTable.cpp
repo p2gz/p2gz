@@ -2,13 +2,15 @@
 #include <p2gz/Localization.h>
 #include "Game/pelletMgr.h"
 
+namespace gz {
+
 const LocalizationTreasureSwap treasureMap[] = {
 	//////////////////// VALLEY OF REPOSE ////////////////////
 	//// Above Ground - 1
 	// Courage Reactor - different in JP
 	{
 	    // Courage Reactor
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "denchi_1_red",                 // internal name
 	    "denchi_1_red.szs",             // archive filename
 	    "us_denchi_1.bmd",              // bmd filename
@@ -41,7 +43,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Courage Reactor
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "denchi_1_red",                 // internal name
 	    "denchi_1_red.szs",             // archive filename
 	    "us_denchi_1.bmd",              // bmd filename
@@ -74,7 +76,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Love and Courage Reactor
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "denchi_1_red",                 // internal name
 	    "denchi_1_red.szs",             // archive filename
 	    "denchi_1_red.bmd",             // bmd filename
@@ -106,11 +108,113 @@ const LocalizationTreasureSwap treasureMap[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 
+	//// Emergence Cave - 1
+	// Spherical Atlas (EC2) - different in all three
+	{
+	    // Spherical Atlas
+	    Treasure_US,                    // region
+	    "map01",                        // internal name
+	    "map01.szs",                    // archive filename
+	    "us_eq_map01.bmd",              // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    53.0,                           // pradius
+	    50.0,                           // height
+	    750.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    101,                            // min carry
+	    101,                            // max carry
+	    "lod",                          // dynamics
+	    200,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    50.0,                           // max depth (for burying stuff)
+	    53.0,                           // depth A (for burying stuff)
+	    53.0,                           // depth B (for burying stuff)
+	    53.0,                           // depth C (for burying stuff)
+	    53.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    184,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Spherical Atlas
+	    Treasure_PAL,                   // region
+	    "map01",                        // internal name
+	    "map01.szs",                    // archive filename
+	    "pal_eq_map01.bmd",             // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    53.0,                           // pradius
+	    50.0,                           // height
+	    750.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    101,                            // min carry
+	    101,                            // max carry
+	    "lod",                          // dynamics
+	    200,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    50.0,                           // max depth (for burying stuff)
+	    53.0,                           // depth A (for burying stuff)
+	    53.0,                           // depth B (for burying stuff)
+	    53.0,                           // depth C (for burying stuff)
+	    53.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    184,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Spherical Atlas
+	    Treasure_JP,                    // region
+	    "map01",                        // internal name
+	    "map01.szs",                    // archive filename
+	    "eq_map01.bmd",                 // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    53.0,                           // pradius
+	    50.0,                           // height
+	    750.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    101,                            // min carry
+	    101,                            // max carry
+	    "lod",                          // dynamics
+	    200,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    50.0,                           // max depth (for burying stuff)
+	    53.0,                           // depth A (for burying stuff)
+	    53.0,                           // depth B (for burying stuff)
+	    53.0,                           // depth C (for burying stuff)
+	    53.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    184,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
 	//// Subterranean Complex - 1
 	// Thirst Activator (SCx7) - different for all three
 	{
 	    // Thirst Activator
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "denchi_1_black",               // internal name
 	    "denchi_1_black.szs",           // archive filename
 	    "us_futa_treetop.bmd",          // bmd filename
@@ -143,7 +247,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Perfect Container
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "denchi_1_black",               // internal name
 	    "denchi_1_black.szs",           // archive filename
 	    "us_kan_beachcliff.bmd",        // bmd filename
@@ -176,7 +280,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Alternative Reactor
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "denchi_1_black",               // internal name
 	    "denchi_1_black.szs",           // archive filename
 	    "denchi_1_black.bmd",           // bmd filename
@@ -213,11 +317,11 @@ const LocalizationTreasureSwap treasureMap[] = {
 	////////////////////////////////////////////////////////
 
 	//////////////////// AWAKENING WOOD ////////////////////
-	//// Above Ground - 1
+	//// Above Ground - 3
 	// Healing Cask - different in all three
 	{
 	    // Healing Cask
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_hiruzen",               // internal name
 	    "g_futa_hiruzen.szs",           // archive filename
 	    "us_futa_carmex.bmd",           // bmd filename
@@ -250,7 +354,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Hypnotic Platter
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_hiruzen",               // internal name
 	    "g_futa_hiruzen.szs",           // archive filename
 	    "pal_cap_vitamalz.bmd",         // bmd filename
@@ -283,7 +387,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Seat of Enlightenment
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_hiruzen",               // internal name
 	    "g_futa_hiruzen.szs",           // archive filename
 	    "g_futa_hiruzen.bmd",           // bmd filename
@@ -315,13 +419,215 @@ const LocalizationTreasureSwap treasureMap[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 
+	// Decorative Goo - different in JP
+	{
+	    // Decorative Goo
+	    Treasure_US,                    // region
+	    "kan",                          // internal name
+	    "kan.szs",                      // archive filename
+	    "us_enogu.bmd",                 // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    24.0,                           // radius
+	    24.0,                           // pradius
+	    35.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    10,                             // min carry
+	    20,                             // max carry
+	    "lod",                          // dynamics
+	    80,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    55.0,                           // max depth (for burying stuff)
+	    55.0,                           // depth A (for burying stuff)
+	    55.0,                           // depth B (for burying stuff)
+	    55.0,                           // depth C (for burying stuff)
+	    55.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    64,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Decorative Goo
+	    Treasure_PAL,                   // region
+	    "kan",                          // internal name
+	    "kan.szs",                      // archive filename
+	    "us_enogu.bmd",                 // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    24.0,                           // radius
+	    24.0,                           // pradius
+	    35.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    10,                             // min carry
+	    20,                             // max carry
+	    "lod",                          // dynamics
+	    80,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    55.0,                           // max depth (for burying stuff)
+	    55.0,                           // depth A (for burying stuff)
+	    55.0,                           // depth B (for burying stuff)
+	    55.0,                           // depth C (for burying stuff)
+	    55.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    64,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Decorative Goo
+	    Treasure_JP,                    // region
+	    "kan",                          // internal name
+	    "kan.szs",                      // archive filename
+	    "kan.bmd",                      // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    24.0,                           // radius
+	    24.0,                           // pradius
+	    35.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    10,                             // min carry
+	    20,                             // max carry
+	    "lod",                          // dynamics
+	    80,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    55.0,                           // max depth (for burying stuff)
+	    55.0,                           // depth A (for burying stuff)
+	    55.0,                           // depth B (for burying stuff)
+	    55.0,                           // depth C (for burying stuff)
+	    55.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    63,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
+	// Geographic Projection - different in all three
+	{
+	    // Geographic Projection
+	    Treasure_US,                    // region
+	    "map02",                        // internal name
+	    "map02.szs",                    // archive filename
+	    "us_eq_map02.bmd",              // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    52.0,                           // pradius
+	    50.0,                           // height
+	    750.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    101,                            // min carry
+	    101,                            // max carry
+	    "lod",                          // dynamics
+	    200,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    3.0,                            // depth (for burying stuff)
+	    60.0,                           // max depth (for burying stuff)
+	    52.0,                           // depth A (for burying stuff)
+	    52.0,                           // depth B (for burying stuff)
+	    52.0,                           // depth C (for burying stuff)
+	    52.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    185,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Geographic Projection
+	    Treasure_PAL,                   // region
+	    "map02",                        // internal name
+	    "map02.szs",                    // archive filename
+	    "pal_eq_map02.bmd",             // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    52.0,                           // pradius
+	    50.0,                           // height
+	    750.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    101,                            // min carry
+	    101,                            // max carry
+	    "lod",                          // dynamics
+	    200,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    3.0,                            // depth (for burying stuff)
+	    60.0,                           // max depth (for burying stuff)
+	    52.0,                           // depth A (for burying stuff)
+	    52.0,                           // depth B (for burying stuff)
+	    52.0,                           // depth C (for burying stuff)
+	    52.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    185,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Geographic Projection
+	    Treasure_JP,                    // region
+	    "map02",                        // internal name
+	    "map02.szs",                    // archive filename
+	    "eq_map02.bmd",                 // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    52.0,                           // pradius
+	    50.0,                           // height
+	    750.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    101,                            // min carry
+	    101,                            // max carry
+	    "lod",                          // dynamics
+	    200,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    3.0,                            // depth (for burying stuff)
+	    60.0,                           // max depth (for burying stuff)
+	    52.0,                           // depth A (for burying stuff)
+	    52.0,                           // depth B (for burying stuff)
+	    52.0,                           // depth C (for burying stuff)
+	    52.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    185,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
 	//// Hole of Beasts - None
 
 	//// White Flower Garden - 2
 	// Alien Billboard - different in PAL
 	{
 	    // Alien Billboard
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "fire_helmet",                  // internal name
 	    "fire_helmet.szs",              // archive filename
 	    "toy_fire_helmet.bmd",          // bmd filename
@@ -354,7 +660,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Nutrient Silo
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "fire_helmet",                  // internal name
 	    "fire_helmet.szs",              // archive filename
 	    "us_kan_skippy.bmd",            // bmd filename
@@ -387,7 +693,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Alien Billboard
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "fire_helmet",                  // internal name
 	    "fire_helmet.szs",              // archive filename
 	    "toy_fire_helmet.bmd",          // bmd filename
@@ -421,7 +727,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Survival Ointment (WFG4) - different for all three
 	{
 	    // Survival Ointment
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_kajiwara",              // internal name
 	    "g_futa_kajiwara.szs",          // archive filename
 	    "us_lip_chapstick.bmd",         // bmd filename
@@ -454,7 +760,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Container of Sea Bounty
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_kajiwara",              // internal name
 	    "g_futa_kajiwara.szs",          // archive filename
 	    "pal_kan_hawesta.bmd",          // bmd filename
@@ -487,7 +793,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Paper Slider
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_kajiwara",              // internal name
 	    "g_futa_kajiwara.szs",          // archive filename
 	    "g_futa_kajiwara.bmd",          // bmd filename
@@ -525,7 +831,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Stupendous Lens (SH6) - different in all three
 	{
 	    // Stupendous Lens
-	    System::LANG_English,            // region
+	    Treasure_US,                     // region
 	    "bey_goma",                      // internal name
 	    "bey_goma.szs",                  // archive filename
 	    "us_musi_lens.bmd",              // bmd filename
@@ -558,7 +864,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Mysterious Remains
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "bey_goma",                     // internal name
 	    "bey_goma.szs",                 // archive filename
 	    "us_kani.bmd",                  // bmd filename
@@ -591,7 +897,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Ultimate Spinner
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "bey_goma",                     // internal name
 	    "bey_goma.szs",                 // archive filename
 	    "bey_goma.bmd",                 // bmd filename
@@ -626,7 +932,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Salivatrix (SH6) - different in JP
 	{
 	    // Salivtrix
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_kyodo",                 // internal name
 	    "g_futa_kyodo.szs",             // archive filename
 	    "us_futa_dannon.bmd",           // bmd filename
@@ -659,7 +965,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Salivtrix
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_kyodo",                 // internal name
 	    "g_futa_kyodo.szs",             // archive filename
 	    "us_futa_dannon.bmd",           // bmd filename
@@ -692,7 +998,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Highly Logical Money
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_kyodo",                 // internal name
 	    "g_futa_kyodo.szs",             // archive filename
 	    "g_futa_kyodo.bmd",             // bmd filename
@@ -731,7 +1037,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Impediment Scourge - different in JP
 	{
 	    // Impediment Scourge
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "yoyo_blue",                    // internal name
 	    "yoyo_blue.szs",                // archive filename
 	    "us_sen_nuki.bmd",              // bmd filename
@@ -764,7 +1070,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Impediment Scourge
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "yoyo_blue",                    // internal name
 	    "yoyo_blue.szs",                // archive filename
 	    "us_sen_nuki.bmd",              // bmd filename
@@ -797,7 +1103,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Lightning Bolt
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "yoyo_blue",                    // internal name
 	    "yoyo_blue.szs",                // archive filename
 	    "yoyo_blue.bmd",                // bmd filename
@@ -832,7 +1138,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Optical Illusion - different in all three
 	{
 	    // Optical Illusion
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "denchi_2_red",                 // internal name
 	    "denchi_2_red.szs",             // archive filename
 	    "us_futa_ragu.bmd",             // bmd filename
@@ -865,7 +1171,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Abstract Masterpiece
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "denchi_2_red",                 // internal name
 	    "denchi_2_red.szs",             // archive filename
 	    "pal_cap_pscttitt.bmd",         // bmd filename
@@ -898,7 +1204,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Yell Battery
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "denchi_2_red",                 // internal name
 	    "denchi_2_red.szs",             // archive filename
 	    "denchi_2_red.bmd",             // bmd filename
@@ -933,7 +1239,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Gherkin Gate - different in JP
 	{
 	    // Gherkin Gate
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_daisen",                // internal name
 	    "g_futa_daisen.szs",            // archive filename
 	    "us_futa_vlasic.bmd",           // bmd filename
@@ -966,7 +1272,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Gherkin Gate
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_daisen",                // internal name
 	    "g_futa_daisen.szs",            // archive filename
 	    "us_futa_vlasic.bmd",           // bmd filename
@@ -999,7 +1305,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Idea Assistant
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_daisen",                // internal name
 	    "g_futa_daisen.szs",            // archive filename
 	    "g_futa_daisen.bmd",            // bmd filename
@@ -1035,7 +1341,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Creative Inspiration (CoS1) - different in all three
 	{
 	    // Creative Inspiration
-	    System::LANG_English,            // region
+	    Treasure_US,                     // region
 	    "g_futa_titiyas",                // internal name
 	    "g_futa_titiyas.szs",            // archive filename
 	    "us_cap_rccola.bmd",             // bmd filename
@@ -1068,7 +1374,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Activity Arouser
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_titiyas",               // internal name
 	    "g_futa_titiyas.szs",           // archive filename
 	    "pal_cap_sinalco.bmd",          // bmd filename
@@ -1101,7 +1407,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Milky Figure
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_titiyas",               // internal name
 	    "g_futa_titiyas.szs",           // archive filename
 	    "g_futa_titiyas.bmd",           // bmd filename
@@ -1136,7 +1442,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Lip Service (CoS2) - different in JP
 	{
 	    // Lip Service
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_b_gold",                   // internal name
 	    "kan_b_gold.szs",               // archive filename
 	    "us_kuchi_beni.bmd",            // bmd filename
@@ -1169,7 +1475,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Lip Service
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_b_gold",                   // internal name
 	    "kan_b_gold.szs",               // archive filename
 	    "us_kuchi_beni.bmd",            // bmd filename
@@ -1202,7 +1508,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Family Raft
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_b_gold",                   // internal name
 	    "kan_b_gold.szs",               // archive filename
 	    "dust_kan_futa_b_gold.bmd",     // bmd filename
@@ -1237,7 +1543,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Patience Tester (CoS3) - different in US
 	{
 	    // Patience Tester
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_nichiro",                  // internal name
 	    "kan_nichiro.szs",              // archive filename
 	    "us_kan_sunluck.bmd",           // bmd filename
@@ -1270,7 +1576,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Open Architecture
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_nichiro",                  // internal name
 	    "kan_nichiro.szs",              // archive filename
 	    "kan_nichiro.bmd",              // bmd filename
@@ -1303,7 +1609,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Open Architecture
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_nichiro",                  // internal name
 	    "kan_nichiro.szs",              // archive filename
 	    "kan_nichiro.bmd",              // bmd filename
@@ -1338,7 +1644,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Flame of Tomorrow (CoS4) - different in JP
 	{
 	    // Flame of Tomorrow
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "tape_blue",                    // internal name
 	    "tape_blue.szs",                // archive filename
 	    "us_match.bmd",                 // bmd filename
@@ -1371,7 +1677,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Flame of Tomorrow
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "tape_blue",                    // internal name
 	    "tape_blue.szs",                // archive filename
 	    "us_match.bmd",                 // bmd filename
@@ -1404,7 +1710,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Flame of Tomorrow
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "tape_blue",                    // internal name
 	    "tape_blue.szs",                // archive filename
 	    "vinyl_tape_blue.bmd",          // bmd filename
@@ -1440,7 +1746,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Massive Lid (GK2) - different in all three
 	{
 	    // Massive Lid
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_kyusyu",                // internal name
 	    "g_futa_kyusyu.szs",            // archive filename
 	    "us_cap_yoohoo.bmd",            // bmd filename
@@ -1473,7 +1779,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Survival Container
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_sikoku",                // internal name
 	    "g_futa_sikoku.szs",            // archive filename
 	    "us_kan_clabbergirl.bmd",       // bmd filename
@@ -1506,7 +1812,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Milk Cover
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_kyusyu",                // internal name
 	    "g_futa_kyusyu.szs",            // archive filename
 	    "g_futa_kyusyu.bmd",            // bmd filename
@@ -1541,7 +1847,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Happiness Emblem (GK4) - different in all three
 	{
 	    // Happiness Emblem
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_sikoku",                // internal name
 	    "g_futa_sikoku.szs",            // archive filename
 	    "us_cap_squirt.bmd",            // bmd filename
@@ -1574,7 +1880,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Drone Supplies
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_kyusyu",                // internal name
 	    "g_futa_kyusyu.szs",            // archive filename
 	    "pal_sweets_haribo.bmd",        // bmd filename
@@ -1607,7 +1913,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Good Old Memories
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_sikoku",                // internal name
 	    "g_futa_sikoku.szs",            // archive filename
 	    "g_futa_sikoku.bmd",            // bmd filename
@@ -1643,7 +1949,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Merciless Extractor (SR1) - different in US
 	{
 	    // Merciless Extractor
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "otama",                        // internal name
 	    "otama.szs",                    // archive filename
 	    "us_lemon_sibori.bmd",          // bmd filename
@@ -1676,7 +1982,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Divine Cooking Tool
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "otama",                        // internal name
 	    "otama.szs",                    // archive filename
 	    "otama.bmd",                    // bmd filename
@@ -1709,7 +2015,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Divine Cooking Tool
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "otama",                        // internal name
 	    "otama.szs",                    // archive filename
 	    "otama.bmd",                    // bmd filename
@@ -1744,7 +2050,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Durable Energy Cell (SR2) - different in JP
 	{
 	    // Durable Energy Cell
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "denchi_2_black",               // internal name
 	    "denchi_2_black.szs",           // archive filename
 	    "us_denchi_2.bmd",              // bmd filename
@@ -1777,7 +2083,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Durable Energy Cell
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "denchi_2_black",               // internal name
 	    "denchi_2_black.szs",           // archive filename
 	    "us_denchi_2.bmd",              // bmd filename
@@ -1810,7 +2116,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Revised Eternal Fuel Dynamo
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "denchi_2_black",               // internal name
 	    "denchi_2_black.szs",           // archive filename
 	    "denchi_2_black.bmd",           // bmd filename
@@ -1845,7 +2151,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Arboreal Frippery (SR4) - different in PAL
 	{
 	    // Arboreal Frippery
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "momiji_normal",                // internal name
 	    "momiji_normal.szs",            // archive filename
 	    "momiji_nomal.bmd",             // bmd filename
@@ -1878,7 +2184,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Arboreal Frippery
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "momiji_normal",                // internal name
 	    "momiji_normal.szs",            // archive filename
 	    "pal_momiji_red.bmd",           // bmd filename
@@ -1911,7 +2217,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Arboreal Frippery
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "momiji_normal",                // internal name
 	    "momiji_normal.szs",            // archive filename
 	    "momiji_nomal.bmd",             // bmd filename
@@ -1946,7 +2252,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Broken Food Master (SR5) - different in all three
 	{
 	    // Broken Food Master
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "toy_lady",                     // internal name
 	    "toy_lady.szs",                 // archive filename
 	    "otama.bmd",                    // bmd filename
@@ -1979,7 +2285,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Merciless Extractor
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "toy_lady",                     // internal name
 	    "toy_lady.szs",                 // archive filename
 	    "us_lemon_sibori.bmd",          // bmd filename
@@ -2012,7 +2318,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Broken Cooking God
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "toy_lady",                     // internal name
 	    "toy_lady.szs",                 // archive filename
 	    "funny_toy_lady.bmd",           // bmd filename
@@ -2047,7 +2353,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Endless Repository (SR5) - different in US
 	{
 	    // Endless Repository
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_iwate",                    // internal name
 	    "kan_iwate.szs",                // archive filename
 	    "us_kan_beachcliff.bmd",        // bmd filename
@@ -2080,7 +2386,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Permanent Container
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_iwate",                    // internal name
 	    "kan_iwate.szs",                // archive filename
 	    "kan_iwate.bmd",                // bmd filename
@@ -2113,7 +2419,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Permanent Container
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_iwate",                    // internal name
 	    "kan_iwate.szs",                // archive filename
 	    "kan_iwate.bmd",                // bmd filename
@@ -2148,7 +2454,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Pondering Emblem (SR5) - different in all three
 	{
 	    // Pondering Emblem
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_kitaama",               // internal name
 	    "g_futa_kitaama.szs",           // archive filename
 	    "us_cap_yoohoo_choco.bmd",      // bmd filename
@@ -2181,7 +2487,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Happiness Emblem
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_kitaama",               // internal name
 	    "g_futa_kitaama.szs",           // archive filename
 	    "pal_cap_fristi.bmd",           // bmd filename
@@ -2214,7 +2520,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Milky Cradle
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_kitaama",               // internal name
 	    "g_futa_kitaama.szs",           // archive filename
 	    "g_futa_kitaama.bmd",           // bmd filename
@@ -2249,7 +2555,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Abstract Masterpiece (SR6) - different in all three
 	{
 	    // Abstract Masterpiece
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "milk_cap",                     // internal name
 	    "milk_cap.szs",                 // archive filename
 	    "us_futa_snapple.bmd",          // bmd filename
@@ -2282,7 +2588,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Plentiful Tank
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "milk_cap",                     // internal name
 	    "milk_cap.szs",                 // archive filename
 	    "pal_kan_breitsamer.bmd",       // bmd filename
@@ -2315,7 +2621,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Estimated Object GF
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "milk_cap",                     // internal name
 	    "milk_cap.szs",                 // archive filename
 	    "g_futa_ohayo.bmd",             // bmd filename
@@ -2351,7 +2657,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Activity Arouser (SmC3) - different in all three
 	{
 	    // Activity Arouser
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_nihonraku",             // internal name
 	    "g_futa_nihonraku.szs",         // archive filename
 	    "us_futa_wilson.bmd",           // bmd filename
@@ -2384,7 +2690,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Pondering Emblem
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_nihonraku",             // internal name
 	    "g_futa_nihonraku.szs",         // archive filename
 	    "pal_cap_tizer.bmd",            // bmd filename
@@ -2417,7 +2723,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Anywhere Floater
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_nihonraku",             // internal name
 	    "g_futa_nihonraku.szs",         // archive filename
 	    "g_futa_nihon_raku.bmd",        // bmd filename
@@ -2452,7 +2758,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Drone Supplies (SmC4) - different in US
 	{
 	    // Drone Supplies
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_imuraya",                  // internal name
 	    "kan_imuraya.szs",              // archive filename
 	    "us_kan_deviled.bmd",           // bmd filename
@@ -2485,7 +2791,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Open Archive
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_imuraya",                  // internal name
 	    "kan_imuraya.szs",              // archive filename
 	    "kan_imuraya.bmd",              // bmd filename
@@ -2518,7 +2824,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Open Archive
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_imuraya",                  // internal name
 	    "kan_imuraya.szs",              // archive filename
 	    "kan_imuraya.bmd",              // bmd filename
@@ -2553,7 +2859,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Proton AA (SmC4) - different in JP
 	{
 	    // Proton AA
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "denchi_3_red",                 // internal name
 	    "denchi_3_red.szs",             // archive filename
 	    "us_denchi_3.bmd",              // bmd filename
@@ -2586,7 +2892,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Proton AA
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "denchi_3_red",                 // internal name
 	    "denchi_3_red.szs",             // archive filename
 	    "us_denchi_3.bmd",              // bmd filename
@@ -2619,7 +2925,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Proton X
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "denchi_3_red",                 // internal name
 	    "denchi_3_red.szs",             // archive filename
 	    "denchi_3_red.bmd",             // bmd filename
@@ -2660,7 +2966,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Mysterious Remains (CoC4) - different in all three
 	{
 	    // Mysterious Remains
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_koiwai",                // internal name
 	    "g_futa_koiwai.szs",            // archive filename
 	    "us_kani.bmd",                  // bmd filename
@@ -2693,7 +2999,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Container of Knowledge
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_koiwai",                // internal name
 	    "g_futa_koiwai.szs",            // archive filename
 	    "pal_kan_connetable.bmd",       // bmd filename
@@ -2726,7 +3032,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Understood Person Symbol
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_koiwai",                // internal name
 	    "g_futa_koiwai.szs",            // archive filename
 	    "g_futa_koiwai.bmd",            // bmd filename
@@ -2761,7 +3067,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Fuel Reservoir (CoC7) - different in JP
 	{
 	    // Fuel Reservoir
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "denchi_3_black",               // internal name
 	    "denchi_3_black.szs",           // archive filename
 	    "us_denchi_9v.bmd",             // bmd filename
@@ -2794,7 +3100,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Fuel Reservoir
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "denchi_3_black",               // internal name
 	    "denchi_3_black.szs",           // archive filename
 	    "us_denchi_9v.bmd",             // bmd filename
@@ -2827,7 +3133,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Fuel Reservoir
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "denchi_3_black",               // internal name
 	    "denchi_3_black.szs",           // archive filename
 	    "denchi_3_black.bmd",           // bmd filename
@@ -2862,7 +3168,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Fruit Guard (CoC8) - different in US
 	{
 	    // Fruit Guard
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_kyokuyo",                  // internal name
 	    "kan_kyokuyo.szs",              // archive filename
 	    "us_kan_treetop.bmd",           // bmd filename
@@ -2895,7 +3201,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Empty Space Container
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_kyokuyo",                  // internal name
 	    "kan_kyokuyo.szs",              // archive filename
 	    "kan_kyokuyo.bmd",              // bmd filename
@@ -2928,7 +3234,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Empty Space Container
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_kyokuyo",                  // internal name
 	    "kan_kyokuyo.szs",              // archive filename
 	    "kan_kyokuyo.bmd",              // bmd filename
@@ -2963,7 +3269,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Silencer (CoC10) - different in JP (value only)
 	{
 	    // Silencer
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "doll",                         // internal name
 	    "doll.szs",                     // archive filename
 	    "doll.bmd",                     // bmd filename
@@ -2996,7 +3302,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Silencer
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "doll",                         // internal name
 	    "doll.szs",                     // archive filename
 	    "doll.bmd",                     // bmd filename
@@ -3029,7 +3335,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Silencer
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "doll",                         // internal name
 	    "doll.szs",                     // archive filename
 	    "doll.bmd",                     // bmd filename
@@ -3065,7 +3371,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Nutrient Silo (HoH6) - different in US
 	{
 	    // Nutrient Silo
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_meidiya",                  // internal name
 	    "kan_meidiya.szs",              // archive filename
 	    "us_kan_skippy.bmd",            // bmd filename
@@ -3098,7 +3404,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Stringent Container
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_meidiya",                  // internal name
 	    "kan_meidiya.szs",              // archive filename
 	    "kan_meidiya.bmd",              // bmd filename
@@ -3131,7 +3437,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Stringent Container
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_meidiya",                  // internal name
 	    "kan_meidiya.szs",              // archive filename
 	    "kan_meidiya.bmd",              // bmd filename
@@ -3166,7 +3472,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Dimensional Slicer (HoH9) - different in all three
 	{
 	    // Dimensional Slicer
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_hirosima",              // internal name
 	    "g_futa_hirosima.szs",          // archive filename
 	    "us_kankiri.bmd",               // bmd filename
@@ -3199,7 +3505,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Patience Tester
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_hirosima",              // internal name
 	    "g_futa_hirosima.szs",          // archive filename
 	    "us_kan_sunluck.bmd",           // bmd filename
@@ -3232,7 +3538,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Flying Saucer
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_hirosima",              // internal name
 	    "g_futa_hirosima.szs",          // archive filename
 	    "g_futa_hirosima.bmd",          // bmd filename
@@ -3268,7 +3574,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Yellow Taste Tyrant (DD11) - different in JP
 	{
 	    // Yellow Taste Tyrant
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_kyosin",                // internal name
 	    "g_futa_kyosin.szs",            // archive filename
 	    "us_futa_frenchs.bmd",          // bmd filename
@@ -3301,7 +3607,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Yellow Taste Tyrant
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_kyosin",                // internal name
 	    "g_futa_kyosin.szs",            // archive filename
 	    "us_futa_frenchs.bmd",          // bmd filename
@@ -3334,7 +3640,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Universe Art
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_kyosin",                // internal name
 	    "g_futa_kyosin.szs",            // archive filename
 	    "g_futa_kyosin.bmd",            // bmd filename
@@ -3369,7 +3675,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Stringent Container (DD12) - different in US
 	{
 	    // Stringent Container
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "kan_maruha",                   // internal name
 	    "kan_maruha.szs",               // archive filename
 	    "us_kan_clabbergirl.bmd",       // bmd filename
@@ -3402,7 +3708,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Endless Repository
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "kan_maruha",                   // internal name
 	    "kan_maruha.szs",               // archive filename
 	    "kan_maruha.bmd",               // bmd filename
@@ -3435,7 +3741,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Endless Repository
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "kan_maruha",                   // internal name
 	    "kan_maruha.szs",               // archive filename
 	    "kan_maruha.bmd",               // bmd filename
@@ -3470,7 +3776,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	// Hypnotic Platter (DD13) - different in all three
 	{
 	    // Hypnotic Platter
-	    System::LANG_English,           // region
+	    Treasure_US,                    // region
 	    "g_futa_sakotani",              // internal name
 	    "g_futa_sakotani.szs",          // archive filename
 	    "us_cap_rootbeer.bmd",          // bmd filename
@@ -3503,7 +3809,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Alien Billboard
-	    System::LANG_French,            // region
+	    Treasure_PAL,                   // region
 	    "g_futa_sakotani",              // internal name
 	    "g_futa_sakotani.szs",          // archive filename
 	    "toy_fire_helmet.bmd",          // bmd filename
@@ -3536,7 +3842,7 @@ const LocalizationTreasureSwap treasureMap[] = {
 	},
 	{
 	    // Fake Emblem Thing
-	    System::LANG_Japanese,          // region
+	    Treasure_JP,                    // region
 	    "g_futa_sakotani",              // internal name
 	    "g_futa_sakotani.szs",          // archive filename
 	    "g_futa_sakotani.bmd",          // bmd filename
@@ -3572,3 +3878,5 @@ const LocalizationTreasureSwap treasureMap[] = {
 };
 
 const u32 TREASURE_MAP_COUNT = ARRAY_SIZE(treasureMap);
+
+} // namespace gz

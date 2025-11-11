@@ -15,6 +15,7 @@ namespace Game {
  */
 PelletConfigList::PelletConfigList()
 {
+	OSReport("PelletConfigList created\n");
 	mConfigs   = nullptr;
 	mConfigCnt = 0;
 }
@@ -97,8 +98,6 @@ PelletConfig* PelletConfigList::getPelletConfig(char* str)
 		u32 len               = strlen(str);
 
 		if (IS_SAME_STRING_N(pConfig->mParams.mName.mData, str, len)) {
-			// @P2GZ localization swap: update the specific config with the current version if-needed
-			updatePelletConfig(pConfig);
 			return pConfig;
 		}
 	}
