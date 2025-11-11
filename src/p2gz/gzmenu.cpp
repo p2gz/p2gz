@@ -159,8 +159,6 @@ void GZMenu::init_menu()
 			// Submenus get added in CutsceneMgr::init
 		))
 		->push(new OpenSubMenuOption("localization", (new ListMenu())
-			->push(new RadioMenuOption("menu text", new Delegate1<LanguageSwap::LanguageSwapMenuWrapper, size_t>
-				(p2gz->language_menu_wrapper, &LanguageSwap::LanguageSwapMenuWrapper:: set_language)))
 			->push(new RadioMenuOption("treasure region", new Delegate1<LanguageSwap::LanguageSwapMenuWrapper, size_t>
 				(p2gz->language_menu_wrapper, &LanguageSwap::LanguageSwapMenuWrapper::set_treasure_region)))
 		));
@@ -253,7 +251,7 @@ void GZMenu::open()
 	// If freecam is active, don't open the menu
 	if (p2gz->freecam && p2gz->freecam->is_enabled())
 		return;
-  
+
 	// Don't open P2GZ menu during the following:
 	// - cutscenes (causes gameplay desync) - One exception:
 	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
@@ -802,8 +800,8 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -909,8 +907,8 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -1272,7 +1270,7 @@ DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_s
                                        bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad = new DecimalKeypad(title_, on_selected, on_opened);
+	keypad     = new DecimalKeypad(title_, on_selected, on_opened);
 	sync_value = on_opened;
 }
 

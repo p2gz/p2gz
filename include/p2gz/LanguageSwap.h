@@ -9,38 +9,22 @@ struct LanguageSwap {
 	struct LanguageSwapMenuWrapper {
 
 		void init_menu();
-		// Wrapper version of the function to be passed into the delegate; will call the LanguageSwap function version for actual
-		// functionality
-		void set_language(size_t new_language_id);
-		// Wrapper version of the function to be passed into the delegate; will call the LanguageSwap function version for actual
-		// functionality
 		void set_treasure_region(size_t new_treasure_region_id);
 	};
 
 public:
 	LanguageSwap()
-	    : language_id(System::LANG_English)
-	    , need_to_change_flag(false)
+	    : need_to_change_flag(false)
 	    , treasure_region_id(System::LANG_English)
 	{
 	}
 
-	System::LanguageID get_language() { return language_id; }
 	System::LanguageID get_treasure_region() { return treasure_region_id; }
 
-	bool need_to_change_lang() { return need_to_change_flag; }
-
-	// Sets the language we need to swap to, and sets flag to let the game know to swap languages next time we are in main menu
-	void set_language(size_t new_language_id);
 	// Sets the region for which treasures to load
 	void set_treasure_region(size_t new_treasure_region_id);
 
-	// Function that actually swaps languages, and updates BMG to current languages
-	void swap_language();
-
 private:
-	// Controls the language for the menu text/BLO
-	System::LanguageID language_id;
 	// Used to determine which treasure to spawn if it's different in a region (US vs. PAL vs. JP)
 	System::LanguageID treasure_region_id;
 	// We can only change language in title menu, so use this flag to let us know when todo that next time we enter the menu

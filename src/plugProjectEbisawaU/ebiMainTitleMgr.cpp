@@ -62,12 +62,6 @@ void TMainTitleMgr::loadResource()
 	sys->heapStatusStart("TMainTitleMgr::loadResource", nullptr);
 	sys->heapStatusStart("TTitleMenu::loadResource", nullptr);
 
-	// @ P2GZ localization-swap
-	// Load the new language here, on main menu startup (as we load other stuff)
-	if (global_language_swap && global_language_swap->need_to_change_lang()) {
-		global_language_swap->swap_language();
-	}
-
 	char buf[PATH_MAX];
 	og::newScreen::makeLanguageResName(buf, "title.szs");
 

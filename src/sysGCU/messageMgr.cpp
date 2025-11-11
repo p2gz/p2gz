@@ -100,23 +100,6 @@ Mgr::Mgr(JKRExpHeap* heap)
 	mIsLoaded = true;
 }
 
-// 	JKRHeap* heap2 = JKRGetCurrentHeap();
-// 	_2C            = 0;
-// 	setupMessage(); // <--- this is the original code; setup the actual message stuff
-// 	// // @P2GZ localization-swap: copy 1^2 code to add support for swapping languages
-// 	// // Notably, initialize our new heap that gets used for language swaps here
-// 	// {
-// 	// 	mLanguageSwapHeap = JKRExpHeap::create(0x20000, sys->mSysHeap, true);
-// 	// 	mLanguageSwapHeap->becomeCurrentHeap();
-// 	// 	setupMessage(); // <--- this is the original code; setup the actual message stuff
-// 	// 	og::gLib2D = nullptr;
-// 	// 	og::Lib2D::create();
-// 	// }
-// 	// End P2GZ edit
-// 	heap2->becomeCurrentHeap();
-// 	mIsLoaded = true;
-// }
-
 /**
  * @note Address: 0x8043805C
  * @note Size: 0x68
@@ -134,25 +117,6 @@ void Mgr::reloadMessageResource()
 {
 	// This is most likely used in the PAL region after changing languages
 	// Entirely removed for US though
-
-	// @P2GZ localization-swap: we now use this funciton to update text
-
-	JKRHeap* currHeap = JKRGetCurrentHeap();
-	// mLanguageSwapHeap->becomeCurrentHeap();
-	// mLanguageSwapHeap->freeAll();
-	setupMessage();
-	// og::gLib2D = nullptr;
-	// og::Lib2D::create();
-	currHeap->becomeCurrentHeap();
-
-	// // Copy 1^2 code to swap languages in-game
-	// JKRHeap* mesgheap = mLanguageSwapHeap; // new p2jme heap
-	// mesgheap->freeAll();
-	// JKRHeap* old_heap = mesgheap->becomeCurrentHeap();
-	// setupMessage();
-	// og::gLib2D = nullptr;
-	// og::Lib2D::create();
-	// old_heap->becomeCurrentHeap();
 }
 
 /**
