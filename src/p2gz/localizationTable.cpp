@@ -4,7 +4,7 @@
 
 namespace gz {
 
-const LocalizationTreasureSwap treasureMap[] = {
+const LocalizedTreasureConfig treasure_region_map[] = {
 	//////////////////// VALLEY OF REPOSE ////////////////////
 	//// Above Ground - 1
 	// Courage Reactor - different in JP
@@ -3877,6 +3877,6 @@ const LocalizationTreasureSwap treasureMap[] = {
 	////////////////////////////////////////////////////////
 };
 
-const u32 TREASURE_MAP_COUNT = ARRAY_SIZE(treasureMap);
+const u32 TREASURE_MAP_COUNT = ARRAY_SIZE(treasure_region_map);
 
 } // namespace gz

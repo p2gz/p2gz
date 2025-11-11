@@ -2,8 +2,6 @@
 #include "P2Macros.h"
 #include "string.h"
 #include "TagParm.h"
-#include <p2gz/p2gz.h>
-#include <p2gz/Localization.h>
 
 const char* className = "pelletConfig";
 

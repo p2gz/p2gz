@@ -36,7 +36,6 @@
 
 #include <p2gz/p2gz.h>
 #include <p2gz/gzmenu.h>
-#include <p2gz/Localization.h>
 
 namespace og {
 namespace Screen {

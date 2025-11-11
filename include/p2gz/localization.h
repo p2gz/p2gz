@@ -31,6 +31,7 @@ public:
 
 	bool require_update() { return pending_update; }
 	void update_region();
+	void localize_config(const char* name, Game::PelletConfig* config);
 
 private:
 	// Used to determine which treasure to spawn if it's different in a region (US vs. PAL vs. JP)
@@ -40,7 +41,7 @@ private:
 	u8 funniMenuTextSetting;               // Funni check; 0 means menu text is localisation, 1 is menu text means localization
 };
 
-struct LocalizationTreasureSwap {
+struct LocalizedTreasureConfig {
 	// NB: there are other variables in PelletConfig but they're unused or unchanged
 
 	TreasureRegion region; // determine which region all the settings below are for
@@ -75,10 +76,8 @@ struct LocalizationTreasureSwap {
 	u8 indirect_state;     // mIndirectState (numeric version of indirect_mats)
 };
 
-void updatePelletConfig(Game::PelletConfig* thisConfig);
-
 extern const u32 TREASURE_MAP_COUNT;
-extern const LocalizationTreasureSwap treasureMap[];
+extern const LocalizedTreasureConfig treasure_region_map[];
 
 } // namespace gz
 

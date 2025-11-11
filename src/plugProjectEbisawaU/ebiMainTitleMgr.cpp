@@ -5,7 +5,6 @@
 #include "og/newScreen/ogUtil.h"
 #include "Game/GameConfig.h"
 #include "Game/Data.h"
-#include <p2gz/p2gz.h>
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "ebiMainTitleMgr";

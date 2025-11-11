@@ -6,7 +6,6 @@
 #include "JSystem/JUtility/JUTTexture.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JMessage/TParse.h"
-#include "og/ogLib2D.h"
 
 static const u32 padding[3] = { 0, 0, 0 };
 
@@ -64,7 +63,6 @@ Mgr::Mgr(JKRExpHeap* heap)
     , _2C(0)
     , mResContainer(nullptr)
     , mMsgRef(nullptr)
-// , mLocalizationHeap(nullptr)
 {
 	P2ASSERTLINE(194, !gP2JMEMgr);
 	gP2JMEMgr = this;
@@ -91,12 +89,10 @@ Mgr::Mgr(JKRExpHeap* heap)
 
 	sys->heapStatusEnd("MessageMgr");
 
-	JKRHeap* currHeap = JKRGetCurrentHeap();
-	// mLocalizationHeap = makeExpHeap(0x60000, currHeap, false);
-	_2C = 0;
-	// mLocalizationHeap->becomeCurrentHeap();
+	JKRHeap* heap2 = JKRGetCurrentHeap();
+	_2C            = 0;
 	setupMessage();
-	currHeap->becomeCurrentHeap();
+	heap2->becomeCurrentHeap();
 	mIsLoaded = true;
 }
 

@@ -41,10 +41,9 @@ void Localization::update_region()
 		return;
 	}
 
-	// update treasures (i.e. not upgrades)
+	// update regular treasures
 	Game::PelletOtakara::Mgr* ota_mgr = Game::PelletOtakara::mgr;
 	if (ota_mgr) {
-		// update all the configs
 		int max = ota_mgr->mConfigList->mConfigCnt;
 		for (int i = 0; i < max; i++) {
 			Game::PelletConfig* config = ota_mgr->mConfigList->getPelletConfig(i);
@@ -53,112 +52,26 @@ void Localization::update_region()
 			// NB: this will result in entries being mismatched a bit, so need to handle that when loading the arcs
 			const char* name = config->mParams.mName.mData;
 			if ((next_treasure_region == Treasure_PAL) || (active_treasure_region == Treasure_PAL)) {
-				if (IS_SAME_STRING(name, "g_futa_kyusyu")) {
+				if (!strcmp(name, "g_futa_kyusyu")) {
 					name = "g_futa_sikoku";
 
-				} else if (IS_SAME_STRING(name, "g_futa_sikoku")) {
+				} else if (!strcmp(name, "g_futa_sikoku")) {
 					name = "g_futa_kyusyu";
 				}
 			}
 
-			// check each config against our swap table to see if we have matches
-			for (int j = 0; j < TREASURE_MAP_COUNT; j++) {
-				const LocalizationTreasureSwap* treasure = &treasureMap[j];
-				// match regions
-				if (treasure->region != next_treasure_region) {
-					continue;
-				}
-
-				// match treasure internal name
-				if (!IS_SAME_STRING(name, treasure->internal_name)) {
-					continue;
-				}
-
-				config->mParams.mArchive.mData        = treasure->archive_name;
-				config->mParams.mBmd.mData            = treasure->bmd_name;
-				config->mParams.mAnimMgr.mData        = treasure->animMgr_name;
-				config->mParams.mColltree.mData       = treasure->collTree_name;
-				config->mParams.mRadius.mData         = treasure->bottom_radius;
-				config->mParams.mPRadius.mData        = treasure->pick_radius;
-				config->mParams.mHeight.mData         = treasure->cyl_height;
-				config->mParams.mInertiaScaling.mData = treasure->inertia_scaling;
-				config->mParams.mParticleType.mData   = treasure->ptcl_type;
-				config->mParams.mNumParticles.mData   = treasure->num_ptcls;
-				config->mParams.mParticleSize.mData   = treasure->ptcl_size;
-				config->mParams.mFriction.mData       = treasure->friction;
-				config->mParams.mMin.mData            = treasure->min_carriers;
-				config->mParams.mMax.mData            = treasure->max_carriers;
-				config->mParams.mDynamics.mData       = treasure->dyn_type;
-				config->mParams.mMoney.mData          = treasure->pokos;
-				config->mParams.mUnique.mData         = treasure->unique;
-				config->mParams.mIndirect.mData       = treasure->indirect_mats;
-				config->mParams.mNumPMotions.mData    = treasure->num_pmotions;
-				config->mParams.mDepth.mData          = treasure->bury_depth;
-				config->mParams.mDepthMax.mData       = treasure->bury_depth_max;
-				config->mParams.mDepthA.mData         = treasure->bury_radius_A;
-				config->mParams.mDepthB.mData         = treasure->bury_radius_B;
-				config->mParams.mDepthC.mData         = treasure->bury_radius_C;
-				config->mParams.mDepthD.mData         = treasure->bury_radius_D;
-				config->mParams.mCode.mData           = treasure->render_code;
-				config->mParams.mDictionary.mData     = treasure->piklopedia_num;
-				config->mParams.mIndirectState        = treasure->indirect_state;
-				break;
-			}
+			localize_config(name, config);
 		}
 	}
 
-	// do the same for upgrades
-	// (the only two differences are the globes, but it's a short list. it's fine.)
+	// do the same for upgrades (EK kit treasures)
 	Game::PelletItem::Mgr* item_mgr = Game::PelletItem::mgr;
 	if (item_mgr) {
-		// update all the configs
 		int max = item_mgr->mConfigList->mConfigCnt;
 		for (int i = 0; i < max; i++) {
 			Game::PelletConfig* config = item_mgr->mConfigList->getPelletConfig(i);
 
-			// check each config against our swap table to see if we have matches
-			for (int j = 0; j < TREASURE_MAP_COUNT; j++) {
-				const LocalizationTreasureSwap* treasure = &treasureMap[j];
-				// match regions
-				if (treasure->region != next_treasure_region) {
-					continue;
-				}
-
-				// match treasure internal name
-				if (!IS_SAME_STRING(config->mParams.mName.mData, treasure->internal_name)) {
-					continue;
-				}
-
-				config->mParams.mArchive.mData        = treasure->archive_name;
-				config->mParams.mBmd.mData            = treasure->bmd_name;
-				config->mParams.mAnimMgr.mData        = treasure->animMgr_name;
-				config->mParams.mColltree.mData       = treasure->collTree_name;
-				config->mParams.mRadius.mData         = treasure->bottom_radius;
-				config->mParams.mPRadius.mData        = treasure->pick_radius;
-				config->mParams.mHeight.mData         = treasure->cyl_height;
-				config->mParams.mInertiaScaling.mData = treasure->inertia_scaling;
-				config->mParams.mParticleType.mData   = treasure->ptcl_type;
-				config->mParams.mNumParticles.mData   = treasure->num_ptcls;
-				config->mParams.mParticleSize.mData   = treasure->ptcl_size;
-				config->mParams.mFriction.mData       = treasure->friction;
-				config->mParams.mMin.mData            = treasure->min_carriers;
-				config->mParams.mMax.mData            = treasure->max_carriers;
-				config->mParams.mDynamics.mData       = treasure->dyn_type;
-				config->mParams.mMoney.mData          = treasure->pokos;
-				config->mParams.mUnique.mData         = treasure->unique;
-				config->mParams.mIndirect.mData       = treasure->indirect_mats;
-				config->mParams.mNumPMotions.mData    = treasure->num_pmotions;
-				config->mParams.mDepth.mData          = treasure->bury_depth;
-				config->mParams.mDepthMax.mData       = treasure->bury_depth_max;
-				config->mParams.mDepthA.mData         = treasure->bury_radius_A;
-				config->mParams.mDepthB.mData         = treasure->bury_radius_B;
-				config->mParams.mDepthC.mData         = treasure->bury_radius_C;
-				config->mParams.mDepthD.mData         = treasure->bury_radius_D;
-				config->mParams.mCode.mData           = treasure->render_code;
-				config->mParams.mDictionary.mData     = treasure->piklopedia_num;
-				config->mParams.mIndirectState        = treasure->indirect_state;
-				break;
-			}
+			localize_config(config->mParams.mName.mData, config);
 		}
 	}
 
@@ -167,8 +80,49 @@ void Localization::update_region()
 	pending_update         = false;
 }
 
-// Add functions from pelletMgr.cpp below that we need to change for treasure swapping; these functions are equivalent but pelletMgr.cpp is
-// not-matching, so yehaw time it is
+void Localization::localize_config(const char* name, Game::PelletConfig* config)
+{
+	for (int j = 0; j < TREASURE_MAP_COUNT; j++) {
+		const LocalizedTreasureConfig* treasure = &treasure_region_map[j];
+		if (treasure->region != next_treasure_region) {
+			continue;
+		}
+
+		if (strcmp(name, treasure->internal_name)) {
+			continue;
+		}
+
+		config->mParams.mArchive.mData        = treasure->archive_name;
+		config->mParams.mBmd.mData            = treasure->bmd_name;
+		config->mParams.mAnimMgr.mData        = treasure->animMgr_name;
+		config->mParams.mColltree.mData       = treasure->collTree_name;
+		config->mParams.mRadius.mData         = treasure->bottom_radius;
+		config->mParams.mPRadius.mData        = treasure->pick_radius;
+		config->mParams.mHeight.mData         = treasure->cyl_height;
+		config->mParams.mInertiaScaling.mData = treasure->inertia_scaling;
+		config->mParams.mParticleType.mData   = treasure->ptcl_type;
+		config->mParams.mNumParticles.mData   = treasure->num_ptcls;
+		config->mParams.mParticleSize.mData   = treasure->ptcl_size;
+		config->mParams.mFriction.mData       = treasure->friction;
+		config->mParams.mMin.mData            = treasure->min_carriers;
+		config->mParams.mMax.mData            = treasure->max_carriers;
+		config->mParams.mDynamics.mData       = treasure->dyn_type;
+		config->mParams.mMoney.mData          = treasure->pokos;
+		config->mParams.mUnique.mData         = treasure->unique;
+		config->mParams.mIndirect.mData       = treasure->indirect_mats;
+		config->mParams.mNumPMotions.mData    = treasure->num_pmotions;
+		config->mParams.mDepth.mData          = treasure->bury_depth;
+		config->mParams.mDepthMax.mData       = treasure->bury_depth_max;
+		config->mParams.mDepthA.mData         = treasure->bury_radius_A;
+		config->mParams.mDepthB.mData         = treasure->bury_radius_B;
+		config->mParams.mDepthC.mData         = treasure->bury_radius_C;
+		config->mParams.mDepthD.mData         = treasure->bury_radius_D;
+		config->mParams.mCode.mData           = treasure->render_code;
+		config->mParams.mDictionary.mData     = treasure->piklopedia_num;
+		config->mParams.mIndirectState        = treasure->indirect_state;
+		break;
+	}
+}
 
 namespace Game {
 
