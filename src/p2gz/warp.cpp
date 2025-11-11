@@ -81,6 +81,8 @@ void Warp::init()
 		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
 
+	enter_area_type_opt->visible = false;
+
 	day_opt->set_selection(dest.day + 1);
 
 	update_cave_opt();
@@ -96,7 +98,7 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 	}
 	// If preset is "none", we need to hide the enter option immediately since it won't update until we swap our warp target otherwise
 	if (enter_area_type_opt) {
-		if (dest.cave == 0 && preset != nullptr) {
+		if (dest.cave == 0 && preset == nullptr) {
 			enter_area_type_opt->visible = true;
 		} else {
 			enter_area_type_opt->visible = false;
@@ -133,6 +135,15 @@ void Warp::set_warp_area(size_t area)
 	update_cave_opt();
 	update_sublevel_opt();
 	update_preset_opt();
+
+	// If preset is "none", we need to hide the enter option immediately since it won't update until we swap our warp target otherwise
+	if (enter_area_type_opt) {
+		if (dest.cave == 0 && preset == nullptr) {
+			enter_area_type_opt->visible = true;
+		} else {
+			enter_area_type_opt->visible = false;
+		}
+	}
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -144,7 +155,7 @@ void Warp::set_warp_cave(size_t cave)
 	update_preset_opt();
 
 	// For now, only allow enter area type for when no preset is selected for ag selection
-	if (dest.cave == 0 && preset != nullptr) {
+	if (dest.cave == 0 && preset == nullptr) {
 		enter_area_type_opt->visible = true;
 	} else {
 		enter_area_type_opt->visible = false;
