@@ -64,7 +64,7 @@ Mgr::Mgr(JKRExpHeap* heap)
     , _2C(0)
     , mResContainer(nullptr)
     , mMsgRef(nullptr)
-    , mLanguageSwapHeap(nullptr)
+// , mLanguageSwapHeap(nullptr)
 {
 	P2ASSERTLINE(194, !gP2JMEMgr);
 	gP2JMEMgr = this;
@@ -92,9 +92,9 @@ Mgr::Mgr(JKRExpHeap* heap)
 	sys->heapStatusEnd("MessageMgr");
 
 	JKRHeap* currHeap = JKRGetCurrentHeap();
-	mLanguageSwapHeap = makeExpHeap(0x60000, currHeap, false);
-	_2C               = 0;
-	mLanguageSwapHeap->becomeCurrentHeap();
+	// mLanguageSwapHeap = makeExpHeap(0x60000, currHeap, false);
+	_2C = 0;
+	// mLanguageSwapHeap->becomeCurrentHeap();
 	setupMessage();
 	currHeap->becomeCurrentHeap();
 	mIsLoaded = true;
@@ -138,8 +138,8 @@ void Mgr::reloadMessageResource()
 	// @P2GZ localization-swap: we now use this funciton to update text
 
 	JKRHeap* currHeap = JKRGetCurrentHeap();
-	mLanguageSwapHeap->becomeCurrentHeap();
-	mLanguageSwapHeap->freeAll();
+	// mLanguageSwapHeap->becomeCurrentHeap();
+	// mLanguageSwapHeap->freeAll();
 	setupMessage();
 	// og::gLib2D = nullptr;
 	// og::Lib2D::create();
