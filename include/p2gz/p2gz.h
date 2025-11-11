@@ -53,7 +53,7 @@ public:
 	gz::Timer* timer;
 	gz::WaypointViewer* waypoint_viewer;
 	gz::Warp* warp;
-	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
+	gz::SkippableCutscenes* skippable_cutscenes;
 	gz::EnemyDebugInfo* enemy_debug_info;
 	gz::DayEditor* day_editor;
 	gz::HeapBarToggle* heap_bar_toggle;

@@ -7,7 +7,7 @@
 using namespace gz;
 using namespace Game;
 
-void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
+void SkippableCutscenes::force_collect(Game::Creature* cutscene_target)
 {
 	if (!enabled || !cutscene_target) {
 		return;
@@ -22,13 +22,6 @@ void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
 			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
 			pod->stimulate(interaction);
 			is_treasure_collected = true;
-
-			// update timer with remaining cutscene time
-			if (moviePlayer->isPlaying("s22_cv_suck_treasure")) {
-				p2gz->timer->stop_skip_timer_treasure();
-			} else if (moviePlayer->isPlaying("s22_cv_suck_equipment")) {
-				p2gz->timer->stop_skip_timer_upgrade();
-			}
 		}
 	}
 
@@ -41,20 +34,27 @@ void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
 			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
 			ufo->stimulate(interaction);
 			is_treasure_collected = true;
-
-			// update timer with remaining cutscene time
-			if (moviePlayer->isPlaying("s10_suck_treasure")) {
-				p2gz->timer->stop_skip_timer_treasure();
-			} else if (moviePlayer->isPlaying("s17_suck_equipment")) {
-				p2gz->timer->stop_skip_timer_upgrade();
-			}
 		}
 	}
 }
 
-void SkippableTreasureCS::prime_skip(Creature* cutscene_target, MovieConfig* config)
+void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* config)
 {
-	if (!enabled || !cutscene_target || !config) {
+	if (!enabled || !config) {
+		return;
+	}
+
+	// make intro crash landing cutscene skippable
+	if (config->is("x01_gamestart")) {
+		config->mFlags &= 0x1; // assign "skippable" flag to cutscene
+
+		// set skip timer
+		p2gz->timer->reset_skip_timer();
+		return;
+	}
+
+	// treasure cutscenes need a target
+	if (!cutscene_target) {
 		return;
 	}
 	// cave and above ground work the same way for this part
