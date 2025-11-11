@@ -27,7 +27,8 @@ inline bool is_working(Game::Piki* piki)
 	    action == PikiAI::ACT_Bridge ||    // bridges
 	    action == PikiAI::ACT_Transport || // carrying objects
 	    action == PikiAI::ACT_Crop ||      // berry plants
-	    action == PikiAI::ACT_Weed)        // nectar grass/rocks
+	    action == PikiAI::ACT_Weed ||      // nectar grass/rocks
+	    action == PikiAI::ACT_Attack)      // attacking enemies
 	{
 		return true;
 	}
