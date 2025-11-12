@@ -1777,7 +1777,7 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 	{
-	    // Flame of Tomorrow
+	    // Time Capsule
 	    Treasure_PAL,                   // region
 	    "locket",                       // internal name
 	    "locket.szs",                   // archive filename
@@ -1810,7 +1810,7 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 	{
-	    // Flame of Tomorrow
+	    // Time Capsule
 	    Treasure_JP,                    // region
 	    "locket",                       // internal name
 	    "locket.szs",                   // archive filename
