@@ -52,7 +52,7 @@ P2GZ::P2GZ()
 	poko_editor                  = new PokoEditor();
 	ek_editor                    = new EKEditor();
 	treasure_editor              = new TreasureEditor();
-	localization_op              = new Localization(rand() % 2);
+	localization_op              = new Localization();
 
 	prev_heap->becomeCurrentHeap();
 }

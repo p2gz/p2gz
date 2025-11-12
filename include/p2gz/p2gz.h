@@ -34,21 +34,7 @@
 struct P2GZ {
 public:
 	P2GZ();
-	~P2GZ()
-	{
-		delete menu;
-		delete collision_viewer;
-		delete freecam;
-		delete navi_tools;
-		delete timer;
-		delete waypoint_viewer;
-		delete warp;
-		delete skippable_treasure_cutscenes;
-		delete day_editor;
-		delete heap_bar_toggle;
-		delete images;
-		delete skip_save;
-	}
+	~P2GZ();
 
 	void init();
 	void update();

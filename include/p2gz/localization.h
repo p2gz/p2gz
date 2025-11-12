@@ -14,20 +14,17 @@ enum TreasureRegion {
 
 struct Localization {
 public:
-	Localization(u8 randVal)
+	Localization()
 	    : next_treasure_region(Treasure_US)
 	    , active_treasure_region(Treasure_US)
 	    , pending_update(false)
 	{
-		funniMenuTextSetting = randVal == 0;
 	}
 
 	void init_menu();
 	TreasureRegion get_treasure_region() { return next_treasure_region; }
-	bool get_funni_text() { return funniMenuTextSetting; }
 
 	void set_treasure_region(size_t new_treasure_region_id);
-	void set_funni_text(u8 setting_) { funniMenuTextSetting = setting_; }
 
 	bool require_update() { return pending_update; }
 	void update_region();
@@ -38,7 +35,6 @@ private:
 	TreasureRegion active_treasure_region; // region since most recent update
 	TreasureRegion next_treasure_region;   // region to apply on next update (i.e. current selection in menu)
 	bool pending_update;                   // basically active != next
-	u8 funniMenuTextSetting;               // Funni check; 0 means menu text is localisation, 1 is menu text means localization
 };
 
 struct LocalizedTreasureConfig {
