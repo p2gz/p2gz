@@ -130,7 +130,8 @@ void ObjectParticleActor::parseUserData_(u32 p1, void const* rawData)
 	char* idx        = (char*)data.mData;
 	mModelJointIndex = -1;
 	for (u32 i = 0; i < data.mFileCount; i++, idx = strchr(idx, 0) + 1) {
-		OSReport("string:%u,%s\n", i, idx);
+		// @P2GZ: stop annoying debug prints
+		// OSReport("string:%u,%s\n", i, idx);
 		if (i == 0) {
 			if (strcmp(idx, "kill") == 0) {
 				mEfxFlag |= 2;
