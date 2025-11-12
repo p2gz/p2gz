@@ -40,39 +40,47 @@ void SkippableCutscenes::force_collect(Game::Creature* cutscene_target)
 
 void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* config)
 {
-	if (!enabled || !config) {
+	if (!config) {
 		return;
 	}
 
-	// make intro crash landing cutscene skippable
+	// toggle intro crash landing cutscene skippable
 	if (config->is("x01_gamestart")) {
-		config->mFlags &= 0x1; // assign "skippable" flag to cutscene
+		if (enabled) {
+			config->enableSkippable();
 
-		// set skip timer
-		p2gz->timer->reset_skip_timer();
-		return;
+			// set skip timer
+			p2gz->timer->reset_skip_timer();
+			return;
+		} else {
+			config->disableSkippable();
+		}
 	}
 
 	// treasure cutscenes need a target
 	if (!cutscene_target) {
 		return;
 	}
-	// cave and above ground work the same way for this part
+	// toggle cave and above ground treasure cutscenes skippable
 	if (config->is("s22_cv_suck_treasure") || config->is("s22_cv_suck_equipment") || config->is("s10_suck_treasure")
 	    || config->is("s17_suck_equipment")) {
-		is_treasure_collected = false;
-		config->mFlags &= 0x1; // assign "skippable" flag to cutscene
+		if (enabled) {
+			is_treasure_collected = false;
+			config->enableSkippable();
 
-		// set skip timer
-		p2gz->timer->reset_skip_timer();
+			// set skip timer
+			p2gz->timer->reset_skip_timer();
 
-		// Record treasure as being collected for the treasure editor
+			// Record treasure as being collected for the treasure editor
 
-		Pellet* pellet = static_cast<Pellet*>(cutscene_target);
-		if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
-			p2gz->treasure_editor->set_collected(pellet, true);
+			Pellet* pellet = static_cast<Pellet*>(cutscene_target);
+			if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
+				p2gz->treasure_editor->set_collected(pellet, true);
+			}
+
+			// TODO: this is where we'd also record the treasure being collected for the purposes of collection statistics
+		} else {
+			config->disableSkippable();
 		}
-
-		// TODO: this is where we'd also record the treasure being collected for the purposes of collection statistics
 	}
 }
