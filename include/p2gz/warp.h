@@ -87,6 +87,7 @@ private:
 	void update_cave_opt();
 	void update_sublevel_opt();
 	void update_preset_opt();
+	void update_day_opt();
 	void warp_to_cave(Game::SingleGameSection* game);
 	void warp_to_area(Game::SingleGameSection* game);
 	void save_pikmin();

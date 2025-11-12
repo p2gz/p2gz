@@ -100,6 +100,7 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 			day_opt->set_selection(preset->day);
 		}
 	}
+	update_day_opt();
 }
 
 WarpDestination Warp::current_dest()
@@ -131,6 +132,7 @@ void Warp::set_warp_area(size_t area)
 	update_cave_opt();
 	update_sublevel_opt();
 	update_preset_opt();
+	update_day_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -140,6 +142,7 @@ void Warp::set_warp_cave(size_t cave)
 
 	update_sublevel_opt();
 	update_preset_opt();
+	update_day_opt();
 
 	enter_area_type_opt->visible = dest.cave == 0;
 }
@@ -204,6 +207,17 @@ void Warp::update_preset_opt()
 	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
 	if (suggested_preset) {
 		set_preset(suggested_preset, PS_Suggested);
+	}
+}
+
+void Warp::update_day_opt()
+{
+	if (day_opt) {
+		if (preset == nullptr) {
+			day_opt->visible = true;
+		} else {
+			day_opt->visible = false;
+		}
 	}
 }
 
