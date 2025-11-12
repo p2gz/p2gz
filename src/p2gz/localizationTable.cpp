@@ -1742,6 +1742,107 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 
+	// Time Capsule (CoS4) - different in JP
+	{
+	    // Time Capsule
+	    Treasure_US,                    // region
+	    "locket",                       // internal name
+	    "locket.szs",                   // archive filename
+	    "us_locket.bmd",                // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    25.0,                           // radius
+	    22.0,                           // pradius
+	    20.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    4,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    7,                              // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    70,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    22.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    76,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Flame of Tomorrow
+	    Treasure_PAL,                   // region
+	    "locket",                       // internal name
+	    "locket.szs",                   // archive filename
+	    "us_locket.bmd",                // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    25.0,                           // radius
+	    22.0,                           // pradius
+	    20.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    4,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    7,                              // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    70,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    22.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    75,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Flame of Tomorrow
+	    Treasure_JP,                    // region
+	    "locket",                       // internal name
+	    "locket.szs",                   // archive filename
+	    "locket.bmd",                   // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    25.0,                           // radius
+	    22.0,                           // pradius
+	    20.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    4,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    7,                              // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    70,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    22.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    75,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
 	//// Glutton's Kitchen - 3
 	// Massive Lid (GK2) - different in all three
 	{
