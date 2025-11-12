@@ -29,7 +29,13 @@ private:
 struct ImageMgr {
 	ImageMgr();
 
-	~ImageMgr() { delete &images; }
+	~ImageMgr()
+	{
+		for (size_t i = 0; i < images.len(); i++) {
+			delete images[i];
+		}
+		images.clear();
+	}
 
 	/// To add a new image, add it to this function with an appropriate name.
 	void init();

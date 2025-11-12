@@ -25,18 +25,11 @@ void Localization::init_menu()
 void Localization::set_treasure_region(size_t new_treasure_region_id)
 {
 	next_treasure_region = (TreasureRegion)new_treasure_region_id;
-	if (next_treasure_region != active_treasure_region) {
-		// update on next load
-		pending_update = true;
-	} else {
-		// no update needed
-		pending_update = false;
-	}
 }
 
 void Localization::update_region()
 {
-	if (!pending_update) {
+	if (!require_update()) {
 		return;
 	}
 
@@ -76,7 +69,6 @@ void Localization::update_region()
 
 	// update previous treasure region to avoid repeated updates
 	active_treasure_region = next_treasure_region;
-	pending_update         = false;
 }
 
 void Localization::localize_config(const char* name, Game::PelletConfig* config)

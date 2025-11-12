@@ -17,7 +17,6 @@ public:
 	Localization()
 	    : next_treasure_region(Treasure_US)
 	    , active_treasure_region(Treasure_US)
-	    , pending_update(false)
 	{
 	}
 
@@ -26,7 +25,7 @@ public:
 
 	void set_treasure_region(size_t new_treasure_region_id);
 
-	bool require_update() { return pending_update; }
+	bool require_update() { return active_treasure_region != next_treasure_region; }
 	void update_region();
 	void localize_config(const char* name, Game::PelletConfig* config);
 
@@ -34,7 +33,6 @@ private:
 	// Used to determine which treasure to spawn if it's different in a region (US vs. PAL vs. JP)
 	TreasureRegion active_treasure_region; // region since most recent update
 	TreasureRegion next_treasure_region;   // region to apply on next update (i.e. current selection in menu)
-	bool pending_update;                   // basically active != next
 };
 
 struct LocalizedTreasureConfig {
