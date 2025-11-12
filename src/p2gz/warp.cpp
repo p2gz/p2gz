@@ -94,6 +94,12 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
+	if (preset) {
+		set_warp_day(preset->day);
+		if (day_opt) {
+			day_opt->set_selection(preset->day);
+		}
+	}
 }
 
 WarpDestination Warp::current_dest()

@@ -57,7 +57,7 @@ void GZMenu::init_menu()
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
 			->push(new HexInputOption("seed", "random", new Delegate1<Warp, u32>(p2gz->warp, &Warp::set_seed), new Delegate<Warp>(p2gz->warp, &Warp::set_random_seed)))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
-			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new RangeMenuOption("day", 1, 99, 5, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PresetMenuOption(new Delegate2<Warp, Preset*, int>(p2gz->warp, &Warp::set_preset)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
@@ -247,7 +247,7 @@ void GZMenu::open()
 	// If freecam is active, don't open the menu
 	if (p2gz->freecam && p2gz->freecam->is_enabled())
 		return;
-  
+
 	// Don't open P2GZ menu during the following:
 	// - cutscenes (causes gameplay desync) - One exception:
 	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
@@ -796,8 +796,8 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -903,8 +903,8 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -1266,7 +1266,7 @@ DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_s
                                        bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad = new DecimalKeypad(title_, on_selected, on_opened);
+	keypad     = new DecimalKeypad(title_, on_selected, on_opened);
 	sync_value = on_opened;
 }
 

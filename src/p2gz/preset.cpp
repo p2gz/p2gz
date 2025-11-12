@@ -26,6 +26,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	upgrades         = 0;
 	cutscene_flags1  = 0;
 	cutscene_flags2  = 0;
+	day              = 5;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -42,6 +43,7 @@ Preset::Preset(Preset& other)
 	squad            = other.squad;
 	onion_pikis      = other.onion_pikis;
 	time             = other.time;
+	day              = other.day;
 	apply_pokos      = false;
 	pokos            = 0;
 	enter_kind       = FromCave;
@@ -162,6 +164,12 @@ Preset* Preset::set_pokos(int pokos_)
 {
 	pokos       = pokos_;
 	apply_pokos = true;
+	return this;
+}
+
+Preset* Preset::set_day(u8 day_)
+{
+	day = day_;
 	return this;
 }
 
@@ -311,7 +319,7 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 
 	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
 	// when changing the warp menu selections
-	current_preset = p2gz->preset_mgr->find("EC", PoD);
+	current_preset = p2gz->preset_mgr->find("EC1", PoD);
 	if (on_select) {
 		on_select->invoke(current_preset, PS_Stale);
 	}

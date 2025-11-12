@@ -15,15 +15,26 @@ using namespace Game;
 #define ALL_BAGS ARR(const char*, "landing area bag (15)", "hubcap bag (35)", "WFG bag (200)")
 
 // Cutscene flags
-#define NUM_BASE_DEMO_FLAGS 14
-#define BASE_DEMO_FLAGS                                                                                                                   \
-	DEMO_Pluck_First_Pikmin, DEMO_Discover_Treasure, DEMO_First_Gate_Down, DEMO_Reds_In_Onion, DEMO_First_Nectar_Use, DEMO_Day_One_Start, \
-	    DEMO_Meet_Red_Pikmin, DEMO_Louie_Finds_Red_Onion, DEMO_Unlock_Captain_Switch, DEMO_First_Use_Louie, DEMO_Reunite_Captains,        \
-	    DEMO_You_Appear_Lost, DEMO_First_Number_Pellet, DEMO_Find_Spiderwort_Mold
+#define NUM_DAY_2_DEMO_FLAGS 3
+#define DAY_2_DEMO_FLAGS     DEMO_Day_One_Start, DEMO_Meet_Red_Pikmin, DEMO_Find_Spiderwort_Mold
 
-#define NUM_AW_DEMO_FLAGS NUM_BASE_DEMO_FLAGS + 7
-#define AW_DEMO_FLAGS                                                                                                  \
-	BASE_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_Find_Cave_Geyser, DEMO_First_Cave_Enter, DEMO_First_Cave_Return, \
+#define NUM_DAY_3_DEMO_FLAGS NUM_DAY_2_DEMO_FLAGS + 4
+#define DAY_3_DEMO_FLAGS \
+	DAY_2_DEMO_FLAGS, DEMO_Pluck_First_Pikmin, DEMO_First_Number_Pellet, DEMO_Unlock_Captain_Switch, DEMO_First_Use_Louie
+
+#define NUM_DAY_4_DEMO_FLAGS NUM_DAY_3_DEMO_FLAGS + 2
+#define DAY_4_DEMO_FLAGS     DAY_3_DEMO_FLAGS, DEMO_Louie_Finds_Red_Onion, DEMO_Reds_In_Onion
+
+#define NUM_EC1_DEMO_FLAGS NUM_DAY_4_DEMO_FLAGS + 5
+#define EC1_DEMO_FLAGS \
+	DAY_4_DEMO_FLAGS, DEMO_Discover_Treasure, DEMO_First_Gate_Down, DEMO_First_Nectar_Use, DEMO_Reunite_Captains, DEMO_You_Appear_Lost
+
+#define NUM_EC2_DEMO_FLAGS NUM_EC1_DEMO_FLAGS + 2
+#define EC2_DEMO_FLAGS     EC1_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_First_Cave_Enter
+
+#define NUM_AW_DEMO_FLAGS NUM_EC2_DEMO_FLAGS + 7
+#define AW_DEMO_FLAGS                                                                                                 \
+	EC2_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_Find_Cave_Geyser, DEMO_First_Cave_Enter, DEMO_First_Cave_Return, \
 	    DEMO_First_Globe_Day_End, DEMO_Purple_Candypop, DEMO_First_Corpse_In_Cave
 
 #define NUM_HOB_DEMO_FLAGS NUM_AW_DEMO_FLAGS + 4
@@ -56,17 +67,40 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_sprays(false, 0, true, 16));
-	presets.push((new Preset("EC", PoD))
+	// presets.push((new Preset("Day 1", PoD))->set_day(1));
+	// presets.push((new Preset("Day 2", PoD))
+	//                  ->set_onion_pikmin(Leaf, Red, 0)
+	//                  ->set_day(2)
+	//                  ->set_cutscene_flags(NUM_DAY_2_DEMO_FLAGS, (DemoFlags[NUM_DAY_2_DEMO_FLAGS]) { DAY_2_DEMO_FLAGS }));
+	// presets.push((new Preset("Day 3", PoD))
+	//                  ->set_onion_pikmin(Leaf, Red, 9)
+	//                  ->set_day(3)
+	//                  ->set_cutscene_flags(NUM_DAY_3_DEMO_FLAGS, (DemoFlags[NUM_DAY_3_DEMO_FLAGS]) { DAY_3_DEMO_FLAGS }));
+	// presets.push((new Preset("Day 4", PoD))
+	//                  ->set_onion_pikmin(Leaf, Red, 13)
+	//                  ->set_day(4)
+	//                  ->set_cutscene_flags(NUM_DAY_4_DEMO_FLAGS, (DemoFlags[NUM_DAY_4_DEMO_FLAGS]) { DAY_4_DEMO_FLAGS }));
+	presets.push((new Preset("EC1", PoD))
 	                 ->set_pikmin(Flower, Red, 46)
 	                 ->set_pikmin(Leaf, Red, 6)
 	                 ->set_time(8.0f)
-	                 ->set_cutscene_flags(NUM_BASE_DEMO_FLAGS, (DemoFlags[NUM_BASE_DEMO_FLAGS]) { BASE_DEMO_FLAGS })
+	                 ->set_day(4)
+	                 ->set_cutscene_flags(NUM_EC1_DEMO_FLAGS, (DemoFlags[NUM_EC1_DEMO_FLAGS]) { EC1_DEMO_FLAGS })
+	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" })
+	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
+	presets.push((new Preset("EC2", PoD))
+	                 ->set_pikmin(Flower, Red, 46)
+	                 ->set_pikmin(Leaf, Red, 6)
+	                 ->set_time(8.0f)
+	                 ->set_day(4)
+	                 ->set_cutscene_flags(NUM_EC2_DEMO_FLAGS, (DemoFlags[NUM_EC2_DEMO_FLAGS]) { EC2_DEMO_FLAGS })
 	                 ->set_destroyed_gates(1, (const char* [1]) { "EC gate" })
 	                 ->set_bags_flattened(ARR(const char*, "landing area bag (15)", "hubcap bag (35)")));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
 	                 ->set_onion_pikmin(Leaf, Purple, 10)
+	                 ->set_day(5)
 	                 ->set_upgrades(1,
 	                                (OlimarData::ItemIndex[1]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -78,6 +112,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_time(8.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(1,
 	                                (OlimarData::ItemIndex[1]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -90,6 +125,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 10)
 	                 ->set_pikmin(Leaf, Purple, 10)
 	                 ->set_time(8.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(1,
 	                                (OlimarData::ItemIndex[1]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -101,6 +137,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(1,
 	                                (OlimarData::ItemIndex[1]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -112,6 +149,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_time(8.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(2,
 	                                (OlimarData::ItemIndex[2]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -125,6 +163,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(2,
 	                                (OlimarData::ItemIndex[2]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -138,6 +177,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 15)
 	                 ->set_time(8.5f)
+	                 ->set_day(5)
 	                 ->set_upgrades(3,
 	                                (OlimarData::ItemIndex[3]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -155,6 +195,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
+	                 ->set_day(5)
 	                 ->set_upgrades(3,
 	                                (OlimarData::ItemIndex[3]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -173,6 +214,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
+	                 ->set_day(5)
 	                 ->set_upgrades(3,
 	                                (OlimarData::ItemIndex[3]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -191,6 +233,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
+	                 ->set_day(5)
 	                 ->set_upgrades(4,
 	                                (OlimarData::ItemIndex[4]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -209,6 +252,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
+	                 ->set_day(5)
 	                 ->set_upgrades(4,
 	                                (OlimarData::ItemIndex[4]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -227,6 +271,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(10.5f)
+	                 ->set_day(5)
 	                 ->set_upgrades(4,
 	                                (OlimarData::ItemIndex[4]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -246,6 +291,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(13.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(5,
 	                                (OlimarData::ItemIndex[5]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -267,6 +313,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 2)
 	                 ->set_onion_pikmin(Flower, Red, 1)
 	                 ->set_time(13.0f)
+	                 ->set_day(5)
 	                 ->set_upgrades(5,
 	                                (OlimarData::ItemIndex[5]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -284,6 +331,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_day(6)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -302,6 +350,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, White, 25)
 	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_day(6)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -320,6 +369,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Purple, 20)
 	                 ->set_onion_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 28)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -339,6 +389,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 55)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_onion_pikmin(Flower, Red, 23)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -358,6 +409,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -378,6 +430,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -397,6 +450,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 45)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_time(9.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -417,6 +471,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -437,6 +492,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(9.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -459,6 +515,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(9.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(6,
 	                                (OlimarData::ItemIndex[6]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -480,6 +537,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_time(10.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(7,
 	                                (OlimarData::ItemIndex[7]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -503,6 +561,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 25)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(10.5f)
+	                 ->set_day(7)
 	                 ->set_upgrades(7,
 	                                (OlimarData::ItemIndex[7]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -524,6 +583,7 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Blue, 40)
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 5)
+	                 ->set_day(8)
 	                 ->set_upgrades(7,
 	                                (OlimarData::ItemIndex[7]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -545,6 +605,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 23)
 	                 ->set_onion_pikmin(Flower, Blue, 5)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
+	                 ->set_day(8)
 	                 ->set_upgrades(7,
 	                                (OlimarData::ItemIndex[7]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -566,6 +627,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Flower, Blue, 11)
 	                 ->set_time(8.5f)
+	                 ->set_day(8)
 	                 ->set_upgrades(7,
 	                                (OlimarData::ItemIndex[7]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -588,6 +650,7 @@ PresetMgr::PresetMgr()
 	                 ->set_onion_pikmin(Flower, Blue, 11)
 	                 ->set_onion_pikmin(Leaf, Blue, 5)
 	                 ->set_time(8.5f)
+	                 ->set_day(8)
 	                 ->set_upgrades(7,
 	                                (OlimarData::ItemIndex[7]) {
 	                                    OlimarData::ODII_SphericalAtlas,
@@ -639,6 +702,7 @@ Preset* PresetMgr::create()
 	if (last_used_preset) {
 		copy_vec(preset->destroyed_gates, last_used_preset->destroyed_gates);
 		preset->enter_kind = last_used_preset->enter_kind;
+		preset->day        = last_used_preset->day;
 	}
 
 	prev_heap->becomeCurrentHeap();
@@ -713,7 +777,10 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 	if (category == PoD) {
 		switch (cave_e) {
 		case EC:
-			return find("EC", PoD);
+			if (dest.sublevel < 1)
+				return find("EC1", PoD);
+			else
+				return find("EC2", PoD);
 		case HoB:
 			if (dest.sublevel < 2)
 				return find("HoB1-2", PoD);
