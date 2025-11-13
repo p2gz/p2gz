@@ -54,7 +54,7 @@ void SegmentHistory::update()
 	WarpDestination current_dest = current_segment->dest;
 	const u32 btn                = p2gz->controller->getButtonDown();
 
-	if (entering_next_sublevel || p2gz->menu->is_root_open()) {
+	if (entering_next_sublevel || (p2gz->menu->is_root_open() && in_cave_play())) {
 		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
 			current_dest.use_set_seed = false;
