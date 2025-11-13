@@ -101,6 +101,12 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 		}
 		break;
 	}
+
+	// @P2GZ localization-swap:
+	// update treasure region before pellet loading if required
+	if (p2gz->localization_op->require_update()) {
+		p2gz->localization_op->update_region();
+	}
 }
 
 /**

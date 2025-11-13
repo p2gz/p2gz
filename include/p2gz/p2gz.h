@@ -15,6 +15,7 @@
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
+#include <p2gz/Localization.h>
 #include <p2gz/SquadEditor.h>
 #include <p2gz/StructureEditor.h>
 #include <p2gz/SegmentHistory.h>
@@ -33,7 +34,7 @@
 struct P2GZ {
 public:
 	P2GZ();
-	~P2GZ() { }
+	~P2GZ();
 
 	void init();
 	void update();
@@ -70,6 +71,7 @@ public:
 	gz::EKEditor* ek_editor;
 	gz::CaveDebugInfo* cave_debug_info;
 	gz::TreasureEditor* treasure_editor;
+	gz::Localization* localization_op;
 
 private:
 	bool inited;
