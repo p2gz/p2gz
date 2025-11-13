@@ -203,7 +203,7 @@ void Timer::reset_skip_timer()
 
 void Timer::stop_skip_timer(Game::MovieConfig* config)
 {
-	if (!skip_timer_set) {
+	if (!skip_timer_set || !config) {
 		return;
 	}
 
@@ -220,6 +220,8 @@ void Timer::stop_skip_timer(Game::MovieConfig* config)
 		max_cutscene_time = MAX_UPGRADE_CUTSCENE_TIME;
 	} else {
 		// we have a skip timer going during the wrong cutscene, something is Wrong
+		OSReport("[P2GZ WARN] stop_skip_timer: unhandled config name\n");
+		OSReport("[P2GZ WARN] >> config: %s\n", config->mMovieNameBuffer2);
 		return;
 	}
 
