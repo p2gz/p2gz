@@ -59,6 +59,7 @@ Warp::Warp()
 	allow_zero_pikmin_in_caves = true;
 	warping_from_menu          = false;
 	needs_post_load_action     = false;
+	warping                    = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 	lockout_frames             = 0;
@@ -223,6 +224,8 @@ void Warp::update_day_opt()
 
 void Warp::do_warp()
 {
+	warping = true;
+
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
@@ -454,6 +457,8 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 
 void Warp::do_post_warp()
 {
+	warping = false;
+
 	if (!needs_post_load_action) {
 		return;
 	}

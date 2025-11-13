@@ -116,7 +116,7 @@ void GZMenu::init_menu()
 	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_plug_debug)))
 				->push(new OpenSubMenuOption("bags", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bags))))) // Will be populated dynamically by StructureEditor
 			))
-			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
+			->push(new OpenSubMenuOption("treasures", (new ListMenu(new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::sync)))))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
@@ -144,6 +144,7 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("draw position", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_position_enabled)))
 				->push(new ToggleMenuOption("draw collision", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_collision_enabled)))
 			))
+			->push(new ToggleMenuOption("generator debug info", false, new Delegate1<GeneratorDebugInfo, bool>(p2gz->generator_debug_info, &GeneratorDebugInfo::set_enabled)))
 			->push(new OpenSubMenuOption("time controls", (new ListMenu())
 				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
 				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
@@ -418,6 +419,9 @@ ListMenu* ListMenu::push(MenuOption* option)
 
 void ListMenu::clear()
 {
+	for (size_t i = 0; i < options.len(); i++) {
+		delete options[i];
+	}
 	options.clear();
 }
 
