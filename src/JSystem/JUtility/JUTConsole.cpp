@@ -637,7 +637,10 @@ void JUTReportConsole_f(char const* fmt, ...)
  */
 void JUTReportConsole(char const* str)
 {
-	JUTReportConsole_f("%s", str);
+	// @P2GZ localization swap
+	// Divert unused console debug text to log
+	// JUTReportConsole_f("%s", str);
+	OSReport("%s", str);
 }
 
 /**

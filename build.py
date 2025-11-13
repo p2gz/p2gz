@@ -25,6 +25,7 @@ P2GZ_CUSTOM_ASSETS_COMPRESSED = [
 P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Ebisawa', 'title', 'title.szs'),
+    os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'otakara_texts.szs'),
     os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
 ]
 
@@ -97,7 +98,11 @@ for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
     # Copy existing uncompressed file
     if os.path.exists(iso_path):
         print(f'Copying {path} to {iso_path}')
-        shutil.copy(path, iso_path)
+        # if it's a file or a directory
+        if os.path.isfile(path):
+            shutil.copy(path, iso_path) # copy individual file
+        else: # its a directory
+            shutil.copytree(path, iso_path, dirs_exist_ok=True) # copy whole directory
 
     # Add new directory + file
     else:
