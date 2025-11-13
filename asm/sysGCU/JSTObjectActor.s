@@ -768,7 +768,9 @@ lbl_constructor:
 /* 8042F224 0042C164  93 A1 00 A4 */	stw r29, 0xa4(r1)
 /* 8042F228 0042C168  7C BD 2B 78 */	mr r29, r5
 /* 8042F22C 0042C16C  4C C6 31 82 */	crclr 6
-/* 8042F230 0042C170  4B CB E4 BD */	bl OSReport
+# @P2GZ: stop annoying debug prints
+# /* 8042F230 0042C170  4B CB E4 BD */	bl OSReport
+/* 8042F230 0042C170  4B CB E4 BD */	nop
 /* 8042F234 0042C174  93 A1 00 20 */	stw r29, 0x20(r1)
 /* 8042F238 0042C178  38 61 00 20 */	addi r3, r1, 0x20
 /* 8042F23C 0042C17C  38 81 00 8C */	addi r4, r1, 0x8c
@@ -808,7 +810,9 @@ lbl_constructor:
 /* 8042F2BC 0042C1FC  91 21 00 40 */	stw r9, 0x40(r1)
 /* 8042F2C0 0042C200  91 21 00 3C */	stw r9, 0x3c(r1)
 /* 8042F2C4 0042C204  4C C6 31 82 */	crclr 6
-/* 8042F2C8 0042C208  4B CB E4 25 */	bl OSReport
+# @P2GZ: stop annoying debug prints
+# /* 8042F2C8 0042C208  4B CB E4 25 */	bl OSReport 
+/* 8042F2C8 0042C208  4B CB E4 25 */	nop
 /* 8042F2CC 0042C20C  80 61 00 60 */	lwz r3, 0x60(r1)
 /* 8042F2D0 0042C210  38 03 00 02 */	addi r0, r3, 2
 /* 8042F2D4 0042C214  90 01 00 60 */	stw r0, 0x60(r1)
@@ -861,7 +865,9 @@ lbl_constructor:
 /* 8042F384 0042C2C4  91 01 00 30 */	stw r8, 0x30(r1)
 /* 8042F388 0042C2C8  91 01 00 2C */	stw r8, 0x2c(r1)
 /* 8042F38C 0042C2CC  4C C6 31 82 */	crclr 6
-/* 8042F390 0042C2D0  4B CB E3 5D */	bl OSReport
+# @P2GZ: stop annoying debug prints
+# /* 8042F390 0042C2D0  4B CB E3 5D */	bl OSReport
+/* 8042F390 0042C2D0  4B CB E3 5D */	nop
 /* 8042F394 0042C2D4  80 61 00 5C */	lwz r3, 0x5c(r1)
 /* 8042F398 0042C2D8  38 03 00 01 */	addi r0, r3, 1
 /* 8042F39C 0042C2DC  90 01 00 5C */	stw r0, 0x5c(r1)
@@ -901,7 +907,9 @@ lbl_constructor:
 /* 8042F418 0042C358  7F C5 F3 78 */	mr r5, r30
 /* 8042F41C 0042C35C  38 7F 00 9C */	addi r3, r31, 0x9c
 /* 8042F420 0042C360  4C C6 31 82 */	crclr 6
-/* 8042F424 0042C364  4B CB E2 C9 */	bl OSReport
+# @P2GZ: stop annoying debug prints
+# /* 8042F424 0042C364  4B CB E2 C9 */	bl OSReport
+/* 8042F424 0042C364  4B CB E2 C9 */	nop
 /* 8042F428 0042C368  7F C3 F3 78 */	mr r3, r30
 /* 8042F42C 0042C36C  38 80 00 00 */	li r4, 0
 /* 8042F430 0042C370  3B BD 00 01 */	addi r29, r29, 1
