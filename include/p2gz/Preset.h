@@ -39,6 +39,7 @@ public:
 	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
+	Preset* set_day(u8 day_);
 
 	PresetCategory category;
 	const char* name;
@@ -46,19 +47,20 @@ public:
 	Game::PikiContainer onion_pikis;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
+	u16 upgrades; // bitflags
 	int num_bitters;
 	int num_spicies;
 	f32 time;
 	u32 cutscene_flags1; // bitflags
 	u32 cutscene_flags2; // bitflags
-	u16 upgrades;        // bitflags
 	Vec<const char*> destroyed_gates;
 	Vec<const char*> finished_bridges;
 	Vec<const char*> bags_flattened;
-	bool plug_destroyed; // no more than one plug per level
 	EnterAreaKind enter_kind;
-	bool apply_pokos;
 	int pokos;
+	bool plug_destroyed; // no more than one plug per level
+	bool apply_pokos;
+	u8 day;
 };
 
 struct PresetMgr {
