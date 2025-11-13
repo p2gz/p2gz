@@ -55,6 +55,14 @@ struct CurriedDelegate1 : public IDelegate1<B> {
 	void (T::*func)(A, B);
 };
 
+struct FreeDelegate : public IDelegate {
+	inline FreeDelegate(void (*func_)()) { func = func_; }
+
+	virtual void invoke() { (func)(); }
+
+	void (*func)();
+};
+
 template <typename R>
 struct IDelegateR {
 	virtual R invoke() = 0; // _08

@@ -6,6 +6,13 @@
 using namespace gz;
 using namespace gz::test;
 
+static const bool dbg = false;
+#define LOG(...)                 \
+	if (dbg) {                   \
+		OSReport("[DBG] ==== "); \
+		OSReport(__VA_ARGS__);   \
+	}
+
 TestRunner::TestRunner()
 {
 	inited   = false;
@@ -43,18 +50,12 @@ void TestRunner::update()
 	}
 }
 
-Test::Test(const char* name_, const size_t num_ops_, TestOp** ops_)
-    : num_ops(num_ops_)
-    , ops(num_ops_)
+Test::Test(const char* name_)
 {
 	GZASSERTLINE(name_);
 	name    = name_;
 	cur_op  = 0;
 	started = false;
-
-	for (size_t i = 0; i < num_ops; i++) {
-		ops.push(ops_[i]);
-	}
 }
 
 bool Test::update()
@@ -63,7 +64,7 @@ bool Test::update()
 		OSReport("GZTest: Starting test\t%s\n", name);
 		p2gz->controller->mPadReplay = p2gz->test_runner->gamepad;
 		started                      = true;
-	} else if (cur_op >= num_ops) {
+	} else if (cur_op >= ops.len()) {
 		return true;
 	}
 
@@ -73,7 +74,7 @@ bool Test::update()
 		cur_op += 1;
 	}
 
-	if (cur_op >= num_ops) {
+	if (cur_op >= ops.len()) {
 		OSReport("GZTest: Finished test\t%s\n", name);
 		p2gz->controller->mPadReplay = nullptr;
 		return true;
@@ -87,23 +88,28 @@ bool Wait::execute()
 	if (frames == 0) {
 		return true;
 	}
+	LOG("Waiting 1 frame\n");
 	frames -= 1;
 	return false;
 }
 
-CompoundOp::CompoundOp(size_t num_, TestOp** ops_)
-    : num(num_)
-    , ops(num_)
+void CompoundOp::restart()
 {
 	cur_op = 0;
-	for (size_t i = 0; i < num; i++) {
-		ops.push(ops_[i]);
+	for (size_t i = 0; i < ops.len(); i++) {
+		ops[i]->restart();
 	}
+}
+
+CompoundOp* CompoundOp::push(TestOp* op)
+{
+	ops.push(op);
+	return this;
 }
 
 bool CompoundOp::execute()
 {
-	if (cur_op >= num) {
+	if (cur_op >= ops.len()) {
 		return true;
 	}
 
@@ -117,17 +123,33 @@ bool CompoundOp::execute()
 bool DoN::execute()
 {
 	if (n > 0) {
+		LOG("DoN with n = %d/%d\n", n, start_n);
 		if (other->execute()) {
 			n -= 1;
 			other->restart();
 		}
 		return false;
 	}
+	LOG("DoN %d done\n", start_n);
+	return true;
+}
+
+bool DoUntil::execute()
+{
+	if (!is_in_state->invoke()) {
+		LOG("DoUntil not in goal state, executing op\n");
+		if (other->execute()) {
+			other->restart();
+		}
+		return false;
+	}
+	LOG("DoUntil reached goal state\n");
 	return true;
 }
 
 bool ButtonInput::execute()
 {
+	LOG("Pressing button %X\n", button);
 	hold_frames -= 1;
 	p2gz->test_runner->gamepad->status.button |= button;
 	if (hold_frames <= 0) {
@@ -138,5 +160,6 @@ bool ButtonInput::execute()
 
 bool WaitForState::execute()
 {
+	LOG("Waiting for state...\n");
 	return is_in_state->invoke();
 }

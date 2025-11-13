@@ -6,6 +6,7 @@
 #include <Game/MapMgr.h>
 #include <GameFlow.h>
 #include <PikiAI.h>
+#include <Game/MoviePlayer.h>
 
 namespace gz {
 
@@ -115,6 +116,16 @@ inline bool in_above_ground_play()
 		return false;
 	}
 	return true;
+}
+
+/// `in_above_ground_play` and player currently has control (not in a loading screen or demo)
+inline bool in_above_ground_gameplay()
+{
+	if (!in_above_ground_play()) {
+		return false;
+	}
+
+	return Game::moviePlayer->mDemoState == Game::DEMOSTATE_Inactive;
 }
 
 inline bool in_cave_play()
@@ -329,6 +340,13 @@ inline bool in_enter_area_load()
 		return false;
 	}
 	return true;
+}
+
+inline void skip_movie()
+{
+	if (Game::moviePlayer && Game::moviePlayer->mDemoState == Game::DEMOSTATE_Playing) {
+		Game::moviePlayer->skip();
+	}
 }
 
 } // namespace gz

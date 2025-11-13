@@ -11,13 +11,19 @@ namespace gz {
 namespace test {
 
 // Creates a Test object with the right array sizes
-#define TEST(name, ...) new Test(name, ARRAY_SIZE(((TestOp*[]) { __VA_ARGS__ })), ((TestOp*[]) { __VA_ARGS__ }))
+#define TEST(name, ...) ((new Test(name))__VA_ARGS__)
+#define __TEST_OP(op)   ->push(op)
 
-#define PRESS(btn)     new ButtonInput(btn), new Wait(1)
-#define DBL_DPAD_L     PRESS(PAD_BUTTON_LEFT), PRESS(PAD_BUTTON_LEFT)
-#define DO_N(num, ...) new DoN(new CompoundOp(ARRAY_SIZE(((TestOp*[]) { __VA_ARGS__ })), ((TestOp*[]) { __VA_ARGS__ })), num)
+#define __COMPOUND(...)        (new CompoundOp()) __VA_ARGS__
+#define PRESS(btn)             __TEST_OP(new ButtonInput(btn)) __TEST_OP(new Wait(1))
+#define DBL_DPAD_L             PRESS(PAD_BUTTON_LEFT) PRESS(PAD_BUTTON_LEFT)
+#define DO_N(num, ...)         __TEST_OP(new DoN(__COMPOUND(__VA_ARGS__), num))
+#define DO_UNTIL(op, state_fn) __TEST_OP(new DoUntil(__COMPOUND(op), new FreeDelegateR<bool>(state_fn)))
+#define MASH_TEXT              PRESS(PAD_BUTTON_A) PRESS(PAD_BUTTON_B)
+#define SKIP_CUTSCENE          __TEST_OP(new ActionOp(new FreeDelegate(&skip_movie)))
 
-#define WAIT_FOR(state_fn) new WaitForState(new FreeDelegateR<bool>(&state_fn))
+#define WAIT(frames)       __TEST_OP(new Wait(frames))
+#define WAIT_FOR(state_fn) __TEST_OP(new WaitForState(new FreeDelegateR<bool>(&state_fn)))
 
 struct TestOp {
 public:
@@ -31,19 +37,14 @@ public:
 
 struct CompoundOp : public TestOp {
 public:
-	CompoundOp(size_t num_, TestOp** ops_);
+	CompoundOp() { cur_op = 0; }
 
 	virtual bool execute();
-	virtual void restart()
-	{
-		cur_op = 0;
-		for (size_t i = 0; i < num; i++) {
-			ops[i]->restart();
-		}
-	}
+	virtual void restart();
+
+	CompoundOp* push(TestOp* op);
 
 	Vec<TestOp*> ops;
-	size_t num;
 
 private:
 	size_t cur_op;
@@ -67,25 +68,62 @@ public:
 	}
 
 	virtual bool execute();
-	virtual void restart() { n = start_n; }
+	virtual void restart()
+	{
+		n = start_n;
+		other->restart();
+	}
 
 	TestOp* other;
 	size_t n;
 	const size_t start_n;
 };
 
-struct ButtonInput : public TestOp {
+struct DoUntil : public TestOp {
 public:
-	ButtonInput(int button_, int hold_frames_ = 1)
+	DoUntil(TestOp* other_, IDelegateR<bool>* is_in_state_)
 	{
-		button      = button_;
-		hold_frames = hold_frames_;
+		GZASSERTLINE(other_);
+		GZASSERTLINE(is_in_state_);
+		other       = other_;
+		is_in_state = is_in_state_;
 	}
 
 	virtual bool execute();
+	virtual void restart() { other->restart(); }
+
+	TestOp* other;
+	IDelegateR<bool>* is_in_state;
+};
+
+struct ButtonInput : public TestOp {
+public:
+	ButtonInput(int button_, int hold_frames_ = 1)
+	    : max_frames(hold_frames_)
+	{
+		button      = button_;
+		hold_frames = max_frames;
+	}
+
+	virtual bool execute();
+	virtual void restart() { hold_frames = max_frames; }
 
 	int button;
 	int hold_frames;
+	const int max_frames;
+};
+
+struct ActionOp : public TestOp {
+public:
+	ActionOp(IDelegate* action_) { action = action_; }
+
+	virtual bool execute()
+	{
+		action->invoke();
+		return true;
+	}
+
+	IDelegate* action;
 };
 
 struct Wait : public TestOp {
@@ -108,14 +146,18 @@ public:
 
 struct Test {
 public:
-	Test(const char* name_, const size_t num_ops_, TestOp** ops_);
+	Test(const char* name_);
 
 	/// Returns whether the test is finished
 	bool update();
+	Test* push(TestOp* op)
+	{
+		ops.push(op);
+		return this;
+	}
 
 private:
 	const char* name;
-	const size_t num_ops;
 	size_t cur_op;
 	Vec<TestOp*> ops;
 	bool started;
