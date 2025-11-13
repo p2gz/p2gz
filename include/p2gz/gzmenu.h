@@ -512,7 +512,7 @@ public:
 	void open();
 	void close();
 	bool is_open() { return enabled; }
-	bool is_lock() { return lock; }
+	bool is_root_open() { return enabled && layer == root_layer; }
 
 	// Called when navigating to a new page to disable inputs for 1 frame to prevent accidentally activating other stuff in submenus
 	// immediately
