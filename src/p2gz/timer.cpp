@@ -201,28 +201,31 @@ void Timer::reset_skip_timer()
 	skip_timer_set = true;
 }
 
-void Timer::stop_skip_timer_treasure()
+void Timer::stop_skip_timer(Game::MovieConfig* config)
 {
-	if (!skip_timer_set) {
+	if (!skip_timer_set || !config) {
 		return;
 	}
 
-	int remaining = skip_timer + (MAX_TREASURE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
-	if (remaining < 0) {
-		remaining = 0;
-	}
+	f32 max_cutscene_time = 0.0f;
 
-	main_timer -= remaining;
-	sub_timer -= remaining;
-	skip_timer_set = false;
-}
-
-void Timer::stop_skip_timer_upgrade()
-{
-	if (!skip_timer_set) {
+	if (config->is("x01_gamestart")) {
+		// intro crash landing cutscene
+		max_cutscene_time = MAX_CRASH_LANDING_CUTSCENE_TIME;
+	} else if (config->is("s22_cv_suck_treasure") || config->is("s10_suck_treasure")) {
+		// treasure cutscene
+		max_cutscene_time = MAX_TREASURE_CUTSCENE_TIME;
+	} else if (config->is("s22_cv_suck_equipment") || config->is("s17_suck_equipment")) {
+		// upgrade cutscene
+		max_cutscene_time = MAX_UPGRADE_CUTSCENE_TIME;
+	} else {
+		// we have a skip timer going during the wrong cutscene, something is Wrong
+		OSReport("[P2GZ WARN] stop_skip_timer: unhandled config name\n");
+		OSReport("[P2GZ WARN] >> config: %s\n", config->mMovieNameBuffer2);
 		return;
 	}
-	int remaining = skip_timer + (MAX_UPGRADE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
+
+	int remaining = skip_timer + (max_cutscene_time * 1000.0f) - get_cur_time();
 	if (remaining < 0) {
 		remaining = 0;
 	}

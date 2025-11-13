@@ -27,32 +27,32 @@ P2GZ::P2GZ()
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// Setup all our P2GZ menus/features here
-	collision_viewer             = new CollisionViewer();
-	controller                   = new Controller(JUTGamePad::PORT_0);
-	freecam                      = new FreeCam();
-	menu                         = new GZMenu();
-	navi_tools                   = new NaviTools();
-	timer                        = new Timer();
-	waypoint_viewer              = new WaypointViewer();
-	warp                         = new Warp();
-	skippable_treasure_cutscenes = new SkippableTreasureCS();
-	day_editor                   = new DayEditor();
-	heap_bar_toggle              = new HeapBarToggle();
-	images                       = new ImageMgr();
-	skip_save                    = new SkipSave();
-	structure_editor             = new StructureEditor();
-	spray_editor                 = new SprayEditor();
-	segment_history              = new SegmentHistory();
-	enemy_debug_info             = new EnemyDebugInfo();
-	cave_debug_info              = new CaveDebugInfo();
-	squad_editor                 = new SquadEditor();
-	preset_mgr                   = new PresetMgr();
-	cutscene_mgr                 = new CutsceneMgr();
-	dismiss_positions            = new DismissPositions();
-	poko_editor                  = new PokoEditor();
-	ek_editor                    = new EKEditor();
-	treasure_editor              = new TreasureEditor();
-	localization_op              = new Localization();
+	collision_viewer    = new CollisionViewer();
+	controller          = new Controller(JUTGamePad::PORT_0);
+	freecam             = new FreeCam();
+	menu                = new GZMenu();
+	navi_tools          = new NaviTools();
+	timer               = new Timer();
+	waypoint_viewer     = new WaypointViewer();
+	warp                = new Warp();
+	skippable_cutscenes = new SkippableCutscenes();
+	day_editor          = new DayEditor();
+	heap_bar_toggle     = new HeapBarToggle();
+	images              = new ImageMgr();
+	skip_save           = new SkipSave();
+	structure_editor    = new StructureEditor();
+	spray_editor        = new SprayEditor();
+	segment_history     = new SegmentHistory();
+	enemy_debug_info    = new EnemyDebugInfo();
+	cave_debug_info     = new CaveDebugInfo();
+	squad_editor        = new SquadEditor();
+	preset_mgr          = new PresetMgr();
+	cutscene_mgr        = new CutsceneMgr();
+	dismiss_positions   = new DismissPositions();
+	poko_editor         = new PokoEditor();
+	ek_editor           = new EKEditor();
+	treasure_editor     = new TreasureEditor();
+	localization_op     = new Localization();
 
 	prev_heap->becomeCurrentHeap();
 }
