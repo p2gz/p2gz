@@ -7,15 +7,16 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
+#include <Game/Entities/PelletOtakara.h>
 
 using namespace gz;
 
 Preset::Preset(const char* name_, PresetCategory category_)
-    : upgrades(0)
-    , cutscene_flags(0)
-    , destroyed_gates(0)
+    : destroyed_gates(0)
     , finished_bridges(0)
     , bags_flattened(0)
+    , enemy_spawn_overrides(0)
+    , treasure_spawn_overrides(0)
 {
 	name             = name_;
 	category         = category_;
@@ -25,6 +26,10 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	num_spicies      = 0;
 	time             = 7.0f;
 	plug_destroyed   = false;
+	upgrades         = 0;
+	cutscene_flags1  = 0;
+	cutscene_flags2  = 0;
+	day              = 5;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -41,20 +46,14 @@ Preset::Preset(Preset& other)
 	squad            = other.squad;
 	onion_pikis      = other.onion_pikis;
 	time             = other.time;
+	day              = other.day;
 	apply_pokos      = false;
 	pokos            = 0;
-	enter_kind       = FromCave;
+	enter_kind       = PEK_FromCave;
 	plug_destroyed   = other.plug_destroyed;
-
-	upgrades.expandCapacityTo(other.upgrades.len());
-	for (size_t i = 0; i < other.upgrades.len(); i++) {
-		upgrades.push(other.upgrades[i]);
-	}
-
-	cutscene_flags.expandCapacityTo(other.cutscene_flags.len());
-	for (size_t i = 0; i < other.cutscene_flags.len(); i++) {
-		cutscene_flags.push(other.cutscene_flags[i]);
-	}
+	upgrades         = other.upgrades;
+	cutscene_flags1  = other.cutscene_flags1;
+	cutscene_flags2  = other.cutscene_flags2;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -70,6 +69,55 @@ Preset::Preset(Preset& other)
 	for (size_t i = 0; i < other.bags_flattened.len(); i++) {
 		bags_flattened.push(other.bags_flattened[i]);
 	}
+
+	enemy_spawn_overrides.expandCapacityTo(other.enemy_spawn_overrides.len());
+	for (size_t i = 0; i < other.enemy_spawn_overrides.len(); i++) {
+		enemy_spawn_overrides.push(other.enemy_spawn_overrides[i]);
+	}
+
+	treasure_spawn_overrides.expandCapacityTo(other.treasure_spawn_overrides.len());
+	for (size_t i = 0; i < other.treasure_spawn_overrides.len(); i++) {
+		treasure_spawn_overrides.push(other.treasure_spawn_overrides[i]);
+	}
+}
+
+Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
+                                                     GenSpawnOverride spawn_override_)
+{
+	enemy_id       = enemy_id_;
+	gen_pos        = gen_pos_;
+	spawn_override = spawn_override_;
+}
+
+Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_)
+{
+	id             = id_;
+	spawn_override = spawn_override_;
+}
+
+GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
+{
+	if (gen->mObject->mTypeID == 'teki') {
+		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
+		for (size_t i = 0; i < enemy_spawn_overrides.len(); i++) {
+			EnemyGenSpawnOverride& oride = enemy_spawn_overrides[i];
+			if (oride.enemy_id == gen_obj_enemy->mEnemyID && absF(oride.gen_pos.sqrDistance(gen->mPosition)) < 25.0f) {
+				return oride.spawn_override;
+			}
+		}
+	}
+	return PSO_Ignore;
+}
+
+GenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
+{
+	for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+		TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+		if (treasure_id == oride.id) {
+			return oride.spawn_override;
+		}
+	}
+	return PSO_Ignore;
 }
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
@@ -101,18 +149,23 @@ Preset* Preset::set_time(f32 time_)
 
 Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
-	cutscene_flags.expandCapacityTo(cutscene_flags.len() + num_flags);
 	for (size_t i = 0; i < num_flags; i++) {
-		cutscene_flags.push(flags[i]);
+		if (flags[i] < 32) {
+			const u32 bit = 1 << flags[i];
+			cutscene_flags1 |= bit;
+		} else {
+			const u32 bit = 1 << (flags[i] - 32);
+			cutscene_flags2 |= bit;
+		}
 	}
 	return this;
 }
 
 Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
 {
-	upgrades.expandCapacityTo(upgrades.len() + num_upgrades);
 	for (size_t i = 0; i < num_upgrades; i++) {
-		upgrades.push(items[i]);
+		const u16 bit = 1 << items[i];
+		upgrades |= bit;
 	}
 	return this;
 }
@@ -166,6 +219,29 @@ Preset* Preset::set_pokos(int pokos_)
 	return this;
 }
 
+Preset* Preset::set_day(u8 day_)
+{
+	day = day_;
+}
+
+Preset* Preset::set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[])
+{
+	enemy_spawn_overrides.expandCapacityTo(enemy_spawn_overrides.len() + num_spawns);
+	for (size_t i = 0; i < num_spawns; i++) {
+		enemy_spawn_overrides.push(overrides[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[])
+{
+	treasure_spawn_overrides.expandCapacityTo(treasure_spawn_overrides.len() + num_spawns);
+	for (size_t i = 0; i < num_spawns; i++) {
+		treasure_spawn_overrides.push(overrides[i]);
+	}
+	return this;
+}
+
 void Preset::apply()
 {
 	// TODO: is this necessary?
@@ -214,18 +290,26 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
 	// Apply upgrades
-	p2gz->ek_editor->reset_all();
-	for (size_t i = 0; i < upgrades.len(); i++) {
-		p2gz->ek_editor->set_upgrade(upgrades[i], true);
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+		const u16 mask = 1 << i;
+		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades & mask);
 	}
 
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
-	for (size_t i = 0; i < cutscene_flags.len(); i++) {
-		Game::DemoFlags flag            = cutscene_flags[i];
-		CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
-		if (cutscene_toggle) {
-			cutscene_toggle->set_cutscene_flag(true);
+	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
+		bool flag_set = false;
+		if (i < 32) {
+			flag_set = cutscene_flags1 & (1 << i);
+		} else {
+			flag_set = cutscene_flags2 & (1 << (i - 32));
+		}
+		if (flag_set) {
+			const Game::DemoFlags flag      = static_cast<Game::DemoFlags>(i);
+			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
+			if (cutscene_toggle) {
+				cutscene_toggle->set_cutscene_flag(true);
+			}
 		}
 	}
 
@@ -262,19 +346,40 @@ void Preset::apply_post_load()
 			}
 		}
 	}
+
+	// Force spawn or despawn treasures
+	FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+	{
+		if (gen->mObject->mTypeID == 'pelt') {
+			Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+			int treasure_id             = gen_pellet->mGenParm->mIndex;
+			int kind                    = gen_pellet->mPelType;
+			for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+				if (oride.id == treasure_id) {
+					if (oride.spawn_override == PSO_Spawn && gen->mCreature == nullptr) {
+						gen->generate();
+					} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
+						Game::PelletKillArg arg;
+						gen->mCreature->kill(&arg);
+					}
+				}
+			}
+		}
+	}
 }
 
 PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
     : MenuOption("preset")
 {
-	on_select            = on_select_;
-	pod_presets_menu                = new ListMenu();
+	on_select        = on_select_;
+	pod_presets_menu = new ListMenu();
 	pod_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, pod_presets_menu, PoD);
-	at_presets_menu                 = new ListMenu();
+	at_presets_menu = new ListMenu();
 	at_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, at_presets_menu, AT);
-	general_presets_menu            = new ListMenu();
+	general_presets_menu = new ListMenu();
 	general_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, general_presets_menu, General);
 
@@ -304,7 +409,7 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 
 	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
 	// when changing the warp menu selections
-	current_preset = p2gz->preset_mgr->find("EC", PoD);
+	current_preset = p2gz->preset_mgr->find("EC1", PoD);
 	if (on_select) {
 		on_select->invoke(current_preset, PS_Stale);
 	}

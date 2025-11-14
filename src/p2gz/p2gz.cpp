@@ -15,6 +15,7 @@
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
 #include <IDelegate.h>
+#include "Dolphin/rand.h"
 
 using namespace gz;
 
@@ -26,31 +27,33 @@ P2GZ::P2GZ()
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// Setup all our P2GZ menus/features here
-	collision_viewer             = new CollisionViewer();
-	controller                   = new Controller(JUTGamePad::PORT_0);
-	freecam                      = new FreeCam();
-	menu                         = new GZMenu();
-	navi_tools                   = new NaviTools();
-	timer                        = new Timer();
-	waypoint_viewer              = new WaypointViewer();
-	warp                         = new Warp();
-	skippable_treasure_cutscenes = new SkippableTreasureCS();
-	day_editor                   = new DayEditor();
-	heap_bar_toggle              = new HeapBarToggle();
-	images                       = new ImageMgr();
-	skip_save                    = new SkipSave();
-	structure_editor             = new StructureEditor();
-	spray_editor                 = new SprayEditor();
-	segment_history              = new SegmentHistory();
-	enemy_debug_info             = new EnemyDebugInfo();
-	cave_debug_info              = new CaveDebugInfo();
-	squad_editor                 = new SquadEditor();
-	preset_mgr                   = new PresetMgr();
-	cutscene_mgr                 = new CutsceneMgr();
-	dismiss_positions            = new DismissPositions();
-	poko_editor                  = new PokoEditor();
-	ek_editor                    = new EKEditor();
-	treasure_editor              = new TreasureEditor();
+	collision_viewer     = new CollisionViewer();
+	controller           = new Controller(JUTGamePad::PORT_0);
+	freecam              = new FreeCam();
+	menu                 = new GZMenu();
+	navi_tools           = new NaviTools();
+	timer                = new Timer();
+	waypoint_viewer      = new WaypointViewer();
+	warp                 = new Warp();
+	skippable_cutscenes  = new SkippableCutscenes();
+	day_editor           = new DayEditor();
+	heap_bar_toggle      = new HeapBarToggle();
+	images               = new ImageMgr();
+	skip_save            = new SkipSave();
+	structure_editor     = new StructureEditor();
+	spray_editor         = new SprayEditor();
+	segment_history      = new SegmentHistory();
+	enemy_debug_info     = new EnemyDebugInfo();
+	cave_debug_info      = new CaveDebugInfo();
+	generator_debug_info = new GeneratorDebugInfo();
+	squad_editor         = new SquadEditor();
+	preset_mgr           = new PresetMgr();
+	cutscene_mgr         = new CutsceneMgr();
+	dismiss_positions    = new DismissPositions();
+	poko_editor          = new PokoEditor();
+	ek_editor            = new EKEditor();
+	treasure_editor      = new TreasureEditor();
+	localization_op      = new Localization();
 
 	prev_heap->becomeCurrentHeap();
 }
@@ -77,9 +80,13 @@ void P2GZ::init()
 	poko_editor->init();
 	ek_editor->init();
 	treasure_editor->init();
+	localization_op->init_menu();
 
 	inited = true;
 	prev_heap->becomeCurrentHeap();
+
+	OSReport("==== Sys heap free/total after P2GZ init: %.2f KB / %.2f KB\n", sys->mSysHeap->getTotalFreeSize() / 1024.0f,
+	         sys->mSysHeap->getHeapSize() / 1024.0f);
 }
 
 void P2GZ::update()
@@ -127,6 +134,7 @@ void P2GZ::draw()
 	freecam->draw();
 	enemy_debug_info->draw();
 	cave_debug_info->draw();
+	generator_debug_info->draw();
 	structure_editor->draw();
 	dismiss_positions->draw();
 }

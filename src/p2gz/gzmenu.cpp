@@ -57,7 +57,7 @@ void GZMenu::init_menu()
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
 			->push(new HexInputOption("seed", "random", new Delegate1<Warp, u32>(p2gz->warp, &Warp::set_seed), new Delegate<Warp>(p2gz->warp, &Warp::set_random_seed)))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
-			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new RangeMenuOption("day", 1, 99, 5, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PresetMenuOption(new Delegate2<Warp, Preset*, int>(p2gz->warp, &Warp::set_preset)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
@@ -116,7 +116,7 @@ void GZMenu::init_menu()
 	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_plug_debug)))
 				->push(new OpenSubMenuOption("bags", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bags))))) // Will be populated dynamically by StructureEditor
 			))
-			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
+			->push(new OpenSubMenuOption("treasures", (new ListMenu(new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::sync)))))
 			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
 			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
 			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
@@ -124,7 +124,7 @@ void GZMenu::init_menu()
 		->push(new OpenSubMenuOption("settings", (new ListMenu())
             ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
-            ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
+            ->push(new ToggleMenuOption("skippable cutscenes", true, new Delegate1<SkippableCutscenes, bool>(p2gz->skippable_cutscenes, &SkippableCutscenes::toggle_skippable)))
             ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
 			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
         ))
@@ -144,6 +144,7 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("draw position", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_position_enabled)))
 				->push(new ToggleMenuOption("draw collision", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_collision_enabled)))
 			))
+			->push(new ToggleMenuOption("generator debug info", false, new Delegate1<GeneratorDebugInfo, bool>(p2gz->generator_debug_info, &GeneratorDebugInfo::set_enabled)))
 			->push(new OpenSubMenuOption("time controls", (new ListMenu())
 				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
 				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
@@ -157,6 +158,10 @@ void GZMenu::init_menu()
 		// Cutscene re-enable menu
 		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
 			// Submenus get added in CutsceneMgr::init
+		))
+		->push(new OpenSubMenuOption("localization", (new ListMenu())
+			->push(new RadioMenuOption("treasure region", new Delegate1<Localization, size_t>
+				(p2gz->localization_op, &Localization::set_treasure_region)))
 		));
 	// clang-format on
 
@@ -247,7 +252,7 @@ void GZMenu::open()
 	// If freecam is active, don't open the menu
 	if (p2gz->freecam && p2gz->freecam->is_enabled())
 		return;
-  
+
 	// Don't open P2GZ menu during the following:
 	// - cutscenes (causes gameplay desync) - One exception:
 	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
@@ -414,6 +419,9 @@ ListMenu* ListMenu::push(MenuOption* option)
 
 void ListMenu::clear()
 {
+	for (size_t i = 0; i < options.len(); i++) {
+		delete options[i];
+	}
 	options.clear();
 }
 
@@ -796,8 +804,8 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -903,8 +911,8 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -1266,7 +1274,7 @@ DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_s
                                        bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad = new DecimalKeypad(title_, on_selected, on_opened);
+	keypad     = new DecimalKeypad(title_, on_selected, on_opened);
 	sync_value = on_opened;
 }
 

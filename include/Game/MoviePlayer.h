@@ -107,6 +107,11 @@ struct MovieConfig : public CNode {
 	inline void resetDrawFlag(u32 flag) { mDrawFlags.typeView &= ~flag; }
 	inline bool isDrawFlag(u32 flag) const { return mDrawFlags.typeView & flag; }
 
+	// @P2GZ: skippable cutscenes
+	// add inlines for easier setting/resetting of skipping
+	inline void enableSkippable() { mFlags = (mFlags & ~0x2) | 0x1; }
+	inline void disableSkippable() { mFlags = (mFlags & ~0x1) | 0x2; }
+
 	// _00     = VTBL
 	// _00-_18 = CNode
 	ID32 mId;                   // _18

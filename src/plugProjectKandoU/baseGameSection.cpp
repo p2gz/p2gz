@@ -2328,7 +2328,8 @@ void BaseGameSection::setupFloatMemory()
 	if (Farm::farmMgr) {
 		Farm::farmMgr->setupSound();
 	}
-	OSReport("<float> Done\n"); // anyone else who changes this to f32 gets 40 years in the dungeon
+	// @P2GZ: stop annoying debug prints
+	// OSReport("<float> Done\n"); // anyone else who changes this to f32 gets 40 years in the dungeon
 
 	/*
 	stwu     r1, -0x2c0(r1)

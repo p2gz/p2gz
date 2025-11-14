@@ -11,6 +11,7 @@ public:
 	~TreasureEditor() { }
 
 	void disable() { enabled = false; }
+	void sync();
 	Game::Pellet* get_active_treasure() { return active_treasure; }
 	bool is_enabled() { return enabled; }
 	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }

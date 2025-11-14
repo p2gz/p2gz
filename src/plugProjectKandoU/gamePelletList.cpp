@@ -82,17 +82,18 @@ void Mgr::loadResource()
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData) {
 		switch (sys->mRegion) {
+		// @P2GZ localization-swap: add support for PAL treasures when using one of not-english and not jp languages
 		case System::LANG_French:
 		case System::LANG_German:
 		case System::LANG_Italian:
+		case System::LANG_Spanish:
+			sprintf(pathBuffer, "/user/Abe/Pellet/%s/pelletlist_%s.szs", "pal", "pal");
 			break;
 		case System::LANG_Japanese:
 			sprintf(pathBuffer, "/user/Abe/Pellet/%s/pelletlist_%s.szs", "jpn", "jpn");
 			break;
 		case System::LANG_English:
 			sprintf(pathBuffer, "/user/Abe/Pellet/%s/pelletlist_%s.szs", "us", "us");
-			break;
-		case System::LANG_Spanish:
 			break;
 		}
 		archive = JKRMountArchive(pathBuffer, JKRArchive::EMM_Mem, JKRHeap::getCurrentHeap(), JKRArchive::EMD_Tail);

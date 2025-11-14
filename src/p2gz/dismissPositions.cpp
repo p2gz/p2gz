@@ -77,8 +77,7 @@ void DismissPositions::update()
 	{
 		Game::Piki* piki = *iterator;
 		if ((!piki->mCurrentState || piki->mCurrentState->releasable()) && piki->isAlive() && piki->mNavi == Game::naviMgr->getActiveNavi()
-		    && piki->getCurrActionID() != PikiAI::ACT_BreakGate && piki->getCurrActionID() != PikiAI::ACT_BreakRock
-		    && piki->getCurrActionID() != PikiAI::ACT_Bridge && piki->getCurrActionID() != PikiAI::ACT_Transport) {
+		    && !is_working(piki)) {
 			buffer[pikis++] = *iterator;
 		}
 	}

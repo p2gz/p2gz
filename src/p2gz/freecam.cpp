@@ -215,8 +215,7 @@ void FreeCam::warp_to_current_position()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mNavi == navi && piki->getCurrActionID() != PikiAI::ACT_BreakGate && piki->getCurrActionID() != PikiAI::ACT_BreakRock
-		    && piki->getCurrActionID() != PikiAI::ACT_Bridge && piki->getCurrActionID() != PikiAI::ACT_Transport) {
+		if (piki->mNavi == navi && !is_working(piki)) {
 			piki->setPosition(naviPos, false);
 		}
 	}
@@ -273,8 +272,10 @@ void FreeCam::update_position()
 		camera->mGoalPosition = goalPosition;
 
 		if (p2gz->treasure_editor->is_enabled()) {
-			Vector3f treasurePos = Vector3f(goalPosition.x, Game::mapMgr->getMinY(goalPosition), goalPosition.z);
-			p2gz->treasure_editor->get_active_treasure()->setPosition(treasurePos, false);
+			Game::Pellet* active_treasure = p2gz->treasure_editor->get_active_treasure();
+			f32 y                         = Game::mapMgr->getMinY(goalPosition) + (active_treasure->getCylinderHeight() * 0.5f);
+			Vector3f treasurePos          = Vector3f(goalPosition.x, y, goalPosition.z);
+			active_treasure->setPosition(treasurePos, false);
 		}
 	}
 }

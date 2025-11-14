@@ -242,7 +242,7 @@ int GameSystem::startPause(bool isPausedSoft, int pauseID, char* str)
 	// @P2GZ: intercept pause reason
 	// (for skippable treasure cutscenes among other things)
 	if (p2gz) {
-		p2gz->skippable_treasure_cutscenes->record_start_press(str);
+		p2gz->skippable_cutscenes->record_start_press(str);
 	}
 
 	return prev;

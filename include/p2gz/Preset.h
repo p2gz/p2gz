@@ -16,9 +16,37 @@ struct WarpDestination;
 
 enum PresetCategory { PoD, AT, General, Generated };
 
-enum EnterAreaKind { FromCave = 0, FromMap = 1, FirstEnter = 2 };
+enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
+
+enum GenSpawnOverride { PSO_Ignore, PSO_DontSpawn, PSO_Spawn };
 
 struct Preset {
+	struct EnemyGenSpawnOverride {
+		EnemyGenSpawnOverride()
+		{
+			enemy_id       = Game::EnemyTypeID::EnemyID_Armor;
+			gen_pos        = Vector3f::zero;
+			spawn_override = PSO_Ignore;
+		}
+		EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_, GenSpawnOverride spawn_override_);
+
+		Game::EnemyTypeID::EEnemyTypeID enemy_id;
+		Vector3f gen_pos;
+		GenSpawnOverride spawn_override;
+	};
+
+	struct TreasureGenSpawnOverride {
+		TreasureGenSpawnOverride()
+		{
+			id             = 255;
+			spawn_override = PSO_Ignore;
+		}
+		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
+
+		u8 id;
+		GenSpawnOverride spawn_override;
+	};
+
 public:
 	Preset(const char* name_, PresetCategory category_);
 	Preset(Preset& other);
@@ -26,6 +54,9 @@ public:
 
 	void apply();
 	void apply_post_load();
+
+	GenSpawnOverride get_enemy_gen_override(Game::Generator* gen);
+	GenSpawnOverride get_treasure_gen_override(int treasure_id, u8 pellet_type);
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
@@ -39,6 +70,9 @@ public:
 	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
+	Preset* set_day(u8 day_);
+	Preset* set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[]);
+	Preset* set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[]);
 
 	PresetCategory category;
 	const char* name;
@@ -46,18 +80,22 @@ public:
 	Game::PikiContainer onion_pikis;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
-	int num_bitters;
-	int num_spicies;
+	u16 upgrades; // bitflags
+	u8 num_bitters;
+	u8 num_spicies;
 	f32 time;
-	Vec<Game::DemoFlags> cutscene_flags;
-	Vec<Game::OlimarData::ItemIndex> upgrades;
+	u32 cutscene_flags1; // bitflags
+	u32 cutscene_flags2; // bitflags
 	Vec<const char*> destroyed_gates;
 	Vec<const char*> finished_bridges;
 	Vec<const char*> bags_flattened;
-	bool plug_destroyed; // no more than one plug per level
 	EnterAreaKind enter_kind;
-	bool apply_pokos;
 	int pokos;
+	bool plug_destroyed; // no more than one plug per level
+	bool apply_pokos;
+	u8 day;
+	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
+	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
 };
 
 struct PresetMgr {
