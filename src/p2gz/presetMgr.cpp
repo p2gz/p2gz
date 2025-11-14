@@ -835,7 +835,7 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 				if (dest.day < 5)
 					return find("enter HoB", PoD);
 				else
-					return find("enter BK (20)", PoD);
+					return find("enter BK (20w)", PoD);
 			} else if (dest.area == 2) {
 				return find("CoS", PoD);
 			}
