@@ -6,7 +6,7 @@ using namespace gz;
 
 void SprayEditor::init()
 {
-	spray_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items/sprays")->get_sub_menu());
+	spray_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items and captains/sprays")->get_sub_menu());
 }
 
 bool SprayEditor::get_bitters_unlocked()
@@ -81,12 +81,8 @@ void SprayEditor::toggle_spicies(bool unlocked)
 	}
 }
 
-void SprayEditor::update()
+void SprayEditor::sync()
 {
-	if (p2gz->menu->is_active_menu("sprays")) {
-		return;
-	}
-
 	static_cast<RangeMenuOption*>(spray_menu->get_option("bitters"))->set_selection(Game::playData->mSprayCount[1]);
 	static_cast<RangeMenuOption*>(spray_menu->get_option("spicies"))->set_selection(Game::playData->mSprayCount[0]);
 	static_cast<ToggleMenuOption*>(spray_menu->get_option("bitters unlocked"))

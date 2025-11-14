@@ -112,10 +112,10 @@ static const size_t NUM_BAG_NAMES = ARRAY_SIZE(BAG_COORD_TO_NAME); // 3
 
 void StructureEditor::init()
 {
-	gate_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/gates")->get_sub_menu());
-	bridge_menu = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/bridges")->get_sub_menu());
-	plug_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/plugs")->get_sub_menu());
-	bag_menu    = static_cast<ListMenu*>(p2gz->menu->get_option("map/structures/bags")->get_sub_menu());
+	gate_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("level/gates")->get_sub_menu());
+	bridge_menu = static_cast<ListMenu*>(p2gz->menu->get_option("level/bridges")->get_sub_menu());
+	plug_menu   = static_cast<ListMenu*>(p2gz->menu->get_option("level/plugs")->get_sub_menu());
+	bag_menu    = static_cast<ListMenu*>(p2gz->menu->get_option("level/bags")->get_sub_menu());
 }
 
 void StructureEditor::add_gate(Game::ItemGate* gate)

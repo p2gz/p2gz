@@ -10,7 +10,7 @@ public:
 	~SprayEditor() { }
 
 	void init();
-	void update();
+	void sync();
 
 	bool get_bitters_unlocked();
 	bool get_spicies_unlocked();

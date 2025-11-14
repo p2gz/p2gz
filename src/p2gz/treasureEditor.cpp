@@ -16,7 +16,7 @@
 namespace gz {
 void TreasureEditor::init()
 {
-	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("map/treasures")->get_sub_menu());
+	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("level/treasures")->get_sub_menu());
 }
 
 // Find the Pellet pointer for the selected treasure.

@@ -111,8 +111,6 @@ void P2GZ::update()
 	test_runner->update();
 #endif
 
-	day_editor->update();
-	spray_editor->update();
 	freecam->update();
 	squad_editor->update();
 	cutscene_mgr->update();

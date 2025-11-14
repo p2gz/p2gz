@@ -14,7 +14,7 @@ void Localization::init_menu()
 	GZASSERTLINE(p2gz->menu);
 
 	// Setup treasure region option and 3 regions below
-	RadioMenuOption* region_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("localization/treasure region"));
+	RadioMenuOption* region_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("level/treasure region"));
 
 	// NB: make sure this order matches the order in the TreasureRegion enum
 	region_opt->options.push("English");
