@@ -212,6 +212,9 @@ void Timer::stop_skip_timer(Game::MovieConfig* config)
 	if (config->is("x01_gamestart")) {
 		// intro crash landing cutscene
 		max_cutscene_time = MAX_CRASH_LANDING_CUTSCENE_TIME;
+	} else if (config->is("x01_coursein_forest") || config->is("x01_coursein_yakushima") || config->is("x01_coursein_last")) {
+		// first area enter cutscene (all three others are the same length)
+		max_cutscene_time = MAX_FIRST_ENTER_CUTSCENE_TIME;
 	} else if (config->is("s22_cv_suck_treasure") || config->is("s10_suck_treasure")) {
 		// treasure cutscene
 		max_cutscene_time = MAX_TREASURE_CUTSCENE_TIME;

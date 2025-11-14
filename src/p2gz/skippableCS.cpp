@@ -44,8 +44,9 @@ void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* conf
 		return;
 	}
 
-	// toggle intro crash landing cutscene skippable
-	if (config->is("x01_gamestart")) {
+	// toggle intro crash landing/first area enter cutscenes skippable
+	if (config->is("x01_gamestart") || config->is("x01_coursein_forest") || config->is("x01_coursein_yakushima")
+	    || config->is("x01_coursein_last")) {
 		if (enabled) {
 			config->enableSkippable();
 
