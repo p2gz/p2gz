@@ -54,22 +54,22 @@ void OnionEditor::update()
 		return;
 	}
 
+	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+	if (!game) {
+		return;
+	}
+
+	if (game->mInCave) {
+		return;
+	}
+
+	if (!Game::ItemOnyon::mgr) {
+		return;
+	}
+
 	for (int color = 0; color < 5; color++) {
 		Vec<MenuOption*>* row = onion_menu->options[color];
 		static_cast<ToggleMenuOption*>((*row)[3])->set_selection(Game::playData->hasContainer(color));
-		static_cast<ToggleMenuOption*>((*row)[4])->visible = false;
-
-		Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
-		if (!game->mInCave) {
-			int area           = game->mCurrentCourseInfo->mCourseIndex;
-			Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(color);
-			if (onion && ((color == 0 && area == 1) || (color == 1 && area == 0) || (color == 2 && area == 2))) {
-				Vector3f lockedPos = ONION_CONFIG[area][color].locked_position;
-				Vector3f onionPos  = onion->getPosition();
-				static_cast<ToggleMenuOption*>((*row)[4])->set_selection(sqrDistanceXZ(lockedPos, onionPos) < 5.0f);
-				static_cast<ToggleMenuOption*>((*row)[4])->visible = true;
-			}
-		}
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
 			opt->set_selection(Game::playData->mPikiContainer.getCount(color, stage));
@@ -77,39 +77,50 @@ void OnionEditor::update()
 	}
 }
 
-void OnionEditor::move_onion(int color, int area, bool unlocked)
+// Returns whether we are currently in the area in which this onion is discovered.
+bool OnionEditor::is_in_unlock_course(Game::Onyon* onion)
+{
+	const int courses[3]          = { 1, 0, 2 };
+	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+	if (game->mInCave) {
+		return false;
+	}
+	return courses[onion->mOnyonType] == game->mCurrentCourseInfo->mCourseIndex;
+}
+
+// onKill is not implemented for onions. This just disables it and moves it underground.
+void OnionEditor::kill_onion(int color)
 {
 	Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(color);
-
-	OSReport("color: %d, area: %d\n", color, area);
-
-	Vector3f pos = ONION_CONFIG[area][color].unlocked_position;
-	f32 rotation = ONION_CONFIG[area][color].unlocked_rotation;
-
-	if (unlocked && onion == nullptr) {
-		// If we're unlocking the onion and it doesn't exist, we're not in the area in which it is discovered,
-		// so we need to birth it instead of moving it.
-		OSReport("unlocking onion that doesn't exist\n");
-		onion    = Game::ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, color);
-		pos      = ONION_CONFIG[area][color].unlocked_position;
-		rotation = ONION_CONFIG[area][color].unlocked_rotation;
-	} else if ((color == 0 && area == 1) || (color == 1 && area == 0) || (color == 2 && area == 2)) {
-		// If we're toggling the onion's unlocked status and we're in the area in which it is discovered,
-		// we need to move it instead of birthing it.
-		pos      = unlocked ? ONION_CONFIG[area][color].unlocked_position : ONION_CONFIG[area][color].locked_position;
-		rotation = unlocked ? ONION_CONFIG[area][color].unlocked_rotation : ONION_CONFIG[area][color].locked_rotation;
-	} else if (!unlocked && onion != nullptr) {
-		// onKill is not implemented for onions since that never happens in vanilla, so we don't have an easy way to get rid of them.
-		// This is a dumb hack, but it works.
-		onion->mPosition.y -= 300.0f;
-		onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
-		onion->startWaitMotion();
-		onion->mGoalWayPoint->setFlag(Game::WPF_Closed);
+	if (!onion) {
 		return;
 	}
 
-	GZASSERTLINE(pos != Vector3f::zero);
-	onion->setPosition(pos, false);
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		if (piki->mPikiKind == color && !piki->isZikatu()) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
+		}
+	}
+
+	for (int stage = 0; stage < 3; stage++) {
+		Game::playData->mPikiContainer.getCount(color, stage) = 0;
+		static_cast<RangeMenuOption*>((*onion_menu->options[color])[stage])->set_selection(0);
+	}
+
+	onion->mPosition.y -= 300.0f;
+	onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
+	onion->startWaitMotion();
+	onion->mGoalWayPoint->setFlag(Game::WPF_Closed);
+}
+
+// Moves the onion to the given position and rotation.
+void OnionEditor::move_onion(Game::Onyon* onion, Vector3f position, f32 rotation)
+{
+	onion->setPosition(position, false);
 	onion->mFaceDir = rotation;
 	onion->onSetPosition();
 	onion->mGoalWayPoint->mFlags &= ~Game::WPF_Closed;
@@ -118,8 +129,15 @@ void OnionEditor::move_onion(int color, int area, bool unlocked)
 	onion->startWaitMotion();
 }
 
+// Toggles whether the given onion is unlocked. Spawns it if it is not unlocked and is not discovered in the current area.
+// Kills it if it is unlocked and is not discovered in the current area.
 void OnionEditor::set_unlocked(bool _)
 {
+	Game::SingleGameSection* section = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+	if (section->mInCave) {
+		return;
+	}
+
 	for (int color = 0; color < 5; color++) {
 		Vec<MenuOption*>* row = onion_menu->options[color];
 		bool unlocked         = static_cast<ToggleMenuOption*>((*row)[3])->get_selection();
@@ -132,26 +150,37 @@ void OnionEditor::set_unlocked(bool _)
 		if (unlocked) {
 			p2gz->squad_editor->set_demo_flags_for_color(static_cast<Game::EPikiKind>(color));
 		} else {
-			Iterator<Game::Piki> iterator(Game::pikiMgr);
-			CI_LOOP(iterator)
-			{
-				Game::Piki* piki = *iterator;
-				if (piki->mPikiKind == color && !piki->isZikatu()) {
-					Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-					piki->kill(&arg);
-				}
-			}
-
 			if (color != Game::Purple && color != Game::White) {
 				Game::playData->mHasBootContainerFlags &= ~(1 << color);
 			}
 			Game::playData->mHasContainerFlags &= ~(1 << color);
 			Game::playData->mMeetPikminFlags &= ~(1 << color);
+		}
 
-			for (int stage = 0; stage < 3; stage++) {
-				Game::playData->mPikiContainer.getCount(color, stage) = 0;
-				static_cast<RangeMenuOption*>((*row)[stage])->set_selection(0);
+		if (color == Game::Purple || color == Game::White) {
+			continue;
+		}
+
+		int area           = section->mCurrentCourseInfo->mCourseIndex;
+		Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(color);
+
+		if (unlocked) {
+			if (onion == nullptr) {
+				onion = Game::ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, color);
 			}
+			move_onion(onion, ONION_CONFIG[area][color].unlocked_position, ONION_CONFIG[area][color].unlocked_rotation);
+		} else if (is_in_unlock_course(onion)) {
+			move_onion(onion, ONION_CONFIG[area][color].locked_position, ONION_CONFIG[area][color].locked_rotation);
+		} else {
+			kill_onion(color);
+		}
+	}
+
+	for (int color = 3; color < 5; color++) {
+		Vec<MenuOption*>* row = onion_menu->options[color];
+		bool unlocked         = static_cast<ToggleMenuOption*>((*row)[3])->get_selection();
+		if (unlocked == Game::playData->hasContainer(color)) {
+			continue;
 		}
 	}
 }

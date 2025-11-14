@@ -2,6 +2,7 @@
 #define _ONION_EDITOR_H
 
 #include <p2gz/gzmenu.h>
+#include <Game/Entities/ItemOnyon.h>
 #include <Vector3.h>
 
 namespace gz {
@@ -28,10 +29,15 @@ public:
 	void init();
 	void set_unlocked(bool);
 	void set_count(s32);
-	void move_onion(int, int, bool);
+	void move_onion(Game::Onyon*, Vector3f, f32);
+	void toggle_default_position(bool);
+	void kill_onion(int);
 	void update();
 
 private:
+	bool is_at_default_position(Game::Onyon*);
+	bool is_in_unlock_course(Game::Onyon*);
+	int get_unlocked_course_index(Game::Onyon*);
 	GridMenu* onion_menu;
 };
 } // namespace gz
