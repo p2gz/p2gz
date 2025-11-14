@@ -30,7 +30,7 @@
 #include <p2gz/Test.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha2"
+#define P2GZ_VERSION "alpha3"
 
 struct P2GZ {
 public:
