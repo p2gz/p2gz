@@ -17,6 +17,10 @@
 #include <IDelegate.h>
 #include "Dolphin/rand.h"
 
+#ifdef GZ_TEST
+#include <p2gz/Test.h>
+#endif
+
 using namespace gz;
 
 P2GZ* p2gz;
@@ -55,6 +59,10 @@ P2GZ::P2GZ()
 	treasure_editor      = new TreasureEditor();
 	localization_op      = new Localization();
 
+#ifdef GZ_TEST
+	test_runner = new test::TestRunner();
+#endif
+
 	prev_heap->becomeCurrentHeap();
 }
 
@@ -82,6 +90,10 @@ void P2GZ::init()
 	treasure_editor->init();
 	localization_op->init_menu();
 
+#ifdef GZ_TEST
+	test_runner->init();
+#endif
+
 	inited = true;
 	prev_heap->becomeCurrentHeap();
 
@@ -94,6 +106,10 @@ void P2GZ::update()
 	if (!inited || !sys->mSysHeap) {
 		return;
 	}
+
+#ifdef GZ_TEST
+	test_runner->update();
+#endif
 
 	day_editor->update();
 	spray_editor->update();
