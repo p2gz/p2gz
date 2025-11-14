@@ -70,6 +70,7 @@ public:
 	gz::EKEditor* ek_editor;
 	gz::CaveDebugInfo* cave_debug_info;
 	gz::TreasureEditor* treasure_editor;
+	gz::EmpressTrainer* empress_trainer;
 
 private:
 	bool inited;
