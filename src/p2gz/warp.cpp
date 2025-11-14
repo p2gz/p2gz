@@ -97,21 +97,16 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
-	// If preset is "none", we need to hide the enter option immediately since it won't update until we swap our warp target otherwise
-	if (enter_area_type_opt) {
-		if (dest.cave == 0 && preset == nullptr) {
-			enter_area_type_opt->visible = true;
-		} else {
-			enter_area_type_opt->visible = false;
-		}
-	}
+
 	if (preset) {
 		set_warp_day(preset->day);
 		if (day_opt) {
 			day_opt->set_selection(preset->day);
 		}
 	}
+
 	update_day_opt();
+	update_enter_type_opt();
 }
 
 WarpDestination Warp::current_dest()
@@ -144,15 +139,7 @@ void Warp::set_warp_area(size_t area)
 	update_sublevel_opt();
 	update_preset_opt();
 	update_day_opt();
-
-	// If preset is "none", we need to hide the enter option immediately since it won't update until we swap our warp target otherwise
-	if (enter_area_type_opt) {
-		if (dest.cave == 0 && preset == nullptr) {
-			enter_area_type_opt->visible = true;
-		} else {
-			enter_area_type_opt->visible = false;
-		}
-	}
+	update_enter_type_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -163,13 +150,7 @@ void Warp::set_warp_cave(size_t cave)
 	update_sublevel_opt();
 	update_preset_opt();
 	update_day_opt();
-
-	// For now, only allow enter area type for when no preset is selected for ag selection
-	if (dest.cave == 0 && preset == nullptr) {
-		enter_area_type_opt->visible = true;
-	} else {
-		enter_area_type_opt->visible = false;
-	}
+	update_enter_type_opt();
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
@@ -235,6 +216,7 @@ void Warp::update_preset_opt()
 	}
 }
 
+// only show day option when warping with no preset
 void Warp::update_day_opt()
 {
 	if (day_opt) {
@@ -242,6 +224,18 @@ void Warp::update_day_opt()
 			day_opt->visible = true;
 		} else {
 			day_opt->visible = false;
+		}
+	}
+}
+
+// only show enter type option when warping AG with no preset
+void Warp::update_enter_type_opt()
+{
+	if (enter_area_type_opt) {
+		if (dest.cave == 0 && preset == nullptr) {
+			enter_area_type_opt->visible = true;
+		} else {
+			enter_area_type_opt->visible = false;
 		}
 	}
 }

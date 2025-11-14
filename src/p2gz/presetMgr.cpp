@@ -230,7 +230,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_hob), e_pod_enter_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromMap));
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
@@ -242,7 +242,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_hob), e_pod_enter_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FirstEnter));
+	                 ->set_enter_kind(PEK_FirstEnter));
 	presets.push((new Preset("HoB1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 62)
 	                 ->set_pikmin(Flower, Purple, 10)
@@ -254,7 +254,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("HoB3-4", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 10)
@@ -267,7 +267,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("HoB5", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -279,7 +279,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("WFG1-WFG3", PoD))
 	                 ->set_pikmin(Flower, Red, 52)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -291,7 +291,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("WFG4-WFG5", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -304,7 +304,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("enter SH", PoD))
 	                 ->set_pikmin(Flower, Red, 37)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -317,7 +317,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("SH1-2", PoD))
 	                 ->set_pikmin(Flower, Red, 35)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -333,7 +333,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_eb), t_pod_post_eb)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("SH3-7", PoD))
 	                 ->set_pikmin(Flower, Red, 30)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -350,7 +350,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_eb), t_pod_post_eb)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("enter BK (15/5w)", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -367,7 +367,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_eb), t_pod_post_eb)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("enter BK (20w)", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -383,7 +383,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_eb), t_pod_post_eb)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("enter BK (25w)", PoD))
 	                 ->set_pikmin(Flower, Red, 22)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -399,7 +399,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_eb), t_pod_post_eb)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("BK", PoD))
 	                 ->set_pikmin(Flower, Red, 27)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -416,7 +416,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("BK (25w)", PoD))
 	                 ->set_pikmin(Flower, Red, 22)
 	                 ->set_pikmin(Flower, Purple, 18)
@@ -433,7 +433,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -446,7 +446,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
-	                 ->set_enter_kind(FromMap));
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("day 6 CR (25w)", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -459,7 +459,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
-	                 ->set_enter_kind(FromMap));
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -473,7 +473,7 @@ PresetMgr::PresetMgr()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_scx), e_pod_enter_scx)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_day_6), t_pod_post_day_6)
-	                 ->set_enter_kind(FromMap));
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("enter SCx (25w)", PoD))
 	                 ->set_onion_pikmin(Flower, White, 25)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -488,7 +488,7 @@ PresetMgr::PresetMgr()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_scx), e_pod_enter_scx)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_day_6), t_pod_post_day_6)
-	                 ->set_enter_kind(FromMap));
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("SCx1-4", PoD))
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -503,7 +503,7 @@ PresetMgr::PresetMgr()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_scx), e_pod_enter_scx)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_scx), t_pod_post_enter_scx)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("SCx1-4 (25w)", PoD))
 	                 ->set_pikmin(Flower, White, 25)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -518,7 +518,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_scx), t_pod_post_enter_scx)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("SCx5-8", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -533,7 +533,7 @@ PresetMgr::PresetMgr()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_scx), e_pod_enter_scx)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_scx), t_pod_post_enter_scx)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("SCx5-8 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -549,7 +549,7 @@ PresetMgr::PresetMgr()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_scx), e_pod_enter_scx)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_scx), t_pod_post_enter_scx)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("FC1-5", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -565,7 +565,7 @@ PresetMgr::PresetMgr()
 	                 ->set_plug_destroyed(true)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_scx), t_pod_post_enter_scx)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("FC1-5 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -582,7 +582,7 @@ PresetMgr::PresetMgr()
 	                 ->set_plug_destroyed(true)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("FC6-7", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -598,7 +598,7 @@ PresetMgr::PresetMgr()
 	                 ->set_plug_destroyed(true)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("FC6-7 (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -615,7 +615,7 @@ PresetMgr::PresetMgr()
 	                 ->set_plug_destroyed(true)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -629,7 +629,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FirstEnter));
+	                 ->set_enter_kind(PEK_FirstEnter));
 	presets.push((new Preset("CoS (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -644,7 +644,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FirstEnter));
+	                 ->set_enter_kind(PEK_FirstEnter));
 	presets.push((new Preset("GK", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -659,7 +659,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 	presets.push((new Preset("GK (40w)", PoD))
 	                 ->set_pikmin(Flower, White, 40)
 	                 ->set_pikmin(Flower, Purple, 20)
@@ -675,7 +675,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
-	                 ->set_enter_kind(FromCave));
+	                 ->set_enter_kind(PEK_FromCave));
 }
 
 Preset* PresetMgr::create()
