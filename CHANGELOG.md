@@ -37,7 +37,7 @@ Bug fixes:
 - Fixed: captains no longer have 1hp when warping to the final floor of a cave from file select
 - Fixed: you can no longer open the gz menu in spots where it would cause crashes or unexpected behavior to warp (loading screens, some cutscenes, etc.)
 - Fixed: wild bulbmin no longer show up in presets after retrying sublevels
-- Fixed: deloaded enemies now show up in freecam
+- Fixed: all objects now show up in freecam, not just ones that were visible initially
 - Fixed: warping after retrying a sublevel with the same seed no longer continues to use the same seed
 
 ---
