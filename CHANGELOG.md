@@ -12,7 +12,6 @@ Feature additions:
 - New option: treasure editor.
     - You can move treasures around the map arbitrarily
     - While moving treasures, you can snap them to the nearest waypoint
-    - You can set treasures as collected so they won't appear on the next area load
 - New option: enemy collision viewer
 - New option: cave spawnpoint debug viewer
 - You can now quick-retry sublevels by opening the gz menu
