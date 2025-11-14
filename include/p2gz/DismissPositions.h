@@ -18,7 +18,8 @@ public:
 
 private:
 	bool enabled;
-	bool dismissed;
+	bool draw_circles;
+	bool draw_lines;
 	Vector3f positions[8];
 	f32 radii[8];
 };

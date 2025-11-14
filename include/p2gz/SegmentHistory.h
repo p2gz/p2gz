@@ -35,7 +35,7 @@ public:
 
 private:
 	void draw_cur_seed();
-	void draw_reset_controls();
+	void draw_reset_controls(bool draw_cave_retry);
 
 	RingBuffer<32, const Segment*> segments;
 };

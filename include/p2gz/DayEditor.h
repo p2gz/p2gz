@@ -10,7 +10,7 @@ namespace gz {
 struct DayEditor {
 public:
 	void init();
-	void update();
+	void sync();
 
 	void set_time_paused(bool paused);
 	void set_time(f32 time);

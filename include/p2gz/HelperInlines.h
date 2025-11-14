@@ -5,12 +5,35 @@
 #include <Game/SingleGame.h>
 #include <Game/MapMgr.h>
 #include <GameFlow.h>
+#include <PikiAI.h>
+#include <Game/MoviePlayer.h>
 
 namespace gz {
 
 inline bool is_30_fps()
 {
 	return sys && (sys->mFrameRate == 2.0f);
+}
+
+// is given piki currently "working"
+// i.e. doing something outside your squad, but would return to squad after finishing
+inline bool is_working(Game::Piki* piki)
+{
+	if (!piki) {
+		return false;
+	}
+	PikiAI::PikiBrainAction action = (PikiAI::PikiBrainAction)piki->getCurrActionID();
+	if (action == PikiAI::ACT_BreakGate || // gates
+	    action == PikiAI::ACT_BreakRock || // plugs
+	    action == PikiAI::ACT_Bridge ||    // bridges
+	    action == PikiAI::ACT_Transport || // carrying objects
+	    action == PikiAI::ACT_Crop ||      // berry plants
+	    action == PikiAI::ACT_Weed ||      // nectar grass/rocks
+	    action == PikiAI::ACT_Attack)      // attacking enemies
+	{
+		return true;
+	}
+	return false;
 }
 
 inline bool in_boot_up()
@@ -93,6 +116,16 @@ inline bool in_above_ground_play()
 		return false;
 	}
 	return true;
+}
+
+/// `in_above_ground_play` and player currently has control (not in a loading screen or demo)
+inline bool in_above_ground_gameplay()
+{
+	if (!in_above_ground_play()) {
+		return false;
+	}
+
+	return Game::moviePlayer->mDemoState == Game::DEMOSTATE_Inactive;
 }
 
 inline bool in_cave_play()
@@ -307,6 +340,13 @@ inline bool in_enter_area_load()
 		return false;
 	}
 	return true;
+}
+
+inline void skip_movie()
+{
+	if (Game::moviePlayer && Game::moviePlayer->mDemoState == Game::DEMOSTATE_Playing) {
+		Game::moviePlayer->skip();
+	}
 }
 
 } // namespace gz

@@ -101,6 +101,12 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 		}
 		break;
 	}
+
+	// @P2GZ localization-swap:
+	// update treasure region before pellet loading if required
+	if (p2gz->localization_op->require_update()) {
+		p2gz->localization_op->update_region();
+	}
 }
 
 /**
@@ -169,6 +175,10 @@ void LoadState::exec(SingleGameSection* game)
 				GameArg arg(true, mGameLoadType);
 				transit(game, SGS_Game, &arg);
 			}
+
+			// @P2GZ - memory logging
+			OSReport("==== Game heap free/total: %.2f KB / %.2f KB\n", JKRGetCurrentHeap()->getTotalFreeSize() / 1024.0f,
+			         JKRGetCurrentHeap()->getHeapSize() / 1024.0f);
 		}
 		if (particle2dMgr) {
 			particle2dMgr->update();

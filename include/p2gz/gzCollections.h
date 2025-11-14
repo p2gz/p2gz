@@ -2,6 +2,7 @@
 #define _GZCOLLECTIONS_H
 
 #include <types.h>
+#include <stl/mem.h>
 #include <p2gz/gzMacros.h>
 
 namespace gz {
@@ -127,7 +128,7 @@ private:
 	void _grow(size_t newCapacity)
 	{
 		T* newBuf = new T[newCapacity];
-		memcpy(newBuf, mBuf, sizeof(T) * mLen);
+		memmove(newBuf, mBuf, sizeof(T) * mLen);
 		delete[] mBuf;
 		mBuf      = newBuf;
 		mCapacity = newCapacity;

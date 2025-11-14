@@ -57,10 +57,11 @@ void GZMenu::init_menu()
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
 			->push(new HexInputOption("seed", "random", new Delegate1<Warp, u32>(p2gz->warp, &Warp::set_seed), new Delegate<Warp>(p2gz->warp, &Warp::set_random_seed)))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
-			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new RangeMenuOption("day", 1, 99, 5, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PresetMenuOption(new Delegate2<Warp, Preset*, int>(p2gz->warp, &Warp::set_preset)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
+		->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
 			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f))
 				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_leaf", true))
@@ -88,50 +89,38 @@ void GZMenu::init_menu()
 				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_flower", true))
 			))
 		))
-		->push(new OpenSubMenuOption("items", (new ListMenu())
+		->push(new OpenSubMenuOption("captain", (new ListMenu())
 			->push(new DecimalInputOption("pokos", new Delegate1<PokoEditor, u32>(p2gz->poko_editor, &PokoEditor::set_pokos), new Delegate<PokoEditor>(p2gz->poko_editor, &PokoEditor::sync)))
-			->push(new OpenSubMenuOption("sprays", (new ListMenu())
+			->push(new OpenSubMenuOption("sprays", (new ListMenu(new Delegate<SprayEditor>(p2gz->spray_editor, &SprayEditor::sync)))
 				->push(new RangeMenuOption("bitters", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_bitters)))
 				->push(new RangeMenuOption("spicies", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_spicies)))
 				->push(new ToggleMenuOption("bitters unlocked", true, new Delegate1<SprayEditor, bool>(p2gz->spray_editor, &SprayEditor::toggle_bitters)))
 				->push(new ToggleMenuOption("spicies unlocked", true, new Delegate1<SprayEditor, bool>(p2gz->spray_editor, &SprayEditor::toggle_spicies)))
 			))
 			->push(new OpenSubMenuOption("upgrades", new ListMenu(new Delegate<EKEditor>(p2gz->ek_editor, &EKEditor::check_upgrades))))
-		))
-        ->push(new OpenSubMenuOption("captain", (new ListMenu(new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::sync)))
 			->push(new ToggleMenuOption("boing mode", false, new Delegate1<NaviTools, bool>(p2gz->navi_tools, &NaviTools::set_boing_mode)))
-			->push(new FloatRangeMenuOption("health", 0.1f, 50.0f, 50.0f, new Delegate1<NaviTools, f32>(p2gz->navi_tools, &NaviTools::set_active_navi_hp)))
-            ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
-        ))
-		->push(new OpenSubMenuOption("map", (new ListMenu())
-			->push(new OpenSubMenuOption("structures", (new ListMenu())
-				->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
-				->push(new ToggleMenuOption("show gate debug info", false,
-	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
-				->push(new OpenSubMenuOption("bridges", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bridges))))) // Will be populated dynamically by StructureEditor
-				->push(new ToggleMenuOption("show bridge debug info", false,
-	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_bridge_debug)))
-				->push(new OpenSubMenuOption("plugs", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_plugs))))) // Will be populated dynamically by StructureEditor
-				->push(new ToggleMenuOption("show plug debug info", false,
-	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_plug_debug)))
-				->push(new OpenSubMenuOption("bags", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bags))))) // Will be populated dynamically by StructureEditor
-			))
-			->push(new OpenSubMenuOption("treasures", (new ListMenu())))
-			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
-			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
-			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
+			->push(new FloatRangeMenuOption("captain health", 0.1f, 50.0f, 50.0f, new Delegate1<NaviTools, f32>(p2gz->navi_tools, &NaviTools::set_active_navi_hp)))
+            ->push(new PerformActionMenuOption("kill captain", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
 		))
-		->push(new OpenSubMenuOption("settings", (new ListMenu())
-            ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
-            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
-            ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
-            ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
-			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
-        ))
-		->push(new OpenSubMenuOption("tools", (new ListMenu())
-			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+
+		// Options that edit the current level state
+		->push(new OpenSubMenuOption("level", (new ListMenu())
+			->push(new OpenSubMenuOption("treasures", (new ListMenu(new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::sync)))))
+			->push(new RadioMenuOption("treasure region", new Delegate1<Localization, size_t>(p2gz->localization_op, &Localization::set_treasure_region)))
+			->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("bridges", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bridges))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("plugs", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_plugs))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("bags", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bags))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("time of day", (new ListMenu(new Delegate<DayEditor>(p2gz->day_editor, &DayEditor::sync)))
+				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
+				->push(new FloatRangeMenuOption("current time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
+			))
+		))
+		->push(new OpenSubMenuOption("cutscenes", (new ListMenu()) /* Submenus get added in CutsceneMgr::init */))
+
+		// All viewers for any kind of debug info should go here
+		->push(new OpenSubMenuOption("debug info", (new ListMenu())
 			->push(new ToggleMenuOption("dismiss positions", false, new Delegate1<DismissPositions, bool>(p2gz->dismiss_positions, &DismissPositions::toggle)))
-			->push(new ToggleMenuOption("toggle heap bar", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 			->push(new OpenSubMenuOption("enemy debug info", (new ListMenu())
 				->push(new ToggleMenuOption("enable", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_enabled)))
 				->push(new OpenSubMenuOption("display settings", (new ListMenu())
@@ -144,20 +133,29 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("draw position", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_position_enabled)))
 				->push(new ToggleMenuOption("draw collision", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_collision_enabled)))
 			))
-			->push(new OpenSubMenuOption("time controls", (new ListMenu())
-				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
-				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
-			))
+			->push(new ToggleMenuOption("generator debug info", false, new Delegate1<GeneratorDebugInfo, bool>(p2gz->generator_debug_info, &GeneratorDebugInfo::set_enabled)))
+			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
+			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
+			->push(new ToggleMenuOption("gate debug info", false, new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
+			->push(new ToggleMenuOption("bridge debug info", false, new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_bridge_debug)))
+			->push(new ToggleMenuOption("plug debug info", false, new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_plug_debug)))
+			->push(new ToggleMenuOption("heap memory usage", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu(new Delegate<Timer>(p2gz->timer, &Timer::sync)))
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
 		))
-		// Cutscene re-enable menu
-		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
-			// Submenus get added in CutsceneMgr::init
-		));
+
+		// General game behaviors and options for how the gz menu looks and behaves
+		->push(new OpenSubMenuOption("settings", (new ListMenu())
+            ->push(new ToggleMenuOption("skippable cutscenes", true, new Delegate1<SkippableCutscenes, bool>(p2gz->skippable_cutscenes, &SkippableCutscenes::toggle_skippable)))
+            ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
+			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
+			->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
+            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
+        ));
 	// clang-format on
 
 	layer = root_layer;
@@ -242,6 +240,10 @@ void GZMenu::pop_layer()
 void GZMenu::open()
 {
 	if (enabled)
+		return;
+
+	// If freecam is active, don't open the menu
+	if (p2gz->freecam && p2gz->freecam->is_enabled())
 		return;
 
 	// Don't open P2GZ menu during the following:
@@ -410,6 +412,9 @@ ListMenu* ListMenu::push(MenuOption* option)
 
 void ListMenu::clear()
 {
+	for (size_t i = 0; i < options.len(); i++) {
+		delete options[i];
+	}
 	options.clear();
 }
 
@@ -423,6 +428,10 @@ void ListMenu::update()
 	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_B) {
 		p2gz->menu->pop_layer();
+		return;
+	}
+
+	if (options.len() == 0) {
 		return;
 	}
 
@@ -792,8 +801,8 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -899,8 +908,8 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	z += p2gz->menu->line_height;
-	keypad->opt_width    = p2gz->menu->line_height;
-	x                    = initial_x;
+	keypad->opt_width = p2gz->menu->line_height;
+	x                 = initial_x;
 	keypad->draw(j2d, x, z);
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
@@ -962,6 +971,7 @@ bool OpenSubMenuOption::select()
 void OpenSubMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	MenuOption::draw(j2d, x, z, selected);
+	x += j2d.print(x, z, " >");
 
 	if (selected) {
 		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
@@ -1262,7 +1272,7 @@ DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_s
                                        bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad = new DecimalKeypad(title_, on_selected, on_opened);
+	keypad     = new DecimalKeypad(title_, on_selected, on_opened);
 	sync_value = on_opened;
 }
 

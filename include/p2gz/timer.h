@@ -6,6 +6,11 @@
 #include <p2gz/gzCollections.h>
 #include <Dolphin/os.h>
 
+// forward declarations
+namespace Game {
+struct MovieConfig;
+} // namespace Game
+
 namespace gz {
 
 // forward declarations
@@ -21,6 +26,12 @@ struct ListMenu;
 
 /// TODO: make individual ones of these for each upgrade depending on text length
 #define MAX_UPGRADE_CUTSCENE_TIME (13.5f)
+
+/// for intro/crash landing cutscene
+#define MAX_CRASH_LANDING_CUTSCENE_TIME (37.5f)
+
+/// for all other "first time enter" cutscenes
+#define MAX_FIRST_ENTER_CUTSCENE_TIME (13.0f)
 
 struct Timer {
 public:
@@ -46,8 +57,7 @@ public:
 	void offset_sub_timer(f32 offset_seconds);
 
 	void reset_skip_timer();
-	void stop_skip_timer_treasure();
-	void stop_skip_timer_upgrade();
+	void stop_skip_timer(Game::MovieConfig* config);
 	void cancel_skip_timer();
 
 	void pause();

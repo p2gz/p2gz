@@ -9,10 +9,10 @@ using namespace gz;
 void DayEditor::init()
 {
 	time_mgr     = Game::gameSystem->mTimeMgr;
-	set_time_opt = static_cast<FloatRangeMenuOption*>(p2gz->menu->get_option("tools/time controls/time"));
+	set_time_opt = static_cast<FloatRangeMenuOption*>(p2gz->menu->get_option("level/time of day/current time"));
 }
 
-void DayEditor::update()
+void DayEditor::sync()
 {
 	if (set_time_opt && time_mgr) {
 		set_time_opt->set_selection(time_mgr->mCurrentTimeOfDay);

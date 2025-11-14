@@ -7,7 +7,7 @@
 using namespace gz;
 using namespace Game;
 
-void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
+void SkippableCutscenes::force_collect(Game::Creature* cutscene_target)
 {
 	if (!enabled || !cutscene_target) {
 		return;
@@ -22,13 +22,6 @@ void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
 			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
 			pod->stimulate(interaction);
 			is_treasure_collected = true;
-
-			// update timer with remaining cutscene time
-			if (moviePlayer->isPlaying("s22_cv_suck_treasure")) {
-				p2gz->timer->stop_skip_timer_treasure();
-			} else if (moviePlayer->isPlaying("s22_cv_suck_equipment")) {
-				p2gz->timer->stop_skip_timer_upgrade();
-			}
 		}
 	}
 
@@ -41,38 +34,54 @@ void SkippableTreasureCS::force_collect(Game::Creature* cutscene_target)
 			InteractSuckDone interaction = InteractSuckDone(pellet, 0);
 			ufo->stimulate(interaction);
 			is_treasure_collected = true;
-
-			// update timer with remaining cutscene time
-			if (moviePlayer->isPlaying("s10_suck_treasure")) {
-				p2gz->timer->stop_skip_timer_treasure();
-			} else if (moviePlayer->isPlaying("s17_suck_equipment")) {
-				p2gz->timer->stop_skip_timer_upgrade();
-			}
 		}
 	}
 }
 
-void SkippableTreasureCS::prime_skip(Creature* cutscene_target, MovieConfig* config)
+void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* config)
 {
-	if (!enabled || !cutscene_target || !config) {
+	if (!config) {
 		return;
 	}
-	// cave and above ground work the same way for this part
+
+	// toggle intro crash landing/first area enter cutscenes skippable
+	if (config->is("x01_gamestart") || config->is("x01_coursein_forest") || config->is("x01_coursein_yakushima")
+	    || config->is("x01_coursein_last")) {
+		if (enabled) {
+			config->enableSkippable();
+
+			// set skip timer
+			p2gz->timer->reset_skip_timer();
+			return;
+		} else {
+			config->disableSkippable();
+		}
+	}
+
+	// treasure cutscenes need a target
+	if (!cutscene_target) {
+		return;
+	}
+	// toggle cave and above ground treasure cutscenes skippable
 	if (config->is("s22_cv_suck_treasure") || config->is("s22_cv_suck_equipment") || config->is("s10_suck_treasure")
 	    || config->is("s17_suck_equipment")) {
-		is_treasure_collected = false;
-		config->mFlags &= 0x1; // assign "skippable" flag to cutscene
+		if (enabled) {
+			is_treasure_collected = false;
+			config->enableSkippable();
 
-		// set skip timer
-		p2gz->timer->reset_skip_timer();
+			// set skip timer
+			p2gz->timer->reset_skip_timer();
 
-		// Record treasure as being collected for the treasure editor
+			// Record treasure as being collected for the treasure editor
 
-		Pellet* pellet = static_cast<Pellet*>(cutscene_target);
-		if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
-			p2gz->treasure_editor->set_collected(pellet, true);
+			Pellet* pellet = static_cast<Pellet*>(cutscene_target);
+			if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
+				p2gz->treasure_editor->set_collected(pellet, true);
+			}
+
+			// TODO: this is where we'd also record the treasure being collected for the purposes of collection statistics
+		} else {
+			config->disableSkippable();
 		}
-
-		// TODO: this is where we'd also record the treasure being collected for the purposes of collection statistics
 	}
 }

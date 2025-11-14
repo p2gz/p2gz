@@ -59,6 +59,7 @@ Warp::Warp()
 	allow_zero_pikmin_in_caves = true;
 	warping_from_menu          = false;
 	needs_post_load_action     = false;
+	warping                    = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 	lockout_frames             = 0;
@@ -81,6 +82,8 @@ void Warp::init()
 		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
 
+	enter_area_type_opt->visible = false;
+
 	day_opt->set_selection(dest.day + 1);
 
 	update_cave_opt();
@@ -94,6 +97,16 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
+
+	if (preset) {
+		set_warp_day(preset->day);
+		if (day_opt) {
+			day_opt->set_selection(preset->day);
+		}
+	}
+
+	update_day_opt();
+	update_enter_type_opt();
 }
 
 WarpDestination Warp::current_dest()
@@ -125,6 +138,8 @@ void Warp::set_warp_area(size_t area)
 	update_cave_opt();
 	update_sublevel_opt();
 	update_preset_opt();
+	update_day_opt();
+	update_enter_type_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -134,8 +149,8 @@ void Warp::set_warp_cave(size_t cave)
 
 	update_sublevel_opt();
 	update_preset_opt();
-
-	enter_area_type_opt->visible = dest.cave == 0;
+	update_day_opt();
+	update_enter_type_opt();
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
@@ -201,14 +216,39 @@ void Warp::update_preset_opt()
 	}
 }
 
+// only show day option when warping with no preset
+void Warp::update_day_opt()
+{
+	if (day_opt) {
+		if (preset == nullptr) {
+			day_opt->visible = true;
+		} else {
+			day_opt->visible = false;
+		}
+	}
+}
+
+// only show enter type option when warping AG with no preset
+void Warp::update_enter_type_opt()
+{
+	if (enter_area_type_opt) {
+		if (dest.cave == 0 && preset == nullptr) {
+			enter_area_type_opt->visible = true;
+		} else {
+			enter_area_type_opt->visible = false;
+		}
+	}
+}
+
 void Warp::do_warp()
 {
+	warping = true;
+
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
 	if (preset) {
 		preset->apply();
-		preset_status                      = PS_Stale;
 		p2gz->preset_mgr->last_used_preset = preset;
 		needs_post_load_action             = true;
 	}
@@ -434,6 +474,8 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 
 void Warp::do_post_warp()
 {
+	warping = false;
+
 	if (!needs_post_load_action) {
 		return;
 	}
@@ -441,5 +483,7 @@ void Warp::do_post_warp()
 	needs_post_load_action = false;
 	if (preset) {
 		preset->apply_post_load();
+		preset_status     = PS_Stale;
+		dest.use_set_seed = false;
 	}
 }

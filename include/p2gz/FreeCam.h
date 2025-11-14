@@ -32,7 +32,7 @@ public:
 		return camera->mGoalPosition;
 	}
 
-	void disable();
+	void disable(bool doUnpause);
 	void enable();
 	void switch_captains();
 	void update();

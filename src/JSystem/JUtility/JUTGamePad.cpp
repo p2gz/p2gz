@@ -891,7 +891,15 @@ JUTGamePadRecordBase::~JUTGamePadRecordBase()
  */
 JUTGamePadRecordFixed::JUTGamePadRecordFixed()
 {
-	// UNUSED FUNCTION
+	// @P2GZ - implement for use in tests
+	clear();
+	mIsActive = true;
+}
+
+void JUTGamePadRecordFixed::getStatus(PADStatus* pad)
+{
+	// @P2GZ - implement for use in tests
+	pad->button = status.button;
 }
 
 /**
@@ -936,7 +944,17 @@ void JUTGamePadRecord::setPart(uint)
  */
 void JUTGamePadRecordFixed::clear()
 {
-	// UNUSED FUNCTION
+	// @P2GZ - implement for use in tests
+	status.button       = 0;
+	status.stickX       = 0;
+	status.stickY       = 0;
+	status.substickX    = 0;
+	status.substickY    = 0;
+	status.triggerLeft  = 0;
+	status.triggerRight = 0;
+	status.analogA      = 0;
+	status.analogB      = 0;
+	status.err          = 0;
 }
 
 /**

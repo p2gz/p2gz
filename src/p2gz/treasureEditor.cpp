@@ -16,7 +16,7 @@
 namespace gz {
 void TreasureEditor::init()
 {
-	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("map/treasures")->get_sub_menu());
+	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("level/treasures")->get_sub_menu());
 }
 
 // Find the Pellet pointer for the selected treasure.
@@ -212,6 +212,23 @@ void TreasureEditor::snap_to_nearest_waypoint()
 	p2gz->freecam->set_position(pos);
 }
 
+void TreasureEditor::sync()
+{
+	Iterator<Game::PelletOtakara::Object> treasureIterator(Game::PelletOtakara::mgr);
+	CI_LOOP(treasureIterator)
+	{
+		Game::PelletOtakara::Object* treasure = *treasureIterator;
+		add(treasure);
+	}
+
+	Iterator<Game::PelletItem::Object> upgradeIterator(Game::PelletItem::mgr);
+	CI_LOOP(upgradeIterator)
+	{
+		Game::PelletItem::Object* treasure = *upgradeIterator;
+		add(treasure);
+	}
+}
+
 // Add a submenu for the given treasure.
 void TreasureEditor::add(Game::Pellet* pellet)
 {
@@ -223,11 +240,13 @@ void TreasureEditor::add(Game::Pellet* pellet)
 		}
 	}
 
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	// clang-format off
 	treasures->push(new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu())
 		->push(new PerformActionMenuOption("move", new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::enable)))
 		->push(new ToggleMenuOption("collected", false, new Delegate1<TreasureEditor, bool>(p2gz->treasure_editor, &TreasureEditor::toggle_collected)))
 	));
+	prev_heap->becomeCurrentHeap();
 	// clang-format on
 }
 
