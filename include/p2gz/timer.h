@@ -30,6 +30,9 @@ struct ListMenu;
 /// for intro/crash landing cutscene
 #define MAX_CRASH_LANDING_CUTSCENE_TIME (37.5f)
 
+/// for all other "first time enter" cutscenes
+#define MAX_FIRST_ENTER_CUTSCENE_TIME (13.0f)
+
 struct Timer {
 public:
 	Timer();
