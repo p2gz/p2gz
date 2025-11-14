@@ -8,7 +8,7 @@ using namespace gz;
 
 void PokoEditor::init()
 {
-	poko_menu = static_cast<DecimalInputOption*>(p2gz->menu->get_option("items and captains/pokos"));
+	poko_menu = static_cast<DecimalInputOption*>(p2gz->menu->get_option("captain/pokos"));
 }
 
 void PokoEditor::sync()

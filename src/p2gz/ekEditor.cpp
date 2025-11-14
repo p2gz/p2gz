@@ -8,7 +8,7 @@ using namespace Game;
 
 void EKEditor::init()
 {
-	upgrades_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items and captains/upgrades")->get_sub_menu());
+	upgrades_menu = static_cast<ListMenu*>(p2gz->menu->get_option("captain/upgrades")->get_sub_menu());
 	GZASSERTLINE(upgrades_menu);
 
 	// clang-format off

@@ -6,7 +6,7 @@ using namespace gz;
 
 void SprayEditor::init()
 {
-	spray_menu = static_cast<ListMenu*>(p2gz->menu->get_option("items and captains/sprays")->get_sub_menu());
+	spray_menu = static_cast<ListMenu*>(p2gz->menu->get_option("captain/sprays")->get_sub_menu());
 }
 
 bool SprayEditor::get_bitters_unlocked()
