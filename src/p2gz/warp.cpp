@@ -249,7 +249,6 @@ void Warp::do_warp()
 
 	if (preset) {
 		preset->apply();
-		preset_status                      = PS_Stale;
 		p2gz->preset_mgr->last_used_preset = preset;
 		needs_post_load_action             = true;
 	}
@@ -484,5 +483,7 @@ void Warp::do_post_warp()
 	needs_post_load_action = false;
 	if (preset) {
 		preset->apply_post_load();
+		preset_status     = PS_Stale;
+		dest.use_set_seed = false;
 	}
 }
