@@ -113,7 +113,7 @@ void FreeCam::update()
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
 		if (p2gz->treasure_editor->is_enabled()) {
-			p2gz->menu->navigate_to("map/treasures");
+			p2gz->menu->navigate_to("level/treasures");
 			og::ogSound->setDecide();
 			p2gz->treasure_editor->disable();
 			p2gz->waypoint_viewer->toggle(false);
@@ -136,7 +136,7 @@ void FreeCam::update()
 		// Otherwise, p2gz menu won't open since it still thinks we're in freecam mode
 		if (!p2gz->menu->is_open()) {
 			if (p2gz->treasure_editor->is_enabled()) {
-				p2gz->menu->navigate_to("map/treasures");
+				p2gz->menu->navigate_to("level/treasures");
 				p2gz->treasure_editor->reset_active_treasure();
 				p2gz->treasure_editor->disable();
 				p2gz->waypoint_viewer->toggle(false);
