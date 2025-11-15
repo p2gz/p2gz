@@ -689,10 +689,6 @@ Preset* PresetMgr::create()
 
 	preset->squad.clear();
 	preset->onion_pikis.clear();
-	if (in_cave_play()) {
-		// We only know
-		fill_current_pikis(preset);
-	}
 
 	preset->set_pokos(p2gz->poko_editor->get_pokos());
 	preset->upgrades  = p2gz->ek_editor->get_upgrades_bitfield();
