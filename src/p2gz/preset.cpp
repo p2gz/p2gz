@@ -30,6 +30,9 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	cutscene_flags1  = 0;
 	cutscene_flags2  = 0;
 	day              = 5;
+	for (int i = 0; i < 4; i++) {
+		treasure_counts[i] = 0;
+	}
 
 	squad.clear();
 	onion_pikis.clear();
@@ -37,23 +40,27 @@ Preset::Preset(const char* name_, PresetCategory category_)
 
 Preset::Preset(Preset& other)
 {
-	name             = other.name;
-	category         = other.category;
-	bitters_unlocked = other.bitters_unlocked;
-	spicies_unlocked = other.spicies_unlocked;
-	num_bitters      = other.num_bitters;
-	num_spicies      = other.num_spicies;
-	squad            = other.squad;
-	onion_pikis      = other.onion_pikis;
-	time             = other.time;
-	day              = other.day;
-	apply_pokos      = false;
-	pokos            = 0;
-	enter_kind       = PEK_FromCave;
-	plug_destroyed   = other.plug_destroyed;
-	upgrades         = other.upgrades;
-	cutscene_flags1  = other.cutscene_flags1;
-	cutscene_flags2  = other.cutscene_flags2;
+	name                        = other.name;
+	category                    = other.category;
+	bitters_unlocked            = other.bitters_unlocked;
+	spicies_unlocked            = other.spicies_unlocked;
+	num_bitters                 = other.num_bitters;
+	num_spicies                 = other.num_spicies;
+	squad                       = other.squad;
+	onion_pikis                 = other.onion_pikis;
+	time                        = other.time;
+	day                         = other.day;
+	apply_pokos                 = false;
+	pokos                       = 0;
+	enter_kind                  = PEK_FromCave;
+	plug_destroyed              = other.plug_destroyed;
+	upgrades                    = other.upgrades;
+	cutscene_flags1             = other.cutscene_flags1;
+	cutscene_flags2             = other.cutscene_flags2;
+	treasure_counts[COURSE_VoR] = other.treasure_counts[COURSE_VoR];
+	treasure_counts[COURSE_AW]  = other.treasure_counts[COURSE_AW];
+	treasure_counts[COURSE_PP]  = other.treasure_counts[COURSE_PP];
+	treasure_counts[COURSE_WW]  = other.treasure_counts[COURSE_WW];
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -219,6 +226,12 @@ Preset* Preset::set_pokos(int pokos_)
 	return this;
 }
 
+Preset* Preset::set_treasure_count(int course_index, int count)
+{
+	treasure_counts[course_index] = count;
+	return this;
+}
+
 Preset* Preset::set_day(u8 day_)
 {
 	day = day_;
@@ -311,6 +324,12 @@ void Preset::apply()
 				cutscene_toggle->set_cutscene_flag(true);
 			}
 		}
+	}
+
+	// Set treasure counts for areas
+	for (int i = 0; i < 4; i++) {
+		Game::playData->mGroundOtakaraCollected[i]    = treasure_counts[i];
+		Game::playData->mGroundOtakaraCollectedOld[i] = treasure_counts[i];
 	}
 
 	p2gz->warp->set_enter_area_type(enter_kind);

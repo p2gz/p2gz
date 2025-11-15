@@ -20,6 +20,8 @@ enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
 
 enum GenSpawnOverride { PSO_Ignore, PSO_DontSpawn, PSO_Spawn };
 
+enum CourseIndex { COURSE_VoR, COURSE_AW, COURSE_PP, COURSE_WW };
+
 struct Preset {
 	struct EnemyGenSpawnOverride {
 		EnemyGenSpawnOverride()
@@ -70,6 +72,7 @@ public:
 	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
+	Preset* set_treasure_count(int course_idx, int count);
 	Preset* set_day(u8 day_);
 	Preset* set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[]);
 	Preset* set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[]);
@@ -94,6 +97,7 @@ public:
 	bool plug_destroyed; // no more than one plug per level
 	bool apply_pokos;
 	u8 day;
+	u8 treasure_counts[4]; // indexed by course index
 	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
 	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
 };
