@@ -102,6 +102,37 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 		break;
 	}
 
+	// @P2GZ - segment history
+	// Start new segment on any loading screen
+	gz::Segment* segment = p2gz->segment_history->start_segment();
+	gz::Preset* preset   = p2gz->warp->get_preset();
+	if (p2gz->warp->warping && preset) {
+		segment->preset = preset;
+	} else {
+		segment->preset      = p2gz->preset_mgr->create();
+		segment->preset->day = Game::gameSystem->mTimeMgr->mDayCount;
+	}
+
+	gz::WarpDestination dest;
+	dest.area         = game->mCurrentCourseInfo->mCourseIndex;
+	dest.day          = Game::gameSystem->mTimeMgr->mDayCount;
+	dest.use_set_seed = false;
+
+	if (!(mIsCaveLoad || mIsCaveDeeper)) {
+		dest.cave = 0;
+		if (mGameLoadType == Game::SingleGame::MapEnter_NewDay) {
+			segment->preset->enter_kind = gz::PEK_FromMap;
+		} else {
+			segment->preset->enter_kind = gz::PEK_FromCave;
+		}
+	} else {
+		ID32 cave_id(game->getCaveID());
+		dest.cave     = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
+		dest.sublevel = game->mCurrentFloor;
+	}
+
+	segment->dest = dest;
+
 	// @P2GZ localization-swap:
 	// update treasure region before pellet loading if required
 	if (p2gz->localization_op->require_update()) {

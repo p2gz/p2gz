@@ -276,3 +276,15 @@ CutsceneMenuOption* CutsceneMgr::create_option(Game::DemoFlags id)
 	return new CutsceneMenuOption(CutsceneMap::get_name_from_idx(id), false,
 	                              new Delegate1<CutsceneToggle, bool>(toggle, &CutsceneToggle::set_cutscene_flag));
 }
+
+CutscenesBitfield CutsceneMgr::get_cur_cutscenes()
+{
+	CutscenesBitfield bitfield;
+	for (size_t i = 0; i < cutscene_list.len(); i++) {
+		CutsceneToggle* toggle = cutscene_list[i];
+		if (Game::playData->isDemoFlag(toggle->get_cutscene_id())) {
+			bitfield.set_cutscene_played(toggle->get_cutscene_id());
+		}
+	}
+	return bitfield;
+}

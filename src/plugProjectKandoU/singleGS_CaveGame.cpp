@@ -554,7 +554,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		game->saveCaveMore();
 
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = true;
+		p2gz->segment_history->entering_next_segment = true;
 	}
 
 	if (config->is("s0C_cv_escape")) {
@@ -563,7 +563,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		game->prepareFountainOn(geyserpos);
 
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = true;
+		p2gz->segment_history->entering_next_segment = true;
 	}
 }
 
@@ -581,7 +581,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 
 	if (config->is("s0C_cv_escape")) {
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = false;
+		p2gz->segment_history->entering_next_segment = false;
 
 		PSMCancelToPauseOffMainBgm();
 		moviePlayer->clearSuspendedDemo();
@@ -612,7 +612,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		mDrawSave = true;
 
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = false;
+		p2gz->segment_history->entering_next_segment = false;
 
 		return;
 	} else if (config->is("g07_cv_gamestart")) {
@@ -627,8 +627,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		p2gz->warp->do_post_warp();
 
 		// @P2GZ - save current squad to history when starting a sublevel
-		gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
-		seg->preset      = p2gz->preset_mgr->create();
+		p2gz->segment_history->record_squad();
 
 		if (isFinal) {
 			Screen::gGame2DMgr->open_GameCave(disp, 2);
@@ -655,8 +654,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		p2gz->warp->do_post_warp();
 
 		// @P2GZ - save current squad to history when starting a sublevel
-		gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
-		seg->preset      = p2gz->preset_mgr->create();
+		p2gz->segment_history->record_squad();
 
 		if (!playData->isDemoFlag(DEMO_First_Cave_Enter)) {
 			playData->setDemoFlag(DEMO_First_Cave_Enter);

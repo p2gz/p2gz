@@ -15,6 +15,7 @@ public:
 	void set_upgrade(Game::OlimarData::ItemIndex, bool enabled);
 	void reset_all();
 	void check_upgrades();
+	u16 get_upgrades_bitfield();
 
 private:
 	void set_menu_opt(Game::OlimarData::ItemIndex, const char* opt_name);

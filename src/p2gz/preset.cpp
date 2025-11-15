@@ -27,8 +27,6 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	time             = 7.0f;
 	plug_destroyed   = false;
 	upgrades         = 0;
-	cutscene_flags1  = 0;
-	cutscene_flags2  = 0;
 	day              = 5;
 
 	squad.clear();
@@ -52,8 +50,7 @@ Preset::Preset(Preset& other)
 	enter_kind       = PEK_FromCave;
 	plug_destroyed   = other.plug_destroyed;
 	upgrades         = other.upgrades;
-	cutscene_flags1  = other.cutscene_flags1;
-	cutscene_flags2  = other.cutscene_flags2;
+	cutscenes        = other.cutscenes;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -150,13 +147,7 @@ Preset* Preset::set_time(f32 time_)
 Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
 	for (size_t i = 0; i < num_flags; i++) {
-		if (flags[i] < 32) {
-			const u32 bit = 1 << flags[i];
-			cutscene_flags1 |= bit;
-		} else {
-			const u32 bit = 1 << (flags[i] - 32);
-			cutscene_flags2 |= bit;
-		}
+		cutscenes.set_cutscene_played(flags[i]);
 	}
 	return this;
 }
@@ -298,14 +289,8 @@ void Preset::apply()
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
 	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
-		bool flag_set = false;
-		if (i < 32) {
-			flag_set = cutscene_flags1 & (1 << i);
-		} else {
-			flag_set = cutscene_flags2 & (1 << (i - 32));
-		}
-		if (flag_set) {
-			const Game::DemoFlags flag      = static_cast<Game::DemoFlags>(i);
+		const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
+		if (cutscenes.cutscene_played(flag)) {
 			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
 			if (cutscene_toggle) {
 				cutscene_toggle->set_cutscene_flag(true);
