@@ -1,8 +1,8 @@
 #include <p2gz/TreasureDebugInfo.h>
 #include <Game/Entities/PelletOtakara.h>
 #include <Game/Entities/PelletItem.h>
-#include <Game/Navi.h>
 #include <P2JME/P2JME.h>
+#include <Game/gameGenerator.h>
 
 using namespace gz;
 
@@ -18,7 +18,7 @@ void TreasureDebugInfo::draw()
 	}
 
 	Graphics* gfx = sys->mGfx;
-	if (!gfx || !gfx->mCurrentViewport || !Game::naviMgr || !Game::naviMgr->getActiveNavi()) {
+	if (!gfx || !gfx->mCurrentViewport) {
 		return;
 	}
 
@@ -39,7 +39,7 @@ void TreasureDebugInfo::draw()
 
 void TreasureDebugInfo::draw_treasure_dbg(Game::Pellet* pellet, Graphics* gfx)
 {
-	if (!pellet->isAlive()) {
+	if (!pellet || !pellet->isAlive()) {
 		return;
 	}
 
@@ -54,10 +54,8 @@ void TreasureDebugInfo::draw_treasure_dbg(Game::Pellet* pellet, Graphics* gfx)
 	Vector3f pellet_pos = pellet->getPosition();
 	Vector3f pos        = pellet_pos + Vector3f(0, 45.0f, 0);
 
-	Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(pellet->mGenerator->mObject);
-	int treasure_id             = gen_pellet->mGenParm->mIndex;
-	int kind                    = gen_pellet->mPelType;
-	const char* treasure_name   = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(treasure_id)->mParams.mName.mData;
+	const int treasure_id     = pellet->getConfigIndex();
+	const char* treasure_name = pellet->getConfigName();
 
 	gfx->perspPrintf(info, pos, "%d: %s", treasure_id, treasure_name);
 	info.mPerspectiveOffsetY += 22;
