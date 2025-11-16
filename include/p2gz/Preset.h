@@ -20,6 +20,13 @@ enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
 
 enum GenSpawnOverride { PSO_Ignore, PSO_DontSpawn, PSO_Spawn };
 
+enum CourseIndex { COURSE_VoR, COURSE_AW, COURSE_PP, COURSE_WW };
+
+struct TreasureAreaMap {
+	u8 id;
+	u8 course_idx;
+};
+
 struct Preset {
 	struct EnemyGenSpawnOverride {
 		EnemyGenSpawnOverride()
