@@ -17,8 +17,8 @@ void Localization::init_menu()
 	RadioMenuOption* region_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("level/treasure region"));
 
 	// NB: make sure this order matches the order in the TreasureRegion enum
-	region_opt->options.push("English");
-	region_opt->options.push("Japanese");
+	region_opt->options.push("US");
+	region_opt->options.push("JP");
 	region_opt->options.push("PAL");
 }
 
