@@ -81,10 +81,10 @@ void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 			Game::playData->setDemoFlag(Game::DEMO_RADAR_ENABLED);
 		}
 	} else {
-		bool validItem = item >= OlimarData::ODII_BruteKnuckles && item < OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM;
+		bool validItem = item >= OlimarData::ODII_BruteKnuckles && item <= OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM;
 		GZASSERTLINE(validItem);
-		int data_idx = (item >> 3);
-		playData->mOlimarData->mFlags[1 - data_idx] &= 0 << (item - (data_idx << 3));
+		int data_idx = item < 8 ? 0 : 1;
+		playData->mOlimarData->mFlags[data_idx] &= ~(1 << (item - (data_idx * 8)));
 
 		if (item == OlimarData::ODII_PrototypeDetector) {
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_RADAR_ENABLED);

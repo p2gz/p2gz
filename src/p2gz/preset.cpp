@@ -324,7 +324,7 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
 	// Apply upgrades
-	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
 		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades & mask);
 	}
