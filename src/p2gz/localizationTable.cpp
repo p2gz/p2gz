@@ -2046,6 +2046,107 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 
+	// Boom Cone (GK5) - different in US
+	{
+	    // Boom Cone
+	    Treasure_US,                    // region
+	    "compact",                      // internal name
+	    "compact.szs",                  // archive filename
+	    "us_cracker.bmd",               // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    27.0,                           // radius
+	    20.0,                           // pradius
+	    22.0,                           // height
+	    250.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    10,                             // min carry
+	    15,                             // max carry
+	    "lod",                          // dynamics
+	    100,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    10.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    134,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Magical Stage
+	    Treasure_PAL,                   // region
+	    "compact",                      // internal name
+	    "compact.szs",                  // archive filename
+	    "compact.bmd",                  // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    52.0,                           // pradius
+	    25.0,                           // height
+	    800.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    30,                             // min carry
+	    45,                             // max carry
+	    "lod",                          // dynamics
+	    150,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    10.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    133,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Magical Stage
+	    Treasure_JP,                    // region
+	    "compact",                      // internal name
+	    "compact.szs",                  // archive filename
+	    "compact.bmd",                  // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    52.0,                           // radius
+	    52.0,                           // pradius
+	    25.0,                           // height
+	    800.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    8,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    30,                             // min carry
+	    45,                             // max carry
+	    "lod",                          // dynamics
+	    150,                            // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    10.0,                           // max depth (for burying stuff)
+	    10.0,                           // depth A (for burying stuff)
+	    50.0,                           // depth B (for burying stuff)
+	    50.0,                           // depth C (for burying stuff)
+	    50.0,                           // depth D (for burying stuff)
+	    0,                              // code (special properties)
+	    132,                            // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
 	//// Shower Room - 7
 	// Merciless Extractor (SR1) - different in US
 	{
