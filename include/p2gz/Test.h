@@ -17,10 +17,12 @@ namespace test {
 #define __COMPOUND(...)        (new CompoundOp()) __VA_ARGS__
 #define PRESS(btn)             __TEST_OP(new ButtonInput(btn)) __TEST_OP(new Wait(1))
 #define DBL_DPAD_L             PRESS(PAD_BUTTON_LEFT) PRESS(PAD_BUTTON_LEFT)
-#define DO_N(num, ...)         __TEST_OP(new DoN(__COMPOUND(__VA_ARGS__), num))
-#define DO_UNTIL(op, state_fn) __TEST_OP(new DoUntil(__COMPOUND(op), new FreeDelegateR<bool>(state_fn)))
 #define MASH_TEXT              PRESS(PAD_BUTTON_A) PRESS(PAD_BUTTON_B)
 #define SKIP_CUTSCENE          __TEST_OP(new ActionOp(new FreeDelegate(&skip_movie)))
+
+#define DO_ACTION(delegate)    __TEST_OP(new ActionOp(delegate))
+#define DO_N(num, ...)         __TEST_OP(new DoN(__COMPOUND(__VA_ARGS__), num))
+#define DO_UNTIL(op, state_fn) __TEST_OP(new DoUntil(__COMPOUND(op), new FreeDelegateR<bool>(state_fn)))
 
 #define WAIT(frames)       __TEST_OP(new Wait(frames))
 #define WAIT_FOR(state_fn) __TEST_OP(new WaitForState(new FreeDelegateR<bool>(&state_fn)))
