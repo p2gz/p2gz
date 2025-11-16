@@ -48,6 +48,7 @@ P2GZ::P2GZ()
 	spray_editor         = new SprayEditor();
 	segment_history      = new SegmentHistory();
 	enemy_debug_info     = new EnemyDebugInfo();
+	treasure_debug_info  = new TreasureDebugInfo();
 	cave_debug_info      = new CaveDebugInfo();
 	generator_debug_info = new GeneratorDebugInfo();
 	squad_editor         = new SquadEditor();
@@ -147,6 +148,7 @@ void P2GZ::draw()
 
 	freecam->draw();
 	enemy_debug_info->draw();
+	treasure_debug_info->draw();
 	cave_debug_info->draw();
 	generator_debug_info->draw();
 	structure_editor->draw();
