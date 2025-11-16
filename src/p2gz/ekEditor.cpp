@@ -71,13 +71,13 @@ void EKEditor::check_upgrades()
 	set_menu_opt(OlimarData::ODII_JusticeAlloy, "metal suit Z");
 }
 
-u16 EKEditor::get_upgrades_bitfield()
+BitFlag<u16> EKEditor::get_upgrades_bitfield()
 {
-	u16 bitfield = 0;
+	BitFlag<u16> bitfield;
 	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
 		if (playData->mOlimarData->hasItem(i)) {
-			bitfield |= mask;
+			bitfield.set(mask);
 		}
 	}
 	return bitfield;

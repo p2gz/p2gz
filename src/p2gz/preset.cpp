@@ -26,7 +26,6 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	num_spicies      = 0;
 	time             = 7.0f;
 	plug_destroyed   = false;
-	upgrades         = 0;
 	day              = 5;
 
 	squad.clear();
@@ -156,7 +155,7 @@ Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex it
 {
 	for (size_t i = 0; i < num_upgrades; i++) {
 		const u16 bit = 1 << items[i];
-		upgrades |= bit;
+		upgrades.set(bit);
 	}
 	return this;
 }
@@ -283,7 +282,7 @@ void Preset::apply()
 	// Apply upgrades
 	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
-		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades & mask);
+		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades.isSet(mask));
 	}
 
 	// Set cutscene flags

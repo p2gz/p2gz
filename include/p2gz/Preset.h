@@ -1,6 +1,7 @@
 #ifndef _GZ_PRESET_H
 #define _GZ_PRESET_H
 
+#include <BitFlag.h>
 #include <IDelegate.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/gzmenu.h>
@@ -81,7 +82,7 @@ public:
 	Game::PikiContainer onion_pikis;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
-	u16 upgrades; // bitflags
+	BitFlag<u16> upgrades;
 	u8 num_bitters;
 	u8 num_spicies;
 	f32 time;
