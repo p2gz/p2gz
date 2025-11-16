@@ -1,6 +1,7 @@
 #include "Game/EnemyBase.h"
 #include "Game/EnemyStateMachine.h"
 #include "types.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 
@@ -30,6 +31,9 @@ void EnemyStateMachine::start(EnemyBase* obj, int id, StateArg* arg)
 {
 	setCurrState(obj, nullptr);
 	transit(obj, id, arg);
+
+	// @P2GZ - register enemy FSM
+	p2gz->savestate_mgr->register_fsm(obj, this);
 }
 
 /**
