@@ -18,7 +18,7 @@ enum PresetCategory { PoD, AT, General, Generated };
 
 enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
 
-enum GenSpawnOverride { PSO_Ignore, PSO_DontSpawn, PSO_Spawn };
+enum GenSpawnOverride { PSO_Ignore = 0, PSO_DontSpawn = 1, PSO_Spawn = 2, PSO_SpawnAndMove = 3 };
 
 enum CourseIndex { COURSE_VoR, COURSE_AW, COURSE_PP, COURSE_WW };
 
@@ -47,11 +47,14 @@ struct Preset {
 		{
 			id             = 255;
 			spawn_override = PSO_Ignore;
+			position_override = Vector3f::zero;
 		}
 		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
+		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_);
 
 		u8 id;
 		GenSpawnOverride spawn_override;
+		Vector3f position_override; // only used if spawn_override is PSO_SpawnAndMove
 	};
 
 public:
