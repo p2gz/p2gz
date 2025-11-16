@@ -11,6 +11,40 @@
 
 using namespace gz;
 
+static const TreasureAreaMap AG_treasure_IDs[] = {
+	{ 47, COURSE_VoR },  // fossilized ursidae
+	{ 62, COURSE_VoR },  // pink menace
+	{ 71, COURSE_VoR },  // unspeakable wonder
+	{ 73, COURSE_VoR },  // temporal mechanism
+	{ 87, COURSE_VoR },  // utter scrap
+	{ 142, COURSE_VoR }, // courage reactor
+	{ 157, COURSE_VoR }, // spiny alien treat
+
+	{ 11, COURSE_AW },  // geographic projection (NB: actually an item ID not treasure ID, but 11 is in SCx3 so it's fine)
+	{ 42, COURSE_AW },  // sunseed berry
+	{ 44, COURSE_AW },  // decorative goo
+	{ 130, COURSE_AW }, // pilgrim bulb
+	{ 155, COURSE_AW }, // chance totem
+	{ 173, COURSE_AW }, // healing cask/hypnotic platter/seat of enlightenment
+	{ 185, COURSE_AW }, // air brake
+
+	{ 53, COURSE_PP },  // onion replica
+	{ 72, COURSE_PP },  // aquatic mine
+	{ 77, COURSE_PP },  // impediment scourge/lightning bolt
+	{ 118, COURSE_PP }, // massage girdle
+	{ 140, COURSE_PP }, // optical illustration/abstract masterpiece/yell battery
+	{ 152, COURSE_PP }, // fortified delicacy
+	{ 172, COURSE_PP }, // gherkin gate
+
+	{ 27, COURSE_WW },  // armored nut
+	{ 45, COURSE_WW },  // anti-hiccup fungus
+	{ 50, COURSE_WW },  // conifer spire
+	{ 76, COURSE_WW },  // doomsday apparatus
+	{ 183, COURSE_WW }, // seed of greed
+};
+
+static const u8 AG_treasure_count = ARRAY_SIZE(AG_treasure_IDs);
+
 Preset::Preset(const char* name_, PresetCategory category_)
     : destroyed_gates(0)
     , finished_bridges(0)
@@ -30,9 +64,6 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	cutscene_flags1  = 0;
 	cutscene_flags2  = 0;
 	day              = 5;
-	for (int i = 0; i < 4; i++) {
-		treasure_counts[i] = 0;
-	}
 
 	squad.clear();
 	onion_pikis.clear();
@@ -40,27 +71,23 @@ Preset::Preset(const char* name_, PresetCategory category_)
 
 Preset::Preset(Preset& other)
 {
-	name                        = other.name;
-	category                    = other.category;
-	bitters_unlocked            = other.bitters_unlocked;
-	spicies_unlocked            = other.spicies_unlocked;
-	num_bitters                 = other.num_bitters;
-	num_spicies                 = other.num_spicies;
-	squad                       = other.squad;
-	onion_pikis                 = other.onion_pikis;
-	time                        = other.time;
-	day                         = other.day;
-	apply_pokos                 = false;
-	pokos                       = 0;
-	enter_kind                  = PEK_FromCave;
-	plug_destroyed              = other.plug_destroyed;
-	upgrades                    = other.upgrades;
-	cutscene_flags1             = other.cutscene_flags1;
-	cutscene_flags2             = other.cutscene_flags2;
-	treasure_counts[COURSE_VoR] = other.treasure_counts[COURSE_VoR];
-	treasure_counts[COURSE_AW]  = other.treasure_counts[COURSE_AW];
-	treasure_counts[COURSE_PP]  = other.treasure_counts[COURSE_PP];
-	treasure_counts[COURSE_WW]  = other.treasure_counts[COURSE_WW];
+	name             = other.name;
+	category         = other.category;
+	bitters_unlocked = other.bitters_unlocked;
+	spicies_unlocked = other.spicies_unlocked;
+	num_bitters      = other.num_bitters;
+	num_spicies      = other.num_spicies;
+	squad            = other.squad;
+	onion_pikis      = other.onion_pikis;
+	time             = other.time;
+	day              = other.day;
+	apply_pokos      = false;
+	pokos            = 0;
+	enter_kind       = PEK_FromCave;
+	plug_destroyed   = other.plug_destroyed;
+	upgrades         = other.upgrades;
+	cutscene_flags1  = other.cutscene_flags1;
+	cutscene_flags2  = other.cutscene_flags2;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -226,12 +253,6 @@ Preset* Preset::set_pokos(int pokos_)
 	return this;
 }
 
-Preset* Preset::set_treasure_count(int course_index, int count)
-{
-	treasure_counts[course_index] = count;
-	return this;
-}
-
 Preset* Preset::set_day(u8 day_)
 {
 	day = day_;
@@ -326,7 +347,26 @@ void Preset::apply()
 		}
 	}
 
-	// Set treasure counts for areas
+	// calc treasure counts for areas
+	u8 treasure_counts[4];
+	treasure_counts[COURSE_VoR] = treasure_counts[COURSE_AW] = treasure_counts[COURSE_PP] = treasure_counts[COURSE_WW] = 0;
+
+	for (int i = 0; i < treasure_spawn_overrides.len(); i++) {
+		// only interested in treasures we've "collected"
+		if (treasure_spawn_overrides[i].spawn_override != PSO_DontSpawn) {
+			continue;
+		}
+
+		int id = treasure_spawn_overrides[i].id;
+		for (u8 i = 0; i < AG_treasure_count; i++) {
+			if (AG_treasure_IDs[i].id == id) {
+				treasure_counts[AG_treasure_IDs[i].course_idx]++;
+				break;
+			}
+		}
+	}
+
+	// set treasure counts
 	for (int i = 0; i < 4; i++) {
 		Game::playData->mGroundOtakaraCollected[i]    = treasure_counts[i];
 		Game::playData->mGroundOtakaraCollectedOld[i] = treasure_counts[i];
