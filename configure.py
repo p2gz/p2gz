@@ -2007,7 +2007,7 @@ config.libs = [
             Object(Matching, "sysGCU/dvdThread.cpp"),
             Object(Matching, "sysGCU/appThread.cpp"),
             Object(Matching, "sysGCU/controller.cpp"),
-            Object(NonMatching, "sysGCU/graphics.cpp"),
+            Object(Equivalent, "sysGCU/graphics.cpp"),
             Object(NonMatching, "sysGCU/matMath.cpp"),
             Object(Matching, "sysGCU/sysShape.cpp"),
             Object(Matching, "sysGCU/reset.cpp"),
