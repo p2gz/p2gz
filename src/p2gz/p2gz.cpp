@@ -60,11 +60,11 @@ P2GZ::P2GZ()
 	ek_editor            = new EKEditor();
 	treasure_editor      = new TreasureEditor();
 	localization_op      = new Localization();
+	empress_trainer      = new EmpressTrainer();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();
 #endif
-	empress_trainer = new EmpressTrainer();
 
 	prev_heap->becomeCurrentHeap();
 }
