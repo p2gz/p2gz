@@ -312,7 +312,7 @@ void Generator::generate()
 		gz::GenSpawnOverride spawn_override = preset->get_enemy_gen_override(this);
 		if (spawn_override == gz::PSO_DontSpawn) {
 			return;
-		} else if (spawn_override == gz::PSO_Spawn) {
+		} else if (spawn_override >= gz::PSO_Spawn) {
 			mDayNum     = gameSystem->mTimeMgr->mDayCount;
 			mDeathCount = 0;
 			mCreature   = mObject->generate(this);

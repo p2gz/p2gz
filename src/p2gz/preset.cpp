@@ -129,6 +129,14 @@ Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverr
 	spawn_override = spawn_override_;
 }
 
+Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_)
+{
+	GZASSERTLINE(spawn_override_ == PSO_SpawnAndMove); // Doesn't make sense to use this ctor otherwise
+	id                = id_;
+	spawn_override    = spawn_override_;
+	position_override = position_override_;
+}
+
 GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
 {
 	if (gen->mObject->mTypeID == 'teki') {
@@ -416,8 +424,16 @@ void Preset::apply_post_load()
 			for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
 				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
 				if (oride.id == treasure_id) {
-					if (oride.spawn_override == PSO_Spawn && gen->mCreature == nullptr) {
-						gen->generate();
+					if (oride.spawn_override >= PSO_Spawn) {
+						if (!gen->mCreature) {
+							gen->generate();
+						}
+						GZASSERTLINE(gen->mCreature);
+						if (oride.spawn_override == PSO_SpawnAndMove) {
+							gen->mCreature->setPosition(oride.position_override, false);
+						} else {
+							gen->mCreature->setPosition(gen->mPosition, false);
+						}
 					} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
 						Game::PelletKillArg arg;
 						gen->mCreature->kill(&arg);
