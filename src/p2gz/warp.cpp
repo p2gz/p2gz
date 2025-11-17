@@ -281,6 +281,11 @@ void Warp::do_warp()
 		skip_save_prompts_opt->set_selection(true);
 		p2gz->skip_save->toggle_save_skip(true);
 	}
+
+	// TODO: This is obviously a dumb hack. Once we have more trainers, this should be refactored and handled by a trainer manager.
+	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
+		p2gz->empress_trainer->stop();
+	}
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)

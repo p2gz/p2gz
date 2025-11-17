@@ -119,6 +119,7 @@ void P2GZ::update()
 	segment_history->update();
 	dismiss_positions->update();
 	navi_tools->update();
+	empress_trainer->update();
 
 	warp->update_lockout_frames();
 
