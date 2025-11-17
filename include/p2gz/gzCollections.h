@@ -43,6 +43,15 @@ struct RingBuffer {
 		return mBuf[(mBufHead + N - n - 1) % N];
 	}
 
+	bool atCapacity() { return mLen == N; }
+
+	/// Gets the oldest thing in the ring buffer. Only save to call if `atCapacity()` returns true.
+	T getLast()
+	{
+		GZASSERTLINE(mLen == N);
+		return peekN(N);
+	}
+
 private:
 	size_t mLen;
 	size_t mBufHead;

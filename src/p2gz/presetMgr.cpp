@@ -54,8 +54,6 @@ using namespace Game;
 
 PresetMgr::PresetMgr()
 {
-	last_used_preset = nullptr;
-
 	// Treasures
 	Preset::TreasureGenSpawnOverride t_pod_all[] = {
 		Preset::TreasureGenSpawnOverride(42, PSO_Spawn),  /* ichigo */
@@ -700,7 +698,21 @@ Preset* PresetMgr::create()
 	preset->num_bitters      = p2gz->spray_editor->get_bitters();
 
 	preset->squad.clear();
-	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	preset->onion_pikis.clear();
+
+	preset->set_pokos(p2gz->poko_editor->get_pokos());
+	preset->upgrades  = p2gz->ek_editor->get_upgrades_bitfield();
+	preset->cutscenes = p2gz->cutscene_mgr->get_cur_cutscenes();
+
+	prev_heap->becomeCurrentHeap();
+	return preset;
+}
+
+void PresetMgr::fill_current_pikis(Preset* preset)
+{
+	GZASSERTLINE(preset);
+
+	Iterator<Piki> iterator(pikiMgr);
 	CI_LOOP(iterator)
 	{
 		Piki* piki = *iterator;
@@ -708,26 +720,7 @@ Preset* PresetMgr::create()
 			preset->squad(piki)++;
 		}
 	}
-
-	preset->onion_pikis.clear();
 	preset->onion_pikis = Game::playData->mPikiContainer;
-
-	preset->set_pokos(p2gz->poko_editor->get_pokos());
-	preset->upgrades        = last_used_preset->upgrades;
-	preset->cutscene_flags1 = last_used_preset->cutscene_flags1;
-	preset->cutscene_flags2 = last_used_preset->cutscene_flags2;
-
-	if (!last_used_preset) {
-		last_used_preset = p2gz->preset_mgr->suggested_preset(Warp::current_dest(), PoD);
-	}
-	if (last_used_preset) {
-		copy_vec(preset->destroyed_gates, last_used_preset->destroyed_gates);
-		preset->enter_kind = last_used_preset->enter_kind;
-		preset->day        = last_used_preset->day;
-	}
-
-	prev_heap->becomeCurrentHeap();
-	return preset;
 }
 
 Preset* PresetMgr::find(const char* name, PresetCategory category)

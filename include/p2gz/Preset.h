@@ -1,10 +1,12 @@
 #ifndef _GZ_PRESET_H
 #define _GZ_PRESET_H
 
+#include <BitFlag.h>
 #include <IDelegate.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/gzmenu.h>
 #include <p2gz/warp.h>
+#include <p2gz/CutsceneToggle.h>
 #include <types.h>
 #include <Game/PikiContainer.h>
 #include <JSystem/J2D/J2DPrint.h>
@@ -90,12 +92,11 @@ public:
 	Game::PikiContainer onion_pikis;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
-	u16 upgrades; // bitflags
+	BitFlag<u16> upgrades;
 	u8 num_bitters;
 	u8 num_spicies;
 	f32 time;
-	u32 cutscene_flags1; // bitflags
-	u32 cutscene_flags2; // bitflags
+	CutscenesBitfield cutscenes;
 	Vec<const char*> destroyed_gates;
 	Vec<const char*> finished_bridges;
 	Vec<const char*> bags_flattened;
@@ -113,12 +114,12 @@ public:
 	PresetMgr();
 
 	Preset* create();
+	static void fill_current_pikis(Preset* preset);
 
 	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
-	Preset* last_used_preset;
 };
 
 struct PresetMenuOption : public MenuOption {
