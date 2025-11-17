@@ -235,7 +235,7 @@ void Warp::do_warp()
 
 	if (preset) {
 		preset->apply();
-		needs_post_load_action             = true;
+		needs_post_load_action = true;
 	}
 
 	if (particle2dMgr) {
@@ -268,6 +268,8 @@ void Warp::do_warp()
 	}
 
 	already_saved_generators = false;
+
+	p2gz->collision_viewer->handle_warp();
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
