@@ -974,7 +974,6 @@ void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 ToggleMenuOption::~ToggleMenuOption()
 {
-	OSReport("deleting toggle\n");
 	if (on_selected) {
 		delete on_selected;
 	}
@@ -1039,7 +1038,6 @@ void OpenSubMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 PerformActionMenuOption::~PerformActionMenuOption()
 {
-	OSReport("deleting performaction\n");
 	if (on_selected) {
 		delete on_selected;
 	}
@@ -1128,7 +1126,6 @@ void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 RangeMenuOption::~RangeMenuOption()
 {
-	OSReport("deleting rangemenuoption\n");
 	if (on_selected) {
 		delete on_selected;
 	}
@@ -1225,7 +1222,6 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 FloatRangeMenuOption::~FloatRangeMenuOption()
 {
-	OSReport("deleting floatrangemenuoption\n");
 	if (on_selected) {
 		delete on_selected;
 	}
