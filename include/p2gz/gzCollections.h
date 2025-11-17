@@ -159,6 +159,12 @@ static void copy_vec(Vec<T>& dst, Vec<T>& src)
 	}
 }
 
+#define DELETE_ALL(vec)                      \
+	for (size_t i = 0; i < vec.len(); i++) { \
+		delete vec[i];                       \
+	}                                        \
+	vec.clear()
+
 } // namespace gz
 
 #endif

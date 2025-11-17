@@ -138,6 +138,14 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	if (p2gz->localization_op->require_update()) {
 		p2gz->localization_op->update_region();
 	}
+
+	// @P2GZ - Structure editor and treasure editor
+	// Clear structures currently in menu whenever we load a new area/sublevel
+	p2gz->structure_editor->clear_gates();
+	p2gz->structure_editor->clear_bridges();
+	p2gz->structure_editor->clear_plugs();
+	p2gz->structure_editor->clear_bags();
+	p2gz->treasure_editor->clear_treasures();
 }
 
 /**
@@ -210,6 +218,8 @@ void LoadState::exec(SingleGameSection* game)
 			// @P2GZ - memory logging
 			OSReport("==== Game heap free/total: %.2f KB / %.2f KB\n", JKRGetCurrentHeap()->getTotalFreeSize() / 1024.0f,
 			         JKRGetCurrentHeap()->getHeapSize() / 1024.0f);
+			OSReport("==== Sys heap free/total: %.2f KB / %.2f KB\n", sys->mSysHeap->getTotalFreeSize() / 1024.0f,
+			         sys->mSysHeap->getHeapSize() / 1024.0f);
 		}
 		if (particle2dMgr) {
 			particle2dMgr->update();

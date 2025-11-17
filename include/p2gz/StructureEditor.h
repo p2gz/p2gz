@@ -13,12 +13,20 @@ struct StructureEditor {
 	struct GateWrapper {
 		GateWrapper()
 		{
-			gate = nullptr;
-			name = nullptr;
+			gate           = nullptr;
+			name           = nullptr;
+			generated_name = false;
+		}
+		~GateWrapper()
+		{
+			if (generated_name) {
+				delete name;
+			}
 		}
 
 		Game::ItemGate* gate;
 		const char* name;
+		bool generated_name;
 
 		void set_gate_segments(s32 segments);
 		void set_gate_segment_health(f32 health);
@@ -42,11 +50,19 @@ struct StructureEditor {
 	struct PlugWrapper {
 		PlugWrapper()
 		{
-			plug = nullptr;
-			name = nullptr;
+			plug           = nullptr;
+			name           = nullptr;
+			generated_name = false;
+		}
+		~PlugWrapper()
+		{
+			if (generated_name) {
+				delete name;
+			}
 		}
 
 		Game::ItemBarrel::Item* plug;
+		bool generated_name;
 		const char* name;
 		Vector3f pos;
 
@@ -148,9 +164,9 @@ public:
 	ListMenu* bag_menu;
 
 private:
-	const char* get_gate_name(f32 x, f32 z);
+	const char* get_gate_name(f32 x, f32 z, bool& generated);
 	const char* get_bridge_name(f32 x, f32 z);
-	const char* get_plug_name(f32 x, f32 z);
+	const char* get_plug_name(f32 x, f32 z, bool& generated);
 	const char* get_bag_name(f32 x, f32 z);
 
 	Vec<GateWrapper*> gates;
