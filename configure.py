@@ -1293,7 +1293,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/gameCPlate.cpp"),
             Object(Matching, "plugProjectKandoU/updateMgr.cpp"),
             Object(Matching, "plugProjectKandoU/aiAction.cpp"),
-            Object(NonMatching, "plugProjectKandoU/aiPrimitives.cpp"),
+            Object(Equivalent, "plugProjectKandoU/aiPrimitives.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiFormation.cpp"),
             Object(Matching, "plugProjectKandoU/creatureStick.cpp"),
             Object(Matching, "plugProjectKandoU/interactBattle.cpp"),
