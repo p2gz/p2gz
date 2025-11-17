@@ -5,6 +5,7 @@
 
 namespace gz {
 struct EmpressTrainer {
+public:
 	EmpressTrainer() { first_damage_frame = -1; }
 	~EmpressTrainer() { }
 
@@ -14,6 +15,7 @@ struct EmpressTrainer {
 	void start();
 	void update();
 
+private:
 	Game::Queen::Obj* get_empress();
 
 	bool enabled;
