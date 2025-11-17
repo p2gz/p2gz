@@ -49,7 +49,6 @@ public:
 
 	void init();
 
-	static WarpDestination current_dest();
 	void set_dest(WarpDestination new_dest);
 
 	void set_warp_area(size_t area);
@@ -82,6 +81,7 @@ public:
 	bool allow_zero_pikmin_in_caves;
 	bool warping_from_menu;
 	bool warping;
+	bool already_saved_generators;
 
 private:
 	void update_cave_opt();

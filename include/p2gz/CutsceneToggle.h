@@ -99,6 +99,42 @@ private:
 	CutsceneMenuOption* option;
 };
 
+struct CutscenesBitfield {
+public:
+	CutscenesBitfield()
+	{
+		bf1 = 0;
+		bf2 = 0;
+	}
+	CutscenesBitfield(CutscenesBitfield& other)
+	{
+		bf1 = other.bf1;
+		bf2 = other.bf2;
+	}
+
+	bool cutscene_played(Game::DemoFlags flag)
+	{
+		if (flag < 32) {
+			return bf1 & (1 << flag);
+		} else {
+			return bf2 & (1 << (flag - 32));
+		}
+	}
+
+	void set_cutscene_played(Game::DemoFlags flag)
+	{
+		if (flag < 32) {
+			bf1 |= (1 << flag);
+		} else {
+			bf2 |= (1 << (flag - 32));
+		}
+	}
+
+private:
+	u32 bf1;
+	u32 bf2;
+};
+
 struct CutsceneMgr {
 public:
 	CutsceneMgr();
@@ -107,6 +143,7 @@ public:
 	void update();
 
 	CutsceneToggle* get_toggle(Game::DemoFlags id);
+	CutscenesBitfield get_cur_cutscenes();
 	void reset_all();
 
 	static CutsceneMenuOption* create_option(Game::DemoFlags id);

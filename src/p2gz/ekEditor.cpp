@@ -71,6 +71,18 @@ void EKEditor::check_upgrades()
 	set_menu_opt(OlimarData::ODII_JusticeAlloy, "metal suit Z");
 }
 
+BitFlag<u16> EKEditor::get_upgrades_bitfield()
+{
+	BitFlag<u16> bitfield;
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+		const u16 mask = 1 << i;
+		if (playData->mOlimarData->hasItem(i)) {
+			bitfield.set(mask);
+		}
+	}
+	return bitfield;
+}
+
 void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 {
 	if (enabled) {
@@ -81,10 +93,10 @@ void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 			Game::playData->setDemoFlag(Game::DEMO_RADAR_ENABLED);
 		}
 	} else {
-		bool validItem = item >= OlimarData::ODII_BruteKnuckles && item < OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM;
+		bool validItem = item >= OlimarData::ODII_BruteKnuckles && item <= OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM;
 		GZASSERTLINE(validItem);
-		int data_idx = (item >> 3);
-		playData->mOlimarData->mFlags[1 - data_idx] &= 0 << (item - (data_idx << 3));
+		int data_idx = item < 8 ? 0 : 1;
+		playData->mOlimarData->mFlags[data_idx] &= ~(1 << (item - (data_idx * 8)));
 
 		if (item == OlimarData::ODII_PrototypeDetector) {
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_RADAR_ENABLED);

@@ -60,6 +60,7 @@ Warp::Warp()
 	warping_from_menu          = false;
 	needs_post_load_action     = false;
 	warping                    = false;
+	already_saved_generators   = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 	lockout_frames             = 0;
@@ -107,21 +108,6 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 
 	update_day_opt();
 	update_enter_type_opt();
-}
-
-WarpDestination Warp::current_dest()
-{
-	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
-	ID32 cave_id(game->getCaveID());
-	WarpDestination dest;
-
-	dest.area         = game->mCurrentCourseInfo->mCourseIndex;
-	dest.cave         = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
-	dest.sublevel     = game->mCurrentFloor;
-	dest.day          = Game::gameSystem->mTimeMgr->mDayCount;
-	dest.use_set_seed = false;
-
-	return dest;
 }
 
 void Warp::set_dest(WarpDestination new_dest)
@@ -249,8 +235,7 @@ void Warp::do_warp()
 
 	if (preset) {
 		preset->apply();
-		p2gz->preset_mgr->last_used_preset = preset;
-		needs_post_load_action             = true;
+		needs_post_load_action = true;
 	}
 
 	if (particle2dMgr) {
@@ -281,6 +266,8 @@ void Warp::do_warp()
 		skip_save_prompts_opt->set_selection(true);
 		p2gz->skip_save->toggle_save_skip(true);
 	}
+
+	already_saved_generators = false;
 
 	// TODO: This is obviously a dumb hack. Once we have more trainers, this should be refactored and handled by a trainer manager.
 	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
@@ -355,7 +342,7 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
 
 	// Save changes to world state if we're above-ground currently
-	if (in_above_ground_play()) {
+	if (in_above_ground_play() && !already_saved_generators) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -409,7 +396,7 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	}
 
 	// Save changes to world state if we're above-ground currently
-	if (in_above_ground_play()) {
+	if (in_above_ground_play() && !already_saved_generators) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 

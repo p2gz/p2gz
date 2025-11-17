@@ -1,10 +1,12 @@
 #ifndef _GZ_PRESET_H
 #define _GZ_PRESET_H
 
+#include <BitFlag.h>
 #include <IDelegate.h>
 #include <p2gz/gzCollections.h>
 #include <p2gz/gzmenu.h>
 #include <p2gz/warp.h>
+#include <p2gz/CutsceneToggle.h>
 #include <types.h>
 #include <Game/PikiContainer.h>
 #include <JSystem/J2D/J2DPrint.h>
@@ -18,7 +20,14 @@ enum PresetCategory { PoD, AT, General, Generated };
 
 enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
 
-enum GenSpawnOverride { PSO_Ignore, PSO_DontSpawn, PSO_Spawn };
+enum GenSpawnOverride { PSO_Ignore = 0, PSO_DontSpawn = 1, PSO_Spawn = 2, PSO_SpawnAndMove = 3 };
+
+enum CourseIndex { COURSE_VoR, COURSE_AW, COURSE_PP, COURSE_WW };
+
+struct TreasureAreaMap {
+	u8 id;
+	u8 course_idx;
+};
 
 struct Preset {
 	struct EnemyGenSpawnOverride {
@@ -40,11 +49,14 @@ struct Preset {
 		{
 			id             = 255;
 			spawn_override = PSO_Ignore;
+			position_override = Vector3f::zero;
 		}
 		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
+		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_);
 
 		u8 id;
 		GenSpawnOverride spawn_override;
+		Vector3f position_override; // only used if spawn_override is PSO_SpawnAndMove
 	};
 
 public:
@@ -80,12 +92,11 @@ public:
 	Game::PikiContainer onion_pikis;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
-	u16 upgrades; // bitflags
+	BitFlag<u16> upgrades;
 	u8 num_bitters;
 	u8 num_spicies;
 	f32 time;
-	u32 cutscene_flags1; // bitflags
-	u32 cutscene_flags2; // bitflags
+	CutscenesBitfield cutscenes;
 	Vec<const char*> destroyed_gates;
 	Vec<const char*> finished_bridges;
 	Vec<const char*> bags_flattened;
@@ -103,12 +114,12 @@ public:
 	PresetMgr();
 
 	Preset* create();
+	static void fill_current_pikis(Preset* preset);
 
 	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
 	Vec<Preset*> presets;
-	Preset* last_used_preset;
 };
 
 struct PresetMenuOption : public MenuOption {

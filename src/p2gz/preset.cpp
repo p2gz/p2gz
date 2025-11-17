@@ -11,6 +11,40 @@
 
 using namespace gz;
 
+static const TreasureAreaMap AG_treasure_IDs[] = {
+	{ 47, COURSE_VoR },  // fossilized ursidae
+	{ 62, COURSE_VoR },  // pink menace
+	{ 71, COURSE_VoR },  // unspeakable wonder
+	{ 73, COURSE_VoR },  // temporal mechanism
+	{ 87, COURSE_VoR },  // utter scrap
+	{ 142, COURSE_VoR }, // courage reactor
+	{ 157, COURSE_VoR }, // spiny alien treat
+
+	{ 11, COURSE_AW },  // geographic projection (NB: actually an item ID not treasure ID, but 11 is in SCx3 so it's fine)
+	{ 42, COURSE_AW },  // sunseed berry
+	{ 44, COURSE_AW },  // decorative goo
+	{ 130, COURSE_AW }, // pilgrim bulb
+	{ 155, COURSE_AW }, // chance totem
+	{ 173, COURSE_AW }, // healing cask/hypnotic platter/seat of enlightenment
+	{ 185, COURSE_AW }, // air brake
+
+	{ 53, COURSE_PP },  // onion replica
+	{ 72, COURSE_PP },  // aquatic mine
+	{ 77, COURSE_PP },  // impediment scourge/lightning bolt
+	{ 118, COURSE_PP }, // massage girdle
+	{ 140, COURSE_PP }, // optical illustration/abstract masterpiece/yell battery
+	{ 152, COURSE_PP }, // fortified delicacy
+	{ 172, COURSE_PP }, // gherkin gate
+
+	{ 27, COURSE_WW },  // armored nut
+	{ 45, COURSE_WW },  // anti-hiccup fungus
+	{ 50, COURSE_WW },  // conifer spire
+	{ 76, COURSE_WW },  // doomsday apparatus
+	{ 183, COURSE_WW }, // seed of greed
+};
+
+static const u8 AG_treasure_count = ARRAY_SIZE(AG_treasure_IDs);
+
 Preset::Preset(const char* name_, PresetCategory category_)
     : destroyed_gates(0)
     , finished_bridges(0)
@@ -26,9 +60,6 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	num_spicies      = 0;
 	time             = 7.0f;
 	plug_destroyed   = false;
-	upgrades         = 0;
-	cutscene_flags1  = 0;
-	cutscene_flags2  = 0;
 	day              = 5;
 
 	squad.clear();
@@ -52,8 +83,7 @@ Preset::Preset(Preset& other)
 	enter_kind       = PEK_FromCave;
 	plug_destroyed   = other.plug_destroyed;
 	upgrades         = other.upgrades;
-	cutscene_flags1  = other.cutscene_flags1;
-	cutscene_flags2  = other.cutscene_flags2;
+	cutscenes        = other.cutscenes;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -93,6 +123,14 @@ Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverr
 {
 	id             = id_;
 	spawn_override = spawn_override_;
+}
+
+Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_)
+{
+	GZASSERTLINE(spawn_override_ == PSO_SpawnAndMove); // Doesn't make sense to use this ctor otherwise
+	id                = id_;
+	spawn_override    = spawn_override_;
+	position_override = position_override_;
 }
 
 GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
@@ -150,13 +188,7 @@ Preset* Preset::set_time(f32 time_)
 Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
 	for (size_t i = 0; i < num_flags; i++) {
-		if (flags[i] < 32) {
-			const u32 bit = 1 << flags[i];
-			cutscene_flags1 |= bit;
-		} else {
-			const u32 bit = 1 << (flags[i] - 32);
-			cutscene_flags2 |= bit;
-		}
+		cutscenes.set_cutscene_played(flags[i]);
 	}
 	return this;
 }
@@ -165,7 +197,7 @@ Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex it
 {
 	for (size_t i = 0; i < num_upgrades; i++) {
 		const u16 bit = 1 << items[i];
-		upgrades |= bit;
+		upgrades.set(bit);
 	}
 	return this;
 }
@@ -290,27 +322,46 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
 	// Apply upgrades
-	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
-		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades & mask);
+		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades.isSet(mask));
 	}
 
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
 	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
-		bool flag_set = false;
-		if (i < 32) {
-			flag_set = cutscene_flags1 & (1 << i);
-		} else {
-			flag_set = cutscene_flags2 & (1 << (i - 32));
-		}
-		if (flag_set) {
-			const Game::DemoFlags flag      = static_cast<Game::DemoFlags>(i);
+		const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
+		if (cutscenes.cutscene_played(flag)) {
 			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
 			if (cutscene_toggle) {
 				cutscene_toggle->set_cutscene_flag(true);
 			}
 		}
+	}
+
+	// calc treasure counts for areas
+	u8 treasure_counts[4];
+	treasure_counts[COURSE_VoR] = treasure_counts[COURSE_AW] = treasure_counts[COURSE_PP] = treasure_counts[COURSE_WW] = 0;
+
+	for (int i = 0; i < treasure_spawn_overrides.len(); i++) {
+		// only interested in treasures we've "collected"
+		if (treasure_spawn_overrides[i].spawn_override != PSO_DontSpawn) {
+			continue;
+		}
+
+		int id = treasure_spawn_overrides[i].id;
+		for (u8 i = 0; i < AG_treasure_count; i++) {
+			if (AG_treasure_IDs[i].id == id) {
+				treasure_counts[AG_treasure_IDs[i].course_idx]++;
+				break;
+			}
+		}
+	}
+
+	// set treasure counts
+	for (int i = 0; i < 4; i++) {
+		Game::playData->mGroundOtakaraCollected[i]    = treasure_counts[i];
+		Game::playData->mGroundOtakaraCollectedOld[i] = treasure_counts[i];
 	}
 
 	p2gz->warp->set_enter_area_type(enter_kind);
@@ -357,8 +408,16 @@ void Preset::apply_post_load()
 			for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
 				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
 				if (oride.id == treasure_id) {
-					if (oride.spawn_override == PSO_Spawn && gen->mCreature == nullptr) {
-						gen->generate();
+					if (oride.spawn_override >= PSO_Spawn) {
+						if (!gen->mCreature) {
+							gen->generate();
+						}
+						GZASSERTLINE(gen->mCreature);
+						if (oride.spawn_override == PSO_SpawnAndMove) {
+							gen->mCreature->setPosition(oride.position_override, false);
+						} else {
+							gen->mCreature->setPosition(gen->mPosition, false);
+						}
 					} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
 						Game::PelletKillArg arg;
 						gen->mCreature->kill(&arg);

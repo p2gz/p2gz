@@ -11,6 +11,7 @@
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/TreasureDebugInfo.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
@@ -58,6 +59,7 @@ public:
 	gz::Warp* warp;
 	gz::SkippableCutscenes* skippable_cutscenes;
 	gz::EnemyDebugInfo* enemy_debug_info;
+	gz::TreasureDebugInfo* treasure_debug_info;
 	gz::GeneratorDebugInfo* generator_debug_info;
 	gz::DayEditor* day_editor;
 	gz::HeapBarToggle* heap_bar_toggle;
