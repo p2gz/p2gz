@@ -67,25 +67,25 @@ void EmpressTrainer::draw()
 	j2d.mGradientColor.set(WHITE);
 
 	int x = 160.0f;
-	j2d.print(x, 416.0f, "first damage frame: %d", first_damage_frame);
+	j2d.print(x, 340.0f, "first damage frame: %d", first_damage_frame);
 
-	x += j2d.print(x, 440.0f, "flick count: ");
+	x += j2d.print(x, 364.0f, "flick count: ");
 	bool success = last_flick_count >= 256 && last_flick_count <= 305;
 	j2d.mCharColor.set(success ? GREEN : RED);
 	j2d.mGradientColor.set(success ? GREEN : RED);
-	x += j2d.print(x, 440.0f, "%d", last_flick_count);
+	x += j2d.print(x, 364.0f, "%d", last_flick_count);
 
 	if (empress->getStateID() != Game::Queen::QUEEN_Sleep && Game::naviMgr->getActiveNavi()) {
 		if (!success) {
-			x += j2d.print(x, 440.0f, " (");
+			x += j2d.print(x, 364.0f, " (");
 			if (last_flick_count < 256) {
-				x += j2d.print(x, 440.0f, "-");
-				x += j2d.print(x, 440.0f, "%d", 256 - last_flick_count);
+				x += j2d.print(x, 364.0f, "-");
+				x += j2d.print(x, 364.0f, "%d", 256 - last_flick_count);
 			} else {
-				x += j2d.print(x, 440.0f, "+");
-				x += j2d.print(x, 440.0f, "%d", last_flick_count - 305);
+				x += j2d.print(x, 364.0f, "+");
+				x += j2d.print(x, 364.0f, "%d", last_flick_count - 305);
 			}
-			x += j2d.print(x, 440.0f, ")");
+			x += j2d.print(x, 364.0f, ")");
 		}
 	}
 }
