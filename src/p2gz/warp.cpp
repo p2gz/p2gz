@@ -269,7 +269,9 @@ void Warp::do_warp()
 
 	already_saved_generators = false;
 
-	p2gz->collision_viewer->handle_warp();
+	if (p2gz->collision_viewer->is_enabled()) {
+		p2gz->collision_viewer->handle_warp();
+	}
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
