@@ -926,13 +926,6 @@ bool System::beginFrame()
 {
 	mCpuRetraceCount = 0;
 	JUTGamePad::read();
-
-	// @P2GZ - main update and menu drawing
-	if (p2gz) {
-		p2gz->update();
-		p2gz->draw_2d();
-	}
-
 	mDvdStatus->update();
 }
 
@@ -942,6 +935,12 @@ bool System::beginFrame()
  */
 void System::endFrame()
 {
+	// @P2GZ - main update and menu drawing
+	if (p2gz) {
+		p2gz->update();
+		p2gz->draw_2d();
+	}
+
 	mDisplay->endFrame();
 	inactiveGP();
 	mResetMgr->update();
