@@ -3,7 +3,7 @@
 
 #include <Controller.h>
 #include <System.h>
-#include <p2gz/HelperInlines.h>
+#include <p2gz/Utility.h>
 
 namespace gz {
 
