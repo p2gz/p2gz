@@ -10,6 +10,7 @@ struct Piki;
 
 struct PikiContainer {
 	PikiContainer();
+	~PikiContainer(); // @P2GZ
 
 	virtual void read(Stream&);  // _00
 	virtual void write(Stream&); // _04

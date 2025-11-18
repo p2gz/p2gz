@@ -68,6 +68,20 @@ struct IDelegateR {
 	virtual R invoke() = 0; // _08
 };
 
+template <typename A>
+struct FreeBoundDelegate1 : public IDelegate {
+	inline FreeBoundDelegate1(void (*func_)(A), A arg1_)
+	{
+		func = func_;
+		arg1 = arg1_;
+	}
+
+	virtual void invoke() { (func)(arg1); }
+
+	A arg1;
+	void (*func)(A);
+};
+
 template <typename A, typename B>
 struct FreeBoundDelegate2 : public IDelegate {
 	inline FreeBoundDelegate2(void (*func_)(A, B), A arg1_, B arg2_)
@@ -82,6 +96,24 @@ struct FreeBoundDelegate2 : public IDelegate {
 	A arg1;
 	B arg2;
 	void (*func)(A, B);
+};
+
+template <typename A, typename B, typename C>
+struct FreeBoundDelegate3 : public IDelegate {
+	inline FreeBoundDelegate3(void (*func_)(A, B, C), A arg1_, B arg2_, C arg3_)
+	{
+		func = func_;
+		arg1 = arg1_;
+		arg2 = arg2_;
+		arg3 = arg3_;
+	}
+
+	virtual void invoke() { (func)(arg1, arg2, arg3); }
+
+	A arg1;
+	B arg2;
+	C arg3;
+	void (*func)(A, B, C);
 };
 
 /// A Delegate that can return an argument

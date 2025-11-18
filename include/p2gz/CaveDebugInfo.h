@@ -40,6 +40,8 @@ public:
 	void clear() { spawn_points.clear(); }
 
 private:
+	void do_draw_spawn_points();
+
 	bool draw_spawn_points;
 	Vec<SpawnPoint> spawn_points;
 };

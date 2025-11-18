@@ -7,6 +7,7 @@
 #include <GameFlow.h>
 #include <PikiAI.h>
 #include <Game/MoviePlayer.h>
+#include <Screen/Game2DMgr.h>
 
 namespace gz {
 
@@ -144,6 +145,22 @@ inline bool in_cave_play()
 		return false;
 	}
 	return true;
+}
+
+/// `in_cave_play` and player currently has control (not in a loading screen or demo)
+inline bool in_cave_gameplay()
+{
+	if (!in_cave_play()) {
+		return false;
+	}
+
+	return Game::moviePlayer->mDemoState == Game::DEMOSTATE_Inactive;
+}
+
+/// Either `in_cave_gameplay` or `in_above_ground_gameplay`
+inline bool in_gameplay()
+{
+	return in_cave_gameplay() || in_above_ground_gameplay();
 }
 
 inline bool in_day_end_sunset()

@@ -49,7 +49,7 @@ struct RingBuffer {
 	T getLast()
 	{
 		GZASSERTLINE(mLen == N);
-		return peekN(N);
+		return peekN(N - 1);
 	}
 
 private:
