@@ -51,6 +51,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
     , bags_flattened(0)
     , enemy_spawn_overrides(0)
     , treasure_spawn_overrides(0)
+    , sprouts(0)
 {
 	name             = name_;
 	category         = category_;
@@ -111,6 +112,18 @@ Preset::Preset(Preset& other)
 	for (size_t i = 0; i < other.treasure_spawn_overrides.len(); i++) {
 		treasure_spawn_overrides.push(other.treasure_spawn_overrides[i]);
 	}
+
+	sprouts.expandCapacityTo(other.sprouts.len());
+	for (size_t i = 0; i < other.sprouts.len(); i++) {
+		sprouts.push(other.sprouts[i]);
+	}
+}
+
+Preset::Sprout::Sprout(Vector3f pos_, u8 stage, u8 kind, u8 amount_ = 0)
+{
+	pos            = pos_;
+	amount         = amount_;
+	stage_and_kind = ((stage & 0x0F) << 4) | (kind & 0x0F);
 }
 
 Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
@@ -169,6 +182,12 @@ Preset* Preset::set_pikmin(int stage, int color, int amount)
 Preset* Preset::set_onion_pikmin(int stage, int color, int amount)
 {
 	onion_pikis.getCount(color, stage) = amount;
+	return this;
+}
+
+Preset* Preset::set_sprouts(size_t num_sprouts, Sprout sprouts[])
+{
+	// TODO
 	return this;
 }
 

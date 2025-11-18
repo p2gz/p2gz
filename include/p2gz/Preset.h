@@ -57,6 +57,28 @@ struct Preset {
 		Vector3f position_override; // only used if spawn_override is PSO_SpawnAndMove
 	};
 
+	struct Sprout {
+	public:
+		Sprout()
+		{
+			pos            = Vector3f::zero;
+			stage_and_kind = 0;
+			amount         = 0;
+		}
+		Sprout(Vector3f pos_, u8 stage, u8 kind, u8 amount_ = 0);
+
+		inline u8 get_stage() { return (stage_and_kind & 0xF0) >> 4; }
+		inline u8 get_kind() { return stage_and_kind & 0x0F; }
+
+		Vector3f pos;
+		/// 0  -> single sprout in a fixed location
+		/// >0 -> n sprouts randomly distributed around an onion
+		u8 amount;
+
+	private:
+		u8 stage_and_kind; // 4bit:stage + 4bit:kind
+	};
+
 public:
 	Preset(const char* name_, PresetCategory category_);
 	Preset(Preset& other);
@@ -70,6 +92,7 @@ public:
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
+	Preset* set_sprouts(size_t num_sprouts, Sprout sprouts[]);
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
 	Preset* set_time(f32 time_);
 	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
@@ -90,6 +113,7 @@ public:
 	const char* name;
 	Game::PikiContainer squad;
 	Game::PikiContainer onion_pikis;
+	Vec<Sprout> sprouts;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
 	BitFlag<u16> upgrades;
