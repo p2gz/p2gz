@@ -4,10 +4,12 @@
 #include <p2gz/BoundDelegate.h>
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
+#include <Game/Entities/ItemPikihead.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
 #include <Game/Entities/PelletOtakara.h>
+#include <Dolphin/rand.h>
 
 using namespace gz;
 
@@ -119,7 +121,7 @@ Preset::Preset(Preset& other)
 	}
 }
 
-Preset::Sprout::Sprout(Vector3f pos_, u8 stage, u8 kind, u8 amount_ = 0)
+Preset::Sprout::Sprout(Vector3f pos_, u8 stage, u8 kind, u8 amount_)
 {
 	pos            = pos_;
 	amount         = amount_;
@@ -185,9 +187,12 @@ Preset* Preset::set_onion_pikmin(int stage, int color, int amount)
 	return this;
 }
 
-Preset* Preset::set_sprouts(size_t num_sprouts, Sprout sprouts[])
+Preset* Preset::set_sprouts(uint num_sprouts, Sprout sprouts_[])
 {
-	// TODO
+	sprouts.expandCapacityTo(num_sprouts);
+	for (uint i = 0; i < num_sprouts; i++) {
+		sprouts.push(sprouts_[i]);
+	}
 	return this;
 }
 
@@ -206,15 +211,15 @@ Preset* Preset::set_time(f32 time_)
 	return this;
 }
 
-Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
+Preset* Preset::set_cutscene_flags(uint num_flags, Game::DemoFlags flags[])
 {
-	for (size_t i = 0; i < num_flags; i++) {
+	for (uint i = 0; i < num_flags; i++) {
 		cutscenes.set_cutscene_played(flags[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIndex flags[])
+Preset* Preset::set_ek_cutscene_flags(uint num_flags, Game::OlimarData::ItemIndex flags[])
 {
 	for (size_t i = 0; i < num_flags; i++) {
 		const u16 bit = 1 << flags[i];
@@ -223,7 +228,7 @@ Preset* Preset::set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIn
 	return this;
 }
 
-Preset* Preset::set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[])
+Preset* Preset::set_cave_cutscene_flags(uint num_flags, CaveIndex flags[])
 {
 	for (size_t i = 0; i < num_flags; i++) {
 		const u16 bit = 1 << flags[i];
@@ -232,39 +237,39 @@ Preset* Preset::set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[])
 	return this;
 }
 
-Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
+Preset* Preset::set_upgrades(uint num_upgrades, Game::OlimarData::ItemIndex items[])
 {
-	for (size_t i = 0; i < num_upgrades; i++) {
+	for (uint i = 0; i < num_upgrades; i++) {
 		const u16 bit = 1 << items[i];
 		upgrades.set(bit);
 	}
 	return this;
 }
 
-Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
+Preset* Preset::set_destroyed_gates(uint num_gates, const char* gates[])
 {
 	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
-	for (size_t i = 0; i < num_gates; i++) {
+	for (uint i = 0; i < num_gates; i++) {
 		GZASSERTLINE(gates[i]);
 		destroyed_gates.push(gates[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_finished_bridges(size_t num_bridges, const char* bridges[])
+Preset* Preset::set_finished_bridges(uint num_bridges, const char* bridges[])
 {
 	finished_bridges.expandCapacityTo(finished_bridges.len() + num_bridges);
-	for (size_t i = 0; i < num_bridges; i++) {
+	for (uint i = 0; i < num_bridges; i++) {
 		GZASSERTLINE(bridges[i]);
 		finished_bridges.push(bridges[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_bags_flattened(size_t num_bags, const char* bags[])
+Preset* Preset::set_bags_flattened(uint num_bags, const char* bags[])
 {
 	bags_flattened.expandCapacityTo(bags_flattened.len() + num_bags);
-	for (size_t i = 0; i < num_bags; i++) {
+	for (uint i = 0; i < num_bags; i++) {
 		GZASSERTLINE(bags[i]);
 		bags_flattened.push(bags[i]);
 	}
@@ -313,11 +318,18 @@ Preset* Preset::set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawn
 	return this;
 }
 
+Game::ItemPikihead::Item* birth_sprout(u8 kind, u8 stage)
+{
+	Game::ItemPikihead::Item* new_sprout = Game::ItemPikihead::mgr->birth();
+	GZASSERTLINE(new_sprout);
+
+	Game::ItemPikihead::InitArg new_sprout_arg(static_cast<Game::EPikiKind>(kind), Vector3f::zero, true, stage, 0.0f);
+	new_sprout->init(&new_sprout_arg);
+	return new_sprout;
+}
+
 void Preset::apply()
 {
-	// TODO: is this necessary?
-	// GameStat::mePikis.clear(); // clear sprouts
-
 	if (Game::naviMgr && Game::naviMgr->mArray) {
 		for (int i = 0; i < 2; i++) {
 			Game::Navi* navi = Game::naviMgr->getAt(i);
@@ -449,6 +461,26 @@ void Preset::apply_post_load()
 	}
 	if (plug_destroyed) {
 		p2gz->structure_editor->set_plug_destroyed(true);
+	}
+
+	// Apply sprouts
+	if (!Game::playData->mCaveSaveData.mIsInCave) {
+		for (uint i = 0; i < sprouts.len(); i++) {
+			Sprout sprout = sprouts[i];
+			if (sprout.amount == 0) {
+				Game::ItemPikihead::Item* new_sprout = birth_sprout(sprout.get_kind(), sprout.get_stage());
+				new_sprout->setPosition(sprout.pos, false);
+			} else {
+				// randomly disperse around the base of an onion
+				static const f32 ONION_DIST = 65.8767f; // Determined by printing in ItemPikihead::BuryState::init
+				for (uint num_sprouts = 0; num_sprouts < sprout.amount; num_sprouts++) {
+					Game::ItemPikihead::Item* new_sprout = birth_sprout(sprout.get_kind(), sprout.get_stage());
+					const f32 angle                      = randFloat() * TAU;
+					Vector3f sprout_pos                  = sprout.pos + Vector3f(sinf(angle) * ONION_DIST, 0.0f, cosf(angle) * ONION_DIST);
+					new_sprout->setPosition(sprout_pos, false);
+				}
+			}
+		}
 	}
 
 	// Force spawn or despawn treasures

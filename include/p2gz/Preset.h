@@ -92,16 +92,16 @@ public:
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
-	Preset* set_sprouts(size_t num_sprouts, Sprout sprouts[]);
+	Preset* set_sprouts(uint num_sprouts, Sprout sprouts_[]);
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
 	Preset* set_time(f32 time_);
-	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
-	Preset* set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIndex flags[]);
-	Preset* set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[]);
-	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
-	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
-	Preset* set_finished_bridges(size_t num_bridges, const char* bridges[]);
-	Preset* set_bags_flattened(size_t num_bags, const char* bags[]);
+	Preset* set_cutscene_flags(uint num_flags, Game::DemoFlags flags[]);
+	Preset* set_ek_cutscene_flags(uint num_flags, Game::OlimarData::ItemIndex flags[]);
+	Preset* set_cave_cutscene_flags(uint num_flags, CaveIndex flags[]);
+	Preset* set_upgrades(uint num_upgrades, Game::OlimarData::ItemIndex items[]);
+	Preset* set_destroyed_gates(uint num_gates, const char* gates[]);
+	Preset* set_finished_bridges(uint num_bridges, const char* bridges[]);
+	Preset* set_bags_flattened(uint num_bags, const char* bags[]);
 	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
