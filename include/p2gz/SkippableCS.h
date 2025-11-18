@@ -9,9 +9,9 @@ struct MovieConfig;
 
 namespace gz {
 
-struct SkippableTreasureCS {
+struct SkippableCutscenes {
 public:
-	SkippableTreasureCS()
+	SkippableCutscenes()
 	    : enabled(true)
 	    , is_treasure_collected(false)
 	    , start_press_reason(nullptr)
@@ -19,6 +19,7 @@ public:
 	}
 
 	void toggle_skippable(bool enabled_) { enabled = enabled_; }
+	bool is_skippable() { return enabled; }
 
 	// if we're in the right cutscene and we're skipping, make the treasure force collect
 	void force_collect(Game::Creature* cutscene_target);

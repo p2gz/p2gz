@@ -23,8 +23,6 @@ struct DecimalKeypad;
 /// Base class for selectable menu options. Override `on_selected` in subclasses
 /// to give them unique behavior.
 struct MenuOption {
-	virtual MenuLayer* get_sub_menu() { return nullptr; }
-
 public:
 	MenuOption(const char* title_, const char* image_name_ = nullptr, bool image_only_ = false)
 	    : title(title_)
@@ -33,29 +31,30 @@ public:
 	    , visible(true)
 	{
 	}
+	virtual ~MenuOption() { }
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update() { }
-	virtual void select() = 0;
-	virtual bool is_range_option() { return false; }
-	void set_editing_in_grid(bool editing) { editing_in_grid = editing; }
+	virtual bool select() = 0;
+	virtual MenuLayer* get_sub_menu() { return nullptr; }
 
 	const char* title;
 	bool visible;
 	const char* image_name;
 	bool image_only;
-	bool editing_in_grid;
 };
 
 struct OpenSubMenuOption : public MenuOption {
-	virtual MenuLayer* get_sub_menu() { return sub_menu; }
-
-	MenuLayer* sub_menu;
-
 public:
 	OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_);
+	~OpenSubMenuOption();
 
-	virtual void select();
+	virtual bool select();
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
+	virtual MenuLayer* get_sub_menu() { return sub_menu; }
+
+private:
+	MenuLayer* sub_menu;
 };
 
 struct PerformActionMenuOption : public MenuOption {
@@ -65,12 +64,17 @@ public:
 	    , on_selected(on_selected_)
 	{
 	}
+	~PerformActionMenuOption();
 
-	virtual void select()
+	virtual bool select()
 	{
-		if (on_selected)
+		if (on_selected) {
 			on_selected->invoke();
+		}
+		return false;
 	}
+
+	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 
 private:
 	IDelegate* on_selected;
@@ -85,15 +89,17 @@ public:
 	    , on_selected(on_selected_)
 	{
 	}
+	~ToggleMenuOption();
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 
-	virtual void select()
+	virtual bool select()
 	{
 		on = !on;
 		if (on_selected) {
 			on_selected->invoke(on);
 		}
+		return false;
 	}
 
 	void set_selection(bool selected) { on = selected; }
@@ -111,10 +117,11 @@ public:
 	    , selected_idx(0)
 	{
 	}
+	~RadioMenuOption();
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
-	virtual void select();
+	virtual bool select();
 
 	void set_selection(size_t idx) { selected_idx = idx; }
 
@@ -139,10 +146,11 @@ public:
 	    , overflow_behavior(overflow_behavior_)
 	{
 	}
+	~RangeMenuOption();
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
-	virtual void select();
+	virtual bool select();
 	virtual bool is_range_option() { return true; }
 
 	s32 get_selection() { return selected_val; }
@@ -170,10 +178,11 @@ public:
 	    , max(max_)
 	{
 	}
+	~FloatRangeMenuOption();
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update();
-	virtual void select();
+	virtual bool select();
 	virtual bool is_range_option() { return true; }
 
 	void set_selection(f32 val) { selected_val = val; }
@@ -193,11 +202,12 @@ struct HexInputOption : public MenuOption {
 public:
 	HexInputOption(const char* title_, const char* value_if_unselected_, IDelegate1<u32>* on_selected, IDelegate* on_unselected,
 	               const char* image_name_ = nullptr, bool image_only_ = false);
+	~HexInputOption();
 
 	virtual MenuLayer* get_sub_menu();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update() { }
-	virtual void select();
+	virtual bool select();
 
 	bool is_selected();
 	u32 get_selected_val();
@@ -210,12 +220,14 @@ private:
 
 struct DecimalInputOption : public MenuOption {
 public:
-	DecimalInputOption(const char* title_, const char* image_name_ = nullptr, bool image_only_ = false);
+	DecimalInputOption(const char* title_, IDelegate1<u32>* on_selected, IDelegate* on_opened = nullptr, const char* image_name_ = nullptr,
+	                   bool image_only_ = false);
+	~DecimalInputOption();
 
 	virtual MenuLayer* get_sub_menu();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update() { }
-	virtual void select();
+	virtual bool select();
 
 	bool is_selected();
 	u32 get_selected_val();
@@ -223,12 +235,14 @@ public:
 
 private:
 	DecimalKeypad* keypad;
+	IDelegate* sync_value;
 };
 
 /// Base class for different types of menus
 struct MenuLayer {
 public:
 	MenuLayer(IDelegate* on_opened_ = nullptr) { on_opened = on_opened_; }
+	virtual ~MenuLayer();
 
 	virtual void update()                            = 0;
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
@@ -255,6 +269,8 @@ public:
 		selected = 0;
 		scroll   = 0;
 	}
+
+	~ListMenu();
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -299,8 +315,9 @@ public:
 	    , pah_right(Controller::PRESS_DPAD_RIGHT)
 	{
 		options.push(new Vec<MenuOption*>);
-		editing_range = false;
+		editing_option = false;
 	}
+	~GridMenu();
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -314,40 +331,28 @@ public:
 
 	MenuOption* cur_option() { return (*options[selected_row])[selected_col]; }
 
-	GridMenu* push_to_row(MenuOption* option)
-	{
-		options[selected_row]->push(option);
-		MenuLayer* sub_menu = option->get_sub_menu();
-		if (sub_menu) {
-			sub_menu->parent = this;
-		}
-		return this;
-	}
-
-	GridMenu* end_row()
-	{
-		selected_row += 1;
-		options.push(new Vec<MenuOption*>);
-		return this;
-	}
+	GridMenu* push_to_row(MenuOption* option);
+	GridMenu* end_row();
 
 	Vec<Vec<MenuOption*>*> options;
 	size_t selected_row;
 	size_t selected_col;
 	f32 opt_width;
 	f32 opt_height;
-	bool editing_range;
 
 private:
 	PressAndHold pah_up;
 	PressAndHold pah_down;
 	PressAndHold pah_left;
 	PressAndHold pah_right;
+
+	bool editing_option;
 };
 
 struct HexKeypad : public MenuLayer {
 public:
 	HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u32>* on_selected_, IDelegate* on_unselected_);
+	~HexKeypad();
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -382,7 +387,8 @@ private:
 
 struct DecimalKeypad : public MenuLayer {
 public:
-	DecimalKeypad(const char* title_);
+	DecimalKeypad(const char* title_, IDelegate1<u32>* on_selected_, IDelegate* on_opened_ = nullptr);
+	~DecimalKeypad();
 
 	virtual void update();
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z);
@@ -393,7 +399,13 @@ public:
 	}
 
 	u32 get_value() { return value; }
-	void set_value(u32 value_) { value = value_; }
+	void set_value(u32 value_)
+	{
+		value = value_;
+		if (on_selected) {
+			on_selected->invoke(value);
+		}
+	}
 
 	bool is_unselected;
 
@@ -405,6 +417,24 @@ private:
 	GridMenu* keypad;
 	u32 value;
 	u8 cur_digit;
+	IDelegate1<u32>* on_selected;
+};
+
+struct BottomControlsDisplay {
+public:
+	BottomControlsDisplay()
+	{
+		x      = 16.0f;
+		z      = 430.0f;
+		margin = 8.0f;
+	}
+
+	void draw_ctrl(J2DPrint& j2d, Controller::EButton button, const char* action);
+	void reset() { x = 16.0f; }
+
+	f32 x;
+	f32 z;
+	f32 margin;
 };
 
 struct GZMenu {
@@ -419,7 +449,7 @@ public:
 	void open();
 	void close();
 	bool is_open() { return enabled; }
-	bool is_lock() { return lock; }
+	bool is_root_open() { return enabled && layer == root_layer; }
 
 	// Called when navigating to a new page to disable inputs for 1 frame to prevent accidentally activating other stuff in submenus
 	// immediately
@@ -435,6 +465,8 @@ public:
 
 	/// Opens the menu to the specified absolute path.
 	void navigate_to(const char* path);
+
+	void draw_control(J2DPrint& j2d, Controller::EButton button, const char* action) { controls.draw_ctrl(j2d, button, action); }
 
 	/// Call in `update()` in menu options that use Dpad L to prevent
 	/// accidentally closing the menu
@@ -511,6 +543,7 @@ private:
 
 	DoublePress open_close_action;
 	ListMenu* root_layer;
+	BottomControlsDisplay controls;
 
 	// menu state
 	bool enabled;

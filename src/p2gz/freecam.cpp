@@ -6,6 +6,8 @@
 #include <og/Sound.h>
 #include <Game/MapMgr.h>
 #include <Game/PikiMgr.h>
+#include <P2JME/P2JME.h>
+#include <PikiAI.h>
 
 using namespace gz;
 
@@ -48,7 +50,7 @@ void FreeCam::enable()
 }
 
 // Disable freecam on the active Navi's camera.
-void FreeCam::disable()
+void FreeCam::disable(bool doUnpause)
 {
 	if (!enabled)
 		return;
@@ -58,7 +60,9 @@ void FreeCam::disable()
 		p2gz->timer->set_freecam_mode(false);
 	}
 	enabled = false;
-	Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
+
+	if (doUnpause)
+		Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
 
 	camera->mGoalPosition -= Vector3f(0, zoom, 0);
 	camera->mGoalVerticalAngle                       = PI / 8;
@@ -70,8 +74,23 @@ void FreeCam::disable()
 
 	navi   = nullptr;
 	camera = nullptr;
+}
 
-	og::ogSound->setCancel();
+void draw_controls()
+{
+	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
+	j2d.initiate();
+	j2d.mGlyphWidth  = p2gz->menu->glyph_width;
+	j2d.mGlyphHeight = p2gz->menu->glyph_height;
+
+	BottomControlsDisplay controls;
+	controls.draw_ctrl(j2d, Controller::PRESS_A, "teleport");
+	controls.draw_ctrl(j2d, Controller::PRESS_B, "close");
+	if (p2gz->treasure_editor->is_enabled()) {
+		controls.draw_ctrl(j2d, Controller::PRESS_X, "snap to waypoint");
+	} else {
+		controls.draw_ctrl(j2d, Controller::PRESS_Y, "switch captain");
+	}
 }
 
 // Perform all updates to the freecam based on the controller inputs on this frame.
@@ -84,24 +103,56 @@ void FreeCam::update()
 	if (navi == nullptr) {
 		return;
 	}
+
+	draw_controls();
+
 	camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
 
 	update_position();
 	update_zoom();
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_A) {
-		warp_to_current_position();
+		if (p2gz->treasure_editor->is_enabled()) {
+			p2gz->menu->navigate_to("level/treasures");
+			og::ogSound->setDecide();
+			p2gz->treasure_editor->disable();
+			p2gz->waypoint_viewer->toggle(false);
+			disable(true);
+		} else {
+			warp_to_current_position();
+			Game::gameSystem->setPause(false, FREECAM_PAUSE_IDENTIFIER, 3);
+		}
 		return;
 	}
 
 	if (navi->mController1->getButtonDown() & Controller::PRESS_B) {
-		if (!p2gz->menu->is_open()) {
-			p2gz->menu->navigate_to("tools/freecam");
-		}
 		// we're still in the menu, so don't unpause the timer
 		p2gz->timer->set_freecam_mode(false);
 
-		disable();
+		// Don't unpause the game when we exit freecam by cancelling
+		disable(false);
+
+		// Open back up the p2gz menu; this needs to be done LAST so that way we disable freecam mode first
+		// Otherwise, p2gz menu won't open since it still thinks we're in freecam mode
+		if (!p2gz->menu->is_open()) {
+			if (p2gz->treasure_editor->is_enabled()) {
+				p2gz->menu->navigate_to("level/treasures");
+				p2gz->treasure_editor->reset_active_treasure();
+				p2gz->treasure_editor->disable();
+				p2gz->waypoint_viewer->toggle(false);
+			} else {
+				p2gz->menu->navigate_to("tools/freecam");
+			}
+		}
+		og::ogSound->setCancel();
+		return;
+	}
+
+	if (navi->mController1->getButtonDown() & Controller::PRESS_X && p2gz->treasure_editor->is_enabled()) {
+		p2gz->treasure_editor->snap_to_nearest_waypoint();
+		minZoom = p2gz->treasure_editor->get_active_treasure()->getPosition().y;
+		zoom    = minZoom + INITIAL_ZOOM_OFFSET;
+		maxZoom = zoom + MAX_ZOOM_OFFSET;
 		return;
 	}
 
@@ -164,12 +215,12 @@ void FreeCam::warp_to_current_position()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mNavi == navi) {
+		if (piki->mNavi == navi && !is_working(piki)) {
 			piki->setPosition(naviPos, false);
 		}
 	}
 
-	disable();
+	disable(true);
 
 	og::ogSound->setDecide();
 }
@@ -219,6 +270,13 @@ void FreeCam::update_position()
 	Vector3f goalPosition(camera->mGoalPosition.x + result.x * speed, camera->mGoalPosition.y, camera->mGoalPosition.z + result.z * speed);
 	if (Game::mapMgr->getMinY(goalPosition) > OUT_OF_BOUNDS_MIN_Y) {
 		camera->mGoalPosition = goalPosition;
+
+		if (p2gz->treasure_editor->is_enabled()) {
+			Game::Pellet* active_treasure = p2gz->treasure_editor->get_active_treasure();
+			f32 y                         = Game::mapMgr->getMinY(goalPosition) + (active_treasure->getCylinderHeight() * 0.5f);
+			Vector3f treasurePos          = Vector3f(goalPosition.x, y, goalPosition.z);
+			active_treasure->setPosition(treasurePos, false);
+		}
 	}
 }
 
@@ -247,6 +305,11 @@ void FreeCam::draw()
 	if (!enabled) {
 		return;
 	}
+
+	if (p2gz->treasure_editor->is_enabled()) {
+		return;
+	}
+
 	draw_current_position();
 }
 

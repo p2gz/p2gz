@@ -24,6 +24,10 @@
 
 using namespace gz;
 
+#define COLOR(color)           \
+	j2d.mCharColor.set(color); \
+	j2d.mGradientColor.set(color)
+
 GZMenu::GZMenu()
     : open_close_action(DoublePress(Controller::PRESS_DPAD_LEFT, 15))
     , enabled(false)
@@ -38,8 +42,8 @@ GZMenu::GZMenu()
 	line_height               = 22.0f;
 
 	color_std         = JUtility::TColor(255, 255, 255, 255);
-	color_highlight   = JUtility::TColor(255, 40, 40, 255);
-	color_breadcrumbs = JUtility::TColor(226, 192, 116, 255);
+	color_highlight   = JUtility::TColor(232, 40, 40, 255);
+	color_breadcrumbs = JUtility::TColor(247, 197, 86, 255);
 }
 
 void GZMenu::init_menu()
@@ -47,16 +51,18 @@ void GZMenu::init_menu()
 	// clang-format off
 	// Structure of GZ menu defined here:
     root_layer = (new ListMenu())
-		->push(new OpenSubMenuOption("warp", (new ListMenu())
+		->push(new OpenSubMenuOption("warp", (new ListMenu(new Delegate<Warp>(p2gz->warp, &Warp::sync)))
 			->push(new RadioMenuOption("area", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_area)))
 			->push(new RadioMenuOption("cave", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_cave)))
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
 			->push(new HexInputOption("seed", "random", new Delegate1<Warp, u32>(p2gz->warp, &Warp::set_seed), new Delegate<Warp>(p2gz->warp, &Warp::set_random_seed)))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
-			->push(new RangeMenuOption("day", 1, 99, 3, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
+			->push(new RadioMenuOption("captain", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_active_captain)))
+			->push(new RangeMenuOption("day", 1, 99, 5, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PresetMenuOption(new Delegate2<Warp, Preset*, int>(p2gz->warp, &Warp::set_preset)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
 		))
+		->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
 			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f))
 				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_leaf", true))
@@ -84,42 +90,41 @@ void GZMenu::init_menu()
 				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_flower", true))
 			))
 		))
-		->push(new OpenSubMenuOption("items", (new ListMenu())
-			->push(new DecimalInputOption("pokos"))
-			->push(new OpenSubMenuOption("sprays", (new ListMenu())
+		->push(new OpenSubMenuOption("trainers", (new ListMenu())
+			->push(new PerformActionMenuOption("fast empress", new Delegate<EmpressTrainer>(p2gz->empress_trainer, &EmpressTrainer::start)))
+		))
+		->push(new OpenSubMenuOption("captain", (new ListMenu())
+			->push(new DecimalInputOption("pokos", new Delegate1<PokoEditor, u32>(p2gz->poko_editor, &PokoEditor::set_pokos), new Delegate<PokoEditor>(p2gz->poko_editor, &PokoEditor::sync)))
+			->push(new OpenSubMenuOption("sprays", (new ListMenu(new Delegate<SprayEditor>(p2gz->spray_editor, &SprayEditor::sync)))
 				->push(new RangeMenuOption("bitters", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_bitters)))
 				->push(new RangeMenuOption("spicies", 0, 99, 0, RangeMenuOption::WRAP, new Delegate1<SprayEditor, s32>(p2gz->spray_editor, &SprayEditor::set_spicies)))
 				->push(new ToggleMenuOption("bitters unlocked", true, new Delegate1<SprayEditor, bool>(p2gz->spray_editor, &SprayEditor::toggle_bitters)))
 				->push(new ToggleMenuOption("spicies unlocked", true, new Delegate1<SprayEditor, bool>(p2gz->spray_editor, &SprayEditor::toggle_spicies)))
 			))
 			->push(new OpenSubMenuOption("upgrades", new ListMenu(new Delegate<EKEditor>(p2gz->ek_editor, &EKEditor::check_upgrades))))
-		))
-        ->push(new OpenSubMenuOption("captain", (new ListMenu(new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::sync)))
 			->push(new ToggleMenuOption("boing mode", false, new Delegate1<NaviTools, bool>(p2gz->navi_tools, &NaviTools::set_boing_mode)))
-			->push(new FloatRangeMenuOption("health", 0.1f, 50.0f, 50.0f, new Delegate1<NaviTools, f32>(p2gz->navi_tools, &NaviTools::set_active_navi_hp)))
-            ->push(new PerformActionMenuOption("kill", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
-        ))
-		->push(new OpenSubMenuOption("map", (new ListMenu())
-			->push(new OpenSubMenuOption("structures", (new ListMenu())
-				->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
-				->push(new ToggleMenuOption("show gate debug info", false,
-	                         new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
-			))
-			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
-			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
-			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
+			->push(new FloatRangeMenuOption("captain health", 0.1f, 50.0f, 50.0f, new Delegate1<NaviTools, f32>(p2gz->navi_tools, &NaviTools::set_active_navi_hp)))
+            ->push(new PerformActionMenuOption("kill captain", new Delegate<NaviTools>(p2gz->navi_tools, &NaviTools::kill)))
 		))
-		->push(new OpenSubMenuOption("settings", (new ListMenu())
-            ->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
-            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
-            ->push(new ToggleMenuOption("skippable treasure cutscenes", true, new Delegate1<SkippableTreasureCS, bool>(p2gz->skippable_treasure_cutscenes, &SkippableTreasureCS::toggle_skippable)))
-            ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
-			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
-        ))
-		->push(new OpenSubMenuOption("tools", (new ListMenu())
-			->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
+
+		// Options that edit the current level state
+		->push(new OpenSubMenuOption("level", (new ListMenu())
+			->push(new OpenSubMenuOption("treasures", (new ListMenu(new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::sync)))))
+			->push(new RadioMenuOption("treasure region", new Delegate1<Localization, size_t>(p2gz->localization_op, &Localization::set_treasure_region)))
+			->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("bridges", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bridges))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("plugs", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_plugs))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("bags", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bags))))) // Will be populated dynamically by StructureEditor
+			->push(new OpenSubMenuOption("time of day", (new ListMenu(new Delegate<DayEditor>(p2gz->day_editor, &DayEditor::sync)))
+				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
+				->push(new FloatRangeMenuOption("current time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
+			))
+		))
+		->push(new OpenSubMenuOption("cutscenes", (new ListMenu()) /* Submenus get added in CutsceneMgr::init */))
+
+		// All viewers for any kind of debug info should go here
+		->push(new OpenSubMenuOption("debug info", (new ListMenu())
 			->push(new ToggleMenuOption("dismiss positions", false, new Delegate1<DismissPositions, bool>(p2gz->dismiss_positions, &DismissPositions::toggle)))
-			->push(new ToggleMenuOption("toggle heap bar", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 			->push(new OpenSubMenuOption("enemy debug info", (new ListMenu())
 				->push(new ToggleMenuOption("enable", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_enabled)))
 				->push(new OpenSubMenuOption("display settings", (new ListMenu())
@@ -130,22 +135,33 @@ void GZMenu::init_menu()
 				->push(new ToggleMenuOption("draw current state", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_cur_state_enabled)))
 				->push(new ToggleMenuOption("draw flick count", true, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_flick_count_enabled)))
 				->push(new ToggleMenuOption("draw position", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_position_enabled)))
+				->push(new ToggleMenuOption("draw collision", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_collision_enabled)))
 				->push(new ToggleMenuOption("draw timers", false, new Delegate1<EnemyDebugInfo, bool>(p2gz->enemy_debug_info, &EnemyDebugInfo::set_draw_timers_enabled)))
 			))
-			->push(new OpenSubMenuOption("time controls", (new ListMenu())
-				->push(new ToggleMenuOption("pause time", false, new Delegate1<DayEditor, bool>(p2gz->day_editor, &DayEditor::set_time_paused)))
-				->push(new FloatRangeMenuOption("time", 7.0, 19.0, 7.0, new Delegate1<DayEditor, f32>(p2gz->day_editor, &DayEditor::set_time)))
-			))
+			->push(new ToggleMenuOption("treasure debug info", false, new Delegate1<TreasureDebugInfo, bool>(p2gz->treasure_debug_info, &TreasureDebugInfo::set_enabled)))
+			->push(new ToggleMenuOption("generator debug info", false, new Delegate1<GeneratorDebugInfo, bool>(p2gz->generator_debug_info, &GeneratorDebugInfo::set_enabled)))
+			->push(new ToggleMenuOption("collision viewer", false, new Delegate1<CollisionViewer, bool>(p2gz->collision_viewer, &CollisionViewer::toggle)))
+			->push(new ToggleMenuOption("waypoint viewer", false, new Delegate1<WaypointViewer, bool>(p2gz->waypoint_viewer, &WaypointViewer::toggle)))
+			->push(new ToggleMenuOption("spawn point viewer", false, new Delegate1<CaveDebugInfo, bool>(p2gz->cave_debug_info, &CaveDebugInfo::set_draw_spawn_points)))
+			->push(new ToggleMenuOption("gate debug info", false, new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_gate_debug)))
+			->push(new ToggleMenuOption("bridge debug info", false, new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_bridge_debug)))
+			->push(new ToggleMenuOption("plug debug info", false, new Delegate1<StructureEditor, bool>(p2gz->structure_editor, &StructureEditor::set_enabled_plug_debug)))
+			->push(new ToggleMenuOption("heap memory usage", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu(new Delegate<Timer>(p2gz->timer, &Timer::sync)))
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
 		))
-		// Cutscene re-enable menu
-		->push(new OpenSubMenuOption("cutscenes", (new ListMenu())
-			// Submenus get added in CutsceneMgr::init
-		));
+
+		// General game behaviors and options for how the gz menu looks and behaves
+		->push(new OpenSubMenuOption("settings", (new ListMenu())
+            ->push(new ToggleMenuOption("skippable cutscenes", true, new Delegate1<SkippableCutscenes, bool>(p2gz->skippable_cutscenes, &SkippableCutscenes::toggle_skippable)))
+            ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
+			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
+			->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
+            ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
+        ));
 	// clang-format on
 
 	layer = root_layer;
@@ -232,6 +248,10 @@ void GZMenu::open()
 	if (enabled)
 		return;
 
+	// If freecam is active, don't open the menu
+	if (p2gz->freecam && p2gz->freecam->is_enabled())
+		return;
+
 	// Don't open P2GZ menu during the following:
 	// - cutscenes (causes gameplay desync) - One exception:
 	// Note that technically a cutscene is playing in the background during day end results, so add exception to cutscene check
@@ -279,6 +299,8 @@ void GZMenu::draw()
 		return;
 	}
 
+	controls.reset();
+
 	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
 	j2d.initiate();
 	j2d.mGlyphWidth  = glyph_width;
@@ -289,12 +311,10 @@ void GZMenu::draw()
 
 	if (breadcrumbs.len() > 0) {
 		for (size_t i = 0; i < breadcrumbs.len(); i++) {
-			j2d.mCharColor.set(color_std);
-			j2d.mGradientColor.set(color_std);
+			COLOR(color_std);
 			x += j2d.print(x, z, " > ");
 
-			j2d.mCharColor.set(color_breadcrumbs);
-			j2d.mGradientColor.set(color_breadcrumbs);
+			COLOR(color_breadcrumbs);
 			x += j2d.print(x, z, breadcrumbs[i]);
 		}
 		z += line_height;
@@ -323,6 +343,18 @@ void GZMenu::navigate_to(const char* path)
 	open();
 	set_lock();
 	root_layer->navigate_to(path);
+}
+
+MenuLayer::~MenuLayer()
+{
+	if (on_opened) {
+		delete on_opened;
+	}
+}
+
+ListMenu::~ListMenu()
+{
+	clear();
 }
 
 MenuOption* ListMenu::get_option(const char* path)
@@ -398,6 +430,9 @@ ListMenu* ListMenu::push(MenuOption* option)
 
 void ListMenu::clear()
 {
+	for (size_t i = 0; i < options.len(); i++) {
+		delete options[i];
+	}
 	options.clear();
 }
 
@@ -408,12 +443,36 @@ void ListMenu::update()
 		selected = scroll;
 	}
 
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_B) {
+		p2gz->menu->pop_layer();
+		return;
+	}
+
+	if (options.len() == 0) {
+		return;
+	}
+
+	// Adjust selection if currently selected option is hidden
+	size_t num_checks = 0;
+	while (options.len() > 0 && !options[selected]->visible) {
+		selected = selected + 1;
+		if (selected >= options.len()) {
+			selected = 0;
+		}
+		num_checks += 1;
+		if (num_checks >= options.len()) {
+			return;
+		}
+	}
+
+	// handle inputs
 	if (pah_up.check(p2gz->controller)) {
 		if (selected == 0) {
 			selected = options.len();
 		}
 		do {
-			selected -= 1;
+			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap
 		} while (!options[selected]->visible);
 	}
 	if (pah_down.check(p2gz->controller) && options.len() > 0) {
@@ -424,13 +483,8 @@ void ListMenu::update()
 			selected += 1;
 		} while (!options[selected]->visible);
 	}
-
-	u32 btn = p2gz->controller->getButtonDown();
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();
-	}
-	if (btn & Controller::PRESS_B) {
-		p2gz->menu->pop_layer();
 	}
 
 	// ... but if we scrolled off the edge deliberately, adjust the scroll
@@ -438,7 +492,7 @@ void ListMenu::update()
 		scroll = selected;
 	}
 
-	if (options.len() > 0 && selected < options.len()) {
+	if (options.len() > 0 && selected < options.len() && options[selected]->visible) {
 		options[selected]->update();
 	}
 }
@@ -455,11 +509,9 @@ void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 		bool is_selected = i == selected;
 
 		if (is_selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		} else {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
+			COLOR(p2gz->menu->color_std);
 		}
 
 		options[i]->draw(j2d, x, z, i == selected);
@@ -474,75 +526,95 @@ void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 			break;
 		}
 	}
+
+	p2gz->menu->draw_control(j2d, Controller::PRESS_B, "back");
+}
+
+GridMenu::~GridMenu()
+{
+	for (size_t row = 0; row < options.len(); row++) {
+		for (size_t col = 0; col < options[row]->len(); col++) {
+			delete (*options[row])[col];
+		}
+		delete options[row];
+	}
+}
+
+GridMenu* GridMenu::push_to_row(MenuOption* option)
+{
+	options[selected_row]->push(option);
+	MenuLayer* sub_menu = option->get_sub_menu();
+	if (sub_menu) {
+		sub_menu->parent = this;
+	}
+	return this;
+}
+
+GridMenu* GridMenu::end_row()
+{
+	selected_row += 1;
+	options.push(new Vec<MenuOption*>);
+	return this;
 }
 
 void GridMenu::update()
 {
 	p2gz->menu->block_open_close_action();
 
-	if (pah_up.check(p2gz->controller) && !editing_range) {
-		if (selected_row == 0) {
-			selected_row = options.len();
-		}
-		do {
-			selected_row -= 1;
-			if (options[selected_row]->len() <= selected_col) {
-				selected_col = options[selected_row]->len() - 1;
-			}
-		} while (!cur_option()->visible);
-	}
-	if (pah_down.check(p2gz->controller) && options.len() > 0 && !editing_range) {
-		if (selected_row >= options.len() - 1) {
-			selected_row = -1;
-		}
-		do {
-			selected_row += 1;
-			if (options[selected_row]->len() <= selected_col) {
-				selected_col = options[selected_row]->len() - 1;
-			}
-		} while (!cur_option()->visible);
-	}
-	if (pah_left.check(p2gz->controller) && !editing_range) {
-		if (selected_col == 0) {
-			selected_col = options[selected_row]->len();
-		}
-		do {
-			selected_col -= 1;
-		} while (!cur_option()->visible);
-	}
-	if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0 && !editing_range) {
-		if (selected_col >= options[selected_row]->len() - 1) {
-			selected_col = -1;
-		}
-		do {
-			selected_col += 1;
-		} while (!cur_option()->visible);
-	}
-
 	u32 btn = p2gz->controller->getButtonDown();
-	if (btn & Controller::PRESS_A) {
-		if (cur_option()->is_range_option()) {
-			editing_range = !editing_range;
-			cur_option()->set_editing_in_grid(editing_range);
-			return;
+	if (editing_option) {
+		if (btn & Controller::PRESS_A || btn & Controller::PRESS_B) {
+			editing_option = false;
+		} else {
+			cur_option()->update();
 		}
-		cur_option()->select();
-	}
-	if (btn & Controller::PRESS_B) {
-		if (cur_option()->is_range_option()) {
-			if (editing_range) {
-				editing_range = false;
-				cur_option()->set_editing_in_grid(editing_range);
-				return;
+	} else {
+		if (pah_up.check(p2gz->controller)) {
+			if (selected_row == 0) {
+				selected_row = options.len();
 			}
+			do {
+				selected_row -= 1;
+				if (options[selected_row]->len() <= selected_col) {
+					selected_col = options[selected_row]->len() - 1;
+				}
+			} while (!cur_option()->visible);
 		}
-		p2gz->menu->pop_layer();
-	}
+		if (pah_down.check(p2gz->controller) && options.len() > 0) {
+			if (selected_row >= options.len() - 1) {
+				selected_row = -1;
+			}
+			do {
+				selected_row += 1;
+				if (options[selected_row]->len() <= selected_col) {
+					selected_col = options[selected_row]->len() - 1;
+				}
+			} while (!cur_option()->visible);
+		}
+		if (pah_left.check(p2gz->controller)) {
+			if (selected_col == 0) {
+				selected_col = options[selected_row]->len();
+			}
+			do {
+				selected_col -= 1;
+			} while (!cur_option()->visible);
+		}
+		if (pah_right.check(p2gz->controller) && options[selected_row]->len() > 0) {
+			if (selected_col >= options[selected_row]->len() - 1) {
+				selected_col = -1;
+			}
+			do {
+				selected_col += 1;
+			} while (!cur_option()->visible);
+		}
 
-	if (cur_option()->is_range_option() && !editing_range) {
-		return;
+		if (btn & Controller::PRESS_A) {
+			editing_option = cur_option()->select();
+		}
+		if (btn & Controller::PRESS_B) {
+			p2gz->menu->pop_layer();
+		}
 	}
-	cur_option()->update();
 }
 
 void GridMenu::draw(J2DPrint& j2d, f32& x, f32& z)
@@ -557,19 +629,28 @@ void GridMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 			bool is_selected = col_idx == selected_col && row_idx == selected_row;
 
 			if (is_selected) {
-				j2d.mCharColor.set(p2gz->menu->color_highlight);
-				j2d.mGradientColor.set(p2gz->menu->color_highlight);
+				if (editing_option) {
+					COLOR(p2gz->menu->color_highlight);
+				} else {
+					COLOR(p2gz->menu->color_breadcrumbs);
+				}
 			} else {
-				j2d.mCharColor.set(p2gz->menu->color_std);
-				j2d.mGradientColor.set(p2gz->menu->color_std);
+				COLOR(p2gz->menu->color_std);
 			}
 
 			const f32 col_start_x = x;
-			option->draw(j2d, x, z, is_selected);
+			option->draw(j2d, x, z, is_selected && editing_option);
 			x = col_start_x + opt_width;
 		}
 		x = start_x;
 		z += opt_height;
+	}
+
+	if (!editing_option) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "select");
+		p2gz->menu->draw_control(j2d, Controller::PRESS_B, "back");
+	} else {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "done");
 	}
 }
 
@@ -679,6 +760,17 @@ HexKeypad::HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u3
 	// clang-format on
 }
 
+HexKeypad::~HexKeypad()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+	if (on_unselected) {
+		delete on_unselected;
+	}
+	delete keypad;
+}
+
 void HexKeypad::select_digit(u32 digit)
 {
 	unselected = false;
@@ -738,11 +830,9 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	for (u8 i = 0; i < 8; i++) {
 		bool is_selected = i == cur_digit;
 		if (is_selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		} else {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
+			COLOR(p2gz->menu->color_std);
 		}
 
 		u8 digit = (value >> ((7 - i) * 4)) & 0xF;
@@ -753,14 +843,19 @@ void HexKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	keypad->opt_width = p2gz->menu->line_height;
 	x                 = initial_x;
 	keypad->draw(j2d, x, z);
+
+	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
+	p2gz->menu->draw_control(j2d, Controller::PRESS_R, "move cursor");
 }
 
-DecimalKeypad::DecimalKeypad(const char* title_)
+DecimalKeypad::DecimalKeypad(const char* title_, IDelegate1<u32>* on_selected_, IDelegate* on_opened_)
+    : MenuLayer(on_opened_)
 {
 	title         = title_;
 	value         = 0;
 	cur_digit     = 0;
 	is_unselected = true;
+	on_selected   = on_selected_;
 
 	// clang-format off
 	keypad = (new GridMenu(16.0f, p2gz->menu->line_height))
@@ -778,6 +873,14 @@ DecimalKeypad::DecimalKeypad(const char* title_)
 	// clang-format on
 }
 
+DecimalKeypad::~DecimalKeypad()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+	delete keypad;
+}
+
 void DecimalKeypad::select_digit(u32 digit)
 {
 	is_unselected = false;
@@ -791,6 +894,10 @@ void DecimalKeypad::select_digit(u32 digit)
 	if (cur_digit < 4) {
 		cur_digit += 1;
 	}
+
+	if (on_selected) {
+		on_selected->invoke(value);
+	}
 }
 
 void DecimalKeypad::set_unselected()
@@ -802,6 +909,9 @@ void DecimalKeypad::set_unselected()
 void DecimalKeypad::submit()
 {
 	is_unselected = false;
+	if (on_selected) {
+		on_selected->invoke(value);
+	}
 	p2gz->menu->pop_layer();
 }
 
@@ -835,11 +945,9 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	for (u8 i = 0; i < 5; i++) {
 		bool is_selected = i == cur_digit;
 		if (is_selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		} else {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
+			COLOR(p2gz->menu->color_std);
 		}
 
 		u8 digit = (value % 100000 / pow10[i]) % 10;
@@ -850,6 +958,9 @@ void DecimalKeypad::draw(J2DPrint& j2d, f32& x, f32& z)
 	keypad->opt_width = p2gz->menu->line_height;
 	x                 = initial_x;
 	keypad->draw(j2d, x, z);
+
+	p2gz->menu->draw_control(j2d, Controller::PRESS_L, ""); // display L and R next to each other
+	p2gz->menu->draw_control(j2d, Controller::PRESS_R, "move cursor");
 }
 
 void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -863,6 +974,13 @@ void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 	if (title && !image_only) {
 		x += j2d.print(x, z, title);
+	}
+}
+
+ToggleMenuOption::~ToggleMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
 	}
 }
 
@@ -881,6 +999,10 @@ void ToggleMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	} else if (title) {
 		x += j2d.print(x, z, "%s: %s", title, on ? "true" : "false");
 	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "toggle");
+	}
 }
 
 OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
@@ -892,10 +1014,53 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 	}
 }
 
-void OpenSubMenuOption::select()
+OpenSubMenuOption::~OpenSubMenuOption()
+{
+	{
+		if (sub_menu) {
+			delete sub_menu;
+		}
+	}
+}
+
+bool OpenSubMenuOption::select()
 {
 	if (sub_menu) {
 		p2gz->menu->push_layer(sub_menu);
+	}
+	return false;
+}
+
+void OpenSubMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
+{
+	MenuOption::draw(j2d, x, z, selected);
+	x += j2d.print(x, z, " >");
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
+	}
+}
+
+PerformActionMenuOption::~PerformActionMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+}
+
+void PerformActionMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
+{
+	MenuOption::draw(j2d, x, z, selected);
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "select");
+	}
+}
+
+RadioMenuOption::~RadioMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
 	}
 }
 
@@ -926,11 +1091,12 @@ void RadioMenuOption::update()
 	}
 }
 
-void RadioMenuOption::select()
+bool RadioMenuOption::select()
 {
 	if (on_selected) {
 		on_selected->invoke(selected_idx);
 	}
+	return true;
 }
 
 void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -949,15 +1115,24 @@ void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 			x += j2d.print(x, z, "%s: < ", title);
 		}
 
-		j2d.mCharColor.set(p2gz->menu->color_std);
-		j2d.mGradientColor.set(p2gz->menu->color_std);
+		COLOR(p2gz->menu->color_std);
 		x += j2d.print(x, z, options[selected_idx]);
 
 		if (selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
+			COLOR(p2gz->menu->color_highlight);
 		}
 		x += j2d.print(x, z, " >");
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
+	}
+}
+
+RangeMenuOption::~RangeMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
 	}
 }
 
@@ -990,11 +1165,12 @@ void RangeMenuOption::update()
 	}
 }
 
-void RangeMenuOption::select()
+bool RangeMenuOption::select()
 {
 	if (on_selected) {
 		on_selected->invoke(selected_val);
 	}
+	return true;
 }
 
 void RangeMenuOption::check_overflow()
@@ -1024,6 +1200,8 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 		j2d.initiate();
 	}
 	if (title) {
+		JUtility::TColor arrow_color = j2d.mCharColor;
+
 		if (!image_only) {
 			x += j2d.print(x, z, "%s: ", title);
 		}
@@ -1032,19 +1210,25 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 			x += j2d.print(x, z, "< ");
 		}
 
-		if (!editing_in_grid) {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
-		}
+		COLOR(p2gz->menu->color_std);
 		x += j2d.print(x, z, "%d", selected_val);
 
-		if (selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
-		}
+		COLOR(arrow_color);
 		if (overflow_behavior == RangeMenuOption::WRAP || selected_val < max) {
 			x += j2d.print(x, z, " >");
 		}
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
+		p2gz->menu->draw_control(j2d, Controller::PRESS_X, "(hold) x10");
+	}
+}
+
+FloatRangeMenuOption::~FloatRangeMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
 	}
 }
 
@@ -1076,11 +1260,12 @@ void FloatRangeMenuOption::update()
 	}
 }
 
-void FloatRangeMenuOption::select()
+bool FloatRangeMenuOption::select()
 {
 	if (on_selected) {
 		on_selected->invoke(selected_val);
 	}
+	return true;
 }
 
 void FloatRangeMenuOption::check_overflow()
@@ -1103,25 +1288,26 @@ void FloatRangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 
 	if (title) {
+		JUtility::TColor arrow_color = j2d.mCharColor;
+
 		x += j2d.print(x, z, "%s: ", title);
 
 		if (selected_val > min) {
 			x += j2d.print(x, z, "< ");
 		}
 
-		if (!editing_in_grid) {
-			j2d.mCharColor.set(p2gz->menu->color_std);
-			j2d.mGradientColor.set(p2gz->menu->color_std);
-		}
+		COLOR(p2gz->menu->color_std);
 		x += j2d.print(x, z, "%.2f", selected_val);
 
-		if (selected) {
-			j2d.mCharColor.set(p2gz->menu->color_highlight);
-			j2d.mGradientColor.set(p2gz->menu->color_highlight);
-		}
+		COLOR(arrow_color);
 		if (selected_val < max) {
 			x += j2d.print(x, z, " >");
 		}
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
+		p2gz->menu->draw_control(j2d, Controller::PRESS_X, "(hold) change faster");
 	}
 }
 
@@ -1133,14 +1319,20 @@ HexInputOption::HexInputOption(const char* title_, const char* value_if_unselect
 	value_if_unselected = value_if_unselected_;
 }
 
+HexInputOption::~HexInputOption()
+{
+	delete keypad;
+}
+
 MenuLayer* HexInputOption::get_sub_menu()
 {
 	return keypad;
 }
 
-void HexInputOption::select()
+bool HexInputOption::select()
 {
 	p2gz->menu->push_layer(keypad);
+	return false;
 }
 
 void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -1150,6 +1342,10 @@ void HexInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 		x += j2d.print(x, z, ": %s", value_if_unselected);
 	} else {
 		x += j2d.print(x, z, ": %08X", keypad->get_value());
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
 	}
 }
 
@@ -1168,10 +1364,20 @@ void HexInputOption::set_selected_val(u32 val)
 	keypad->set_value(val);
 }
 
-DecimalInputOption::DecimalInputOption(const char* title_, const char* image_name_, bool image_only_)
+DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_selected, IDelegate* on_opened, const char* image_name_,
+                                       bool image_only_)
     : MenuOption(title_, image_name_, image_only_)
 {
-	keypad = new DecimalKeypad(title_);
+	keypad     = new DecimalKeypad(title_, on_selected, on_opened);
+	sync_value = on_opened;
+}
+
+DecimalInputOption::~DecimalInputOption()
+{
+	if (sync_value) {
+		delete sync_value;
+	}
+	delete keypad;
 }
 
 MenuLayer* DecimalInputOption::get_sub_menu()
@@ -1179,15 +1385,23 @@ MenuLayer* DecimalInputOption::get_sub_menu()
 	return keypad;
 }
 
-void DecimalInputOption::select()
+bool DecimalInputOption::select()
 {
 	p2gz->menu->push_layer(keypad);
+	return false;
 }
 
 void DecimalInputOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
+	if (sync_value) {
+		sync_value->invoke();
+	}
 	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": %05u", keypad->get_value());
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open");
+	}
 }
 
 bool DecimalInputOption::is_selected()
@@ -1203,4 +1417,54 @@ u32 DecimalInputOption::get_selected_val()
 void DecimalInputOption::set_selected_val(u32 val)
 {
 	keypad->set_value(val);
+}
+
+void BottomControlsDisplay::draw_ctrl(J2DPrint& j2d, Controller::EButton button, const char* action)
+{
+	const char* button_img = nullptr;
+	switch (button) {
+	case Controller::PRESS_L:
+		button_img = "l_btn";
+		break;
+	case Controller::PRESS_R:
+		button_img = "r_btn";
+		break;
+	case Controller::PRESS_X:
+		button_img = "x_btn";
+		break;
+	case Controller::PRESS_Y:
+		button_img = "y_btn";
+		break;
+	case Controller::PRESS_A:
+		button_img = "a_btn";
+		break;
+	case Controller::PRESS_B:
+		button_img = "b_btn";
+		break;
+	case Controller::PRESS_DPAD_DOWN:
+	case Controller::PRESS_DPAD_UP:
+		button_img = "dpad_updown";
+		break;
+	case Controller::PRESS_DPAD_LEFT:
+	case Controller::PRESS_DPAD_RIGHT:
+		button_img = "dpad_leftright";
+		break;
+	case Controller::PRESS_Z:
+		button_img = "z_btn";
+		break;
+	}
+
+	if (!button_img) {
+		OSReport("no menu image for button %X\n", button);
+		return;
+	}
+
+	COLOR(p2gz->menu->color_std);
+
+	x += p2gz->images->draw(button_img, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0));
+	x += p2gz->images->spacing() / 2.0f;
+	j2d.initiate();
+
+	x += j2d.print(x, z, "%s", action);
+	x += margin;
 }

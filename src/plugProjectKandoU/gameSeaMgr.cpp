@@ -77,7 +77,10 @@ bool AABBWaterBox::update()
 		if (mLoweredAmount <= mLoweringGoalDiff) {
 			mLoweredAmount = mLoweringGoalDiff;
 			mState         = WaterBox_Dead;
-			mapMgr->mSeaMgr->delNode(this);
+
+			// @P2GZ - don't kill waterboxes when they're done lowering
+			// mapMgr->mSeaMgr->delNode(this);
+
 			return true;
 		}
 

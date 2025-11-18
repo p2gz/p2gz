@@ -8,13 +8,14 @@
 #include <p2gz/timer.h>
 #include <p2gz/WaypointViewer.h>
 #include <p2gz/SprayEditor.h>
-#include <Game/BaseGameSection.h>
 #include <p2gz/warp.h>
 #include <p2gz/SkippableCS.h>
 #include <p2gz/EnemyDebugInfo.h>
+#include <p2gz/TreasureDebugInfo.h>
 #include <p2gz/DayEditor.h>
 #include <p2gz/HeapBarToggle.h>
 #include <p2gz/SkipSave.h>
+#include <p2gz/Localization.h>
 #include <p2gz/SquadEditor.h>
 #include <p2gz/StructureEditor.h>
 #include <p2gz/SegmentHistory.h>
@@ -25,14 +26,18 @@
 #include <p2gz/CutsceneToggle.h>
 #include <p2gz/EKEditor.h>
 #include <p2gz/CaveDebugInfo.h>
+#include <p2gz/TreasureEditor.h>
+#include <p2gz/GeneratorDebugInfo.h>
+#include <p2gz/Test.h>
+#include <p2gz/Trainers.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha2"
+#define P2GZ_VERSION "alpha3"
 
 struct P2GZ {
 public:
 	P2GZ();
-	~P2GZ() { }
+	~P2GZ();
 
 	void init();
 	void update();
@@ -52,8 +57,10 @@ public:
 	gz::Timer* timer;
 	gz::WaypointViewer* waypoint_viewer;
 	gz::Warp* warp;
-	gz::SkippableTreasureCS* skippable_treasure_cutscenes;
+	gz::SkippableCutscenes* skippable_cutscenes;
 	gz::EnemyDebugInfo* enemy_debug_info;
+	gz::TreasureDebugInfo* treasure_debug_info;
+	gz::GeneratorDebugInfo* generator_debug_info;
 	gz::DayEditor* day_editor;
 	gz::HeapBarToggle* heap_bar_toggle;
 	gz::ImageMgr* images;
@@ -68,6 +75,11 @@ public:
 	gz::PokoEditor* poko_editor;
 	gz::EKEditor* ek_editor;
 	gz::CaveDebugInfo* cave_debug_info;
+	gz::TreasureEditor* treasure_editor;
+	gz::Localization* localization_op;
+	gz::EmpressTrainer* empress_trainer;
+
+	gz::test::TestRunner* test_runner;
 
 private:
 	bool inited;

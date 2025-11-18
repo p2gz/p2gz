@@ -138,6 +138,21 @@ struct Item : public WorkItem<Item, FSM, State> {
 	f32 getStageDepth();
 	f32 getWorkRadius();
 
+	// @P2GZ: bridge editor
+	// some useful inlines for health calculations
+	f32 getCurrentStageHealth() { return mStageHealths[mCurrStageIdx] > 0.0f ? mStageHealths[mCurrStageIdx] : 0.0f; }
+	f32 getBridgeHealth()
+	{
+		if (mCurrStageIdx >= mStageCount) {
+			return 0.0f;
+		}
+		f32 health = 0.0f;
+		for (int i = mCurrStageIdx; i < mStageCount; i++) {
+			health += (mStageHealths[i] > 0.0f) ? mStageHealths[i] : 0.0f;
+		}
+		return health;
+	}
+
 	// _00      = VTBL
 	// _00-_1EC = WorkItem
 	Mabiki mMabiki;                             // _1EC
@@ -150,6 +165,7 @@ struct Item : public WorkItem<Item, FSM, State> {
 	int mCurrStageIdx;                          // _218
 	int mStageCount;                            // _21C
 	f32* mStageHealths;                         // _220
+	bool mIsGlitched;                           // _224, @P2GZ - make it easier to see if bridge is glitched
 };
 
 struct Mgr : public TNodeItemMgr {

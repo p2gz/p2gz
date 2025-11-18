@@ -16,9 +16,14 @@ struct JKRHeap;
 struct SectionInfo {
 	char* mName; // _00
 
+	// @P2GZ: make titleSection.cpp equivalent
+	// union {
+	// 	u32 abcd;
+	// 	u8 mSectionId, b, c, d;
+	// } mId; // _04
 	union {
 		u32 abcd;
-		u8 mSectionId, b, c, d;
+		u8 mSectionId[4];
 	} mId; // _04
 };
 

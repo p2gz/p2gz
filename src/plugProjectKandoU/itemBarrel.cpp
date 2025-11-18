@@ -16,6 +16,7 @@
 #include "SysShape/Model.h"
 #include "nans.h"
 #include "stream.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace ItemBarrel {
@@ -136,17 +137,32 @@ void DeadState::onDamage(Item*, f32)
  */
 void DeadState::onKeyEvent(Item* item, SysShape::KeyEvent const& event)
 {
-	WaterBox* waterbox = mapMgr->findWater(item->mBoundingSphere);
-	if (waterbox && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		MoviePlayArg movieArg("x12_drain_water", nullptr, nullptr, 0);
-		movieArg.setTarget(item);
-		moviePlayer->mTargetObject = item;
-		moviePlayer->play(movieArg);
-		item->mSoundObj->startSound(PSSE_EV_WATER_OUT, 0);
-		waterbox->startDown(-100.0f);
+	// @P2GZ - store waterbox for future use
+	if (item->mWaterbox && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
+		// @P2GZ: plug editor
+		// don't play the movie every time we spawn with a plug already killed
+		if (!item->mSkipDeathEfx) {
+			MoviePlayArg movieArg("x12_drain_water", nullptr, nullptr, 0);
+			movieArg.setTarget(item);
+			moviePlayer->mTargetObject = item;
+			moviePlayer->play(movieArg);
+			item->mSoundObj->startSound(PSSE_EV_WATER_OUT, 0);
+			item->mWaterbox->startDown(-100.0f);
+		}
 	}
 	item->mAnimSpeed = 0.0f;
-	mgr->kill(item);
+
+	// @P2GZ - plug editor
+	// move the waterbox down instantly if skipping death fx (killed in menu)
+	if (item->mWaterbox && item->mSkipDeathEfx) {
+		item->mWaterbox->mBounds.mMin.y -= 100.0f;
+		item->mWaterbox->mBounds.mMax.y -= 100.0f;
+		item->mWaterbox->mLoweredAmount = -100.0f;
+	}
+
+	// @P2GZ: plug editor
+	// don't kill the plug otherwise we can't respawn it
+	item->mPosition.y -= 100.0f;
 }
 
 /**
@@ -211,10 +227,15 @@ void Item::doLoad(Stream& input)
 		setAlive(false);
 		WaterBox* waterbox = mapMgr->findWater(mBoundingSphere);
 		if (waterbox) {
+			// @P2GZ - store waterbox for future use
+			mWaterbox = static_cast<AABBWaterBox*>(waterbox);
+
 			waterbox->startDown(-100.0f);
 		}
 		mAnimSpeed = 0.0f;
-		mgr->kill(this);
+
+		// @P2GZ - don't kill plug on load so we can respawn it
+		// mgr->kill(this);
 	}
 }
 
@@ -226,6 +247,9 @@ Item::Item()
     : WorkItem(OBJTYPE_Barrel)
 {
 	mMass = 0.0f;
+	// @P2GZ: plug editor
+	mSkipDeathEfx = false;
+	mWaterbox     = nullptr;
 }
 
 /**
@@ -266,6 +290,19 @@ void Item::onSetPosition()
 {
 	makeTrMatrix();
 	updateBoundSphere();
+
+	// @P2GZ: plug editor
+	// Register created plug with structure editor.
+	// Done in onSetPosition because StructureEditor uses
+	// coords to determine the name for the plug.
+	p2gz->structure_editor->add_plug(this);
+
+	// @P2GZ: plug editor
+	// make sure plug can always find its waterbox so we can toggle the height
+	AABBWaterBox* wbox = static_cast<AABBWaterBox*>(mapMgr->findWater(mBoundingSphere));
+	if (wbox) {
+		mWaterbox = wbox;
+	}
 }
 
 /**
@@ -321,11 +358,17 @@ bool Item::getVectorField(Sys::Sphere& sphere, Vector3f& vec)
 f32 Item::getWorkRadius()
 {
 	Sys::Sphere bounds;
-	if (isAlive()) {
-		mCollTree->getBoundingSphere(bounds);
-		return bounds.mRadius;
-	}
-	return 0.0f;
+
+	// @P2GZ - always return correct bounding sphere so it doesn't get reset
+	// when plug is dead.
+	// if (isAlive()) {
+	// 	mCollTree->getBoundingSphere(bounds);
+	// 	return bounds.mRadius;
+	// }
+	// return 0.0f;
+
+	mCollTree->getBoundingSphere(bounds);
+	return bounds.mRadius;
 }
 
 /**

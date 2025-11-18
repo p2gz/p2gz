@@ -94,6 +94,11 @@ void CollisionViewer::toggle(bool enabled_)
 
 void CollisionViewer::draw()
 {
+	if (Game::naviMgr->getActiveNavi() && need_to_reenable) {
+		toggle(true);
+		need_to_reenable = false;
+	}
+
 	if (!enabled) {
 		return;
 	}

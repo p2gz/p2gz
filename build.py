@@ -25,6 +25,7 @@ P2GZ_CUSTOM_ASSETS_COMPRESSED = [
 P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Ebisawa', 'title', 'title.szs'),
+    os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'otakara_texts.szs'),
     os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
 ]
 
@@ -33,6 +34,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--clean', '-c', action='store_true', help='Build from a clean working directory')
 parser.add_argument('--restart-dolphin', '-rd', action='store_true', help='Restart Dolphin with root/sys/main.dol after build')
 parser.add_argument('--map', '-m', action='store_true', help='Compile a map file for easier debugging')
+parser.add_argument('--test', '-t', action='store_true', help='Compile testing code')
 args = parser.parse_args()
 
 if args.restart_dolphin:
@@ -97,7 +99,11 @@ for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
     # Copy existing uncompressed file
     if os.path.exists(iso_path):
         print(f'Copying {path} to {iso_path}')
-        shutil.copy(path, iso_path)
+        # if it's a file or a directory
+        if os.path.isfile(path):
+            shutil.copy(path, iso_path) # copy individual file
+        else: # its a directory
+            shutil.copytree(path, iso_path, dirs_exist_ok=True) # copy whole directory
 
     # Add new directory + file
     else:
@@ -113,6 +119,8 @@ for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
 config_cmd = 'python3 configure.py --non-matching'
 if args.map:
     config_cmd += ' --map'
+if args.test:
+    config_cmd += ' --test'
 
 subprocess.run(config_cmd, shell=True)
 

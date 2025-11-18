@@ -768,7 +768,7 @@ void ItemGate::getLifeGaugeParam(Game::LifeGaugeParam& param)
 	// hide life gauge when gate is at zero health
 	// (we could do this with inactiveLifeGauge I think, but not from in here)
 	// param.mIsGaugeShown    = mLod.isFlag(AILOD_IsVisible);
-	param.mIsGaugeShown = mLod.isFlag(AILOD_IsVisible) && (getGateHealth() > 0.0f);
+	param.mIsGaugeShown = mLod.isFlag(AILOD_IsVisible) && (getGateHealth() > 0.0f) && p2gz->structure_editor->is_gate_debug_enabled();
 }
 
 /**

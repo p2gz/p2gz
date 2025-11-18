@@ -215,8 +215,11 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	p2gz->warp->do_post_warp();
 
 	// @P2GZ - clear list of spawnpoints to draw
-	// TODO: when (if?) we have spawnpoint viewing working for AG, remove this
 	p2gz->cave_debug_info->clear();
+
+	// @P2GZ - segment history
+	// Record squad into preset if it's a generated preset.
+	p2gz->segment_history->record_squad();
 }
 
 /**
@@ -435,7 +438,7 @@ void GameState::exec(SingleGameSection* game)
 
 	// @P2GZ: skippable treasure cutscenes
 	// force collect treasure during cutscene if conditions are met
-	p2gz->skippable_treasure_cutscenes->force_collect(game->mDraw2DCreature);
+	p2gz->skippable_cutscenes->force_collect(game->mDraw2DCreature);
 
 	// when you enter a cave from above ground, this state is still technically active until after the game saves
 	if (mInSaveScreen) {
@@ -645,7 +648,7 @@ void GameState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 {
 	// @P2GZ: skippable treasure cutscenes
 	// make treasure cutscenes skippable
-	p2gz->skippable_treasure_cutscenes->prime_skip(game->mDraw2DCreature, config);
+	p2gz->skippable_cutscenes->prime_skip(game->mDraw2DCreature, config);
 
 	Screen::gGame2DMgr->startFadeBG_CourseName();
 	Screen::gGame2DMgr->startCount_CourseName();
@@ -678,6 +681,10 @@ void GameState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		game->saveMainMapSituation(isSC);
 		Vector3f pos = game->mCurrentCave->getPosition();
 		game->prepareHoleIn(pos, false);
+
+		// @P2GZ - retry sublevel
+		p2gz->segment_history->entering_next_segment = true;
+		p2gz->warp->already_saved_generators         = true;
 	}
 }
 
@@ -848,6 +855,11 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 			p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
 		}
 		mInSaveScreen = true;
+
+		// @P2GZ - retry sublevel
+		p2gz->segment_history->entering_next_segment = false;
+		p2gz->warp->already_saved_generators         = false;
+
 		return;
 	}
 

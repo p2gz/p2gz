@@ -21,7 +21,7 @@ void SegmentHistory::draw_2d()
 	SceneType scene_type = Screen::gGame2DMgr->mScreenMgr->getSceneType();
 
 	bool gz_menu_open = p2gz->menu->is_open();
-	bool is_paused = Game::gameSystem
+	bool is_paused    = Game::gameSystem
 	              && (scene_type == SCENE_PAUSE_MENU_DOUKUTU || scene_type == SCENE_PAUSE_MENU_ITEMS || scene_type == SCENE_PAUSE_MENU_MAP
 	                  || scene_type == SCENE_PAUSE_MENU_CONTROLS);
 	bool is_in_load_screen = scene_type == SCENE_FLOOR && started_creating_map;
@@ -31,12 +31,12 @@ void SegmentHistory::draw_2d()
 		draw_cur_seed();
 	}
 
-	if (entering_next_sublevel) {
-		draw_reset_controls();
+	if (entering_next_segment || (cur_segment() && p2gz->menu->is_root_open())) {
+		draw_reset_controls(entering_next_segment);
 	}
 }
 
-const Segment* SegmentHistory::cur_segment()
+Segment* SegmentHistory::cur_segment()
 {
 	if (segments.len() > 0) {
 		return segments.peek();
@@ -46,13 +46,15 @@ const Segment* SegmentHistory::cur_segment()
 
 void SegmentHistory::update()
 {
-	if (entering_next_sublevel) {
-		const Segment* current_segment = cur_segment();
-		GZASSERTLINE(current_segment);
-		WarpDestination current_dest = current_segment->dest;
+	const Segment* current_segment = cur_segment();
+	if (!current_segment) {
+		return;
+	}
 
-		const u32 btn = p2gz->controller->getButtonDown();
+	WarpDestination current_dest = current_segment->dest;
+	const u32 btn                = p2gz->controller->getButtonDown();
 
+	if (entering_next_segment || p2gz->menu->is_root_open()) {
 		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
 			current_dest.use_set_seed = false;
@@ -61,22 +63,24 @@ void SegmentHistory::update()
 			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 			p2gz->warp->do_warp();
 
-			entering_next_sublevel = false;
+			entering_next_segment = false;
 			return;
 		}
 
 		// Retry same sublevel, same seed
-		if (btn & Controller::PRESS_Y) {
+		if (btn & Controller::PRESS_Y && in_cave_play()) {
 			current_dest.use_set_seed = true;
 
 			p2gz->warp->set_dest(current_dest);
 			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 			p2gz->warp->do_warp();
 
-			entering_next_sublevel = false;
+			entering_next_segment = false;
 			return;
 		}
+	}
 
+	if (entering_next_segment && in_cave_play()) {
 		// Restart cave from the beginning
 		if (btn & Controller::PRESS_L) {
 			if (segments.len() == 0) {
@@ -94,7 +98,6 @@ void SegmentHistory::update()
 				if (this_segment->dest.cave == current_dest.cave) {
 					if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
 						floor0_segment = this_segment;
-
 						break;
 					}
 				} else {
@@ -116,14 +119,15 @@ void SegmentHistory::update()
 				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
 					cat = floor0_segment->preset->category;
 				}
+				p2gz->warp->set_dest(floor0_dest);
 				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
 			} else {
+				p2gz->warp->set_dest(floor0_dest);
 				p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
 			}
-			p2gz->warp->set_dest(floor0_dest);
-			p2gz->warp->do_warp();
 
-			entering_next_sublevel = false;
+			p2gz->warp->do_warp();
+			entering_next_segment = false;
 			return;
 		}
 	}
@@ -158,42 +162,63 @@ void SegmentHistory::draw_cur_seed()
 	j2d.print(208.0f, 440.0f, "0x%08X", seed);
 }
 
-void draw_ctrl(J2DPrint& j2d, const f32 glyph_size, f32 x, f32& z, const char* img_name, const char* msg)
+void draw_ctrl(J2DPrint& j2d, const f32 glyph_size, f32& z, const char* img_name, const char* msg)
 {
-	x += p2gz->images->draw(img_name, 16.0f, z - p2gz->images->height() / 2.0f);
-	x += p2gz->images->spacing();
+	f32 x = System::getRenderModeWidth() - 48.0f;
+	p2gz->images->draw(img_name, x, z - p2gz->images->height() / 2.0f);
+	x -= p2gz->images->spacing();
 
 	j2d.initiate();
+	x -= j2d.getWidth("%s", msg);
 	j2d.print(x, z + (glyph_size / 2.0f) - 4.0f, msg);
 
 	z += p2gz->images->height() + 4.0f;
 }
 
-void SegmentHistory::draw_reset_controls()
+void SegmentHistory::draw_reset_controls(bool draw_cave_retry)
 {
 	const f32 glyph_size = 18.0f;
 	J2DPrint j2d         = init_j2d(glyph_size);
 
-	f32 x = 16.0f;
-	f32 z = 180.0f;
+	f32 z = 280.0f;
 
-	draw_ctrl(j2d, glyph_size, x, z, "x_btn", "replay sublevel");
-	draw_ctrl(j2d, glyph_size, x, z, "y_btn", "replay seed");
-	draw_ctrl(j2d, glyph_size, x, z, "l_btn", "restart cave");
+	if (in_cave_play()) {
+		draw_ctrl(j2d, glyph_size, z, "x_btn", "replay sublevel");
+		draw_ctrl(j2d, glyph_size, z, "y_btn", "replay seed");
+		if (draw_cave_retry) {
+			draw_ctrl(j2d, glyph_size, z, "l_btn", "restart cave");
+		}
+	} else {
+		draw_ctrl(j2d, glyph_size, z, "x_btn", "replay segment");
+	}
 }
 
-void SegmentHistory::start_segment(u32 seed)
+Segment* SegmentHistory::start_segment()
 {
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	Segment* segment     = new Segment();
-	WarpDestination dest = Warp::current_dest();
-	dest.seed            = seed;
-	dest.use_set_seed    = true;
-	segment->dest        = dest;
 	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
 
-	segments.push(const_cast<const Segment*>(segment));
+	if (segments.atCapacity()) {
+		Segment* oldestSegment = segments.getLast();
+		delete oldestSegment;
+	}
+	segments.push(segment);
 
 	prev_heap->becomeCurrentHeap();
+
+	return segment;
+}
+
+void SegmentHistory::record_squad()
+{
+	Segment* segment = cur_segment();
+	if (!segment || !segment->preset || segment->preset->category != Generated) {
+		return;
+	}
+
+	segment->preset->squad.clear();
+	segment->preset->onion_pikis.clear();
+	PresetMgr::fill_current_pikis(segment->preset);
 }

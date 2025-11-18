@@ -4,6 +4,15 @@
 #include <p2gz/HelperInlines.h>
 #include <p2gz/p2gz.h>
 
+#include "Morimura/HurryUp.h"
+#include "Morimura/mrUtil.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Game/GameSystem.h"
+#include "Game/MoviePlayer.h"
+#include "Game/gamePlayData.h"
+#include "Game/Navi.h"
+#include "nans.h"
+
 using namespace gz;
 
 Timer::Timer()
@@ -192,28 +201,34 @@ void Timer::reset_skip_timer()
 	skip_timer_set = true;
 }
 
-void Timer::stop_skip_timer_treasure()
+void Timer::stop_skip_timer(Game::MovieConfig* config)
 {
-	if (!skip_timer_set) {
+	if (!skip_timer_set || !config) {
 		return;
 	}
 
-	int remaining = skip_timer + (MAX_TREASURE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
-	if (remaining < 0) {
-		remaining = 0;
-	}
+	f32 max_cutscene_time = 0.0f;
 
-	main_timer -= remaining;
-	sub_timer -= remaining;
-	skip_timer_set = false;
-}
-
-void Timer::stop_skip_timer_upgrade()
-{
-	if (!skip_timer_set) {
+	if (config->is("x01_gamestart")) {
+		// intro crash landing cutscene
+		max_cutscene_time = MAX_CRASH_LANDING_CUTSCENE_TIME;
+	} else if (config->is("x01_coursein_forest") || config->is("x01_coursein_yakushima") || config->is("x01_coursein_last")) {
+		// first area enter cutscene (all three others are the same length)
+		max_cutscene_time = MAX_FIRST_ENTER_CUTSCENE_TIME;
+	} else if (config->is("s22_cv_suck_treasure") || config->is("s10_suck_treasure")) {
+		// treasure cutscene
+		max_cutscene_time = MAX_TREASURE_CUTSCENE_TIME;
+	} else if (config->is("s22_cv_suck_equipment") || config->is("s17_suck_equipment")) {
+		// upgrade cutscene
+		max_cutscene_time = MAX_UPGRADE_CUTSCENE_TIME;
+	} else {
+		// we have a skip timer going during the wrong cutscene, something is Wrong
+		OSReport("[P2GZ WARN] stop_skip_timer: unhandled config name\n");
+		OSReport("[P2GZ WARN] >> config: %s\n", config->mMovieNameBuffer2);
 		return;
 	}
-	int remaining = skip_timer + (MAX_UPGRADE_CUTSCENE_TIME * 1000.0f) - get_cur_time();
+
+	int remaining = skip_timer + (max_cutscene_time * 1000.0f) - get_cur_time();
 	if (remaining < 0) {
 		remaining = 0;
 	}
@@ -281,3 +296,48 @@ void Timer::set_sub_timer_enabled(bool on)
 {
 	sub_timer_enabled = on;
 }
+
+// @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv
+
+namespace Morimura {
+
+/**
+ * @note Address: 0x8034792C
+ * @note Size: 0x240
+ */
+void THurryUp2D::scaleUp2()
+{
+	f32 goal = mParams[mState].mGoalScale;
+	if (mPaneSunL->mScale.x < goal) {
+		f32 factor = mTimer * mScaleSp2 * 60.0f;
+		f32 scale  = factor * sys->mDeltaTime + mParams[mState].mScale;
+		if (scale > goal) {
+			scale = goal;
+		}
+		u8 alpha = mFadeFraction * u8(mAlphaMod1 * scale + mAlphaMod2);
+		mPaneHurry2->setAlpha(alpha);
+		mPaneSundown2->setAlpha(alpha);
+		mPaneSunL->setAlpha(alpha);
+		mPaneSunW->setAlpha(alpha);
+		mWhitePane->setAlpha(0);
+		mPaneSunL->updateScale(scale);
+	} else {
+		if (!mIsSection && (Game::gameSystem->isFlag(Game::GAMESYS_IsGameWorldActive)) && !mIsSection && Game::moviePlayer
+		    && !Game::playData->isDemoFlag(Game::DEMO_First_Sunset_Warning)) {
+			Game::MoviePlayArg arg("g09_first_sunset", nullptr, nullptr, 0);
+			Game::Navi* navi = Game::naviMgr->getActiveNavi();
+			if (navi && navi->mCamera) {
+				// @P2GZ sunset-pause-fix: close p2gz menu when first sunset warning cutscene plays to prevent unpause desync issues
+				if (p2gz && p2gz->menu->is_open()) {
+					p2gz->menu->close();
+				}
+				Game::playData->setDemoFlag(Game::DEMO_First_Sunset_Warning);
+				Game::moviePlayer->mTargetNavi   = navi;
+				Game::moviePlayer->mActingCamera = navi->mCamera;
+				Game::moviePlayer->play(arg);
+			}
+		}
+	}
+}
+
+} // namespace Morimura

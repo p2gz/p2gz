@@ -52,6 +52,7 @@ sheet.tsv
 tools/mwcc_compiler/
 tools/powerpc/
 compile_commands.json
+references/
 release/
 release_assets/version.txt
 !release_assets/*.exe

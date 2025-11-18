@@ -215,6 +215,10 @@ void CutsceneMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	if (title && !image_only) {
 		x += j2d.print(x, z, "%s: %s", title, on ? "already played" : "not yet played");
 	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "toggle played");
+	}
 }
 
 void CutsceneToggle::set_cutscene_flag(bool played)
@@ -271,4 +275,16 @@ CutsceneMenuOption* CutsceneMgr::create_option(Game::DemoFlags id)
 	CutsceneToggle* toggle = p2gz->cutscene_mgr->get_toggle(id);
 	return new CutsceneMenuOption(CutsceneMap::get_name_from_idx(id), false,
 	                              new Delegate1<CutsceneToggle, bool>(toggle, &CutsceneToggle::set_cutscene_flag));
+}
+
+CutscenesBitfield CutsceneMgr::get_cur_cutscenes()
+{
+	CutscenesBitfield bitfield;
+	for (size_t i = 0; i < cutscene_list.len(); i++) {
+		CutsceneToggle* toggle = cutscene_list[i];
+		if (Game::playData->isDemoFlag(toggle->get_cutscene_id())) {
+			bitfield.set_cutscene_played(toggle->get_cutscene_id());
+		}
+	}
+	return bitfield;
 }

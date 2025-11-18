@@ -560,7 +560,7 @@ void PelletGoalState::exec(Pellet* pelt)
 
 	// @P2GZ: skippable treasure cutscenes
 	// make sure we don't collect the treasure twice if we skip it after it hits the ship
-	p2gz->skippable_treasure_cutscenes->set_collected();
+	p2gz->skippable_cutscenes->set_collected();
 
 	if (Radar::mgr) {
 		Radar::Mgr::getNumOtakaraItems();

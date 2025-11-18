@@ -7,12 +7,50 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
+#include <Game/Entities/PelletOtakara.h>
 
 using namespace gz;
 
+static const TreasureAreaMap AG_treasure_IDs[] = {
+	{ 47, COURSE_VoR },  // fossilized ursidae
+	{ 62, COURSE_VoR },  // pink menace
+	{ 71, COURSE_VoR },  // unspeakable wonder
+	{ 73, COURSE_VoR },  // temporal mechanism
+	{ 87, COURSE_VoR },  // utter scrap
+	{ 142, COURSE_VoR }, // courage reactor
+	{ 157, COURSE_VoR }, // spiny alien treat
+
+	{ 11, COURSE_AW },  // geographic projection (NB: actually an item ID not treasure ID, but 11 is in SCx3 so it's fine)
+	{ 42, COURSE_AW },  // sunseed berry
+	{ 44, COURSE_AW },  // decorative goo
+	{ 130, COURSE_AW }, // pilgrim bulb
+	{ 155, COURSE_AW }, // chance totem
+	{ 173, COURSE_AW }, // healing cask/hypnotic platter/seat of enlightenment
+	{ 185, COURSE_AW }, // air brake
+
+	{ 53, COURSE_PP },  // onion replica
+	{ 72, COURSE_PP },  // aquatic mine
+	{ 77, COURSE_PP },  // impediment scourge/lightning bolt
+	{ 118, COURSE_PP }, // massage girdle
+	{ 140, COURSE_PP }, // optical illustration/abstract masterpiece/yell battery
+	{ 152, COURSE_PP }, // fortified delicacy
+	{ 172, COURSE_PP }, // gherkin gate
+
+	{ 27, COURSE_WW },  // armored nut
+	{ 45, COURSE_WW },  // anti-hiccup fungus
+	{ 50, COURSE_WW },  // conifer spire
+	{ 76, COURSE_WW },  // doomsday apparatus
+	{ 183, COURSE_WW }, // seed of greed
+};
+
+static const u8 AG_treasure_count = ARRAY_SIZE(AG_treasure_IDs);
+
 Preset::Preset(const char* name_, PresetCategory category_)
-    : upgrades(1)
-    , cutscene_flags(1)
+    : destroyed_gates(0)
+    , finished_bridges(0)
+    , bags_flattened(0)
+    , enemy_spawn_overrides(0)
+    , treasure_spawn_overrides(0)
 {
 	name             = name_;
 	category         = category_;
@@ -21,6 +59,8 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	num_bitters      = 0;
 	num_spicies      = 0;
 	time             = 7.0f;
+	plug_destroyed   = false;
+	day              = 5;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -37,16 +77,85 @@ Preset::Preset(Preset& other)
 	squad            = other.squad;
 	onion_pikis      = other.onion_pikis;
 	time             = other.time;
+	day              = other.day;
+	apply_pokos      = false;
+	pokos            = 0;
+	enter_kind       = PEK_FromCave;
+	plug_destroyed   = other.plug_destroyed;
+	upgrades         = other.upgrades;
+	cutscenes        = other.cutscenes;
 
-	upgrades.expandCapacityTo(other.upgrades.len());
-	for (size_t i = 0; i < other.upgrades.len(); i++) {
-		upgrades.push(other.upgrades[i]);
+	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
+	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
+		destroyed_gates.push(other.destroyed_gates[i]);
 	}
 
-	cutscene_flags.expandCapacityTo(other.cutscene_flags.len());
-	for (size_t i = 0; i < other.cutscene_flags.len(); i++) {
-		cutscene_flags.push(other.cutscene_flags[i]);
+	finished_bridges.expandCapacityTo(other.finished_bridges.len());
+	for (size_t i = 0; i < other.finished_bridges.len(); i++) {
+		finished_bridges.push(other.finished_bridges[i]);
 	}
+
+	bags_flattened.expandCapacityTo(other.bags_flattened.len());
+	for (size_t i = 0; i < other.bags_flattened.len(); i++) {
+		bags_flattened.push(other.bags_flattened[i]);
+	}
+
+	enemy_spawn_overrides.expandCapacityTo(other.enemy_spawn_overrides.len());
+	for (size_t i = 0; i < other.enemy_spawn_overrides.len(); i++) {
+		enemy_spawn_overrides.push(other.enemy_spawn_overrides[i]);
+	}
+
+	treasure_spawn_overrides.expandCapacityTo(other.treasure_spawn_overrides.len());
+	for (size_t i = 0; i < other.treasure_spawn_overrides.len(); i++) {
+		treasure_spawn_overrides.push(other.treasure_spawn_overrides[i]);
+	}
+}
+
+Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
+                                                     GenSpawnOverride spawn_override_)
+{
+	enemy_id       = enemy_id_;
+	gen_pos        = gen_pos_;
+	spawn_override = spawn_override_;
+}
+
+Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_)
+{
+	id             = id_;
+	spawn_override = spawn_override_;
+}
+
+Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_)
+{
+	GZASSERTLINE(spawn_override_ == PSO_SpawnAndMove); // Doesn't make sense to use this ctor otherwise
+	id                = id_;
+	spawn_override    = spawn_override_;
+	position_override = position_override_;
+}
+
+GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
+{
+	if (gen->mObject->mTypeID == 'teki') {
+		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
+		for (size_t i = 0; i < enemy_spawn_overrides.len(); i++) {
+			EnemyGenSpawnOverride& oride = enemy_spawn_overrides[i];
+			if (oride.enemy_id == gen_obj_enemy->mEnemyID && absF(oride.gen_pos.sqrDistance(gen->mPosition)) < 25.0f) {
+				return oride.spawn_override;
+			}
+		}
+	}
+	return PSO_Ignore;
+}
+
+GenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
+{
+	for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+		TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+		if (treasure_id == oride.id) {
+			return oride.spawn_override;
+		}
+	}
+	return PSO_Ignore;
 }
 
 Preset* Preset::set_pikmin(int stage, int color, int amount)
@@ -78,18 +187,17 @@ Preset* Preset::set_time(f32 time_)
 
 Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
-	cutscene_flags.expandCapacityTo(cutscene_flags.len() + num_flags);
 	for (size_t i = 0; i < num_flags; i++) {
-		cutscene_flags.push(flags[i]);
+		cutscenes.set_cutscene_played(flags[i]);
 	}
 	return this;
 }
 
 Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
 {
-	upgrades.expandCapacityTo(upgrades.len() + num_upgrades);
 	for (size_t i = 0; i < num_upgrades; i++) {
-		upgrades.push(items[i]);
+		const u16 bit = 1 << items[i];
+		upgrades.set(bit);
 	}
 	return this;
 }
@@ -100,6 +208,68 @@ Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
 	for (size_t i = 0; i < num_gates; i++) {
 		GZASSERTLINE(gates[i]);
 		destroyed_gates.push(gates[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_finished_bridges(size_t num_bridges, const char* bridges[])
+{
+	finished_bridges.expandCapacityTo(finished_bridges.len() + num_bridges);
+	for (size_t i = 0; i < num_bridges; i++) {
+		GZASSERTLINE(bridges[i]);
+		finished_bridges.push(bridges[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_bags_flattened(size_t num_bags, const char* bags[])
+{
+	bags_flattened.expandCapacityTo(bags_flattened.len() + num_bags);
+	for (size_t i = 0; i < num_bags; i++) {
+		GZASSERTLINE(bags[i]);
+		bags_flattened.push(bags[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_plug_destroyed(bool destroyed)
+{
+	plug_destroyed = destroyed;
+	return this;
+}
+
+Preset* Preset::set_enter_kind(EnterAreaKind kind)
+{
+	enter_kind = kind;
+	return this;
+}
+
+Preset* Preset::set_pokos(int pokos_)
+{
+	pokos       = pokos_;
+	apply_pokos = true;
+	return this;
+}
+
+Preset* Preset::set_day(u8 day_)
+{
+	day = day_;
+}
+
+Preset* Preset::set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[])
+{
+	enemy_spawn_overrides.expandCapacityTo(enemy_spawn_overrides.len() + num_spawns);
+	for (size_t i = 0; i < num_spawns; i++) {
+		enemy_spawn_overrides.push(overrides[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[])
+{
+	treasure_spawn_overrides.expandCapacityTo(treasure_spawn_overrides.len() + num_spawns);
+	for (size_t i = 0; i < num_spawns; i++) {
+		treasure_spawn_overrides.push(overrides[i]);
 	}
 	return this;
 }
@@ -152,27 +322,70 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
 	// Apply upgrades
-	p2gz->ek_editor->reset_all();
-	for (size_t i = 0; i < upgrades.len(); i++) {
-		p2gz->ek_editor->set_upgrade(upgrades[i], true);
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+		const u16 mask = 1 << i;
+		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades.isSet(mask));
 	}
 
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
-	for (size_t i = 0; i < cutscene_flags.len(); i++) {
-		Game::DemoFlags flag            = cutscene_flags[i];
-		CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
-		if (cutscene_toggle) {
-			cutscene_toggle->set_cutscene_flag(true);
+	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
+		const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
+		if (cutscenes.cutscene_played(flag)) {
+			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
+			if (cutscene_toggle) {
+				cutscene_toggle->set_cutscene_flag(true);
+			}
 		}
+	}
+
+	// calc treasure counts for areas
+	u8 treasure_counts[4];
+	treasure_counts[COURSE_VoR] = treasure_counts[COURSE_AW] = treasure_counts[COURSE_PP] = treasure_counts[COURSE_WW] = 0;
+
+	for (int i = 0; i < treasure_spawn_overrides.len(); i++) {
+		// only interested in treasures we've "collected"
+		if (treasure_spawn_overrides[i].spawn_override != PSO_DontSpawn) {
+			continue;
+		}
+
+		int id = treasure_spawn_overrides[i].id;
+		for (u8 i = 0; i < AG_treasure_count; i++) {
+			if (AG_treasure_IDs[i].id == id) {
+				treasure_counts[AG_treasure_IDs[i].course_idx]++;
+				break;
+			}
+		}
+	}
+
+	// set treasure counts
+	for (int i = 0; i < 4; i++) {
+		Game::playData->mGroundOtakaraCollected[i]    = treasure_counts[i];
+		Game::playData->mGroundOtakaraCollectedOld[i] = treasure_counts[i];
+	}
+
+	p2gz->warp->set_enter_area_type(enter_kind);
+
+	if (apply_pokos) {
+		p2gz->poko_editor->set_pokos(pokos);
 	}
 }
 
 void Preset::apply_post_load()
 {
-	// Destroy gates
+	p2gz->structure_editor->reset_all_structures();
+
 	for (size_t i = 0; i < destroyed_gates.len(); i++) {
 		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
+	}
+	for (size_t i = 0; i < finished_bridges.len(); i++) {
+		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i], 0);
+	}
+	for (size_t i = 0; i < bags_flattened.len(); i++) {
+		p2gz->structure_editor->set_bag_flattened(bags_flattened[i], true);
+	}
+	if (plug_destroyed) {
+		p2gz->structure_editor->set_plug_destroyed(true);
 	}
 
 	// Make sure all navi have max health
@@ -184,18 +397,50 @@ void Preset::apply_post_load()
 			}
 		}
 	}
+
+	// Force spawn or despawn treasures
+	FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+	{
+		if (gen->mObject->mTypeID == 'pelt') {
+			Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+			int treasure_id             = gen_pellet->mGenParm->mIndex;
+			int kind                    = gen_pellet->mPelType;
+			for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+				if (oride.id == treasure_id) {
+					if (oride.spawn_override >= PSO_Spawn) {
+						if (!gen->mCreature) {
+							gen->generate();
+						}
+						GZASSERTLINE(gen->mCreature);
+						if (oride.spawn_override == PSO_SpawnAndMove) {
+							gen->mCreature->setPosition(oride.position_override, false);
+						} else {
+							gen->mCreature->setPosition(gen->mPosition, false);
+						}
+					} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
+						Game::PelletKillArg arg;
+						gen->mCreature->kill(&arg);
+					}
+				}
+			}
+		}
+	}
 }
 
 PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
     : MenuOption("preset")
 {
-	on_select            = on_select_;
-	pod_presets_menu                = new ListMenu();
-	pod_presets_menu->on_opened     = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, pod_presets_menu);
-	at_presets_menu                 = new ListMenu();
-	at_presets_menu->on_opened      = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, at_presets_menu);
-	general_presets_menu            = new ListMenu();
-	general_presets_menu->on_opened = new BoundDelegate1<PresetMenuOption, ListMenu*>(this, &select_current_preset, general_presets_menu);
+	on_select        = on_select_;
+	pod_presets_menu = new ListMenu();
+	pod_presets_menu->on_opened
+	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, pod_presets_menu, PoD);
+	at_presets_menu = new ListMenu();
+	at_presets_menu->on_opened
+	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, at_presets_menu, AT);
+	general_presets_menu = new ListMenu();
+	general_presets_menu->on_opened
+	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, general_presets_menu, General);
 
 	preset_category_list = (new ListMenu())
 	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
@@ -223,16 +468,16 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 
 	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
 	// when changing the warp menu selections
-	current_preset = p2gz->preset_mgr->find("EC", PoD);
+	current_preset = p2gz->preset_mgr->find("EC1", PoD);
 	if (on_select) {
 		on_select->invoke(current_preset, PS_Stale);
 	}
 }
 
 /// Adjusts the selection of a category menu when it's opened so the current preset is highlighted
-void PresetMenuOption::select_current_preset(ListMenu* menu)
+void PresetMenuOption::select_current_preset(ListMenu* menu, PresetCategory cat)
 {
-	if (!current_preset || !menu) {
+	if (!current_preset || current_preset->category != cat || !menu) {
 		return;
 	}
 
@@ -330,11 +575,16 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	} else {
 		x += j2d.print(x, z, "none");
 	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open presets menu");
+	}
 }
 
-void PresetMenuOption::select()
+bool PresetMenuOption::select()
 {
 	p2gz->menu->push_layer(preset_category_list);
+	return false;
 }
 
 void PresetMenuOption::do_on_preset_selected(Preset* preset)
@@ -353,7 +603,7 @@ PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOpti
 	parent = parent_;
 }
 
-void PresetPreviewMenuOption::select()
+bool PresetPreviewMenuOption::select()
 {
 	parent->current_preset = preset;
 	parent->do_on_preset_selected(preset);
@@ -361,6 +611,7 @@ void PresetPreviewMenuOption::select()
 	while (p2gz->menu->get_active_layer() != warp_menu) {
 		p2gz->menu->pop_layer();
 	}
+	return false;
 }
 
 void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
@@ -375,5 +626,9 @@ void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 	} else {
 		x += j2d.print(x, z, "no preset (use current squad)");
+	}
+
+	if (selected) {
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "use this preset");
 	}
 }

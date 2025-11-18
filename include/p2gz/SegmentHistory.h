@@ -26,18 +26,18 @@ public:
 	void draw_2d();
 	void update();
 
-	void start_segment(u32 seed);
-	const Segment* cur_segment();
-	Segment* cur_segment_mut() { return const_cast<Segment*>(cur_segment()); }
+	Segment* start_segment();
+	Segment* cur_segment();
+	void record_squad();
 
 	bool started_creating_map;
-	bool entering_next_sublevel;
+	bool entering_next_segment;
 
 private:
 	void draw_cur_seed();
-	void draw_reset_controls();
+	void draw_reset_controls(bool draw_cave_retry);
 
-	RingBuffer<32, const Segment*> segments;
+	RingBuffer<32, Segment*> segments;
 };
 
 }; // namespace gz

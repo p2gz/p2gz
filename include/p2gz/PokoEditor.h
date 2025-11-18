@@ -11,10 +11,13 @@ public:
 	~PokoEditor() { }
 
 	void init();
-	void update();
+	void sync();
+	u32 get_pokos();
+	void set_pokos(u32 pokos);
+	void apply_cave_pokos();
 
 private:
-	gz::DecimalInputOption* pokos;
+	gz::DecimalInputOption* poko_menu;
 };
 } // namespace gz
 #endif

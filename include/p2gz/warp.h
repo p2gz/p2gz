@@ -8,6 +8,9 @@
 
 namespace gz {
 
+struct Preset;
+struct PresetMenuOption;
+
 struct WarpDestination {
 public:
 	WarpDestination()
@@ -29,7 +32,7 @@ public:
 	bool use_set_seed;
 
 	// whether to do the falling animation or the ship fly-in animation when warping to AG
-	size_t enter_area_type;
+	u8 enter_area_type;
 };
 
 typedef enum PresetStatus {
@@ -45,8 +48,8 @@ public:
 	~Warp() { }
 
 	void init();
+	void sync();
 
-	static WarpDestination current_dest();
 	void set_dest(WarpDestination new_dest);
 
 	void set_warp_area(size_t area);
@@ -54,7 +57,8 @@ public:
 	void set_warp_sublevel(s32 sublevel);
 	void set_warp_day(s32 day) { dest.day = day - 1; }
 	void set_allow_zero_piki_in_caves(bool allow) { allow_zero_pikmin_in_caves = allow; }
-	void set_enter_area_type(size_t type) { dest.enter_area_type = type == 1; }
+	void set_enter_area_type(size_t type) { dest.enter_area_type = type; }
+	void set_active_captain(size_t captain) { active_captain = captain; }
 	void set_seed(u32);
 	void set_random_seed() { dest.use_set_seed = false; }
 
@@ -78,11 +82,17 @@ public:
 
 	bool allow_zero_pikmin_in_caves;
 	bool warping_from_menu;
+	bool warping;
+	bool already_saved_generators;
+	u8 active_captain;
 
 private:
 	void update_cave_opt();
 	void update_sublevel_opt();
 	void update_preset_opt();
+	void update_day_opt();
+	void update_enter_type_opt();
+	void update_captain_opt();
 	void warp_to_cave(Game::SingleGameSection* game);
 	void warp_to_area(Game::SingleGameSection* game);
 	void save_pikmin();
@@ -96,6 +106,7 @@ private:
 	RangeMenuOption* sublevel_opt;
 	RadioMenuOption* cave_opt;
 	RangeMenuOption* day_opt;
+	RadioMenuOption* captain_opt;
 	RadioMenuOption* enter_area_type_opt;
 	HexInputOption* seed_opt;
 	PresetMenuOption* preset_opt;

@@ -125,6 +125,12 @@ parser.add_argument(
     action="store_false",
     help="disable progress calculation",
 )
+parser.add_argument(
+    "--test",
+    dest="test",
+    action="store_true",
+    help="compile testing code",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -228,6 +234,11 @@ cflags_pikmin = [
     "-use_lmw_stmw on",
     "-str reuse,readonly",
     "-common on",
+]
+
+cflags_test = [
+    *cflags_pikmin,
+    "-d GZ_TEST",
 ]
 
 config.linker_version = "GC/2.6"
@@ -1272,7 +1283,7 @@ config.libs = [
             Object(Matching, "plugProjectKandoU/mapMgr.cpp"),
             Object(Matching, "plugProjectKandoU/baseHIOSection.cpp"),
             Object(Equivalent, "plugProjectKandoU/naviWhistle.cpp"),
-            Object(NonMatching, "plugProjectKandoU/pelletMgr.cpp"),
+            Object(Equivalent, "plugProjectKandoU/pelletMgr.cpp"),
             Object(NonMatching, "plugProjectKandoU/routeMgr.cpp"),
             Object(Matching, "plugProjectKandoU/onyonMgr.cpp"),
             Object(Matching, "plugProjectKandoU/objectTypes.cpp"),
@@ -1282,7 +1293,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/gameCPlate.cpp"),
             Object(Matching, "plugProjectKandoU/updateMgr.cpp"),
             Object(Matching, "plugProjectKandoU/aiAction.cpp"),
-            Object(NonMatching, "plugProjectKandoU/aiPrimitives.cpp"),
+            Object(Equivalent, "plugProjectKandoU/aiPrimitives.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiFormation.cpp"),
             Object(Matching, "plugProjectKandoU/creatureStick.cpp"),
             Object(Matching, "plugProjectKandoU/interactBattle.cpp"),
@@ -1996,7 +2007,7 @@ config.libs = [
             Object(Matching, "sysGCU/dvdThread.cpp"),
             Object(Matching, "sysGCU/appThread.cpp"),
             Object(Matching, "sysGCU/controller.cpp"),
-            Object(NonMatching, "sysGCU/graphics.cpp"),
+            Object(Equivalent, "sysGCU/graphics.cpp"),
             Object(NonMatching, "sysGCU/matMath.cpp"),
             Object(Matching, "sysGCU/sysShape.cpp"),
             Object(Matching, "sysGCU/reset.cpp"),
@@ -2038,7 +2049,7 @@ config.libs = [
             Object(NonMatching, "sysGCU/pikmin2MemoryCardMgr.cpp"),
             Object(Matching, "sysGCU/commonSaveData.cpp"),
             Object(Equivalent, "sysGCU/bootSection.cpp"),
-            Object(NonMatching, "sysGCU/titleSection.cpp"),
+            Object(Equivalent, "sysGCU/titleSection.cpp"),
             Object(Matching, "sysGCU/loadResource.cpp"),
             Object(Matching, "sysGCU/rootMenuSection.cpp"),
             Object(Matching, "sysGCU/demoSection.cpp"),
@@ -2086,11 +2097,19 @@ config.libs = [
     },
     {
         "lib": "p2gz",
-        "cflags": [*cflags_pikmin],
+        "cflags": [*cflags_test] if args.test else [*cflags_pikmin],
         "mw_version": "GC/2.6",
         "host": True,
         "objects": [Object(Matching, os.path.relpath(file, "src"))
                     for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))],
+    },
+    {
+        "lib": "p2gz_test",
+        "cflags": [*cflags_test],
+        "mw_version": "GC/2.6",
+        "host": True,
+        "objects": [Object(Matching, os.path.relpath(file, "src"))
+                    for file in glob.glob(os.path.join("src", "p2gz", "test", "*.cpp"))],
     },
 ]
 
@@ -2104,8 +2123,13 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
     if not config.non_matching:
         return objects
     if module_id == 0:  # DOL
-        return objects + [os.path.relpath(file, "src")
+        all_objects = objects + [os.path.relpath(file, "src")
                           for file in glob.glob(os.path.join("src", "p2gz", "*.cpp"))]
+        if args.test:
+            return all_objects + [os.path.relpath(file, "src")
+                          for file in glob.glob(os.path.join("src", "p2gz", "test", "*.cpp"))]
+        return all_objects
+
     return objects
 
 # Uncomment to enable the link order callback.

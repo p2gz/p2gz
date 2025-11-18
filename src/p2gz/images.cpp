@@ -40,26 +40,31 @@ void ImageMgr::init()
 	push(new Image(getImageFile(image_arc, "r_btn.bti"), "r_btn"));
 	push(new Image(getImageFile(image_arc, "x_btn.bti"), "x_btn"));
 	push(new Image(getImageFile(image_arc, "y_btn.bti"), "y_btn"));
+	push(new Image(getImageFile(image_arc, "a_btn.bti"), "a_btn"));
+	push(new Image(getImageFile(image_arc, "b_btn.bti"), "b_btn"));
+	push(new Image(getImageFile(image_arc, "z_btn.bti"), "z_btn"));
+	push(new Image(getImageFile(image_arc, "dpad_leftright.bti"), "dpad_leftright"));
+	push(new Image(getImageFile(image_arc, "dpad_updown.bti"), "dpad_updown"));
 
-	push(new Image(getImageFile(image_arc, "rp_l64.bti"), "red_leaf"));
-	push(new Image(getImageFile(image_arc, "rp_b64.bti"), "red_bud"));
-	push(new Image(getImageFile(image_arc, "rp_f64.bti"), "red_flower"));
+	push(new Image(getImageFile(image_arc, "rp_l32.bti"), "red_leaf"));
+	push(new Image(getImageFile(image_arc, "rp_b32.bti"), "red_bud"));
+	push(new Image(getImageFile(image_arc, "rp_f32.bti"), "red_flower"));
 
-	push(new Image(getImageFile(image_arc, "yp_l64.bti"), "yellow_leaf"));
-	push(new Image(getImageFile(image_arc, "yp_b64.bti"), "yellow_bud"));
-	push(new Image(getImageFile(image_arc, "yp_f64.bti"), "yellow_flower"));
+	push(new Image(getImageFile(image_arc, "yp_l32.bti"), "yellow_leaf"));
+	push(new Image(getImageFile(image_arc, "yp_b32.bti"), "yellow_bud"));
+	push(new Image(getImageFile(image_arc, "yp_f32.bti"), "yellow_flower"));
 
-	push(new Image(getImageFile(image_arc, "bp_l64.bti"), "blue_leaf"));
-	push(new Image(getImageFile(image_arc, "bp_b64.bti"), "blue_bud"));
-	push(new Image(getImageFile(image_arc, "bp_f64.bti"), "blue_flower"));
+	push(new Image(getImageFile(image_arc, "bp_l32.bti"), "blue_leaf"));
+	push(new Image(getImageFile(image_arc, "bp_b32.bti"), "blue_bud"));
+	push(new Image(getImageFile(image_arc, "bp_f32.bti"), "blue_flower"));
 
-	push(new Image(getImageFile(image_arc, "wp_l64.bti"), "white_leaf"));
-	push(new Image(getImageFile(image_arc, "wp_b64.bti"), "white_bud"));
-	push(new Image(getImageFile(image_arc, "wp_f64.bti"), "white_flower"));
+	push(new Image(getImageFile(image_arc, "wp_l32.bti"), "white_leaf"));
+	push(new Image(getImageFile(image_arc, "wp_b32.bti"), "white_bud"));
+	push(new Image(getImageFile(image_arc, "wp_f32.bti"), "white_flower"));
 
-	push(new Image(getImageFile(image_arc, "blp_l64.bti"), "purple_leaf"));
-	push(new Image(getImageFile(image_arc, "blp_b64.bti"), "purple_bud"));
-	push(new Image(getImageFile(image_arc, "blp_f64.bti"), "purple_flower"));
+	push(new Image(getImageFile(image_arc, "blp_l32.bti"), "purple_leaf"));
+	push(new Image(getImageFile(image_arc, "blp_b32.bti"), "purple_bud"));
+	push(new Image(getImageFile(image_arc, "blp_f32.bti"), "purple_flower"));
 
 	push(new Image(getImageFile(image_arc, "cha_l.bti"), "bulbmin_leaf"));
 	push(new Image(getImageFile(image_arc, "cha_b.bti"), "bulbmin_bud"));

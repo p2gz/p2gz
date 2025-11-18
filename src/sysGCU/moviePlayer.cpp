@@ -17,6 +17,7 @@
 #include "ParticleMgr.h"
 #include "utilityU.h"
 #include "nans.h"
+#include <p2gz/p2gz.h>
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "moviePlayer";
@@ -915,6 +916,27 @@ void MoviePlayer::skip()
 	mDemoPSM->onDemoFadeoutStart(30);
 	gameSystem->setPause(true, "moviePl:skip", 0);
 	mStudioControl->stopAllObjects();
+
+	// @P2GZ: make intro cutscene skippable
+	// update the timer if we skip the cutscene
+	// (+ handle weird intro cutscene skip sound stuff)
+	if (p2gz->skippable_cutscenes->is_skippable()) {
+		p2gz->timer->stop_skip_timer(mCurrentConfig);
+
+		// re-enable pikmin sounds for intro skip
+		// this normally happens on the first textbox of the cutscene, but we skipped it
+		if (mCurrentConfig->is("x01_gamestart")) {
+			PSGame::SoundTable::CategoryMgr* cat              = PSSystem::SingletonBase<PSGame::SoundTable::CategoryMgr>::getInstance();
+			PSSystem::getSoundCategoryInfo(cat, 5)->mDisabled = false;
+			PSSystem::getSoundCategoryInfo(cat, 2)->mDisabled = false;
+
+			PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
+			PSSystem::validateSceneMgr(mgr);
+			PSM::Scene_Game* scene = static_cast<PSM::Scene_Game*>(mgr->getChildScene());
+			PSSystem::checkChildScene(scene);
+			scene->mChild->stopMainSeq(5);
+		}
+	}
 
 	/*
 	stwu     r1, -0x40(r1)

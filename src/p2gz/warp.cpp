@@ -48,9 +48,10 @@ static const size_t NUM_FLOORS[4][4] = {
 	{ 5, 6, 7, 5 },
 	{ 10, 15, 14, 0 },
 };
-static const char* ENTER_KINDS[2] = {
+static const char* ENTER_KINDS[3] = {
 	"from cave",
 	"from map screen",
+	"first enter from map",
 };
 
 Warp::Warp()
@@ -58,9 +59,12 @@ Warp::Warp()
 	allow_zero_pikmin_in_caves = true;
 	warping_from_menu          = false;
 	needs_post_load_action     = false;
+	warping                    = false;
+	already_saved_generators   = false;
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 	lockout_frames             = 0;
+	active_captain             = NAVIID_Olimar;
 }
 
 void Warp::init()
@@ -70,20 +74,32 @@ void Warp::init()
 	cave_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/cave"));
 	day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
 	enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
+	captain_opt         = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/captain"));
 	seed_opt            = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
 	preset_opt          = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
 
 	for (size_t i = 0; i < 4; i++) {
 		area_opt->options.push(AREA_NAMES[i]);
 	}
-	for (size_t i = 0; i < 2; i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(ENTER_KINDS); i++) {
 		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
+	captain_opt->options.push("olimar");
+	captain_opt->options.push("louie");
+
+	enter_area_type_opt->visible = false;
 
 	day_opt->set_selection(dest.day + 1);
 
 	update_cave_opt();
 	update_sublevel_opt();
+	update_captain_opt();
+}
+
+void Warp::sync()
+{
+	active_captain = Game::playData->mCaveSaveData.mActiveNaviID;
+	captain_opt->set_selection(active_captain);
 }
 
 void Warp::set_preset(Preset* preset_, int preset_status_)
@@ -93,21 +109,16 @@ void Warp::set_preset(Preset* preset_, int preset_status_)
 	if (preset_opt) {
 		preset_opt->current_preset = preset;
 	}
-}
 
-WarpDestination Warp::current_dest()
-{
-	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
-	ID32 cave_id(game->getCaveID());
-	WarpDestination dest;
+	if (preset) {
+		set_warp_day(preset->day);
+		if (day_opt) {
+			day_opt->set_selection(preset->day);
+		}
+	}
 
-	dest.area         = game->mCurrentCourseInfo->mCourseIndex;
-	dest.cave         = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
-	dest.sublevel     = game->mCurrentFloor;
-	dest.day          = Game::gameSystem->mTimeMgr->mDayCount;
-	dest.use_set_seed = false;
-
-	return dest;
+	update_day_opt();
+	update_enter_type_opt();
 }
 
 void Warp::set_dest(WarpDestination new_dest)
@@ -124,6 +135,9 @@ void Warp::set_warp_area(size_t area)
 	update_cave_opt();
 	update_sublevel_opt();
 	update_preset_opt();
+	update_day_opt();
+	update_enter_type_opt();
+	update_captain_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -133,8 +147,9 @@ void Warp::set_warp_cave(size_t cave)
 
 	update_sublevel_opt();
 	update_preset_opt();
-
-	enter_area_type_opt->visible = dest.cave == 0;
+	update_day_opt();
+	update_enter_type_opt();
+	update_captain_opt();
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
@@ -200,16 +215,45 @@ void Warp::update_preset_opt()
 	}
 }
 
+// only show day option when warping with no preset
+void Warp::update_day_opt()
+{
+	if (day_opt) {
+		if (preset == nullptr) {
+			day_opt->visible = true;
+		} else {
+			day_opt->visible = false;
+		}
+	}
+}
+
+// only show enter type option when warping AG with no preset
+void Warp::update_enter_type_opt()
+{
+	if (enter_area_type_opt) {
+		if (dest.cave == 0 && preset == nullptr) {
+			enter_area_type_opt->visible = true;
+		} else {
+			enter_area_type_opt->visible = false;
+		}
+	}
+}
+
+void Warp::update_captain_opt()
+{
+	captain_opt->visible = dest.cave > 0;
+}
+
 void Warp::do_warp()
 {
+	warping = true;
+
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
 	if (preset) {
 		preset->apply();
-		preset_status                      = PS_Stale;
-		p2gz->preset_mgr->last_used_preset = preset;
-		needs_post_load_action             = true;
+		needs_post_load_action = true;
 	}
 
 	if (particle2dMgr) {
@@ -217,6 +261,8 @@ void Warp::do_warp()
 	}
 
 	reset_cave_treasure_collections(game);
+	p2gz->poko_editor->apply_cave_pokos();
+
 	if (dest.cave == 0) {
 		warp_to_area(game);
 	} else {
@@ -237,6 +283,17 @@ void Warp::do_warp()
 		skip_save_prompts_opt->visible          = false;
 		skip_save_prompts_opt->set_selection(true);
 		p2gz->skip_save->toggle_save_skip(true);
+	}
+
+	already_saved_generators = false;
+
+	// TODO: This is obviously a dumb hack. Once we have more trainers, this should be refactored and handled by a trainer manager.
+	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
+		p2gz->empress_trainer->stop();
+	}
+
+	if (p2gz->collision_viewer->is_enabled()) {
+		p2gz->collision_viewer->handle_warp();
 	}
 }
 
@@ -307,15 +364,16 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
 
 	// Save changes to world state if we're above-ground currently
-	if (in_above_ground_play()) {
+	if (in_above_ground_play() && !already_saved_generators) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
-	game->mCurrentCourseInfo = dst_course_info;
-	game->mCurrentCave       = cave;
-	game->mCaveID            = caveID;
-	game->mCaveIndex         = caveID.getID();
-	game->mCurrentFloor      = dest.sublevel;
+	game->mCurrentCourseInfo                    = dst_course_info;
+	game->mCurrentCave                          = cave;
+	game->mCaveID                               = caveID;
+	game->mCaveIndex                            = caveID.getID();
+	game->mCurrentFloor                         = dest.sublevel;
+	Game::playData->mCaveSaveData.mActiveNaviID = active_captain;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 
 	// adjust timer to account for saving + enable sub timer
@@ -361,7 +419,7 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	}
 
 	// Save changes to world state if we're above-ground currently
-	if (in_above_ground_play()) {
+	if (in_above_ground_play() && !already_saved_generators) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -431,6 +489,8 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 
 void Warp::do_post_warp()
 {
+	warping = false;
+
 	if (!needs_post_load_action) {
 		return;
 	}
@@ -438,5 +498,7 @@ void Warp::do_post_warp()
 	needs_post_load_action = false;
 	if (preset) {
 		preset->apply_post_load();
+		preset_status     = PS_Stale;
+		dest.use_set_seed = false;
 	}
 }

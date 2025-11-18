@@ -122,13 +122,6 @@ void CaveState::gameStart(SingleGameSection* game)
 		PSSystem::checkGameScene(scene);
 		scene->stopPollutionSe();
 	}
-
-	// @P2GZ - post-load actions on warp
-	p2gz->warp->do_post_warp();
-
-	// @P2GZ - save current squad to history when starting a sublevel
-	gz::Segment* seg = p2gz->segment_history->cur_segment_mut();
-	seg->preset      = p2gz->preset_mgr->create();
 }
 
 /**
@@ -151,7 +144,7 @@ void CaveState::exec(SingleGameSection* game)
 
 	// @P2GZ: skippable treasure cutscenes
 	// force collect treasure during cutscene if conditions are met
-	p2gz->skippable_treasure_cutscenes->force_collect(game->mDraw2DCreature);
+	p2gz->skippable_cutscenes->force_collect(game->mDraw2DCreature);
 
 	// the saving between cave floors is part of this state
 	if (mDrawSave) {
@@ -496,7 +489,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 {
 	// @P2GZ: skippable treasure cutscenes
 	// make treasure cutscenes skippable
-	p2gz->skippable_treasure_cutscenes->prime_skip(game->mDraw2DCreature, config);
+	p2gz->skippable_cutscenes->prime_skip(game->mDraw2DCreature, config);
 
 	if (config->is("s0B_cv_coursein")) {
 		game->createFallPikminSound();
@@ -561,7 +554,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		game->saveCaveMore();
 
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = true;
+		p2gz->segment_history->entering_next_segment = true;
 	}
 
 	if (config->is("s0C_cv_escape")) {
@@ -570,7 +563,7 @@ void CaveState::onMovieStart(SingleGameSection* game, MovieConfig* config, u32, 
 		game->prepareFountainOn(geyserpos);
 
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = true;
+		p2gz->segment_history->entering_next_segment = true;
 	}
 }
 
@@ -588,7 +581,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 
 	if (config->is("s0C_cv_escape")) {
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = false;
+		p2gz->segment_history->entering_next_segment = false;
 
 		PSMCancelToPauseOffMainBgm();
 		moviePlayer->clearSuspendedDemo();
@@ -619,7 +612,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		mDrawSave = true;
 
 		// @P2GZ - retry sublevel
-		p2gz->segment_history->entering_next_sublevel = false;
+		p2gz->segment_history->entering_next_segment = false;
 
 		return;
 	} else if (config->is("g07_cv_gamestart")) {
@@ -630,12 +623,14 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		bool isFinal       = (cFloor == maxFloor);
 		disp.mIsFinalFloor = isFinal;
 
+		// @P2GZ - post-load actions on warp
+		p2gz->warp->do_post_warp();
+
+		// @P2GZ - save current squad to history when starting a sublevel
+		p2gz->segment_history->record_squad();
+
 		if (isFinal) {
 			Screen::gGame2DMgr->open_GameCave(disp, 2);
-
-			// @P2GZ - post-load actions on warp
-			p2gz->warp->do_post_warp();
-
 			return;
 		}
 
@@ -654,6 +649,12 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 			piki->mVelocity       = 0.0f;
 			piki->mTargetVelocity = 0.0f;
 		}
+
+		// @P2GZ - post-load actions on warp
+		p2gz->warp->do_post_warp();
+
+		// @P2GZ - save current squad to history when starting a sublevel
+		p2gz->segment_history->record_squad();
 
 		if (!playData->isDemoFlag(DEMO_First_Cave_Enter)) {
 			playData->setDemoFlag(DEMO_First_Cave_Enter);
@@ -676,10 +677,6 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 
 			if (isFinal) {
 				Screen::gGame2DMgr->open_GameCave(disp, 2);
-
-				// @P2GZ - post-load actions on warp
-				p2gz->warp->do_post_warp();
-
 				return;
 			}
 

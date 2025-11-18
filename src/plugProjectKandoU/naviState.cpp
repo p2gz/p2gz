@@ -27,6 +27,9 @@
 #include "utilityU.h"
 #include "JSystem/JUtility/JUTGamePad.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 int unusedNaviStateArray[] = { 1, 2, 3, 0 }; // ?
 
 static const int unusedNaviStateArray2[] = { 0, 0, 0 };
@@ -416,7 +419,12 @@ void NaviWalkState::exec(Navi* navi)
 			}
 
 			Onyon* onyon = navi->checkOnyon();
-			if (onyon && navi->mController1->isButtonDown(JUTGamePad::PRESS_A) && onyon->mOnyonType != ONYON_TYPE_POD) {
+
+			// @P2GZ: freecam
+			// don't open onion menus when enabling freecam
+			// if (onyon && navi->mController1->isButtonDown(JUTGamePad::PRESS_A) && onyon->mOnyonType != ONYON_TYPE_POD) {
+			if (onyon && navi->mController1->isButtonDown(JUTGamePad::PRESS_A) && onyon->mOnyonType != ONYON_TYPE_POD
+			    && !p2gz->freecam->is_enabled()) {
 				NaviContainerArg containerArg(onyon);
 				transit(navi, NSID_Container, &containerArg);
 				return;

@@ -6,6 +6,9 @@
 #include "Viewport.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 
 bool AILOD::drawInfo;
@@ -38,6 +41,13 @@ AILOD::AILOD()
  */
 void Creature::updateLOD(Game::AILODParm& parm)
 {
+	// @P2GZ: freecam
+	// force AILOD_IsVisibleBoth while enabled
+	if (p2gz->freecam->is_enabled()) {
+		mLod.setFlag(AILOD_IsVisibleBoth);
+		return;
+	}
+
 	Sys::Sphere lodSphere;
 	Sys::Cylinder lodCylinder;
 	getLODSphere(lodSphere);

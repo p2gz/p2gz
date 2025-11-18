@@ -2,6 +2,7 @@
 #define _GZCOLLECTIONS_H
 
 #include <types.h>
+#include <stl/mem.h>
 #include <p2gz/gzMacros.h>
 
 namespace gz {
@@ -40,6 +41,15 @@ struct RingBuffer {
 		GZASSERTLINE(mLen > 0);
 		GZASSERTLINE(n < mLen);
 		return mBuf[(mBufHead + N - n - 1) % N];
+	}
+
+	bool atCapacity() { return mLen == N; }
+
+	/// Gets the oldest thing in the ring buffer. Only save to call if `atCapacity()` returns true.
+	T getLast()
+	{
+		GZASSERTLINE(mLen == N);
+		return peekN(N);
 	}
 
 private:
@@ -127,7 +137,7 @@ private:
 	void _grow(size_t newCapacity)
 	{
 		T* newBuf = new T[newCapacity];
-		memcpy(newBuf, mBuf, sizeof(T) * mLen);
+		memmove(newBuf, mBuf, sizeof(T) * mLen);
 		delete[] mBuf;
 		mBuf      = newBuf;
 		mCapacity = newCapacity;
@@ -148,6 +158,12 @@ static void copy_vec(Vec<T>& dst, Vec<T>& src)
 		dst.push(src[i]);
 	}
 }
+
+#define DELETE_ALL(vec)                      \
+	for (size_t i = 0; i < vec.len(); i++) { \
+		delete vec[i];                       \
+	}                                        \
+	vec.clear()
 
 } // namespace gz
 
