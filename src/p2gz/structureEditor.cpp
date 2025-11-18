@@ -120,9 +120,11 @@ void StructureEditor::init()
 
 void StructureEditor::add_gate(Game::ItemGate* gate)
 {
-	GateWrapper* gate_wrapper = new GateWrapper();
-	gate_wrapper->gate        = gate;
-	gate_wrapper->name        = get_gate_name(gate->mPosition.x, gate->mPosition.z);
+	bool generated               = false;
+	GateWrapper* gate_wrapper    = new GateWrapper();
+	gate_wrapper->gate           = gate;
+	gate_wrapper->name           = get_gate_name(gate->mPosition.x, gate->mPosition.z, generated);
+	gate_wrapper->generated_name = generated;
 	gates.push(gate_wrapper);
 
 	// clang-format off
@@ -137,13 +139,13 @@ void StructureEditor::add_gate(Game::ItemGate* gate)
 
 void StructureEditor::clear_gates()
 {
-	gates.clear();
+	DELETE_ALL(gates);
 	if (gate_menu) {
 		gate_menu->clear();
 	}
 }
 
-const char* StructureEditor::get_gate_name(f32 x, f32 z)
+const char* StructureEditor::get_gate_name(f32 x, f32 z, bool& generated)
 {
 	for (size_t i = 0; i < NUM_GATE_NAMES; i++) {
 		NameCoordinateMap map = GATE_COORD_TO_NAME[i];
@@ -154,6 +156,7 @@ const char* StructureEditor::get_gate_name(f32 x, f32 z)
 
 	char* name = new char[8];
 	sprintf(name, "gate %d", gates.len());
+	generated = true;
 	return name;
 }
 
@@ -232,7 +235,7 @@ void StructureEditor::add_bridge(Game::ItemBridge::Item* bridge)
 
 void StructureEditor::clear_bridges()
 {
-	bridges.clear();
+	DELETE_ALL(bridges);
 	if (bridge_menu) {
 		bridge_menu->clear();
 	}
@@ -247,9 +250,7 @@ const char* StructureEditor::get_bridge_name(f32 x, f32 z)
 		}
 	}
 
-	char* name = new char[8];
-	sprintf(name, "bridge %d", bridges.len());
-	return name;
+	GZASSERTLINE(false); // all bridges should be accounted for
 }
 
 void StructureEditor::set_bridge_stages_left(const char* name, int stages_left)
@@ -345,7 +346,8 @@ void StructureEditor::sync_bridges()
 
 void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
 {
-	const char* plug_name = get_plug_name(plug->mPosition.x, plug->mPosition.z);
+	bool generated        = false;
+	const char* plug_name = get_plug_name(plug->mPosition.x, plug->mPosition.z, generated);
 	// check if we already have a menu item for this plug
 	for (int i = 0; i < plugs.len(); i++) {
 		if (strcmp(plug_name, plugs[i]->name) == 0) {
@@ -354,18 +356,19 @@ void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
 
 		// we only ever have one plug per floor, so just check for the only name it could have
 		if (in_cave_play() && (strcmp("plug 0", plugs[i]->name) == 0)) {
+			delete plug_name;
 			return;
 		}
 	}
 
-	PlugWrapper* wrapper = new PlugWrapper();
-	wrapper->plug        = plug;
-	wrapper->name        = plug_name;
-	wrapper->pos         = plug->mPosition;
+	PlugWrapper* wrapper    = new PlugWrapper();
+	wrapper->plug           = plug;
+	wrapper->name           = plug_name;
+	wrapper->pos            = plug->mPosition;
+	wrapper->generated_name = generated;
 	plugs.push(wrapper);
 
 	Game::ItemBarrel::Mgr* mgr = Game::ItemBarrel::mgr;
-
 	if (!mgr) {
 		return;
 	}
@@ -389,13 +392,13 @@ void StructureEditor::set_plug_destroyed(bool destroyed)
 
 void StructureEditor::clear_plugs()
 {
-	plugs.clear();
+	DELETE_ALL(plugs);
 	if (plug_menu) {
 		plug_menu->clear();
 	}
 }
 
-const char* StructureEditor::get_plug_name(f32 x, f32 z)
+const char* StructureEditor::get_plug_name(f32 x, f32 z, bool& generated)
 {
 	for (size_t i = 0; i < NUM_PLUG_NAMES; i++) {
 		NameCoordinateMap map = PLUG_COORD_TO_NAME[i];
@@ -406,6 +409,7 @@ const char* StructureEditor::get_plug_name(f32 x, f32 z)
 
 	char* name = new char[8];
 	sprintf(name, "plug %d", plugs.len());
+	generated = true;
 	return name;
 }
 
@@ -529,7 +533,7 @@ void StructureEditor::set_bag_flattened(const char* name, bool flattened)
 
 void StructureEditor::clear_bags()
 {
-	bags.clear();
+	DELETE_ALL(bags);
 	if (bag_menu) {
 		bag_menu->clear();
 	}
@@ -544,9 +548,7 @@ const char* StructureEditor::get_bag_name(f32 x, f32 z)
 		}
 	}
 
-	char* name = new char[8];
-	sprintf(name, "bag %d", plugs.len());
-	return name;
+	GZASSERTLINE(false); // all bags should be accounted for
 }
 
 void StructureEditor::BagWrapper::set_bag_state(bool alive)
