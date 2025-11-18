@@ -134,6 +134,10 @@ void P2GZ::draw_2d()
 		return;
 	}
 
+#ifdef GZ_TEST
+	test_runner->draw_2d();
+#endif
+
 	menu->draw();
 	timer->draw();
 	segment_history->draw_2d();

@@ -158,6 +158,8 @@ public:
 		return this;
 	}
 
+	inline const char* get_name() { return name; }
+
 private:
 	const char* name;
 	size_t cur_op;
@@ -171,6 +173,7 @@ public:
 
 	void init();
 	void update();
+	void draw_2d();
 
 	JUTGamePadRecordFixed* gamepad;
 
