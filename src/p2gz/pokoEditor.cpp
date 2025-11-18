@@ -1,6 +1,6 @@
 #include <p2gz/PokoEditor.h>
 #include <p2gz/p2gz.h>
-#include <p2gz/HelperInlines.h>
+#include <p2gz/Utility.h>
 #include <Game/Entities/ItemOnyon.h>
 #include <Game/gamePlayData.h>
 

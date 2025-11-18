@@ -1,4 +1,4 @@
-#include <p2gz/HelperInlines.h>
+#include <p2gz/Utility.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <p2gz/p2gz.h>
@@ -197,8 +197,8 @@ Segment* SegmentHistory::start_segment()
 {
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
-	Segment* segment     = new Segment();
-	segment->preset      = nullptr; // pikis are not alive when this is run. it will be set later
+	Segment* segment = new Segment();
+	segment->preset  = nullptr; // pikis are not alive when this is run. it will be set later
 
 	if (segments.atCapacity()) {
 		Segment* oldestSegment = segments.getLast();

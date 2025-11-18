@@ -9,6 +9,104 @@
 #include <Game/MoviePlayer.h>
 
 namespace gz {
+/// Course/area codes used throughout the codebase
+enum CourseIndex { COURSE_VoR, COURSE_AW, COURSE_PP, COURSE_WW };
+
+/// Cave codes used in P2GZ files
+enum CaveIndex {
+	CAVE_AboveGround = 0,
+	CAVE_EC          = 1,
+	CAVE_SCx         = 2,
+	CAVE_FC          = 3,
+	CAVE_HoB         = 4,
+	CAVE_WFG         = 5,
+	CAVE_BK          = 6,
+	CAVE_SH          = 7,
+	CAVE_CoS         = 8,
+	CAVE_GK          = 9,
+	CAVE_SR          = 10,
+	CAVE_SmC         = 11,
+	CAVE_CoC         = 12,
+	CAVE_HoH         = 13,
+	CAVE_DD          = 14,
+	CAVE_COUNT, // 15
+};
+
+/// convert cave index into course/area index (e.g. EC => VoR)
+inline CourseIndex get_area_from_cave(CaveIndex cave)
+{
+	switch (cave) {
+	case CAVE_EC:
+	case CAVE_SCx:
+	case CAVE_FC:
+		return COURSE_VoR;
+
+	case CAVE_HoB:
+	case CAVE_WFG:
+	case CAVE_BK:
+	case CAVE_SH:
+		return COURSE_AW;
+
+	case CAVE_CoS:
+	case CAVE_GK:
+	case CAVE_SR:
+	case CAVE_SmC:
+		return COURSE_PP;
+
+	case CAVE_CoC:
+	case CAVE_HoH:
+	case CAVE_DD:
+		return COURSE_WW;
+
+	default:
+		OSReport("[P2GZ WARN] get area from cave: bad cave id [%d]\n", cave);
+		GZASSERTLINE(false); // force crash
+		return COURSE_WW;
+	}
+}
+
+/// convert cave index into caveID (e.g. EC => 't_01')
+inline ID32 get_id_from_cave(CaveIndex cave)
+{
+	switch (cave) {
+	case CAVE_EC:
+		return ID32('t_01');
+	case CAVE_SCx:
+		return ID32('t_02');
+	case CAVE_FC:
+		return ID32('t_03');
+
+	case CAVE_HoB:
+		return ID32('f_01');
+	case CAVE_WFG:
+		return ID32('f_02');
+	case CAVE_BK:
+		return ID32('f_03');
+	case CAVE_SH:
+		return ID32('f_04');
+
+	case CAVE_CoS:
+		return ID32('y_01');
+	case CAVE_GK:
+		return ID32('y_02');
+	case CAVE_SR:
+		return ID32('y_03');
+	case CAVE_SmC:
+		return ID32('y_04');
+
+	case CAVE_CoC:
+		return ID32('l_01');
+	case CAVE_HoH:
+		return ID32('l_02');
+	case CAVE_DD:
+		return ID32('l_03');
+
+	default:
+		OSReport("[P2GZ WARN] get id from cave: bad cave id [%d]\n", cave);
+		GZASSERTLINE(false); // force crash
+		return ID32('l_03');
+	}
+}
 
 inline bool is_30_fps()
 {

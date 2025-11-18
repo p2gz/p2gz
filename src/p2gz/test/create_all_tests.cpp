@@ -1,6 +1,6 @@
 #include <p2gz/p2gz.h>
 #include <p2gz/Test.h>
-#include <p2gz/HelperInlines.h>
+#include <p2gz/Utility.h>
 #include <p2gz/BoundDelegate.h>
 #include <Dolphin/pad.h>
 #include <Game/gamePlayData.h>
