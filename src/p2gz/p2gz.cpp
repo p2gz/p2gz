@@ -12,6 +12,7 @@
 #include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
 #include <p2gz/TreasureEditor.h>
+#include <p2gz/Trainers.h>
 #include <Game/Navi.h>
 #include <P2JME/P2JME.h>
 #include <IDelegate.h>
@@ -59,6 +60,7 @@ P2GZ::P2GZ()
 	ek_editor            = new EKEditor();
 	treasure_editor      = new TreasureEditor();
 	localization_op      = new Localization();
+	empress_trainer      = new EmpressTrainer();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();
@@ -118,6 +120,7 @@ void P2GZ::update()
 	segment_history->update();
 	dismiss_positions->update();
 	navi_tools->update();
+	empress_trainer->update();
 
 	warp->update_lockout_frames();
 
@@ -141,6 +144,7 @@ void P2GZ::draw_2d()
 	menu->draw();
 	timer->draw();
 	segment_history->draw_2d();
+	empress_trainer->draw();
 }
 
 // Anything that needs to be drawn in 3D space should be drawn here.

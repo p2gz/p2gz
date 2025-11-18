@@ -29,6 +29,7 @@
 #include <p2gz/TreasureEditor.h>
 #include <p2gz/GeneratorDebugInfo.h>
 #include <p2gz/Test.h>
+#include <p2gz/Trainers.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha3"
@@ -76,6 +77,8 @@ public:
 	gz::CaveDebugInfo* cave_debug_info;
 	gz::TreasureEditor* treasure_editor;
 	gz::Localization* localization_op;
+	gz::EmpressTrainer* empress_trainer;
+
 	gz::test::TestRunner* test_runner;
 
 private:
