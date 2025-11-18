@@ -59,5 +59,11 @@ void TestRunner::create_all_tests()
         DO_UNTIL(SKIP_CUTSCENE, in_above_ground_gameplay)
         DO_ACTION(new FreeDelegate(&assert_has_cos_upgrades))
     ));
+    tests.push(TEST("warp 20 times",
+        DO_N(20, DO_ACTION(WARP_WITH_PRESET("CoS", PoD))
+                 WAIT_FOR(in_above_ground_play)
+                 DO_UNTIL(SKIP_CUTSCENE, in_above_ground_gameplay)
+        )
+    ));
 	// clang-format on
 }

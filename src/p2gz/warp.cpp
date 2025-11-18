@@ -64,6 +64,7 @@ Warp::Warp()
 	preset_status              = PS_Stale;
 	cave                       = nullptr;
 	lockout_frames             = 0;
+	active_captain             = NAVIID_Olimar;
 }
 
 void Warp::init()
@@ -73,6 +74,7 @@ void Warp::init()
 	cave_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/cave"));
 	day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
 	enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
+	captain_opt         = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/captain"));
 	seed_opt            = static_cast<HexInputOption*>(p2gz->menu->get_option("warp/seed"));
 	preset_opt          = static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"));
 
@@ -82,6 +84,8 @@ void Warp::init()
 	for (size_t i = 0; i < ARRAY_SIZE(ENTER_KINDS); i++) {
 		enter_area_type_opt->options.push(ENTER_KINDS[i]);
 	}
+	captain_opt->options.push("olimar");
+	captain_opt->options.push("louie");
 
 	enter_area_type_opt->visible = false;
 
@@ -89,6 +93,13 @@ void Warp::init()
 
 	update_cave_opt();
 	update_sublevel_opt();
+	update_captain_opt();
+}
+
+void Warp::sync()
+{
+	active_captain = Game::playData->mCaveSaveData.mActiveNaviID;
+	captain_opt->set_selection(active_captain);
 }
 
 void Warp::set_preset(Preset* preset_, int preset_status_)
@@ -126,6 +137,7 @@ void Warp::set_warp_area(size_t area)
 	update_preset_opt();
 	update_day_opt();
 	update_enter_type_opt();
+	update_captain_opt();
 }
 
 void Warp::set_warp_cave(size_t cave)
@@ -137,6 +149,7 @@ void Warp::set_warp_cave(size_t cave)
 	update_preset_opt();
 	update_day_opt();
 	update_enter_type_opt();
+	update_captain_opt();
 }
 
 void Warp::set_warp_sublevel(s32 sublevel)
@@ -226,6 +239,11 @@ void Warp::update_enter_type_opt()
 	}
 }
 
+void Warp::update_captain_opt()
+{
+	captain_opt->visible = dest.cave > 0;
+}
+
 void Warp::do_warp()
 {
 	warping = true;
@@ -268,6 +286,11 @@ void Warp::do_warp()
 	}
 
 	already_saved_generators = false;
+
+	// TODO: This is obviously a dumb hack. Once we have more trainers, this should be refactored and handled by a trainer manager.
+	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
+		p2gz->empress_trainer->stop();
+	}
 
 	if (p2gz->collision_viewer->is_enabled()) {
 		p2gz->collision_viewer->handle_warp();
@@ -345,11 +368,12 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
-	game->mCurrentCourseInfo = dst_course_info;
-	game->mCurrentCave       = cave;
-	game->mCaveID            = caveID;
-	game->mCaveIndex         = caveID.getID();
-	game->mCurrentFloor      = dest.sublevel;
+	game->mCurrentCourseInfo                    = dst_course_info;
+	game->mCurrentCave                          = cave;
+	game->mCaveID                               = caveID;
+	game->mCaveIndex                            = caveID.getID();
+	game->mCurrentFloor                         = dest.sublevel;
+	Game::playData->mCaveSaveData.mActiveNaviID = active_captain;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 
 	// adjust timer to account for saving + enable sub timer

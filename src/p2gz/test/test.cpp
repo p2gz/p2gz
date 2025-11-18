@@ -2,6 +2,7 @@
 #include <p2gz/Test.h>
 #include <JSystem/JUtility/JUTGamePad.h>
 #include <Dolphin/pad.h>
+#include <P2JME/P2JME.h>
 
 using namespace gz;
 using namespace gz::test;
@@ -48,6 +49,25 @@ void TestRunner::update()
 	if (cur_test >= tests.len()) {
 		OSReport("GZTest: Done with all tests\n");
 	}
+}
+
+void TestRunner::draw_2d()
+{
+	if (!inited || cur_test >= tests.len()) {
+		return;
+	}
+
+	Test* test = tests[cur_test];
+
+	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
+	j2d.initiate();
+	j2d.mGlyphWidth  = 28.0f;
+	j2d.mGlyphHeight = 28.0f;
+	const JUtility::TColor color(200, 255, 200, 255);
+	j2d.mCharColor.set(color);
+	j2d.mGradientColor.set(color);
+
+	j2d.print(96.0f, 128.0f, "Running test:\n-> %s", test->get_name());
 }
 
 Test::Test(const char* name_)

@@ -51,12 +51,13 @@ void GZMenu::init_menu()
 	// clang-format off
 	// Structure of GZ menu defined here:
     root_layer = (new ListMenu())
-		->push(new OpenSubMenuOption("warp", (new ListMenu())
+		->push(new OpenSubMenuOption("warp", (new ListMenu(new Delegate<Warp>(p2gz->warp, &Warp::sync)))
 			->push(new RadioMenuOption("area", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_area)))
 			->push(new RadioMenuOption("cave", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_warp_cave)))
 			->push(new RangeMenuOption("sublevel", 1, 14, 1, RangeMenuOption::WRAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_sublevel)))
 			->push(new HexInputOption("seed", "random", new Delegate1<Warp, u32>(p2gz->warp, &Warp::set_seed), new Delegate<Warp>(p2gz->warp, &Warp::set_random_seed)))
 			->push(new RadioMenuOption("enter method", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_enter_area_type)))
+			->push(new RadioMenuOption("captain", new Delegate1<Warp, size_t>(p2gz->warp, &Warp::set_active_captain)))
 			->push(new RangeMenuOption("day", 1, 99, 5, RangeMenuOption::CAP, new Delegate1<Warp, s32>(p2gz->warp, &Warp::set_warp_day)))
 			->push(new PresetMenuOption(new Delegate2<Warp, Preset*, int>(p2gz->warp, &Warp::set_preset)))
 			->push(new PerformActionMenuOption("go", new Delegate<Warp>(p2gz->warp, &Warp::do_warp)))
@@ -88,6 +89,9 @@ void GZMenu::init_menu()
 				->push_to_row(new RangeMenuOption("cb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_bud", true))
 				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_flower", true))
 			))
+		))
+		->push(new OpenSubMenuOption("trainers", (new ListMenu())
+			->push(new PerformActionMenuOption("fast empress", new Delegate<EmpressTrainer>(p2gz->empress_trainer, &EmpressTrainer::start)))
 		))
 		->push(new OpenSubMenuOption("captain", (new ListMenu())
 			->push(new DecimalInputOption("pokos", new Delegate1<PokoEditor, u32>(p2gz->poko_editor, &PokoEditor::set_pokos), new Delegate<PokoEditor>(p2gz->poko_editor, &PokoEditor::sync)))
@@ -340,6 +344,18 @@ void GZMenu::navigate_to(const char* path)
 	root_layer->navigate_to(path);
 }
 
+MenuLayer::~MenuLayer()
+{
+	if (on_opened) {
+		delete on_opened;
+	}
+}
+
+ListMenu::~ListMenu()
+{
+	clear();
+}
+
 MenuOption* ListMenu::get_option(const char* path)
 {
 	if (!path) {
@@ -511,6 +527,16 @@ void ListMenu::draw(J2DPrint& j2d, f32& x, f32& z)
 	}
 
 	p2gz->menu->draw_control(j2d, Controller::PRESS_B, "back");
+}
+
+GridMenu::~GridMenu()
+{
+	for (size_t row = 0; row < options.len(); row++) {
+		for (size_t col = 0; col < options[row]->len(); col++) {
+			delete (*options[row])[col];
+		}
+		delete options[row];
+	}
 }
 
 GridMenu* GridMenu::push_to_row(MenuOption* option)
@@ -733,6 +759,17 @@ HexKeypad::HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u3
 	// clang-format on
 }
 
+HexKeypad::~HexKeypad()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+	if (on_unselected) {
+		delete on_unselected;
+	}
+	delete keypad;
+}
+
 void HexKeypad::select_digit(u32 digit)
 {
 	unselected = false;
@@ -835,6 +872,14 @@ DecimalKeypad::DecimalKeypad(const char* title_, IDelegate1<u32>* on_selected_, 
 	// clang-format on
 }
 
+DecimalKeypad::~DecimalKeypad()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+	delete keypad;
+}
+
 void DecimalKeypad::select_digit(u32 digit)
 {
 	is_unselected = false;
@@ -931,6 +976,13 @@ void MenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 }
 
+ToggleMenuOption::~ToggleMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+}
+
 void ToggleMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	if (image_name) {
@@ -961,6 +1013,15 @@ OpenSubMenuOption::OpenSubMenuOption(const char* title_, MenuLayer* sub_menu_)
 	}
 }
 
+OpenSubMenuOption::~OpenSubMenuOption()
+{
+	{
+		if (sub_menu) {
+			delete sub_menu;
+		}
+	}
+}
+
 bool OpenSubMenuOption::select()
 {
 	if (sub_menu) {
@@ -979,12 +1040,26 @@ void OpenSubMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 }
 
+PerformActionMenuOption::~PerformActionMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+}
+
 void PerformActionMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	MenuOption::draw(j2d, x, z, selected);
 
 	if (selected) {
 		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "select");
+	}
+}
+
+RadioMenuOption::~RadioMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
 	}
 }
 
@@ -1050,6 +1125,13 @@ void RadioMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 
 	if (selected) {
 		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
+	}
+}
+
+RangeMenuOption::~RangeMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
 	}
 }
 
@@ -1142,6 +1224,13 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 }
 
+FloatRangeMenuOption::~FloatRangeMenuOption()
+{
+	if (on_selected) {
+		delete on_selected;
+	}
+}
+
 void FloatRangeMenuOption::update()
 {
 	p2gz->menu->block_open_close_action();
@@ -1229,6 +1318,11 @@ HexInputOption::HexInputOption(const char* title_, const char* value_if_unselect
 	value_if_unselected = value_if_unselected_;
 }
 
+HexInputOption::~HexInputOption()
+{
+	delete keypad;
+}
+
 MenuLayer* HexInputOption::get_sub_menu()
 {
 	return keypad;
@@ -1275,6 +1369,14 @@ DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_s
 {
 	keypad     = new DecimalKeypad(title_, on_selected, on_opened);
 	sync_value = on_opened;
+}
+
+DecimalInputOption::~DecimalInputOption()
+{
+	if (sync_value) {
+		delete sync_value;
+	}
+	delete keypad;
 }
 
 MenuLayer* DecimalInputOption::get_sub_menu()
