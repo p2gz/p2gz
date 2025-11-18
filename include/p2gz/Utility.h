@@ -60,6 +60,7 @@ inline CourseIndex get_area_from_cave(CaveIndex cave)
 
 	default:
 		OSReport("[P2GZ WARN] get area from cave: bad cave id [%d]\n", cave);
+		GZASSERTLINE(false); // force crash
 		return COURSE_WW;
 	}
 }
@@ -102,6 +103,7 @@ inline ID32 get_id_from_cave(CaveIndex cave)
 
 	default:
 		OSReport("[P2GZ WARN] get id from cave: bad cave id [%d]\n", cave);
+		GZASSERTLINE(false); // force crash
 		return ID32('l_03');
 	}
 }
