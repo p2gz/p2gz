@@ -30,6 +30,10 @@ public:
 	Segment* cur_segment();
 	void record_squad();
 
+	void retry_segment();
+	void retry_same_seed();
+	void retry_cave();
+
 	bool started_creating_map;
 	bool entering_next_segment;
 
