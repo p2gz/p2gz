@@ -22,8 +22,6 @@ enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
 
 enum GenSpawnOverride { PSO_Ignore = 0, PSO_DontSpawn = 1, PSO_Spawn = 2, PSO_SpawnAndMove = 3 };
 
-enum CourseIndex { COURSE_VoR, COURSE_AW, COURSE_PP, COURSE_WW };
-
 struct TreasureAreaMap {
 	u8 id;
 	u8 course_idx;
@@ -47,8 +45,8 @@ struct Preset {
 	struct TreasureGenSpawnOverride {
 		TreasureGenSpawnOverride()
 		{
-			id             = 255;
-			spawn_override = PSO_Ignore;
+			id                = 255;
+			spawn_override    = PSO_Ignore;
 			position_override = Vector3f::zero;
 		}
 		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
@@ -75,6 +73,8 @@ public:
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
 	Preset* set_time(f32 time_);
 	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
+	Preset* set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIndex flags[]);
+	Preset* set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[]);
 	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
 	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
 	Preset* set_finished_bridges(size_t num_bridges, const char* bridges[]);
@@ -97,6 +97,8 @@ public:
 	u8 num_spicies;
 	f32 time;
 	CutscenesBitfield cutscenes;
+	BitFlag<u16> ek_cutscenes;
+	BitFlag<u16> cave_cutscenes;
 	Vec<const char*> destroyed_gates;
 	Vec<const char*> finished_bridges;
 	Vec<const char*> bags_flattened;

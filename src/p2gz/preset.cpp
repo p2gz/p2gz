@@ -84,6 +84,8 @@ Preset::Preset(Preset& other)
 	plug_destroyed   = other.plug_destroyed;
 	upgrades         = other.upgrades;
 	cutscenes        = other.cutscenes;
+	ek_cutscenes     = other.ek_cutscenes;
+	cave_cutscenes   = other.cave_cutscenes;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
@@ -189,6 +191,24 @@ Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
 {
 	for (size_t i = 0; i < num_flags; i++) {
 		cutscenes.set_cutscene_played(flags[i]);
+	}
+	return this;
+}
+
+Preset* Preset::set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIndex flags[])
+{
+	for (size_t i = 0; i < num_flags; i++) {
+		const u16 bit = 1 << flags[i];
+		ek_cutscenes.set(bit);
+	}
+	return this;
+}
+
+Preset* Preset::set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[])
+{
+	for (size_t i = 0; i < num_flags; i++) {
+		const u16 bit = 1 << flags[i];
+		cave_cutscenes.set(bit);
 	}
 	return this;
 }
@@ -329,10 +349,34 @@ void Preset::apply()
 
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
+	// set regular cutscenes
 	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
 		const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
 		if (cutscenes.cutscene_played(flag)) {
 			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
+			if (cutscene_toggle) {
+				cutscene_toggle->set_cutscene_flag(true);
+			}
+		}
+	}
+	// set exploration kit discovery cutscenes
+	for (size_t i = 0; i < Game::OlimarData::ODII_COUNT; i++) {
+		const Game::OlimarData::ItemIndex flag = static_cast<Game::OlimarData::ItemIndex>(i);
+		const u16 mask                         = 1 << i;
+		if (ek_cutscenes.isSet(mask)) {
+			EKCutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_ek_toggle(flag);
+			if (cutscene_toggle) {
+				cutscene_toggle->set_cutscene_flag(true);
+			}
+		}
+	}
+	// set cave discovery cutscenes
+	// (from 1 because we can't "discover" above-ground)
+	for (size_t i = 1; i < CAVE_COUNT; i++) {
+		const CaveIndex flag = static_cast<CaveIndex>(i);
+		const u16 mask       = 1 << i;
+		if (cave_cutscenes.isSet(mask)) {
+			CaveCutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_cave_toggle(flag);
 			if (cutscene_toggle) {
 				cutscene_toggle->set_cutscene_flag(true);
 			}

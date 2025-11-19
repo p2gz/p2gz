@@ -1,7 +1,7 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <p2gz/timer.h>
-#include <p2gz/HelperInlines.h>
+#include <p2gz/Utility.h>
 #include <p2gz/p2gz.h>
 
 #include "Morimura/HurryUp.h"

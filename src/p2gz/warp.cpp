@@ -254,7 +254,7 @@ void Warp::do_warp()
 
 	if (preset) {
 		preset->apply();
-		needs_post_load_action             = true;
+		needs_post_load_action = true;
 	}
 
 	if (particle2dMgr) {
@@ -287,6 +287,15 @@ void Warp::do_warp()
 	}
 
 	already_saved_generators = false;
+
+	// TODO: This is obviously a dumb hack. Once we have more trainers, this should be refactored and handled by a trainer manager.
+	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
+		p2gz->empress_trainer->stop();
+	}
+
+	if (p2gz->collision_viewer->is_enabled()) {
+		p2gz->collision_viewer->handle_warp();
+	}
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
@@ -360,11 +369,11 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
-	game->mCurrentCourseInfo = dst_course_info;
-	game->mCurrentCave       = cave;
-	game->mCaveID            = caveID;
-	game->mCaveIndex         = caveID.getID();
-	game->mCurrentFloor      = dest.sublevel;
+	game->mCurrentCourseInfo                    = dst_course_info;
+	game->mCurrentCave                          = cave;
+	game->mCaveID                               = caveID;
+	game->mCaveIndex                            = caveID.getID();
+	game->mCurrentFloor                         = dest.sublevel;
 	Game::playData->mCaveSaveData.mActiveNaviID = active_captain;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 

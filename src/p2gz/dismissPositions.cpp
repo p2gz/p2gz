@@ -5,7 +5,7 @@
 #include <Game/PikiMgr.h>
 #include <Game/PikiState.h>
 #include <Game/MapMgr.h>
-#include <p2gz/HelperInlines.h>
+#include <p2gz/Utility.h>
 #include <p2gz/DrawHelpers.h>
 #include <PikiAI.h>
 

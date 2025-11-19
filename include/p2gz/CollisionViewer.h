@@ -11,18 +11,28 @@
 namespace gz {
 struct CollisionViewer {
 public:
-	CollisionViewer() { enabled = false; }
+	CollisionViewer()
+	{
+		enabled          = false;
+		need_to_reenable = false;
+	}
 	~CollisionViewer() { }
 
 	void toggle(bool);
 	void draw();
 
+	void handle_warp()
+	{
+		toggle(false);
+		need_to_reenable = true;
+	}
 	bool is_enabled() { return enabled; }
 
 private:
 	bool is_navi_on_triangle(Sys::Triangle*, Sys::Triangle*, Sys::VertexTable*);
 	void draw_triangles(Sys::Sphere&);
 	bool enabled;
+	bool need_to_reenable;
 	Sys::Sphere olimarSphere;
 	Sys::Sphere louieSphere;
 	Sys::Triangle* olimarTriangle;

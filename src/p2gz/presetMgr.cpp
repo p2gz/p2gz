@@ -10,7 +10,7 @@
 using namespace gz;
 using namespace Game;
 
-// Cutscene flags
+// PoD Cutscene flags
 #define NUM_DAY_2_DEMO_FLAGS 3
 #define DAY_2_DEMO_FLAGS     DEMO_Day_One_Start, DEMO_Meet_Red_Pikmin, DEMO_Find_Spiderwort_Mold
 
@@ -28,10 +28,9 @@ using namespace Game;
 #define NUM_EC2_DEMO_FLAGS NUM_EC1_DEMO_FLAGS + 2
 #define EC2_DEMO_FLAGS     EC1_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_First_Cave_Enter
 
-#define NUM_AW_DEMO_FLAGS NUM_EC2_DEMO_FLAGS + 7
-#define AW_DEMO_FLAGS                                                                                                 \
-	EC2_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_Find_Cave_Geyser, DEMO_First_Cave_Enter, DEMO_First_Cave_Return, \
-	    DEMO_First_Globe_Day_End, DEMO_Purple_Candypop, DEMO_First_Corpse_In_Cave
+#define NUM_AW_DEMO_FLAGS NUM_EC2_DEMO_FLAGS + 5
+#define AW_DEMO_FLAGS \
+	EC2_DEMO_FLAGS, DEMO_Find_Cave_Geyser, DEMO_First_Cave_Return, DEMO_First_Globe_Day_End, DEMO_Purple_Candypop, DEMO_First_Corpse_In_Cave
 
 #define NUM_HOB_DEMO_FLAGS NUM_AW_DEMO_FLAGS + 4
 #define HOB_DEMO_FLAGS \
@@ -51,6 +50,59 @@ using namespace Game;
 
 #define NUM_GK_DEMO_FLAGS NUM_COS_DEMO_FLAGS + 1
 #define GK_DEMO_FLAGS     COS_DEMO_FLAGS, DEMO_Find_Yellow_Onion
+
+// PoD Exploration Kit cutscene flags
+#define NUM_AW_EK_FLAGS 1
+#define AW_EK_FLAGS     OlimarData::ODII_SphericalAtlas
+
+#define NUM_WFG_EK_FLAGS NUM_AW_EK_FLAGS + 1
+#define WFG_EK_FLAGS     AW_EK_FLAGS, OlimarData::ODII_PrototypeDetector
+
+#define NUM_SH_EK_FLAGS NUM_WFG_EK_FLAGS + 1
+#define SH_EK_FLAGS     WFG_EK_FLAGS, OlimarData::ODII_FiveManNapsack
+
+#define NUM_ENTER_BK_EK_FLAGS NUM_SH_EK_FLAGS + 1
+#define ENTER_BK_EK_FLAGS     SH_EK_FLAGS, OlimarData::ODII_JusticeAlloy
+
+#define NUM_BK_EK_FLAGS NUM_ENTER_BK_EK_FLAGS + 1
+#define BK_EK_FLAGS     ENTER_BK_EK_FLAGS, OlimarData::ODII_GeographicProjection
+
+#define NUM_POST_BK_EK_FLAGS NUM_BK_EK_FLAGS + 1
+#define POST_BK_EK_FLAGS     BK_EK_FLAGS, OlimarData::ODII_ForgedCourage
+
+#define NUM_POST_FC_EK_FLAGS NUM_POST_BK_EK_FLAGS + 1
+#define POST_FC_EK_FLAGS     POST_BK_EK_FLAGS, OlimarData::ODII_BruteKnuckles
+
+#define NUM_GK_EK_FLAGS NUM_POST_FC_EK_FLAGS + 1
+#define GK_EK_FLAGS     POST_FC_EK_FLAGS, OlimarData::ODII_TheKey
+
+// PoD Cave discovery cutscene flags
+#define NUM_AW_CAVE_FLAGS 1
+#define AW_CAVE_FLAGS     CAVE_EC
+
+#define NUM_HOB_CAVE_FLAGS NUM_AW_CAVE_FLAGS + 1
+#define HOB_CAVE_FLAGS     AW_CAVE_FLAGS, CAVE_HoB
+
+#define NUM_WFG_CAVE_FLAGS NUM_HOB_CAVE_FLAGS + 1
+#define WFG_CAVE_FLAGS     HOB_CAVE_FLAGS, CAVE_WFG
+
+#define NUM_SH_CAVE_FLAGS NUM_WFG_CAVE_FLAGS + 1
+#define SH_CAVE_FLAGS     WFG_CAVE_FLAGS, CAVE_SH
+
+#define NUM_BK_CAVE_FLAGS NUM_SH_CAVE_FLAGS + 1
+#define BK_CAVE_FLAGS     SH_CAVE_FLAGS, CAVE_BK
+
+#define NUM_SCX_CAVE_FLAGS NUM_BK_CAVE_FLAGS + 1
+#define SCX_CAVE_FLAGS     BK_CAVE_FLAGS, CAVE_SCx
+
+#define NUM_FC_CAVE_FLAGS NUM_SCX_CAVE_FLAGS + 1
+#define FC_CAVE_FLAGS     SCX_CAVE_FLAGS, CAVE_FC
+
+#define NUM_COS_CAVE_FLAGS NUM_FC_CAVE_FLAGS + 1
+#define COS_CAVE_FLAGS     FC_CAVE_FLAGS, CAVE_CoS
+
+#define NUM_GK_CAVE_FLAGS NUM_COS_CAVE_FLAGS + 1
+#define GK_CAVE_FLAGS     COS_CAVE_FLAGS, CAVE_GK
 
 PresetMgr::PresetMgr()
 {
@@ -226,6 +278,7 @@ PresetMgr::PresetMgr()
 	                 ->set_time(8.0f)
 	                 ->set_day(4)
 	                 ->set_cutscene_flags(NUM_EC1_DEMO_FLAGS, (DemoFlags[NUM_EC1_DEMO_FLAGS]) { EC1_DEMO_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_AW_CAVE_FLAGS, (CaveIndex[NUM_AW_CAVE_FLAGS]) { AW_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_ec), g_pod_ec)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec));
 	presets.push((new Preset("EC2", PoD))
@@ -234,6 +287,7 @@ PresetMgr::PresetMgr()
 	                 ->set_time(8.0f)
 	                 ->set_day(4)
 	                 ->set_cutscene_flags(NUM_EC2_DEMO_FLAGS, (DemoFlags[NUM_EC2_DEMO_FLAGS]) { EC2_DEMO_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_AW_CAVE_FLAGS, (CaveIndex[NUM_AW_CAVE_FLAGS]) { AW_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_ec), g_pod_ec)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_hob), e_pod_enter_hob)
@@ -246,6 +300,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_vor1), ek_pod_post_vor1)
 	                 ->set_cutscene_flags(NUM_AW_DEMO_FLAGS, (DemoFlags[NUM_AW_DEMO_FLAGS]) { AW_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_AW_EK_FLAGS, (OlimarData::ItemIndex[NUM_AW_EK_FLAGS]) { AW_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_AW_CAVE_FLAGS, (CaveIndex[NUM_AW_CAVE_FLAGS]) { AW_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_ec), g_pod_ec)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_hob), e_pod_enter_hob)
@@ -258,6 +314,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_vor1), ek_pod_post_vor1)
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_AW_EK_FLAGS, (OlimarData::ItemIndex[NUM_AW_EK_FLAGS]) { AW_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_HOB_CAVE_FLAGS, (CaveIndex[NUM_HOB_CAVE_FLAGS]) { HOB_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_hob), g_pod_post_enter_hob)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -271,6 +329,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_vor1), ek_pod_post_vor1)
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_AW_EK_FLAGS, (OlimarData::ItemIndex[NUM_AW_EK_FLAGS]) { AW_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_HOB_CAVE_FLAGS, (CaveIndex[NUM_HOB_CAVE_FLAGS]) { HOB_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_hob), g_pod_post_enter_hob)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -283,6 +343,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_vor1), ek_pod_post_vor1)
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_AW_EK_FLAGS, (OlimarData::ItemIndex[NUM_AW_EK_FLAGS]) { AW_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_HOB_CAVE_FLAGS, (CaveIndex[NUM_HOB_CAVE_FLAGS]) { HOB_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_hob), g_pod_post_enter_hob)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -295,6 +357,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_hob), ek_pod_post_hob)
 	                 ->set_cutscene_flags(NUM_HOB_DEMO_FLAGS, (DemoFlags[NUM_HOB_DEMO_FLAGS]) { HOB_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_WFG_EK_FLAGS, (OlimarData::ItemIndex[NUM_WFG_EK_FLAGS]) { WFG_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_WFG_CAVE_FLAGS, (CaveIndex[NUM_WFG_CAVE_FLAGS]) { WFG_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_hob), g_pod_post_enter_hob)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -308,6 +372,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_hob), ek_pod_post_hob)
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_WFG_EK_FLAGS, (OlimarData::ItemIndex[NUM_WFG_EK_FLAGS]) { WFG_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_WFG_CAVE_FLAGS, (CaveIndex[NUM_WFG_CAVE_FLAGS]) { WFG_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_hob), g_pod_post_enter_hob)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -321,6 +387,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_wfg), ek_pod_post_wfg)
 	                 ->set_cutscene_flags(NUM_WFG_DEMO_FLAGS, (DemoFlags[NUM_WFG_DEMO_FLAGS]) { WFG_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_SH_EK_FLAGS, (OlimarData::ItemIndex[NUM_SH_EK_FLAGS]) { SH_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_WFG_CAVE_FLAGS, (CaveIndex[NUM_WFG_CAVE_FLAGS]) { WFG_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_hob), g_pod_post_enter_hob)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -337,6 +405,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_wfg), ek_pod_post_wfg)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_SH_EK_FLAGS, (OlimarData::ItemIndex[NUM_SH_EK_FLAGS]) { SH_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SH_CAVE_FLAGS, (CaveIndex[NUM_SH_CAVE_FLAGS]) { SH_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -354,6 +424,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_wfg), ek_pod_post_wfg)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_SH_EK_FLAGS, (OlimarData::ItemIndex[NUM_SH_EK_FLAGS]) { SH_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SH_CAVE_FLAGS, (CaveIndex[NUM_SH_CAVE_FLAGS]) { SH_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -371,6 +443,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_sh), ek_pod_post_sh)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_ENTER_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_ENTER_BK_EK_FLAGS]) { ENTER_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SH_CAVE_FLAGS, (CaveIndex[NUM_SH_CAVE_FLAGS]) { SH_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -387,6 +461,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_sh), ek_pod_post_sh)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_ENTER_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_ENTER_BK_EK_FLAGS]) { ENTER_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SH_CAVE_FLAGS, (CaveIndex[NUM_SH_CAVE_FLAGS]) { SH_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -403,6 +479,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_sh), ek_pod_post_sh)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_ENTER_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_ENTER_BK_EK_FLAGS]) { ENTER_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SH_CAVE_FLAGS, (CaveIndex[NUM_SH_CAVE_FLAGS]) { SH_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_post_hob), e_pod_post_hob)
@@ -420,6 +498,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_enter_bk), ek_pod_post_enter_bk)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_BK_EK_FLAGS]) { BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_BK_CAVE_FLAGS, (CaveIndex[NUM_BK_CAVE_FLAGS]) { BK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
@@ -437,6 +517,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(5)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_enter_bk), ek_pod_post_enter_bk)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_BK_EK_FLAGS]) { BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_BK_CAVE_FLAGS, (CaveIndex[NUM_BK_CAVE_FLAGS]) { BK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
@@ -450,6 +532,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(6)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_BK_CAVE_FLAGS, (CaveIndex[NUM_BK_CAVE_FLAGS]) { BK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
@@ -463,6 +547,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(6)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_SH_DEMO_FLAGS, (DemoFlags[NUM_SH_DEMO_FLAGS]) { SH_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_BK_CAVE_FLAGS, (CaveIndex[NUM_BK_CAVE_FLAGS]) { BK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
@@ -476,6 +562,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_BK_CAVE_FLAGS, (CaveIndex[NUM_BK_CAVE_FLAGS]) { BK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
@@ -491,6 +579,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_BK_CAVE_FLAGS, (CaveIndex[NUM_BK_CAVE_FLAGS]) { BK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_sh), g_pod_post_enter_sh)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
@@ -506,6 +596,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SCX_CAVE_FLAGS, (CaveIndex[NUM_SCX_CAVE_FLAGS]) { SCX_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
@@ -522,6 +614,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SCX_CAVE_FLAGS, (CaveIndex[NUM_SCX_CAVE_FLAGS]) { SCX_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
@@ -536,6 +630,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SCX_CAVE_FLAGS, (CaveIndex[NUM_SCX_CAVE_FLAGS]) { SCX_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
@@ -552,6 +648,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_SCX_CAVE_FLAGS, (CaveIndex[NUM_SCX_CAVE_FLAGS]) { SCX_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_scx), br_pod_post_enter_scx)
@@ -568,6 +666,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_FC_CAVE_FLAGS, (CaveIndex[NUM_FC_CAVE_FLAGS]) { FC_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_plug_destroyed(true)
@@ -585,6 +685,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_bk), ek_pod_post_bk)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_BK_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_BK_EK_FLAGS]) { POST_BK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_FC_CAVE_FLAGS, (CaveIndex[NUM_FC_CAVE_FLAGS]) { FC_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_plug_destroyed(true)
@@ -601,6 +703,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_fc5), ek_pod_post_fc5)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_FC_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_FC_EK_FLAGS]) { POST_FC_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_FC_CAVE_FLAGS, (CaveIndex[NUM_FC_CAVE_FLAGS]) { FC_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_plug_destroyed(true)
@@ -618,6 +722,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(7)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_fc5), ek_pod_post_fc5)
 	                 ->set_cutscene_flags(NUM_VOR2_DEMO_FLAGS, (DemoFlags[NUM_VOR2_DEMO_FLAGS]) { VOR2_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_FC_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_FC_EK_FLAGS]) { POST_FC_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_FC_CAVE_FLAGS, (CaveIndex[NUM_FC_CAVE_FLAGS]) { FC_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_plug_destroyed(true)
@@ -633,6 +739,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(8)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_fc5), ek_pod_post_fc5)
 	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_FC_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_FC_EK_FLAGS]) { POST_FC_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_COS_CAVE_FLAGS, (CaveIndex[NUM_COS_CAVE_FLAGS]) { COS_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
@@ -648,6 +756,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(8)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_fc5), ek_pod_post_fc5)
 	                 ->set_cutscene_flags(NUM_COS_DEMO_FLAGS, (DemoFlags[NUM_COS_DEMO_FLAGS]) { COS_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_POST_FC_EK_FLAGS, (OlimarData::ItemIndex[NUM_POST_FC_EK_FLAGS]) { POST_FC_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_COS_CAVE_FLAGS, (CaveIndex[NUM_COS_CAVE_FLAGS]) { COS_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
@@ -663,6 +773,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(8)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_fc5), ek_pod_post_fc5)
 	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_GK_EK_FLAGS, (OlimarData::ItemIndex[NUM_GK_EK_FLAGS]) { GK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_GK_CAVE_FLAGS, (CaveIndex[NUM_GK_CAVE_FLAGS]) { GK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
@@ -679,6 +791,8 @@ PresetMgr::PresetMgr()
 	                 ->set_day(8)
 	                 ->set_upgrades(ARRAY_SIZE(ek_pod_post_fc5), ek_pod_post_fc5)
 	                 ->set_cutscene_flags(NUM_GK_DEMO_FLAGS, (DemoFlags[NUM_GK_DEMO_FLAGS]) { GK_DEMO_FLAGS })
+	                 ->set_ek_cutscene_flags(NUM_GK_EK_FLAGS, (OlimarData::ItemIndex[NUM_GK_EK_FLAGS]) { GK_EK_FLAGS })
+	                 ->set_cave_cutscene_flags(NUM_GK_CAVE_FLAGS, (CaveIndex[NUM_GK_CAVE_FLAGS]) { GK_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_post_enter_scx), g_pod_post_enter_scx)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
@@ -701,8 +815,10 @@ Preset* PresetMgr::create()
 	preset->onion_pikis.clear();
 
 	preset->set_pokos(p2gz->poko_editor->get_pokos());
-	preset->upgrades  = p2gz->ek_editor->get_upgrades_bitfield();
-	preset->cutscenes = p2gz->cutscene_mgr->get_cur_cutscenes();
+	preset->upgrades       = p2gz->ek_editor->get_upgrades_bitfield();
+	preset->cutscenes      = p2gz->cutscene_mgr->get_cur_cutscenes();
+	preset->ek_cutscenes   = p2gz->cutscene_mgr->get_cur_ek_cutscenes();
+	preset->cave_cutscenes = p2gz->cutscene_mgr->get_cur_cave_cutscenes();
 
 	prev_heap->becomeCurrentHeap();
 	return preset;
@@ -737,45 +853,25 @@ Preset* PresetMgr::find(const char* name, PresetCategory category)
 	return nullptr;
 }
 
-namespace gz {
-typedef enum Cave {
-	AG  = 0,
-	EC  = 1,
-	SCx = 2,
-	FC  = 3,
-	HoB = 4,
-	WFG = 5,
-	BK  = 6,
-	SH  = 7,
-	CoS = 8,
-	GK  = 9,
-	SR  = 10,
-	SmC = 11,
-	CoC = 12,
-	HoH = 13,
-	DD  = 14
-} Cave;
-}; // namespace gz
-
-gz::Cave which_cave(u32 area, u32 cave)
+gz::CaveIndex which_cave(u32 area, u32 cave)
 {
 	if (cave == 0) {
-		return AG;
+		return CAVE_AboveGround;
 	}
 
 	switch (area) {
 	case 0:
 		GZASSERTLINE(cave < 4);
-		return static_cast<gz::Cave>(EC + cave - 1);
+		return static_cast<gz::CaveIndex>(CAVE_EC + cave - 1);
 	case 1:
 		GZASSERTLINE(cave < 5);
-		return static_cast<gz::Cave>(HoB + cave - 1);
+		return static_cast<gz::CaveIndex>(CAVE_HoB + cave - 1);
 	case 2:
 		GZASSERTLINE(cave < 5);
-		return static_cast<gz::Cave>(CoS + cave - 1);
+		return static_cast<gz::CaveIndex>(CAVE_CoS + cave - 1);
 	case 3:
 		GZASSERTLINE(cave < 4);
-		return static_cast<gz::Cave>(CoC + cave - 1);
+		return static_cast<gz::CaveIndex>(CAVE_CoC + cave - 1);
 	}
 
 	GZASSERTLINE(false);
@@ -783,52 +879,52 @@ gz::Cave which_cave(u32 area, u32 cave)
 
 Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
 {
-	gz::Cave cave_e = which_cave(dest.area, dest.cave);
+	gz::CaveIndex cave_e = which_cave(dest.area, dest.cave);
 	if (category == General) {
 		return nullptr;
 	}
 
 	if (category == PoD) {
 		switch (cave_e) {
-		case EC:
+		case CAVE_EC:
 			if (dest.sublevel < 1)
 				return find("EC1", PoD);
 			else
 				return find("EC2", PoD);
-		case HoB:
+		case CAVE_HoB:
 			if (dest.sublevel < 2)
 				return find("HoB1-2", PoD);
 			else if (dest.sublevel < 4)
 				return find("HoB3-4", PoD);
 			else
 				return find("HoB5", PoD);
-		case WFG:
+		case CAVE_WFG:
 			if (dest.sublevel < 3)
 				return find("WFG1-WFG3", PoD);
 			else
 				return find("WFG4-WFG5", PoD);
-		case SH:
+		case CAVE_SH:
 			if (dest.sublevel < 2)
 				return find("SH1-2", PoD);
 			else
 				return find("SH3-7", PoD);
-		case BK:
+		case CAVE_BK:
 			return find("BK", PoD);
-		case SCx:
+		case CAVE_SCx:
 			if (dest.sublevel < 4)
 				return find("SCx1-4", PoD);
 			else
 				return find("SCx5-8", PoD);
-		case FC:
+		case CAVE_FC:
 			if (dest.sublevel < 5)
 				return find("FC1-5", PoD);
 			else
 				return find("FC6-7", PoD);
-		case CoS:
+		case CAVE_CoS:
 			return find("CoS", PoD);
-		case GK:
+		case CAVE_GK:
 			return find("GK", PoD);
-		case AG:
+		case CAVE_AboveGround:
 			if (dest.area == 0) {
 				if (dest.day == 5)
 					return find("day 6 CR", PoD);

@@ -8,6 +8,10 @@
 #include <P2JME/P2JME.h>
 #include <Game/MoviePlayer.h>
 #include <Game/generalEnemyMgr.h>
+#include <Game/EnemyAnimKeyEvent.h>
+#include <Game/Entities/Bomb.h>
+#include <Game/Entities/ElecHiba.h>
+#include <Game/Entities/Hiba.h>
 
 using namespace gz;
 
@@ -29,6 +33,7 @@ EnemyDebugInfo::EnemyDebugInfo()
 	draw_flick_count = true;
 	draw_position    = false;
 	draw_collision   = false;
+	draw_timers      = false;
 }
 
 void EnemyDebugInfo::set_size(s32 size)
@@ -69,7 +74,8 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		return;
 	}
 
-	if (enemy->mHealth <= 0.0f || !enemy->mLod.isFlag(AILOD_IsVisible)) {
+	// Bomb rocks explode after 10 frames of being "dead".
+	if ((enemy->mHealth <= 0.0f && enemy->getEnemyTypeID() != Game::EnemyTypeID::EnemyID_Bomb) || !enemy->mLod.isFlag(AILOD_IsVisible)) {
 		return;
 	}
 
@@ -236,6 +242,19 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	case Game::EnemyTypeID::EnemyID_DangoMushi:
 		pos.y += 100.0f;
 		break;
+
+	case Game::EnemyTypeID::EnemyID_ElecHiba:
+		// Electrical wires are two separate enemies linked together via a TeamList object.
+		// However, only one of them actually changes state, so, to reduce visual noise,
+		// we will only draw the primary ElecHiba's state at the midpoint of the two.
+		Game::ElecHiba::Obj* electrical_wire = static_cast<Game::ElecHiba::Obj*>(enemy);
+		if (electrical_wire->is_primary && electrical_wire->getChildObjPtr()) {
+			Vector3f adjustedChildPos = electrical_wire->getChildObjPtr()->getPosition()
+			                          + Vector3f(0, static_cast<Game::EnemyParmsBase*>(enemy->mParms)->mGeneral.mLifeMeterHeight, 0);
+			pos = (pos + adjustedChildPos) / 2;
+		} else {
+			return;
+		}
 	}
 
 	// Debug prints
@@ -255,6 +274,10 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		gfx->perspPrintf(info, pos, "flick: %d", (int)enemy->mFlickTimer);
 		info.mPerspectiveOffsetY += line_height;
 	}
+	if (draw_timers) {
+		draw_timer(enemy, gfx, info, pos);
+		info.mPerspectiveOffsetY += line_height;
+	}
 
 	// Setup sphere draw next (drawing shapes vs. text needs a different init call)
 	gfx->initPrimDraw(nullptr);
@@ -262,6 +285,61 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 	if (draw_collision) {
 		// Set depth to 0 at start to prevent drawing the root collision sphere
 		recursive_draw_coll_sphere(enemy, gfx, 0, enemy->mCollTree->mPart);
+	}
+}
+
+void EnemyDebugInfo::draw_timer(Game::EnemyBase* enemy, Graphics* gfx, PerspPrintfInfo info, Vector3f pos)
+{
+	if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Hiba) {
+		Game::Hiba::Obj* fire_geyser = static_cast<Game::Hiba::Obj*>(enemy);
+		if (fire_geyser->getStateID() == Game::Hiba::HIBA_Wait) {
+			gfx->perspPrintf(info, pos, "timer: %.2f",
+			                 (static_cast<Game::Hiba::Parms*>(fire_geyser->mParms))->mProperParms.mWaitTime.mValue - fire_geyser->mTimer);
+		} else if (fire_geyser->getStateID() == Game::Hiba::HIBA_Attack) {
+			// Hardcoded additional 4 frames to account for the time it takes for the fire animation
+			// to stop playing after `mTimer` reaches `mActiveTime`.
+			gfx->perspPrintf(
+			    info, pos, "timer: %.2f",
+			    ((4 * sys->mDeltaTime) + (static_cast<Game::Hiba::Parms*>(fire_geyser->mParms))->mProperParms.mActiveTime.mValue)
+			        - fire_geyser->mTimer);
+		}
+	}
+
+	if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_ElecHiba) {
+		Game::ElecHiba::Obj* electrical_wire = static_cast<Game::ElecHiba::Obj*>(enemy);
+		if (electrical_wire->getStateID() == Game::ElecHiba::ELECHIBA_Wait) {
+			gfx->perspPrintf(info, pos, "timer: %.2f",
+			                 (static_cast<Game::ElecHiba::Parms*>(electrical_wire->mParms))->mProperParms.mWaitTime.mValue
+			                     - electrical_wire->mWaitTimer);
+		} else if (electrical_wire->getStateID() == Game::ElecHiba::ELECHIBA_Sign) {
+			gfx->perspPrintf(info, pos, "timer: %.2f",
+			                 (static_cast<Game::ElecHiba::Parms*>(electrical_wire->mParms))->mProperParms.mWarningTime.mValue
+			                     - electrical_wire->mWaitTimer);
+		} else if (electrical_wire->getStateID() == Game::ElecHiba::ELECHIBA_Attack) {
+			gfx->perspPrintf(info, pos, "timer: %.2f",
+			                 (static_cast<Game::ElecHiba::Parms*>(electrical_wire->mParms))->mProperParms.mActiveTime.mValue
+			                     - electrical_wire->mWaitTimer);
+		}
+	}
+
+	if (enemy->getEnemyTypeID() == Game::EnemyTypeID::EnemyID_Bomb) {
+		Game::Bomb::Obj* bomb = static_cast<Game::Bomb::Obj*>(enemy);
+
+		// Bombs use their health as a timer. There is an additional delay of 10 frames
+		// after their health reaches zero before they explode.
+		f32 time_to_explosion = bomb->mHealth + (10.0f * sys->mDeltaTime)
+		                      - (static_cast<Game::Bomb::StateBomb*>(bomb->mCurrentLifecycleState)->mExplodeDelayTimer * sys->mDeltaTime);
+
+		// If they were detonated by a purple hipdrop, then their health is immediately set to zero,
+		// but there is still a delay of one second before the transit to StateBomb occurs.
+		if (bomb->hipdropped) {
+			time_to_explosion = (41.0f - bomb->mFlickTimer) * sys->mDeltaTime;
+			if (time_to_explosion < 0.0f) {
+				time_to_explosion = 0.0f;
+			}
+		}
+
+		gfx->perspPrintf(info, pos, "timer: %.2f", time_to_explosion);
 	}
 }
 
