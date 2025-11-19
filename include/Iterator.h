@@ -97,7 +97,9 @@ struct Iterator {
 	 *
 	 * @return Reference to the incremented iterator.
 	 */
-	inline Iterator<T>& operator++()
+	// @P2GZ: un-inline iterator functions
+	// inline Iterator<T>& operator++()
+	Iterator<T>& operator++()
 	{
 		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		mIndex = mContainer->getNext(mIndex);
@@ -109,7 +111,9 @@ struct Iterator {
 	 *
 	 * @return true if the current element satisfies the condition, false otherwise.
 	 */
-	inline bool satisfy()
+	// @P2GZ: un-inline iterator functions
+	// inline bool satisfy()
+	bool satisfy()
 	{
 		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		return mCondition->satisfy(mContainer->get(mIndex));
