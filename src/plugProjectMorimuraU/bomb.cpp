@@ -117,6 +117,9 @@ Obj::Obj()
 	mAnimator            = new ProperAnimator;
 	setFSM(new FSM);
 	mEfxLight = new efx::TBombrockLight;
+
+	// @P2GZ: enemy debug info
+	hipdropped = false;
 }
 
 /**

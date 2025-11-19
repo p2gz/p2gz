@@ -28,6 +28,9 @@
 #include "PikiAI.h"
 #include "nans.h"
 
+// @P2GZ
+#include <Game/Entities/Bomb.h>
+
 namespace Game {
 
 static const int someArray[3] = { 0, 0, 0 };
@@ -2227,6 +2230,12 @@ void PikiHipDropState::collisionCallback(Piki* piki, CollEvent& collEvent)
 			if (velocity.y < 0.0f) {
 				check = collEvent.mCollidingCreature->stimulate(hipdrop);
 				earthquake(piki);
+
+				// @P2GZ: enemy debug info
+				if (strcmp(collEvent.mCollidingCreature->getCreatureName(), "Bomb") == 0) {
+					Bomb::Obj* bomb  = static_cast<Bomb::Obj*>(collEvent.mCollidingCreature);
+					bomb->hipdropped = true;
+				}
 			}
 
 			InteractPress press(piki, 10.0f, collEvent.mCollisionObj);

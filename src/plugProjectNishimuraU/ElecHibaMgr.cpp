@@ -119,6 +119,9 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 		teamList = &elecHiba->mTeamList;
 		elecHiba->createEffect(true);
 
+		// @P2GZ: enemy debug info
+		elecHiba->is_primary = true;
+
 		EnemyBase* potentialPartner = EnemyMgrBase::birth(birthArg);
 		if (potentialPartner) {
 			Obj* elecHibaPartner            = static_cast<Obj*>(potentialPartner);
@@ -126,6 +129,9 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 			elecHibaPartner->setElecHibaPosition(&param, -1.0f);
 			elecHibaPartner->createEffect(false);
 			teamList->add(&elecHibaPartner->mTeamList);
+
+			// @P2GZ: enemy debug info
+			elecHibaPartner->is_primary = false;
 		}
 	}
 

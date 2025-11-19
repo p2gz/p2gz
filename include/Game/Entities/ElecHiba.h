@@ -101,7 +101,9 @@ struct Obj : public EnemyBase {
 	EVersusHibaType mVersusHibaType;      // _2F8
 	int mRedAttrAttackCount;              // _2FC
 	int mBlueAttrAttackCount;             // _300
-	                                      // _304 = PelletView
+
+	// @P2GZ: enemy debug info
+	bool is_primary;
 };
 
 struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
