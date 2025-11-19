@@ -19,6 +19,12 @@ PikiContainer::PikiContainer()
 	clear();
 }
 
+// @P2GZ - add dtor for PikiContainer to enable using it as a local variable
+PikiContainer::~PikiContainer()
+{
+	delete[] mContainer;
+}
+
 /**
  * @note Address: 0x801F128C
  * @note Size: 0x6C

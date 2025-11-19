@@ -22,6 +22,7 @@
 #include <Game/MapMgr.h>
 #include <Dolphin/rand.h>
 #include <TParticle2dMgr.h>
+#include <Screen/Game2DMgr.h>
 
 using namespace gz;
 
@@ -491,14 +492,20 @@ void Warp::do_post_warp()
 {
 	warping = false;
 
-	if (!needs_post_load_action) {
-		return;
+	// Make sure all navi have max health
+	if (Game::naviMgr && Game::naviMgr->mArray) {
+		for (int i = 0; i < 2; i++) {
+			Game::Navi* navi = Game::naviMgr->getAt(i);
+			if (navi && navi->isAlive()) {
+				navi->mHealth = 50.0f;
+			}
+		}
 	}
 
-	needs_post_load_action = false;
-	if (preset) {
+	if (needs_post_load_action && preset) {
 		preset->apply_post_load();
 		preset_status     = PS_Stale;
 		dest.use_set_seed = false;
 	}
+	needs_post_load_action = false;
 }

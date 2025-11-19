@@ -11,7 +11,7 @@ namespace gz {
 namespace test {
 
 // Creates a Test object with the right array sizes
-#define TEST(name, ...) ((new Test(name))__VA_ARGS__)
+#define TEST(name, ...) ((new Test(name))__VA_ARGS__ WAIT(30))
 #define __TEST_OP(op)   ->push(op)
 
 #define __COMPOUND(...)        (new CompoundOp()) __VA_ARGS__
@@ -19,6 +19,7 @@ namespace test {
 #define DBL_DPAD_L             PRESS(PAD_BUTTON_LEFT) PRESS(PAD_BUTTON_LEFT)
 #define MASH_TEXT              PRESS(PAD_BUTTON_A) PRESS(PAD_BUTTON_B)
 #define SKIP_CUTSCENE          __TEST_OP(new ActionOp(new FreeDelegate(&skip_movie)))
+#define SKIP_LOAD_CUTSCENES    DO_UNTIL(SKIP_CUTSCENE, in_gameplay)
 
 #define DO_ACTION(delegate)    __TEST_OP(new ActionOp(delegate))
 #define DO_N(num, ...)         __TEST_OP(new DoN(__COMPOUND(__VA_ARGS__), num))

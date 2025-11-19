@@ -132,19 +132,16 @@ void SquadEditor::clear_all_pikmin()
 }
 
 // Get the current Pikmin counts from the active captain's squad.
-// Returns a vector of { blue_leaves, blue_buds, blue_flowers, red_*, yellow_*, purple_*, white_* }.
-gz::Vec<s32> SquadEditor::get_squad()
+Game::PikiContainer SquadEditor::get_squad()
 {
-	gz::Vec<s32> squad(18);
-	for (int i = 0; i < 18; i++) {
-		squad.push(0);
-	}
+	Game::PikiContainer squad;
+
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
 		if (piki->mNavi) {
-			squad[piki->mPikiKind * 3 + piki->mHappaKind]++;
+			squad.getCount(piki->mPikiKind, piki->mHappaKind)++;
 		}
 	}
 	return squad;
@@ -153,7 +150,7 @@ gz::Vec<s32> SquadEditor::get_squad()
 // Set the active captain's squad to the Pikmin counts from the squad menu.
 void SquadEditor::set_squad(s32 _)
 {
-	gz::Vec<s32> squad = get_squad();
+	Game::PikiContainer squad = get_squad();
 
 	int total = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
@@ -174,7 +171,7 @@ void SquadEditor::set_squad(s32 _)
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
 			s32 target           = opt->get_selection();
-			s32 current          = squad[color * 3 + stage];
+			s32 current          = squad.getCount(color, stage);
 			if (target != current) {
 				changed  = opt;
 				previous = current;
@@ -195,7 +192,7 @@ void SquadEditor::set_squad(s32 _)
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
 			s32 target           = opt->get_selection();
-			s32 current          = squad[color * 3 + stage];
+			s32 current          = squad.getCount(color, stage);
 
 			if (target < current) {
 				kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), current - target);
@@ -204,6 +201,9 @@ void SquadEditor::set_squad(s32 _)
 			}
 		}
 	}
+
+	// Set warp preset to none so the squad isn't overridden
+	p2gz->warp->set_preset(nullptr, PS_Chosen);
 }
 
 // Update the squad menu with the Pikmin counts from the active captain's squad.
@@ -225,11 +225,11 @@ void SquadEditor::update()
 		return;
 	}
 
-	gz::Vec<s32> squad = get_squad();
+	Game::PikiContainer squad = get_squad();
 	for (int color = 0; color < 6; color++) {
 		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
-			static_cast<RangeMenuOption*>((*row)[stage])->set_selection(squad[color * 3 + stage]);
+			static_cast<RangeMenuOption*>((*row)[stage])->set_selection(squad.getCount(color, stage));
 		}
 	}
 }
