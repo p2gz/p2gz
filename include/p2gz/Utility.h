@@ -7,6 +7,7 @@
 #include <GameFlow.h>
 #include <PikiAI.h>
 #include <Game/MoviePlayer.h>
+#include <p2gz/gzMacros.h>
 
 namespace gz {
 /// Course/area codes used throughout the codebase
