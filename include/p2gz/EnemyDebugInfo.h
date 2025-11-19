@@ -29,6 +29,7 @@ struct EnemyDebugInfo {
 
 private:
 	void draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx);
+	void draw_timer(Game::EnemyBase*, Graphics*, PerspPrintfInfo, Vector3f);
 	void recursive_draw_coll_sphere(Game::EnemyBase* enemy, Graphics* gfx, int depth, CollPart* cp);
 
 	bool enabled;

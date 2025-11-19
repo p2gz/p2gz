@@ -119,7 +119,7 @@ Obj::Obj()
 	mEfxLight = new efx::TBombrockLight;
 
 	// @P2GZ: enemy debug info
-	forced = false;
+	hipdropped = false;
 }
 
 /**

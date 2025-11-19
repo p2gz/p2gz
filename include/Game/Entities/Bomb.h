@@ -104,7 +104,7 @@ struct Obj : public EnemyBase {
 	efx::TBombrockLight* mEfxLight; // _2D4
 
 	// @P2GZ: enemy debug info
-	bool forced;
+	bool hipdropped;
 };
 
 struct Mgr : public EnemyMgrBase {
