@@ -18,9 +18,10 @@ struct Iterator {
 	 * @param startIndex Optional parameter specifying the starting index of the iteration.
 	 * @param condition Optional condition to filter the elements during iteration.
 	 */
-	inline Iterator<T>(Container<T>* container, void* startIndex = 0, Condition<T>* condition = nullptr)
+	Iterator<T>(Container<T>* container, void* startIndex = 0, Condition<T>* condition = nullptr)
 	    : mCondition(condition)
 	{
+		FORCE_DONT_INLINE;
 		mIndex     = startIndex;
 		mContainer = container;
 	}
@@ -31,6 +32,7 @@ struct Iterator {
 	 */
 	virtual void first() // _08
 	{
+		FORCE_DONT_INLINE;
 		if (mCondition == nullptr) {
 			mIndex = mContainer->getStart();
 			return;
@@ -51,6 +53,7 @@ struct Iterator {
 	 */
 	virtual void next() // _0C
 	{
+		FORCE_DONT_INLINE;
 		if (mCondition == nullptr) {
 			mIndex = mContainer->getNext(mIndex);
 			return;
@@ -72,6 +75,7 @@ struct Iterator {
 	 */
 	virtual bool isDone() // _10
 	{
+		FORCE_DONT_INLINE;
 		return mIndex == mContainer->getEnd();
 	}
 
@@ -82,6 +86,7 @@ struct Iterator {
 	 */
 	virtual T* operator*() // _14
 	{
+		FORCE_DONT_INLINE;
 		return mContainer->get(mIndex);
 	}
 
@@ -92,6 +97,7 @@ struct Iterator {
 	 */
 	inline Iterator<T>& operator++()
 	{
+		FORCE_DONT_INLINE;
 		mIndex = mContainer->getNext(mIndex);
 		return *this;
 	}
@@ -101,9 +107,13 @@ struct Iterator {
 	 *
 	 * @return true if the current element satisfies the condition, false otherwise.
 	 */
-	inline bool satisfy() { return mCondition->satisfy(mContainer->get(mIndex)); }
+	inline bool satisfy()
+	{
+		FORCE_DONT_INLINE;
+		return mCondition->satisfy(mContainer->get(mIndex));
+	}
 
-	void* mIndex;             // _04;
+	void* mIndex;             // _04
 	Container<T>* mContainer; // _08
 	Condition<T>* mCondition; // _0C
 };
