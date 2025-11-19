@@ -18,10 +18,12 @@ struct Iterator {
 	 * @param startIndex Optional parameter specifying the starting index of the iteration.
 	 * @param condition Optional condition to filter the elements during iteration.
 	 */
+	// @P2GZ: un-inline iterator functions
+	// inline Iterator<T>(Container<T>* container, void* startIndex = 0, Condition<T>* condition = nullptr)
 	Iterator<T>(Container<T>* container, void* startIndex = 0, Condition<T>* condition = nullptr)
 	    : mCondition(condition)
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		mIndex     = startIndex;
 		mContainer = container;
 	}
@@ -32,7 +34,7 @@ struct Iterator {
 	 */
 	virtual void first() // _08
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		if (mCondition == nullptr) {
 			mIndex = mContainer->getStart();
 			return;
@@ -53,7 +55,7 @@ struct Iterator {
 	 */
 	virtual void next() // _0C
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		if (mCondition == nullptr) {
 			mIndex = mContainer->getNext(mIndex);
 			return;
@@ -75,7 +77,7 @@ struct Iterator {
 	 */
 	virtual bool isDone() // _10
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		return mIndex == mContainer->getEnd();
 	}
 
@@ -86,7 +88,7 @@ struct Iterator {
 	 */
 	virtual T* operator*() // _14
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		return mContainer->get(mIndex);
 	}
 
@@ -97,7 +99,7 @@ struct Iterator {
 	 */
 	inline Iterator<T>& operator++()
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		mIndex = mContainer->getNext(mIndex);
 		return *this;
 	}
@@ -109,7 +111,7 @@ struct Iterator {
 	 */
 	inline bool satisfy()
 	{
-		FORCE_DONT_INLINE;
+		FORCE_DONT_INLINE; // @P2GZ: un-inline iterator functions
 		return mCondition->satisfy(mContainer->get(mIndex));
 	}
 
