@@ -194,8 +194,8 @@ void Warp::update_sublevel_opt()
 	seed_opt->visible      = selection_is_cave;
 
 	if (selection_is_cave) {
-		sublevel_opt->max = NUM_FLOORS[dest.area][dest.cave - 1];
 		sublevel_opt->set_selection(dest.sublevel + 1);
+		sublevel_opt->set_bounds(1, NUM_FLOORS[dest.area][dest.cave - 1]);
 	}
 }
 

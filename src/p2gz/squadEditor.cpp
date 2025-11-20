@@ -1,5 +1,6 @@
 #include <p2gz/SquadEditor.h>
 #include <p2gz/p2gz.h>
+#include <p2gz/BoundDelegate.h>
 #include <p2gz/gzCollections.h>
 #include <Game/Entities/ItemPikihead.h>
 #include <Game/Navi.h>
@@ -12,9 +13,43 @@
 
 using namespace gz;
 
+#define SET_PIK(color, stage)                                                                                                           \
+	(new CurriedDelegate2<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_piki_count, color, \
+	                                                                           stage))
+#define PIK_OPT(opt_name, color, stage, image_name) \
+	(new RangeMenuOption(opt_name, 0, 100, 0, RangeMenuOption::WRAP, SET_PIK(color, stage), image_name, true))
+
 void SquadEditor::init()
 {
 	squad_menu = static_cast<GridMenu*>(p2gz->menu->get_option("pikmin/squad")->get_sub_menu());
+	GZASSERTLINE(squad_menu);
+
+	// clang-format off
+	squad_menu
+		->push_to_row(PIK_OPT("rf", Game::Red,     Game::Flower, "red_flower"))
+		->push_to_row(PIK_OPT("rl", Game::Red,     Game::Leaf,   "red_leaf"))
+		->push_to_row(PIK_OPT("rb", Game::Red,     Game::Bud,    "red_bud"))
+		->end_row()
+		->push_to_row(PIK_OPT("yf", Game::Yellow,  Game::Flower, "yellow_flower"))
+		->push_to_row(PIK_OPT("yl", Game::Yellow,  Game::Leaf,   "yellow_leaf"))
+		->push_to_row(PIK_OPT("yb", Game::Yellow,  Game::Bud,    "yellow_bud"))
+		->end_row()
+		->push_to_row(PIK_OPT("bf", Game::Blue,    Game::Flower, "blue_flower"))
+		->push_to_row(PIK_OPT("bl", Game::Blue,    Game::Leaf,   "blue_leaf"))
+		->push_to_row(PIK_OPT("bb", Game::Blue,    Game::Bud,    "blue_bud"))
+		->end_row()
+		->push_to_row(PIK_OPT("pf", Game::Purple,  Game::Flower, "purple_flower"))
+		->push_to_row(PIK_OPT("pl", Game::Purple,  Game::Leaf,   "purple_leaf"))
+		->push_to_row(PIK_OPT("pb", Game::Purple,  Game::Bud,    "purple_bud"))
+		->end_row()
+		->push_to_row(PIK_OPT("wf", Game::White,   Game::Flower, "white_flower"))
+		->push_to_row(PIK_OPT("wl", Game::White,   Game::Leaf,   "white_leaf"))
+		->push_to_row(PIK_OPT("wb", Game::White,   Game::Bud,    "white_bud"))
+		->end_row()
+		->push_to_row(PIK_OPT("cf", Game::Bulbmin, Game::Flower, "bulbmin_flower"))
+		->push_to_row(PIK_OPT("cl", Game::Bulbmin, Game::Leaf,   "bulbmin_leaf"))
+		->push_to_row(PIK_OPT("cb", Game::Bulbmin, Game::Bud,    "bulbmin_bud"));
+	// clang-format on
 }
 
 // Add a Pikmin to the active captain's squad if there are fewer than 100 Pikmin in the field.
@@ -89,12 +124,16 @@ void SquadEditor::set_demo_flags_for_color(Game::EPikiKind color)
 // Remove a Pikmin from the active captain's squad.
 void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int count)
 {
+	if (count <= 0) {
+		return;
+	}
+
 	int killed = 0;
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mPikiKind == color && piki->mHappaKind == stage && !piki->isZikatu()) {
+		if (piki->mPikiKind == color && piki->mHappaKind == stage && !piki->isZikatu() && !piki->isWildBulbmin()) {
 			piki->endStick();
 			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
 			piki->kill(&arg);
@@ -106,7 +145,7 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 	}
 }
 
-void SquadEditor::clear_all_pikmin()
+void SquadEditor::clear_all_pikmin(bool kill_wild)
 {
 	Game::playData->mPikiContainer.clear();
 	Game::playData->mCaveSaveData.mCavePikis.clear(); // clear saved cave pikmin
@@ -114,8 +153,10 @@ void SquadEditor::clear_all_pikmin()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-		piki->kill(&arg);
+		if (kill_wild || (!piki->isZikatu() && !piki->isWildBulbmin())) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
+		}
 	}
 
 	if (Game::ItemPikihead::mgr) {
@@ -131,7 +172,7 @@ void SquadEditor::clear_all_pikmin()
 	}
 }
 
-// Get the current Pikmin counts from the active captain's squad.
+/// Get the counts for all living Pikmin on the field
 Game::PikiContainer SquadEditor::get_squad()
 {
 	Game::PikiContainer squad;
@@ -140,96 +181,58 @@ Game::PikiContainer SquadEditor::get_squad()
 	CI_LOOP(iterator)
 	{
 		Game::Piki* piki = *iterator;
-		if (piki->mNavi) {
-			squad.getCount(piki->mPikiKind, piki->mHappaKind)++;
-		}
+		squad.getCount(piki->mPikiKind, piki->mHappaKind)++;
 	}
 	return squad;
 }
 
-// Set the active captain's squad to the Pikmin counts from the squad menu.
-void SquadEditor::set_squad(s32 _)
+static const char COLOR_LETTERS[7] = "brypwc";
+static const char STAGE_LETTERS[4] = "lbf";
+RangeMenuOption* SquadEditor::get_option(Game::EPikiKind color, Game::EPikiHappa stage)
 {
-	Game::PikiContainer squad = get_squad();
+	char opt_name[3];
+	opt_name[0] = COLOR_LETTERS[color];
+	opt_name[1] = STAGE_LETTERS[stage];
+	opt_name[2] = '\0';
 
-	int total = Game::ItemPikihead::mgr->mMonoObjectMgr.mActiveCount;
-	Iterator<Game::Piki> iterator(Game::pikiMgr);
-	CI_LOOP(iterator)
-	{
-		Game::Piki* piki = *iterator;
-		if (piki->mNavi == nullptr) {
-			total++;
-		}
-	}
-
-	// If the player increments an option to exceed 100 total Pikmin, we need to identify the offending option
-	// and clamp it so the total Pikmin count is 100.
-	RangeMenuOption* changed = nullptr;
-	int previous             = 0;
-	for (int color = 0; color < 6; color++) {
-		Vec<MenuOption*>* row = squad_menu->options[color];
-		for (int stage = 0; stage < 3; stage++) {
-			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
-			s32 target           = opt->get_selection();
-			s32 current          = squad.getCount(color, stage);
-			if (target != current) {
-				changed  = opt;
-				previous = current;
-			}
-			total += target;
-		}
-	}
-	if (total > MAX_PIKI_COUNT) {
-		int clamp = changed->get_selection() - total + MAX_PIKI_COUNT;
-		if (clamp <= previous) {
-			clamp = 0;
-		}
-		changed->set_selection(clamp);
-	}
-
-	for (int color = 0; color < 6; color++) {
-		Vec<MenuOption*>* row = squad_menu->options[color];
-		for (int stage = 0; stage < 3; stage++) {
-			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
-			s32 target           = opt->get_selection();
-			s32 current          = squad.getCount(color, stage);
-
-			if (target < current) {
-				kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), current - target);
-			} else if (target > current) {
-				birth_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), target - current);
-			}
-		}
-	}
-
-	// Set warp preset to none so the squad isn't overridden
-	p2gz->warp->set_preset(nullptr, PS_Chosen);
+	return static_cast<RangeMenuOption*>(squad_menu->get_option(opt_name));
 }
 
-// Update the squad menu with the Pikmin counts from the active captain's squad.
-void SquadEditor::update()
+void SquadEditor::set_piki_count(Game::EPikiKind color, Game::EPikiHappa stage, s32 selection)
 {
-	// Don't update the live squad count while the squad editor is open.
-	if (p2gz->menu->is_active_menu("squad")) {
-		open = true;
-		return;
+	Game::PikiContainer squad     = get_squad();
+	const int num_field_pikmin    = squad.getTotalSum();
+	const int selected_kind_count = squad.getCount(color, stage);
+	int num_to_change             = selection - selected_kind_count;
+
+	if (num_field_pikmin + num_to_change > MAX_PIKI_COUNT) {
+		num_to_change = MAX_PIKI_COUNT - num_field_pikmin;
+	} else if (num_field_pikmin + num_to_change < 0) {
+		num_to_change = -num_field_pikmin;
 	}
 
-	open = false;
-
-	if (!Game::pikiMgr) {
-		return;
+	if (num_to_change > 0) {
+		birth_piki(color, stage, num_to_change);
+	} else {
+		kill_piki(color, stage, -num_to_change);
 	}
 
-	if (Game::pikiMgr->mActiveCount == 0) {
-		return;
-	}
+	sync();
+}
 
-	Game::PikiContainer squad = get_squad();
+// Aligns the menu options' selections with actual living pikmin
+// counts and updates their upper bounds to prevent going over 100
+void SquadEditor::sync()
+{
+	Game::PikiContainer squad  = get_squad();
+	const int num_field_pikmin = squad.getTotalSum();
+
 	for (int color = 0; color < 6; color++) {
-		Vec<MenuOption*>* row = squad_menu->options[color];
 		for (int stage = 0; stage < 3; stage++) {
-			static_cast<RangeMenuOption*>((*row)[stage])->set_selection(squad.getCount(color, stage));
+			RangeMenuOption* opt  = get_option(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage));
+			const int num_of_kind = squad.getCount(color, stage);
+			opt->set_selection(num_of_kind);
+			opt->set_bounds(0, num_of_kind + MAX_PIKI_COUNT - num_field_pikmin);
 		}
 	}
 }

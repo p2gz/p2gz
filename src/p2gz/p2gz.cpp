@@ -115,7 +115,6 @@ void P2GZ::update()
 #endif
 
 	freecam->update();
-	squad_editor->update();
 	cutscene_mgr->update();
 	segment_history->update();
 	dismiss_positions->update();

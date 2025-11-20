@@ -64,31 +64,8 @@ void GZMenu::init_menu()
 		))
 		->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
-			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f))
-				->push_to_row(new RangeMenuOption("bl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_leaf", true))
-				->push_to_row(new RangeMenuOption("bb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_bud", true))
-				->push_to_row(new RangeMenuOption("bf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "blue_flower", true))
-				->end_row()
-				->push_to_row(new RangeMenuOption("rl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "red_leaf", true))
-				->push_to_row(new RangeMenuOption("rb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "red_bud", true))
-				->push_to_row(new RangeMenuOption("rf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "red_flower", true))
-				->end_row()
-				->push_to_row(new RangeMenuOption("yl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "yellow_leaf", true))
-				->push_to_row(new RangeMenuOption("yb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "yellow_bud", true))
-				->push_to_row(new RangeMenuOption("yf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "yellow_flower", true))
-				->end_row()
-				->push_to_row(new RangeMenuOption("pl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "purple_leaf", true))
-				->push_to_row(new RangeMenuOption("pb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "purple_bud", true))
-				->push_to_row(new RangeMenuOption("pf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "purple_flower", true))
-				->end_row()
-				->push_to_row(new RangeMenuOption("wl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "white_leaf", true))
-				->push_to_row(new RangeMenuOption("wb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "white_bud", true))
-				->push_to_row(new RangeMenuOption("wf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "white_flower", true))
-				->end_row()
-				->push_to_row(new RangeMenuOption("cl", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_leaf", true))
-				->push_to_row(new RangeMenuOption("cb", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_bud", true))
-				->push_to_row(new RangeMenuOption("cf", 0, 100, 0, RangeMenuOption::WRAP, new Delegate1<SquadEditor, s32>(p2gz->squad_editor, &SquadEditor::set_squad), "bulbmin_flower", true))
-			))
+			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f, new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::sync)))))
+			->push(new PerformActionMenuOption("clear all", new BoundDelegate1<SquadEditor, bool>(p2gz->squad_editor, &SquadEditor::clear_all_pikmin, false)))
 		))
 		->push(new OpenSubMenuOption("trainers", (new ListMenu())
 			->push(new PerformActionMenuOption("fast empress", new Delegate<EmpressTrainer>(p2gz->empress_trainer, &EmpressTrainer::start)))
@@ -1151,12 +1128,11 @@ void RangeMenuOption::update()
 	}
 
 	if (btn & Controller::PRESS_DPAD_LEFT) {
-		selected_val -= delta;
+		update_selection(-delta);
 	}
 	if (btn & Controller::PRESS_DPAD_RIGHT) {
-		selected_val += delta;
+		update_selection(delta);
 	}
-	check_overflow();
 
 	if (init_selected_val != selected_val) {
 		if (on_selected) {
@@ -1173,20 +1149,21 @@ bool RangeMenuOption::select()
 	return true;
 }
 
-void RangeMenuOption::check_overflow()
+void RangeMenuOption::update_selection(s32 delta)
 {
-	if (selected_val > max) {
-		if (overflow_behavior == RangeMenuOption::CAP) {
+	switch (overflow_behavior) {
+	case CAP:
+		selected_val = MAX(MIN(selected_val + delta, max), min);
+		break;
+	case WRAP:
+		if (selected_val == max && delta > 0) {
+			selected_val = min;
+		} else if (selected_val == min && delta < 0) {
 			selected_val = max;
 		} else {
-			selected_val = min;
+			selected_val = MAX(MIN(selected_val + delta, max), min);
 		}
-	} else if (selected_val < min) {
-		if (overflow_behavior == RangeMenuOption::CAP) {
-			selected_val = min;
-		} else {
-			selected_val = max;
-		}
+		break;
 	}
 }
 
@@ -1222,6 +1199,19 @@ void RangeMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	if (selected) {
 		p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "change value");
 		p2gz->menu->draw_control(j2d, Controller::PRESS_X, "(hold) x10");
+	}
+}
+
+void RangeMenuOption::set_bounds(s32 min_, s32 max_)
+{
+	GZASSERTLINE(min <= max);
+	min = min_;
+	max = max_;
+
+	if (selected_val < min) {
+		selected_val = min;
+	} else if (selected_val > max) {
+		selected_val = max;
 	}
 }
 
