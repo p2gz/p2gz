@@ -197,13 +197,13 @@ Segment* SegmentHistory::start_segment()
 {
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
-	Segment* segment = new Segment();
-	segment->preset  = nullptr; // pikis are not alive when this is run. it will be set later
-
 	if (segments.atCapacity()) {
 		Segment* oldestSegment = segments.getLast();
 		delete oldestSegment;
 	}
+
+	Segment* segment = new Segment();
+	segment->preset  = nullptr; // pikis are not alive when this is run. it will be set later
 	segments.push(segment);
 
 	prev_heap->becomeCurrentHeap();
