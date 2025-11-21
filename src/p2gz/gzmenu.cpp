@@ -265,6 +265,13 @@ void GZMenu::open()
 		return;
 	}
 
+	// Hide options that control current game state when editing those game states isn't valid.
+	const bool in_gameplay         = in_cave_gameplay() || in_above_ground_gameplay();
+	get_option("freecam")->visible = in_gameplay;
+	get_option("pikmin")->visible  = in_gameplay;
+	get_option("captain")->visible = in_gameplay;
+	get_option("level")->visible   = in_gameplay;
+
 	layer = root_layer;
 	layer->reset_selection();
 	breadcrumbs.clear();
