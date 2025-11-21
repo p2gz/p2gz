@@ -280,6 +280,7 @@ PresetMgr::PresetMgr()
 	                 ->set_cutscene_flags(NUM_EC1_DEMO_FLAGS, (DemoFlags[NUM_EC1_DEMO_FLAGS]) { EC1_DEMO_FLAGS })
 	                 ->set_cave_cutscene_flags(NUM_AW_CAVE_FLAGS, (CaveIndex[NUM_AW_CAVE_FLAGS]) { AW_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_pod_ec), g_pod_ec)
+	                 ->set_sprouts(1, (Preset::Sprout[]) { Preset::Sprout(Game::Leaf, Game::Red, 10) })
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_ec), b_post_ec));
 	presets.push((new Preset("EC2", PoD))
 	                 ->set_pikmin(Flower, Red, 46)

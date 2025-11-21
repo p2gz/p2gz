@@ -65,7 +65,8 @@ struct Preset {
 			stage_and_kind = 0;
 			amount         = 0;
 		}
-		Sprout(Vector3f pos_, u8 stage, u8 kind, u8 amount_ = 0);
+		Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_);    // Onion ring (yum)
+		Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind); // Single in a fixed spot
 
 		inline u8 get_stage() { return (stage_and_kind & 0xF0) >> 4; }
 		inline u8 get_kind() { return stage_and_kind & 0x0F; }
@@ -92,22 +93,22 @@ public:
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
-	Preset* set_sprouts(uint num_sprouts, Sprout sprouts_[]);
+	Preset* set_sprouts(u32 num_sprouts, Sprout sprouts_[]);
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
 	Preset* set_time(f32 time_);
-	Preset* set_cutscene_flags(uint num_flags, Game::DemoFlags flags[]);
-	Preset* set_ek_cutscene_flags(uint num_flags, Game::OlimarData::ItemIndex flags[]);
-	Preset* set_cave_cutscene_flags(uint num_flags, CaveIndex flags[]);
-	Preset* set_upgrades(uint num_upgrades, Game::OlimarData::ItemIndex items[]);
-	Preset* set_destroyed_gates(uint num_gates, const char* gates[]);
-	Preset* set_finished_bridges(uint num_bridges, const char* bridges[]);
-	Preset* set_bags_flattened(uint num_bags, const char* bags[]);
+	Preset* set_cutscene_flags(u32 num_flags, Game::DemoFlags flags[]);
+	Preset* set_ek_cutscene_flags(u32 num_flags, Game::OlimarData::ItemIndex flags[]);
+	Preset* set_cave_cutscene_flags(u32 num_flags, CaveIndex flags[]);
+	Preset* set_upgrades(u32 num_upgrades, Game::OlimarData::ItemIndex items[]);
+	Preset* set_destroyed_gates(u32 num_gates, const char* gates[]);
+	Preset* set_finished_bridges(u32 num_bridges, const char* bridges[]);
+	Preset* set_bags_flattened(u32 num_bags, const char* bags[]);
 	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
 	Preset* set_day(u8 day_);
-	Preset* set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[]);
-	Preset* set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[]);
+	Preset* set_enemy_spawn_overrides(u32 num_spawns, EnemyGenSpawnOverride overrides[]);
+	Preset* set_treasure_spawn_overrides(u32 num_spawns, TreasureGenSpawnOverride overrides[]);
 
 	PresetCategory category;
 	const char* name;
