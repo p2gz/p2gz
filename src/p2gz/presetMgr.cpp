@@ -64,44 +64,6 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 	preset->onion_pikis = Game::playData->mPikiContainer;
 }
 
-Preset* PresetMgr::find(const char* name, PresetCategory category)
-{
-	for (size_t i = 0; i < presets.len(); i++) {
-		Preset* preset = presets[i];
-		GZASSERTLINE(preset);
-		if (category == preset->category && strcmp(preset->name, name) == 0) {
-			return preset;
-		}
-	}
-
-	OSReport("Attempted to find preset \"%s\" that does not exist\n", name);
-	return nullptr;
-}
-
-gz::CaveIndex which_cave(u32 area, u32 cave)
-{
-	if (cave == 0) {
-		return CAVE_AboveGround;
-	}
-
-	switch (area) {
-	case 0:
-		GZASSERTLINE(cave < 4);
-		return static_cast<gz::CaveIndex>(CAVE_EC + cave - 1);
-	case 1:
-		GZASSERTLINE(cave < 5);
-		return static_cast<gz::CaveIndex>(CAVE_HoB + cave - 1);
-	case 2:
-		GZASSERTLINE(cave < 5);
-		return static_cast<gz::CaveIndex>(CAVE_CoS + cave - 1);
-	case 3:
-		GZASSERTLINE(cave < 4);
-		return static_cast<gz::CaveIndex>(CAVE_CoC + cave - 1);
-	}
-
-	GZASSERTLINE(false);
-}
-
 Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
 {
 	gz::CaveIndex cave_e = which_cave(dest.area, dest.cave);
@@ -284,5 +246,43 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 		}
 	}
 
+	return nullptr;
+}
+
+gz::CaveIndex PresetMgr::which_cave(u32 area, u32 cave)
+{
+	if (cave == 0) {
+		return CAVE_AboveGround;
+	}
+
+	switch (area) {
+	case 0:
+		GZASSERTLINE(cave < 4);
+		return static_cast<gz::CaveIndex>(CAVE_EC + cave - 1);
+	case 1:
+		GZASSERTLINE(cave < 5);
+		return static_cast<gz::CaveIndex>(CAVE_HoB + cave - 1);
+	case 2:
+		GZASSERTLINE(cave < 5);
+		return static_cast<gz::CaveIndex>(CAVE_CoS + cave - 1);
+	case 3:
+		GZASSERTLINE(cave < 4);
+		return static_cast<gz::CaveIndex>(CAVE_CoC + cave - 1);
+	}
+
+	GZASSERTLINE(false);
+}
+
+Preset* PresetMgr::find(const char* name, PresetCategory category)
+{
+	for (size_t i = 0; i < presets.len(); i++) {
+		Preset* preset = presets[i];
+		GZASSERTLINE(preset);
+		if (category == preset->category && strcmp(preset->name, name) == 0) {
+			return preset;
+		}
+	}
+
+	OSReport("Attempted to find preset \"%s\" that does not exist\n", name);
 	return nullptr;
 }

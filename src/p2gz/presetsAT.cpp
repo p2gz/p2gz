@@ -4,838 +4,845 @@
 using namespace gz;
 using namespace Game;
 
+/////////////////////////////////////////////////////////////
+///////////////////////// TREASURES /////////////////////////
+static Preset::TreasureGenSpawnOverride t_at_start[] = {
+	// nothing collected
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_Spawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_Spawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Spawn),  /* goo */
+	Preset::TreasureGenSpawnOverride(130, PSO_Spawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_Spawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn), /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Spawn), /* air brake */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_eb[] = {
+	// AW: dice and goo moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_Spawn),   /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_Spawn),   /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),  /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_Spawn),  /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_Ignore), /* dice -- TODO: ADD POSITION --*/
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),  /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Spawn),  /* air brake */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_aw1[] = {
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_scx[] = {
+	// VoR: scrap moved
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_Ignore), /* scrap -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_fc[] = {
+	// VoR: scrap moved (more)
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_Ignore), /* scrap -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_scrap[] = {
+	// VoR: scrap moved (more)
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),     /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),     /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_Spawn),     /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_Spawn),     /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn), /* scrap -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(142, PSO_Spawn),    /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_Spawn),    /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_vor2[] = {
+	// VoR: all collected
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_smc[] = {
+	// VoR: all collected
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// PP: girdle moved
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_Spawn),   /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_Spawn),   /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_Spawn),   /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_Ignore), /* girdle -- TODO: ADD POSITION-- */
+	Preset::TreasureGenSpawnOverride(140, PSO_Spawn),  /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_Spawn),  /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_Spawn),  /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_sr[] = {
+	// VoR: all collected
+	// AW: dice, globe, strawberry, bulb collected, AB and goo moved
+	// PP: all collected
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_bk[] = {
+	// VoR: all collected
+	// AW: dice, globe, strawberry, bulb collected, AB moved, goo moved (more), 'cask' moved
+	// PP: all collected
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_Ignore),    /* healing cask/milk lid -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_sh[] = {
+	// VoR: all collected
+	// AW: all collected
+	// PP: all collected
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_DontSpawn),  /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask/milk lid -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(185, PSO_DontSpawn), /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_doomsday[] = {
+	// VoR: all collected
+	// AW: all collected
+	// PP: all collected
+	// WW: doomsday collected
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_DontSpawn),  /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask/milk lid -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(185, PSO_DontSpawn), /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_Spawn),     /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_Spawn),     /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_Spawn),     /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_DontSpawn), /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_Spawn),    /* seed of greed */
+};
+
+static Preset::TreasureGenSpawnOverride t_at_post_enter_hoh[] = {
+	// VoR: all collected
+	// AW: all collected
+	// PP: all collected
+	// WW: all collected
+	// VoR
+	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+	Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
+	Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
+	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+
+	// AW
+	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+	Preset::TreasureGenSpawnOverride(43, PSO_DontSpawn),  /* goo -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask/milk lid -- TODO: ADD POSITION -- */
+	Preset::TreasureGenSpawnOverride(185, PSO_DontSpawn), /* air brake -- TODO: ADD POSITION -- */
+
+	// PP
+	Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
+	Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
+	Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
+	Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
+	Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
+	Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
+	Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
+
+	// WW
+	Preset::TreasureGenSpawnOverride(27, PSO_DontSpawn),  /* nut */
+	Preset::TreasureGenSpawnOverride(45, PSO_DontSpawn),  /* mushroom */
+	Preset::TreasureGenSpawnOverride(50, PSO_DontSpawn),  /* pinecone */
+	Preset::TreasureGenSpawnOverride(76, PSO_DontSpawn),  /* doomsday apparatus */
+	Preset::TreasureGenSpawnOverride(183, PSO_DontSpawn), /* seed of greed */
+};
+
+/////////////////////////////////////////////////////////////
+////////////////////////// ENEMIES //////////////////////////
+static Preset::EnemyGenSpawnOverride e_at_enter_wfg[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn), // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),   // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_Spawn),  // near gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_Spawn),    // after gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),     // to HoB
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),  // flower pot
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),    // near bulb
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),     // 1-pellets (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),   // 5-pellet (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),    // 1-pellet (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),  // 1-pellets (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),    // BO
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_hob[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   // after gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),        // 1-pellets (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),      // 5-pellet (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),       // 1-pellet (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),     // 1-pellets (BO)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),       // BO
+};
+
+static Preset::EnemyGenSpawnOverride e_at_day_5[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   // after gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1631.42f, -53.0f, 3351.95f), PSO_Spawn), // near AB (near bridge)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1388.69f, -53.0f, 3972.27f), PSO_Spawn), // near AB (far bridge)
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_scx[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_Spawn), // entry to hubcap
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(548.54f, 100.0f, 546.48f), PSO_Spawn),     // bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(300.91f, 100.0f, 361.60f), PSO_Spawn),     // to the side
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(340.79f, 15.0f, 868.56f), PSO_Spawn),   // bridge (near)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(145.54f, 18.87f, 618.03f), PSO_Spawn),  // bridge (far)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-244.22f, 100.0f, 326.78f),
+	                              PSO_Spawn), // between bridge and ursidae
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_fc[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn), // entry to hubcap
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(548.54f, 100.0f, 546.48f), PSO_Spawn),         // bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(300.91f, 100.0f, 361.60f), PSO_Spawn),         // to the side
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(340.79f, 15.0f, 868.56f), PSO_Spawn),       // bridge (near)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(145.54f, 18.87f, 618.03f), PSO_Spawn),      // bridge (far)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-244.22f, 100.0f, 326.78f),
+	                              PSO_Spawn), // between bridge and ursidae
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(302.18f, 100.0f, -177.91f), PSO_Spawn),        // to FC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Fkabuto, Vector3f(182.16f, 210.0f, -1559.79f), PSO_Spawn),       // crown
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-271.09f, 114.0f, -1387.32f), PSO_Spawn), // FC
+};
+
+static Preset::EnemyGenSpawnOverride e_at_vor_cleanup[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn), // entry to hubcap
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(548.54f, 100.0f, 546.48f), PSO_DontSpawn),     // bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(300.91f, 100.0f, 361.60f), PSO_Spawn),         // to the side
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(340.79f, 15.0f, 868.56f), PSO_Spawn),       // bridge (near)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(145.54f, 18.87f, 618.03f), PSO_Spawn),      // bridge (far)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-244.22f, 100.0f, 326.78f),
+	                              PSO_Spawn), // between bridge and ursidae
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(302.18f, 100.0f, -177.91f), PSO_DontSpawn),        // to FC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Fkabuto, Vector3f(182.16f, 210.0f, -1559.79f), PSO_DontSpawn),       // crown
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-271.09f, 114.0f, -1387.32f), PSO_DontSpawn), // FC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-679.41f, 60.0f, -24.93f), PSO_Spawn),             // 2x fiery
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-810.08f, 60.0f, -378.64f), PSO_Spawn),            // 1x fiery
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_FireChappy, Vector3f(-616.06f, 100.0f, -778.38f), PSO_Spawn),        // fiery
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-259.88f, 50.0f, 2476.48f), PSO_Spawn),           // 10-pellet
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(52.87f, 9.17f, 3055.31f), PSO_Spawn),   // 5-pellet (base)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-1342.39f, 4.2f, 2825.76f), PSO_Spawn), // 5-pellet (bags 1)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-1340.81f, 0.0f, 2606.40f), PSO_Spawn), // 5-pellet (bags 2)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-584.42f, 0.0f, 3160.87f), PSO_Spawn),  // 1-pellet (base)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-21.92f, 0.0f, 2870.73f), PSO_Spawn),   // 1-pellet (base)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-400.92f, 0.0f, 2646.80f), PSO_Spawn),  // 1-pellet (base)
+
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_cos[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_Spawn),       // near CoS
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_Spawn), // 1-pellets, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_Spawn),  // 5-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_Spawn),  // 10-pellet, YO
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_gk[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_DontSpawn),       // near CoS
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_DontSpawn), // 1-pellets, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 5-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 10-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-650.0f, 52.89f, -1800.0f), PSO_Spawn),        // near GK
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_smc[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_DontSpawn),       // near CoS
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_DontSpawn), // 1-pellets, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 5-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 10-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-650.0f, 52.89f, -1800.0f), PSO_Spawn),        // near GK
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-400.0f, -57.0f, -2950.0f), PSO_Spawn),      // near girdle scales
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-900.0f, -57.0f, -3000.0f), PSO_Spawn),       // near girdle
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-1100.0f, -57.0f, -3200.0f), PSO_Spawn),      // near girdle
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(0.0f, -57.0f, -3000.0f), PSO_Spawn),    // near SmC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-25.0f, 0.0f, -75.0f), PSO_Spawn),              // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(275.0f, 16.48f, -275.0f), PSO_Spawn),           // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1350.0f, -91.40f, 1450.0f), PSO_Spawn),      // near SR
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1400.0f, -90.05f, 1825.0f), PSO_Spawn),      // near SR
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_sr[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_DontSpawn),       // near CoS
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_DontSpawn), // 1-pellets, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 5-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 10-pellet, YO
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-650.0f, 52.89f, -1800.0f), PSO_DontSpawn),    // near GK
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-400.0f, -57.0f, -2950.0f),
+	                              PSO_DontSpawn),                                                                      // near girdle scales
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(0.0f, -57.0f, -3000.0f), PSO_DontSpawn), // near SmC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-25.0f, 0.0f, -75.0f), PSO_DontSpawn),           // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(275.0f, 16.48f, -275.0f), PSO_DontSpawn),        // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1350.0f, -91.40f, 1450.0f), PSO_Spawn),       // near SR
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1400.0f, -90.05f, 1825.0f), PSO_Spawn),       // near SR
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(375.0f, 7.24f, -1375.0f), PSO_Spawn),           // near bitters
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_UmiMushiBlind, Vector3f(950.0f, 57.0f, 475.0f), PSO_Spawn),     // mine
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(150.0f, -57.0f, 1950.0f), PSO_Spawn),         // near onion
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(400.0f, -57.0f, 1600.0f), PSO_Spawn),            // near shell
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(750.0f, -57.0f, 1350.0f), PSO_Spawn),            // near shell
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(550.0f, 17.69f, -1000.0f), PSO_Spawn),           // near bitters
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_bk[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_Spawn),       // after gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-347.22f, -20.0f, 4107.39f), PSO_Spawn),     // near SH
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-383.96f, 30.0f, 575.85f), PSO_Spawn),         // near electric gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-71.49f, -20.0f, 1117.59f), PSO_Spawn),        // near WFG
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_sh[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   // after gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-347.22f, -20.0f, 4107.39f), PSO_DontSpawn), // near SH
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-383.96f, 30.0f, 575.85f), PSO_DontSpawn),     // near electric gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-71.49f, -20.0f, 1117.59f), PSO_Spawn),        // near WFG
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_coc[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_Spawn), // wandering
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_Spawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_Spawn),     // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_Spawn),       // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_Spawn),    // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_Spawn),       // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_Spawn),        // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_Spawn),    // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_Spawn),    // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),      // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn), // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),  // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_Spawn),         // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),         // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),         // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn),    // water gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),        // electric gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn),     // near pinecone
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),        // near berries
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),       // near berries
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_dd[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_DontSpawn), // wandering
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_DontSpawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_DontSpawn),     // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_Spawn),           // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_DontSpawn),    // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_DontSpawn),       // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_DontSpawn),        // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_Spawn),        // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_Spawn),        // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),          // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn),     // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),      // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_Spawn),             // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),             // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),             // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn),        // water gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),            // electric gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn),         // near pinecone
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),            // near berries
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),           // near berries
+};
+
+static Preset::EnemyGenSpawnOverride e_at_enter_hoh[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_DontSpawn), // wandering
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_DontSpawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_DontSpawn),     // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_DontSpawn),       // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_DontSpawn),    // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_DontSpawn),       // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_DontSpawn),        // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_Spawn),        // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_Spawn),        // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),          // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn),     // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),      // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_Spawn),             // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),             // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),             // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn),        // water gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),            // electric gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn),         // near pinecone
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),            // near berries
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),           // near berries
+};
+
+static Preset::EnemyGenSpawnOverride e_at_post_enter_hoh[] = {
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_DontSpawn), // wandering
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_DontSpawn),    // near base
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_DontSpawn),     // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_DontSpawn),       // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_DontSpawn),    // near CoC
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_DontSpawn),       // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_DontSpawn),        // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_DontSpawn),    // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_DontSpawn),    // DD gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),          // near bridge
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn),     // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),      // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_DontSpawn),  // impact site (nut)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),      // impact site (bump)
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),      // impact site
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn), // water gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),     // electric gate
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn),  // near pinecone
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),     // near berries
+	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),    // near berries
+};
+
+/////////////////////////////////////////////////////////////
+/////////////////////////// GATES ///////////////////////////
+static const char* g_at_post_enter_ec[]  = { "EC gate" };
+static const char* g_at_post_enter_wfg[] = { "EC gate", "black gate" };
+static const char* g_at_post_enter_scx[] = { "EC gate", "black gate", "water gate" };
+static const char* g_at_post_enter_smc[] = { "EC gate", "black gate", "water gate", "zirconium rotor gate" };
+static const char* g_at_post_enter_bk[]  = { "EC gate", "black gate", "water gate", "zirconium rotor gate", "blue onion gate", "SH gate" };
+static const char* g_at_post_enter_hoh[]
+    = { "EC gate", "black gate", "water gate", "zirconium rotor gate", "blue onion gate", "SH gate", "bridge gate", "HoH gate" };
+
+/////////////////////////////////////////////////////////////
+/////////////////////////// BAGS ////////////////////////////
+static const char* b_post_enter_ec[] = { "landing area bag (15)", "hubcap bag (35)" };
+static const char* b_all[]           = { "landing area bag (15)", "hubcap bag (35)", "WFG bag (200)" };
+
+/////////////////////////////////////////////////////////////
+////////////////////////// BRIDGES //////////////////////////
+static const char* br_at_post_aw1[]       = { "globe bridge" };
+static const char* br_at_post_enter_scx[] = { "globe bridge", "water bridge" };
+static const char* br_at_post_enter_fc[]  = { "globe bridge", "water bridge", "FC bridge" };
+static const char* br_at_post_enter_sr[]  = { "globe bridge", "water bridge", "FC bridge", "bitter plant bridge", "SR bridge" };
+static const char* br_at_post_enter_dd[] = { "globe bridge", "water bridge", "FC bridge", "bitter plant bridge", "SR bridge", "DD bridge" };
+
+/////////////////////////////////////////////////////////////
+////////////////////////// UPGRADES /////////////////////////
+static OlimarData::ItemIndex ek_at_post_vor1[] = { OlimarData::ODII_SphericalAtlas };
+static OlimarData::ItemIndex ek_at_post_wfg[]  = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack };
+static OlimarData::ItemIndex ek_at_post_hob[]
+    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector };
+static OlimarData::ItemIndex ek_at_post_aw1[] = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack,
+	                                              OlimarData::ODII_PrototypeDetector, OlimarData::ODII_GeographicProjection };
+static OlimarData::ItemIndex ek_at_post_scx[]
+    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb };
+static OlimarData::ItemIndex ek_at_post_fc5[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles };
+static OlimarData::ItemIndex ek_at_post_fc8[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
+	    OlimarData::ODII_RepugnantAppendage };
+static OlimarData::ItemIndex ek_at_post_gk[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
+	    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial };
+static OlimarData::ItemIndex ek_at_post_smc[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
+	    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker };
+static OlimarData::ItemIndex ek_at_post_sr[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
+	    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker,
+	    OlimarData::ODII_AmplifiedAmplifier };
+static OlimarData::ItemIndex ek_at_post_bk[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
+	    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker,
+	    OlimarData::ODII_AmplifiedAmplifier,   OlimarData::ODII_ForgedCourage };
+static OlimarData::ItemIndex ek_at_post_sh[]
+    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
+	    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
+	    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker,
+	    OlimarData::ODII_AmplifiedAmplifier,   OlimarData::ODII_ForgedCourage,  OlimarData::ODII_JusticeAlloy };
+
 void PresetMgr::init_at_presets()
 {
-	/////////////////////////////////////////////////////////////
-	///////////////////////// TREASURES /////////////////////////
-	Preset::TreasureGenSpawnOverride t_at_start[] = {
-		// nothing collected
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_Spawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_Spawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Spawn),  /* goo */
-		Preset::TreasureGenSpawnOverride(130, PSO_Spawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_Spawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn), /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Spawn), /* air brake */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_eb[] = {
-		// AW: dice and goo moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_Spawn),   /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_Spawn),   /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),  /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_Spawn),  /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_Ignore), /* dice -- TODO: ADD POSITION --*/
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),  /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Spawn),  /* air brake */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_aw1[] = {
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_scx[] = {
-		// VoR: scrap moved
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_Ignore), /* scrap -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_fc[] = {
-		// VoR: scrap moved (more)
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_Spawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_Spawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_Ignore), /* scrap -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_scrap[] = {
-		// VoR: scrap moved (more)
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),     /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),     /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_Spawn),     /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_Spawn),     /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn), /* scrap -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(142, PSO_Spawn),    /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_Spawn),    /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_vor2[] = {
-		// VoR: all collected
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Spawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_smc[] = {
-		// VoR: all collected
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// PP: girdle moved
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_Spawn),   /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_Spawn),   /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_Spawn),   /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_Ignore), /* girdle -- TODO: ADD POSITION-- */
-		Preset::TreasureGenSpawnOverride(140, PSO_Spawn),  /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_Spawn),  /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_Spawn),  /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_sr[] = {
-		// VoR: all collected
-		// AW: dice, globe, strawberry, bulb collected, AB and goo moved
-		// PP: all collected
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask/milk lid */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_bk[] = {
-		// VoR: all collected
-		// AW: dice, globe, strawberry, bulb collected, AB moved, goo moved (more), 'cask' moved
-		// PP: all collected
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_Ignore),     /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_Ignore),    /* healing cask/milk lid -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(185, PSO_Ignore),    /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_sh[] = {
-		// VoR: all collected
-		// AW: all collected
-		// PP: all collected
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_DontSpawn),  /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask/milk lid -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(185, PSO_DontSpawn), /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_Spawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn), /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_doomsday[] = {
-		// VoR: all collected
-		// AW: all collected
-		// PP: all collected
-		// WW: doomsday collected
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_DontSpawn),  /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask/milk lid -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(185, PSO_DontSpawn), /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_Spawn),     /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_Spawn),     /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_Spawn),     /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_DontSpawn), /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_Spawn),    /* seed of greed */
-	};
-
-	Preset::TreasureGenSpawnOverride t_at_post_enter_hoh[] = {
-		// VoR: all collected
-		// AW: all collected
-		// PP: all collected
-		// WW: all collected
-		// VoR
-		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-		Preset::TreasureGenSpawnOverride(71, PSO_DontSpawn),  /* crown */
-		Preset::TreasureGenSpawnOverride(73, PSO_DontSpawn),  /* watch */
-		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-
-		// AW
-		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-		Preset::TreasureGenSpawnOverride(43, PSO_DontSpawn),  /* goo -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask/milk lid -- TODO: ADD POSITION -- */
-		Preset::TreasureGenSpawnOverride(185, PSO_DontSpawn), /* air brake -- TODO: ADD POSITION -- */
-
-		// PP
-		Preset::TreasureGenSpawnOverride(53, PSO_DontSpawn),  /* onion replica */
-		Preset::TreasureGenSpawnOverride(72, PSO_DontSpawn),  /* mine */
-		Preset::TreasureGenSpawnOverride(77, PSO_DontSpawn),  /* scourge/lightning bolt */
-		Preset::TreasureGenSpawnOverride(118, PSO_DontSpawn), /* girdle */
-		Preset::TreasureGenSpawnOverride(140, PSO_DontSpawn), /* optical illustration/battery */
-		Preset::TreasureGenSpawnOverride(152, PSO_DontSpawn), /* shell */
-		Preset::TreasureGenSpawnOverride(172, PSO_DontSpawn), /* gherkin gate/milk lid */
-
-		// WW
-		Preset::TreasureGenSpawnOverride(27, PSO_DontSpawn),  /* nut */
-		Preset::TreasureGenSpawnOverride(45, PSO_DontSpawn),  /* mushroom */
-		Preset::TreasureGenSpawnOverride(50, PSO_DontSpawn),  /* pinecone */
-		Preset::TreasureGenSpawnOverride(76, PSO_DontSpawn),  /* doomsday apparatus */
-		Preset::TreasureGenSpawnOverride(183, PSO_DontSpawn), /* seed of greed */
-	};
-
-	/////////////////////////////////////////////////////////////
-	////////////////////////// ENEMIES //////////////////////////
-	Preset::EnemyGenSpawnOverride e_at_enter_wfg[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn), // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),   // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_Spawn),  // near gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_Spawn),    // after gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),     // to HoB
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),  // flower pot
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),    // near bulb
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),     // 1-pellets (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),   // 5-pellet (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),    // 1-pellet (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),  // 1-pellets (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),    // BO
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_hob[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   // after gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),        // 1-pellets (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),      // 5-pellet (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),       // 1-pellet (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),     // 1-pellets (BO)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),       // BO
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_day_5[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   // after gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1631.42f, -53.0f, 3351.95f), PSO_Spawn), // near AB (near bridge)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1388.69f, -53.0f, 3972.27f), PSO_Spawn), // near AB (far bridge)
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_scx[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_Spawn), // entry to hubcap
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(548.54f, 100.0f, 546.48f), PSO_Spawn),     // bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(300.91f, 100.0f, 361.60f), PSO_Spawn),     // to the side
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(340.79f, 15.0f, 868.56f), PSO_Spawn),   // bridge (near)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(145.54f, 18.87f, 618.03f), PSO_Spawn),  // bridge (far)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-244.22f, 100.0f, 326.78f),
-		                              PSO_Spawn), // between bridge and ursidae
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_fc[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn), // entry to hubcap
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(548.54f, 100.0f, 546.48f), PSO_Spawn),         // bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(300.91f, 100.0f, 361.60f), PSO_Spawn),         // to the side
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(340.79f, 15.0f, 868.56f), PSO_Spawn),       // bridge (near)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(145.54f, 18.87f, 618.03f), PSO_Spawn),      // bridge (far)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-244.22f, 100.0f, 326.78f),
-		                              PSO_Spawn), // between bridge and ursidae
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(302.18f, 100.0f, -177.91f), PSO_Spawn),        // to FC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Fkabuto, Vector3f(182.16f, 210.0f, -1559.79f), PSO_Spawn),       // crown
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-271.09f, 114.0f, -1387.32f), PSO_Spawn), // FC
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_vor_cleanup[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn), // entry to hubcap
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(548.54f, 100.0f, 546.48f), PSO_DontSpawn),     // bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(300.91f, 100.0f, 361.60f), PSO_Spawn),         // to the side
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(340.79f, 15.0f, 868.56f), PSO_Spawn),       // bridge (near)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(145.54f, 18.87f, 618.03f), PSO_Spawn),      // bridge (far)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-244.22f, 100.0f, 326.78f),
-		                              PSO_Spawn), // between bridge and ursidae
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(302.18f, 100.0f, -177.91f), PSO_DontSpawn),        // to FC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Fkabuto, Vector3f(182.16f, 210.0f, -1559.79f), PSO_DontSpawn),       // crown
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-271.09f, 114.0f, -1387.32f), PSO_DontSpawn), // FC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-679.41f, 60.0f, -24.93f), PSO_Spawn),             // 2x fiery
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-810.08f, 60.0f, -378.64f), PSO_Spawn),            // 1x fiery
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_FireChappy, Vector3f(-616.06f, 100.0f, -778.38f), PSO_Spawn),        // fiery
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-259.88f, 50.0f, 2476.48f), PSO_Spawn),           // 10-pellet
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(52.87f, 9.17f, 3055.31f), PSO_Spawn),   // 5-pellet (base)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-1342.39f, 4.2f, 2825.76f), PSO_Spawn), // 5-pellet (bags 1)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-1340.81f, 0.0f, 2606.40f), PSO_Spawn), // 5-pellet (bags 2)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-584.42f, 0.0f, 3160.87f), PSO_Spawn),  // 1-pellet (base)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-21.92f, 0.0f, 2870.73f), PSO_Spawn),   // 1-pellet (base)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-400.92f, 0.0f, 2646.80f), PSO_Spawn),  // 1-pellet (base)
-
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_cos[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_Spawn),       // near CoS
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_Spawn), // 1-pellets, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_Spawn),  // 5-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_Spawn),  // 10-pellet, YO
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_gk[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_DontSpawn),       // near CoS
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_DontSpawn), // 1-pellets, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 5-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 10-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-650.0f, 52.89f, -1800.0f), PSO_Spawn),        // near GK
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_smc[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_DontSpawn),       // near CoS
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_DontSpawn), // 1-pellets, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 5-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 10-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-650.0f, 52.89f, -1800.0f), PSO_Spawn),        // near GK
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-400.0f, -57.0f, -2950.0f), PSO_Spawn),   // near girdle scales
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-900.0f, -57.0f, -3000.0f), PSO_Spawn),    // near girdle
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-1100.0f, -57.0f, -3200.0f), PSO_Spawn),   // near girdle
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(0.0f, -57.0f, -3000.0f), PSO_Spawn), // near SmC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-25.0f, 0.0f, -75.0f), PSO_Spawn),           // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(275.0f, 16.48f, -275.0f), PSO_Spawn),        // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1350.0f, -91.40f, 1450.0f), PSO_Spawn),   // near SR
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1400.0f, -90.05f, 1825.0f), PSO_Spawn),   // near SR
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_sr[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-950.0f, 6.25f, -150.0f), PSO_DontSpawn),       // near CoS
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-480.0f, 89.01f, -1115.0f), PSO_DontSpawn), // 1-pellets, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-666.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 5-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-375.0f, 89.01f, -800.0f), PSO_DontSpawn),  // 10-pellet, YO
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-650.0f, 52.89f, -1800.0f), PSO_DontSpawn),    // near GK
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(-400.0f, -57.0f, -2950.0f),
-		                              PSO_DontSpawn), // near girdle scales
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(0.0f, -57.0f, -3000.0f), PSO_DontSpawn), // near SmC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-25.0f, 0.0f, -75.0f), PSO_DontSpawn),           // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(275.0f, 16.48f, -275.0f), PSO_DontSpawn),        // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1350.0f, -91.40f, 1450.0f), PSO_Spawn),       // near SR
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(1400.0f, -90.05f, 1825.0f), PSO_Spawn),       // near SR
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(375.0f, 7.24f, -1375.0f), PSO_Spawn),           // near bitters
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_UmiMushiBlind, Vector3f(950.0f, 57.0f, 475.0f), PSO_Spawn),     // mine
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Catfish, Vector3f(150.0f, -57.0f, 1950.0f), PSO_Spawn),         // near onion
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(400.0f, -57.0f, 1600.0f), PSO_Spawn),            // near shell
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(750.0f, -57.0f, 1350.0f), PSO_Spawn),            // near shell
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(550.0f, 17.69f, -1000.0f), PSO_Spawn),           // near bitters
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_bk[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_Spawn),       // after gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-347.22f, -20.0f, 4107.39f), PSO_Spawn),     // near SH
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-383.96f, 30.0f, 575.85f), PSO_Spawn),  // near electric gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-71.49f, -20.0f, 1117.59f), PSO_Spawn), // near WFG
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_sh[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),      // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn), // near gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),   // after gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-899.46f, -20.0f, 1109.54f), PSO_Spawn),        // to HoB
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),     // flower pot
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-347.22f, -20.0f, 4107.39f), PSO_DontSpawn), // near SH
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),       // near bulb
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-383.96f, 30.0f, 575.85f), PSO_DontSpawn), // near electric gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-71.49f, -20.0f, 1117.59f), PSO_Spawn),    // near WFG
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_coc[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_Spawn), // wandering
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_Spawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_Spawn),     // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_Spawn),       // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_Spawn),    // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_Spawn),       // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_Spawn),        // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_Spawn),    // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_Spawn),    // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),      // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn), // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),  // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_Spawn),         // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),         // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),         // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn),    // water gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),        // electric gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn),     // near pinecone
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),        // near berries
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),       // near berries
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_dd[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_DontSpawn), // wandering
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_DontSpawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_DontSpawn),     // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_Spawn),           // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_DontSpawn),    // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_DontSpawn),       // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_DontSpawn),        // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_Spawn),        // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_Spawn),        // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),          // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn),     // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),      // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_Spawn),             // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),             // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),             // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn),        // water gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),    // electric gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn), // near pinecone
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),    // near berries
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),   // near berries
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_enter_hoh[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_DontSpawn), // wandering
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_DontSpawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_DontSpawn),     // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_DontSpawn),       // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_DontSpawn),    // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_DontSpawn),       // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_DontSpawn),        // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_Spawn),        // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_Spawn),        // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),          // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn),     // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),      // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_Spawn),             // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),             // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),             // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn),        // water gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),    // electric gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn), // near pinecone
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),    // near berries
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),   // near berries
-	};
-
-	Preset::EnemyGenSpawnOverride e_at_post_enter_hoh[] = {
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_MiniHoudai, Vector3f(-1576.15f, 20.0f, 1320.49f), PSO_DontSpawn), // wandering
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-3232.67f, 0.0f, -123.87f), PSO_DontSpawn),    // near base
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-2245.25, 50.0f, 676.88f), PSO_DontSpawn),     // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Sarai, Vector3f(-2781.4f, -30.0f, 162.67f), PSO_DontSpawn),       // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Rkabuto, Vector3f(-3007.17f, -30.0f, 574.86f), PSO_DontSpawn),    // near CoC
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-1340.17f, 30.0f, 491.33f), PSO_DontSpawn),       // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-1310.87f, 30.0f, 346.84f), PSO_DontSpawn),        // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1218.46f, 23.95f, 766.49f), PSO_DontSpawn),    // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_GasHiba, Vector3f(-1220.70f, 22.19f, 679.39f), PSO_DontSpawn),    // DD gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Frog, Vector3f(-1500.08f, -10.0f, 1002.67f), PSO_Spawn),          // near bridge
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-342.40f, 0.0f, 1391.13f), PSO_Spawn),     // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hanachirashi, Vector3f(-92.24f, 0.0f, 1681.89f), PSO_Spawn),      // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-145.68f, 0.0f, 1537.79f), PSO_DontSpawn),  // impact site (nut)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-467.91f, 0.0f, 1477.60f), PSO_Spawn),      // impact site (bump)
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Hana, Vector3f(-241.84f, 0.0f, 1716.82f), PSO_Spawn),      // impact site
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Jigumo, Vector3f(-3538.90f, -30.0f, 1044.17f), PSO_Spawn), // water gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tobi, Vector3f(-2976.20f, 0.0f, 2237.37f), PSO_Spawn),     // electric gate
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kabuto, Vector3f(-2172.05f, 30.0f, 2714.40f), PSO_Spawn),  // near pinecone
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-2992.96f, 0.0f, 1651.54f), PSO_Spawn),     // near berries
-		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wtank, Vector3f(-3244.42f, 0.0f, 2052.76f), PSO_Spawn),    // near berries
-	};
-
-	/////////////////////////////////////////////////////////////
-	/////////////////////////// GATES ///////////////////////////
-	const char* g_at_post_enter_ec[]  = { "EC gate" };
-	const char* g_at_post_enter_wfg[] = { "EC gate", "black gate" };
-	const char* g_at_post_enter_scx[] = { "EC gate", "black gate", "water gate" };
-	const char* g_at_post_enter_smc[] = { "EC gate", "black gate", "water gate", "zirconium rotor gate" };
-	const char* g_at_post_enter_bk[]  = { "EC gate", "black gate", "water gate", "zirconium rotor gate", "blue onion gate", "SH gate" };
-	const char* g_at_post_enter_hoh[]
-	    = { "EC gate", "black gate", "water gate", "zirconium rotor gate", "blue onion gate", "SH gate", "bridge gate", "HoH gate" };
-
-	/////////////////////////////////////////////////////////////
-	/////////////////////////// BAGS ////////////////////////////
-	const char* b_post_enter_ec[] = { "landing area bag (15)", "hubcap bag (35)" };
-	const char* b_all[]           = { "landing area bag (15)", "hubcap bag (35)", "WFG bag (200)" };
-
-	/////////////////////////////////////////////////////////////
-	////////////////////////// BRIDGES //////////////////////////
-	const char* br_at_post_aw1[]       = { "globe bridge" };
-	const char* br_at_post_enter_scx[] = { "globe bridge", "water bridge" };
-	const char* br_at_post_enter_fc[]  = { "globe bridge", "water bridge", "FC bridge" };
-	const char* br_at_post_enter_sr[]  = { "globe bridge", "water bridge", "FC bridge", "bitter plant bridge", "SR bridge" };
-	const char* br_at_post_enter_dd[]  = { "globe bridge", "water bridge", "FC bridge", "bitter plant bridge", "SR bridge", "DD bridge" };
-
-	/////////////////////////////////////////////////////////////
-	////////////////////////// UPGRADES /////////////////////////
-	OlimarData::ItemIndex ek_at_post_vor1[] = { OlimarData::ODII_SphericalAtlas };
-	OlimarData::ItemIndex ek_at_post_wfg[]  = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack };
-	OlimarData::ItemIndex ek_at_post_hob[]
-	    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector };
-	OlimarData::ItemIndex ek_at_post_aw1[] = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack,
-		                                       OlimarData::ODII_PrototypeDetector, OlimarData::ODII_GeographicProjection };
-	OlimarData::ItemIndex ek_at_post_scx[]
-	    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb };
-	OlimarData::ItemIndex ek_at_post_fc5[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles };
-	OlimarData::ItemIndex ek_at_post_fc8[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
-		    OlimarData::ODII_RepugnantAppendage };
-	OlimarData::ItemIndex ek_at_post_gk[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
-		    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial };
-	OlimarData::ItemIndex ek_at_post_smc[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
-		    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker };
-	OlimarData::ItemIndex ek_at_post_sr[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
-		    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker,
-		    OlimarData::ODII_AmplifiedAmplifier };
-	OlimarData::ItemIndex ek_at_post_bk[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
-		    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker,
-		    OlimarData::ODII_AmplifiedAmplifier,   OlimarData::ODII_ForgedCourage };
-	OlimarData::ItemIndex ek_at_post_sh[]
-	    = { OlimarData::ODII_SphericalAtlas,       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_PrototypeDetector,
-		    OlimarData::ODII_GeographicProjection, OlimarData::ODII_StellarOrb,     OlimarData::ODII_BruteKnuckles,
-		    OlimarData::ODII_RepugnantAppendage,   OlimarData::ODII_DreamMaterial,  OlimarData::ODII_ProfessionalNoisemaker,
-		    OlimarData::ODII_AmplifiedAmplifier,   OlimarData::ODII_ForgedCourage,  OlimarData::ODII_JusticeAlloy };
-
-	/////////////////////////////////////////////////////////////
-	////////////////////////// PRESETS //////////////////////////
-	///////// VoR1
+	init_at_vor1_presets();
+	init_at_aw1_presets();
+	init_at_vor2_presets();
+	init_at_pp_presets();
+	init_at_aw2_presets();
+	init_at_ww_presets();
+}
+
+void PresetMgr::init_at_vor1_presets()
+{
 	// presets.push((new Preset("Day 1", AT))->set_day(1));
 	// presets.push((new Preset("Day 2", AT))
 	//                  ->set_onion_pikmin(Leaf, Red, 0)
@@ -878,8 +885,10 @@ void PresetMgr::init_at_presets()
 	                 ->set_cave_cutscene_flags(NUM_EC_CAVE_FLAGS, (CaveIndex[NUM_EC_CAVE_FLAGS]) { EC_CAVE_FLAGS })
 	                 ->set_destroyed_gates(ARRAY_SIZE(g_at_post_enter_ec), g_at_post_enter_ec)
 	                 ->set_bags_flattened(ARRAY_SIZE(b_post_enter_ec), b_post_enter_ec));
-	/////////////
-	///////// AW1
+}
+
+void PresetMgr::init_at_aw1_presets()
+{
 	presets.push((new Preset("enter WFG", AT))
 	                 ->set_onion_pikmin(Flower, Red, 28)
 	                 ->set_onion_pikmin(Leaf, Red, 4)
@@ -1046,8 +1055,10 @@ void PresetMgr::init_at_presets()
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_at_post_eb), t_at_post_eb)
 	                 ->set_sprays(true, 1, false, 0)
 	                 ->set_enter_kind(PEK_FromCave));
-	//////////////
-	///////// VoR2
+}
+
+void PresetMgr::init_at_vor2_presets()
+{
 	presets.push((new Preset("enter SCx", AT))
 	                 ->set_onion_pikmin(Flower, Red, 22)
 	                 ->set_onion_pikmin(Flower, Purple, 34)
@@ -1341,8 +1352,10 @@ void PresetMgr::init_at_presets()
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_at_post_scrap), t_at_post_scrap)
 	                 ->set_sprays(true, 8, true, 10)
 	                 ->set_enter_kind(PEK_FromMap));
-	////////////
-	///////// PP
+}
+
+void PresetMgr::init_at_pp_presets()
+{
 	presets.push((new Preset("enter CoS", AT))
 	                 ->set_onion_pikmin(Flower, Red, 7)
 	                 ->set_onion_pikmin(Flower, Purple, 59)
@@ -1728,6 +1741,10 @@ void PresetMgr::init_at_presets()
 	        ->set_treasure_spawn_overrides(ARRAY_SIZE(t_at_post_enter_sr), t_at_post_enter_sr)
 	        ->set_sprays(true, 3, true, 5)
 	        ->set_enter_kind(PEK_FromCave));
+}
+
+void PresetMgr::init_at_aw2_presets()
+{
 	presets.push(
 	    (new Preset("enter BK", AT))
 	        ->set_onion_pikmin(Flower, Red, 2)
@@ -1928,6 +1945,10 @@ void PresetMgr::init_at_presets()
 	        ->set_treasure_spawn_overrides(ARRAY_SIZE(t_at_post_enter_sh), t_at_post_enter_sh)
 	        ->set_sprays(true, 8, true, 8)
 	        ->set_enter_kind(PEK_FromCave));
+}
+
+void PresetMgr::init_at_ww_presets()
+{
 	presets.push(
 	    (new Preset("enter CoC", AT))
 	        ->set_onion_pikmin(Flower, Red, 2)

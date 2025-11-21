@@ -120,9 +120,21 @@ public:
 
 	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
+	CaveIndex which_cave(u32 area, u32 cave);
 
 	void init_pod_presets();
+	void init_pod_vor1_presets();
+	void init_pod_aw_presets();
+	void init_pod_vor2_presets();
+	void init_pod_pp_presets();
+
 	void init_at_presets();
+	void init_at_vor1_presets();
+	void init_at_aw1_presets();
+	void init_at_vor2_presets();
+	void init_at_pp_presets();
+	void init_at_aw2_presets();
+	void init_at_ww_presets();
 
 	Vec<Preset*> presets;
 };

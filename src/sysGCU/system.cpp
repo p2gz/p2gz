@@ -31,6 +31,9 @@
 #include "Dolphin/__start.h"
 #include <p2gz/p2gz.h>
 
+#define DEFAULT_SYSHEAP_SIZE     (0x438000)
+#define P2GZ_SYSHEAP_EXPAND_SIZE (0xC800)
+
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth
 	                                                 448, // efbHeight
@@ -415,7 +418,9 @@ System::System()
 	sUseABXCommand = true;
 	initCurrentHeapMutex();
 	JKRHeap* heap = JKRGetCurrentHeap();
-	mSysHeap      = JKRExpHeap::create(0x438000, nullptr, true);
+	// @P2GZ: expand heap for at presets
+	// mSysHeap      = JKRExpHeap::create(DEFAULT_SYSHEAP_SIZE, nullptr, true);
+	mSysHeap = JKRExpHeap::create(DEFAULT_SYSHEAP_SIZE + P2GZ_SYSHEAP_EXPAND_SIZE, nullptr, true);
 	mSysHeap->becomeCurrentHeap();
 	mHeapStatus = new HeapStatus;
 	construct();
