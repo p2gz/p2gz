@@ -44,38 +44,107 @@ Segment* SegmentHistory::cur_segment()
 	return nullptr;
 }
 
-void SegmentHistory::update()
+void SegmentHistory::retry_segment()
 {
 	const Segment* current_segment = cur_segment();
 	if (!current_segment) {
 		return;
 	}
-
 	WarpDestination current_dest = current_segment->dest;
-	const u32 btn                = p2gz->controller->getButtonDown();
 
+	current_dest.use_set_seed = false;
+	p2gz->warp->set_dest(current_dest);
+	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
+	p2gz->warp->do_warp();
+
+	entering_next_segment = false;
+}
+
+void SegmentHistory::retry_same_seed()
+{
+	const Segment* current_segment = cur_segment();
+	if (!current_segment) {
+		return;
+	}
+	WarpDestination current_dest = current_segment->dest;
+
+	current_dest.use_set_seed = true;
+
+	p2gz->warp->set_dest(current_dest);
+	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
+	p2gz->warp->do_warp();
+
+	entering_next_segment = false;
+}
+
+void SegmentHistory::retry_cave()
+{
+	const Segment* current_segment = cur_segment();
+	if (!current_segment) {
+		return;
+	}
+	WarpDestination current_dest = current_segment->dest;
+
+	if (segments.len() == 0) {
+		return;
+	}
+
+	// Find segment for the first floor of the cave
+	const Segment* floor0_segment = nullptr;
+	for (size_t i = 0; i < segments.len(); i++) {
+		const Segment* this_segment = segments.peekN(i);
+		if (!this_segment) {
+			break;
+		}
+
+		if (this_segment->dest.cave == current_dest.cave) {
+			if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
+				floor0_segment = this_segment;
+				break;
+			}
+		} else {
+			break;
+		}
+	}
+
+	if (!floor0_segment) {
+		floor0_segment = current_segment;
+	}
+
+	WarpDestination floor0_dest = floor0_segment->dest;
+	floor0_dest.use_set_seed    = false;
+	if (floor0_dest.sublevel != 0) {
+		floor0_dest.sublevel = 0;
+		// If we don't find history for floor 0 in this cave, get the recommended preset for it.
+		// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
+		PresetCategory cat = PoD;
+		if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
+			cat = floor0_segment->preset->category;
+		}
+		p2gz->warp->set_dest(floor0_dest);
+		p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
+	} else {
+		p2gz->warp->set_dest(floor0_dest);
+		p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
+	}
+
+	p2gz->warp->do_warp();
+	entering_next_segment = false;
+}
+
+void SegmentHistory::update()
+{
+	const u32 btn = p2gz->controller->getButtonDown();
 	if (entering_next_segment || p2gz->menu->is_root_open()) {
 		// Retry same sublevel, random seed
 		if (btn & Controller::PRESS_X) {
-			current_dest.use_set_seed = false;
-
-			p2gz->warp->set_dest(current_dest);
-			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
-			p2gz->warp->do_warp();
-
-			entering_next_segment = false;
+			retry_segment();
 			return;
 		}
 
 		// Retry same sublevel, same seed
 		if (btn & Controller::PRESS_Y && in_cave_play()) {
-			current_dest.use_set_seed = true;
-
-			p2gz->warp->set_dest(current_dest);
-			p2gz->warp->set_preset(current_segment->preset, PS_Generated);
-			p2gz->warp->do_warp();
-
-			entering_next_segment = false;
+			retry_same_seed();
 			return;
 		}
 	}
@@ -83,51 +152,7 @@ void SegmentHistory::update()
 	if (entering_next_segment && in_cave_play()) {
 		// Restart cave from the beginning
 		if (btn & Controller::PRESS_L) {
-			if (segments.len() == 0) {
-				return;
-			}
-
-			// Find segment for the first floor of the cave
-			const Segment* floor0_segment = nullptr;
-			for (size_t i = 0; i < segments.len(); i++) {
-				const Segment* this_segment = segments.peekN(i);
-				if (!this_segment) {
-					break;
-				}
-
-				if (this_segment->dest.cave == current_dest.cave) {
-					if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
-						floor0_segment = this_segment;
-						break;
-					}
-				} else {
-					break;
-				}
-			}
-
-			if (!floor0_segment) {
-				floor0_segment = current_segment;
-			}
-
-			WarpDestination floor0_dest = floor0_segment->dest;
-			floor0_dest.use_set_seed    = false;
-			if (floor0_dest.sublevel != 0) {
-				floor0_dest.sublevel = 0;
-				// If we don't find history for floor 0 in this cave, get the recommended preset for it.
-				// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
-				PresetCategory cat = PoD;
-				if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
-					cat = floor0_segment->preset->category;
-				}
-				p2gz->warp->set_dest(floor0_dest);
-				p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
-			} else {
-				p2gz->warp->set_dest(floor0_dest);
-				p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
-			}
-
-			p2gz->warp->do_warp();
-			entering_next_segment = false;
+			retry_cave();
 			return;
 		}
 	}

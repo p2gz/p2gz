@@ -128,7 +128,7 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	} else {
 		ID32 cave_id(game->getCaveID());
 		dest.cave     = game->mCurrentCourseInfo->getCaveIndex_FromID(cave_id) + 1;
-		dest.sublevel = game->mCurrentFloor;
+		dest.sublevel = Game::playData->mCaveSaveData.mCurrentFloor;
 	}
 
 	segment->dest = dest;
