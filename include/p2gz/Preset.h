@@ -121,6 +121,9 @@ public:
 	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
 	Preset* find(const char* name, PresetCategory category);
 
+	void init_pod_presets();
+	void init_at_presets();
+
 	Vec<Preset*> presets;
 };
 

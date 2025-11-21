@@ -1,0 +1,158 @@
+#ifndef _GZ_PRESETSAT_H
+#define _GZ_PRESETSAT_H
+
+// NB: don't include this header with the PresetsPoD header (name overlaps)
+// AT Cutscene flags
+#define NUM_DAY_2_DEMO_FLAGS 3
+#define DAY_2_DEMO_FLAGS     DEMO_Day_One_Start, DEMO_Meet_Red_Pikmin
+
+#define NUM_DAY_3_DEMO_FLAGS NUM_DAY_2_DEMO_FLAGS + 4
+#define DAY_3_DEMO_FLAGS \
+	DAY_2_DEMO_FLAGS, DEMO_Pluck_First_Pikmin, DEMO_First_Number_Pellet, DEMO_Unlock_Captain_Switch, DEMO_First_Use_Louie
+
+#define NUM_DAY_4_DEMO_FLAGS NUM_DAY_3_DEMO_FLAGS + 2
+#define DAY_4_DEMO_FLAGS     DAY_3_DEMO_FLAGS, DEMO_Louie_Finds_Red_Onion, DEMO_Reds_In_Onion
+
+#define NUM_EC1_DEMO_FLAGS NUM_DAY_4_DEMO_FLAGS + 5
+#define EC1_DEMO_FLAGS \
+	DAY_4_DEMO_FLAGS, DEMO_Discover_Treasure, DEMO_First_Gate_Down, DEMO_First_Nectar_Use, DEMO_Reunite_Captains, DEMO_You_Appear_Lost
+
+#define NUM_EC2_DEMO_FLAGS NUM_EC1_DEMO_FLAGS + 2
+#define EC2_DEMO_FLAGS     EC1_DEMO_FLAGS, DEMO_Find_Cave_Deeper_Hole, DEMO_First_Cave_Enter
+
+#define NUM_EC_VISIT_2_DEMO_FLAGS NUM_EC2_DEMO_FLAGS + 3
+#define EC_VISIT_2_DEMO_FLAGS     EC2_DEMO_FLAGS, DEMO_Find_Cave_Geyser, DEMO_First_Cave_Return, DEMO_Purple_Candypop
+
+#define NUM_AW1_DEMO_FLAGS NUM_EC_VISIT_2_DEMO_FLAGS + 1
+#define AW1_DEMO_FLAGS     EC_VISIT_2_DEMO_FLAGS, DEMO_First_Globe_Day_End
+
+#define NUM_POST_ENTER_WFG_DEMO_FLAGS NUM_AW1_DEMO_FLAGS + 3
+#define POST_ENTER_WFG_DEMO_FLAGS     AW1_DEMO_FLAGS, DEMO_Enter_Awakening_Wood, DEMO_Purples_In_Ship, DEMO_Reds_Purples_Tutorial
+
+#define NUM_POST_WFG1_DEMO_FLAGS NUM_POST_ENTER_WFG_DEMO_FLAGS + 1
+#define POST_WFG1_DEMO_FLAGS     POST_ENTER_WFG_DEMO_FLAGS, DEMO_First_Corpse_In_Cave
+
+#define NUM_POST_WFG3_DEMO_FLAGS NUM_POST_WFG1_DEMO_FLAGS + 3
+#define POST_WFG3_DEMO_FLAGS     POST_WFG1_DEMO_FLAGS, DEMO_White_Candypop, DEMO_Whites_Digging, DEMO_Eat_White_Pikmin
+
+#define NUM_POST_ENTER_HOB_DEMO_FLAGS NUM_POST_WFG3_DEMO_FLAGS + 6
+#define POST_ENTER_HOB_DEMO_FLAGS                                                                                                  \
+	POST_WFG3_DEMO_FLAGS, DEMO_Find_Blue_Onion, DEMO_Pikmin_In_Danger_Poison, DEMO_Pikmin_In_Danger_Water, DEMO_First_Spicy_Berry, \
+	    DEMO_First_Spicy_Spray_Made, DEMO_SPICY_ENABLED
+
+#define NUM_POST_HOB3_DEMO_FLAGS NUM_POST_ENTER_HOB_DEMO_FLAGS + 1
+#define POST_HOB3_DEMO_FLAGS     POST_ENTER_HOB_DEMO_FLAGS, DEMO_Pikmin_In_Danger_Fire
+
+#define NUM_POST_AW1_DEMO_FLAGS NUM_POST_HOB3_DEMO_FLAGS + 5
+#define POST_AW1_DEMO_FLAGS                                                                                                      \
+	POST_HOB3_DEMO_FLAGS, DEMO_Max_Pikmin_On_Field, DEMO_Find_Spicy_Drop, DEMO_First_Bitter_Berry, DEMO_First_Bitter_Spray_Made, \
+	    DEMO_BITTER_ENABLED
+
+#define NUM_POST_ENTER_SCX_DEMO_FLAGS NUM_POST_AW1_DEMO_FLAGS + 2
+#define POST_ENTER_SCX_DEMO_FLAGS     POST_AW1_DEMO_FLAGS, DEMO_Whites_In_Ship, DEMO_First_Spicy_Use
+
+#define NUM_POST_SCX_DEMO_FLAGS NUM_POST_ENTER_SCX_DEMO_FLAGS + 1
+#define POST_SCX_DEMO_FLAGS     POST_ENTER_SCX_DEMO_FLAGS, DEMO_First_Bitter_Use
+
+#define NUM_POST_FC1_DEMO_FLAGS NUM_POST_SCX_DEMO_FLAGS + 1
+#define POST_FC1_DEMO_FLAGS     POST_SCX_DEMO_FLAGS, DEMO_Find_Bitter_Drop
+
+#define NUM_POST_FC3_DEMO_FLAGS NUM_POST_FC1_DEMO_FLAGS + 1
+#define POST_FC3_DEMO_FLAGS     POST_FC1_DEMO_FLAGS, DEMO_Discover_Bulbmin
+
+#define NUM_POST_ENTER_COS_DEMO_FLAGS NUM_POST_FC3_DEMO_FLAGS + 2
+#define POST_ENTER_COS_DEMO_FLAGS     POST_FC3_DEMO_FLAGS, DEMO_Enter_Perplexing_Pool, DEMO_Find_Yellow_Onion
+
+#define NUM_POST_ENTER_SMC_DEMO_FLAGS NUM_POST_ENTER_COS_DEMO_FLAGS + 1
+#define POST_ENTER_SMC_DEMO_FLAGS     POST_ENTER_COS_DEMO_FLAGS, DEMO_Waterwraith_Appears
+
+#define NUM_POST_ENTER_SR_DEMO_FLAGS NUM_POST_ENTER_SMC_DEMO_FLAGS + 1
+#define POST_ENTER_SR_DEMO_FLAGS     POST_ENTER_SMC_DEMO_FLAGS, DEMO_Find_Spiderwort_Mold
+
+#define NUM_POST_ENTER_BK_DEMO_FLAGS NUM_POST_ENTER_SR_DEMO_FLAGS + 1
+#define POST_ENTER_BK_DEMO_FLAGS     POST_ENTER_SR_DEMO_FLAGS, DEMO_President_Start
+
+#define NUM_POST_ENTER_COC_DEMO_FLAGS NUM_POST_ENTER_BK_DEMO_FLAGS + 1
+#define POST_ENTER_COC_DEMO_FLAGS     POST_ENTER_BK_DEMO_FLAGS, DEMO_Enter_Wistful_Wild
+
+#define NUM_POST_DD_DEMO_FLAGS NUM_POST_ENTER_COC_DEMO_FLAGS + 2
+#define POST_DD_DEMO_FLAGS     POST_ENTER_COC_DEMO_FLAGS, DEMO_Find_Loozy_Treasure, DEMO_Find_Titan_Dweevil
+
+// AT Exploration Kit cutscene flags
+#define NUM_POST_VOR1_EK_FLAGS 1
+#define POST_VOR1_EK_FLAGS     OlimarData::ODII_SphericalAtlas
+
+#define NUM_POST_WFG_EK_FLAGS NUM_POST_VOR1_EK_FLAGS + 1
+#define POST_WFG_EK_FLAGS     POST_VOR1_EK_FLAGS, OlimarData::ODII_FiveManNapsack
+
+#define NUM_POST_HOB_EK_FLAGS NUM_POST_WFG_EK_FLAGS + 1
+#define POST_HOB_EK_FLAGS     POST_WFG_EK_FLAGS, OlimarData::ODII_PrototypeDetector
+
+#define NUM_POST_AW1_EK_FLAGS NUM_POST_HOB_EK_FLAGS + 1
+#define POST_AW1_EK_FLAGS     POST_HOB_EK_FLAGS, OlimarData::ODII_GeographicProjection
+
+#define NUM_POST_SCX_EK_FLAGS NUM_POST_AW1_EK_FLAGS + 1
+#define POST_SCX_EK_FLAGS     POST_AW1_EK_FLAGS, OlimarData::ODII_StellarOrb
+
+#define NUM_POST_FC5_EK_FLAGS NUM_POST_SCX_EK_FLAGS + 1
+#define POST_FC5_EK_FLAGS     POST_SCX_EK_FLAGS, OlimarData::ODII_BruteKnuckles
+
+#define NUM_POST_FC_EK_FLAGS NUM_POST_FC5_EK_FLAGS + 1
+#define POST_FC_EK_FLAGS     POST_FC5_EK_FLAGS, OlimarData::ODII_RepugnantAppendage
+
+#define NUM_POST_COS_EK_FLAGS NUM_POST_FC_EK_FLAGS + 1
+#define POST_COS_EK_FLAGS     POST_FC_EK_FLAGS, OlimarData::ODII_TheKey
+
+#define NUM_POST_GK_EK_FLAGS NUM_POST_COS_EK_FLAGS + 1
+#define POST_GK_EK_FLAGS     POST_COS_EK_FLAGS, OlimarData::ODII_DreamMaterial
+
+#define NUM_POST_SMC_EK_FLAGS NUM_POST_GK_EK_FLAGS + 1
+#define POST_SMC_EK_FLAGS     POST_GK_EK_FLAGS, OlimarData::ODII_ProfessionalNoisemaker
+
+#define NUM_POST_SR_EK_FLAGS NUM_POST_SMC_EK_FLAGS + 1
+#define POST_SR_EK_FLAGS     POST_SMC_EK_FLAGS, OlimarData::ODII_AmplifiedAmplifier
+
+#define NUM_POST_BK_EK_FLAGS NUM_POST_SR_EK_FLAGS + 1
+#define POST_BK_EK_FLAGS     POST_SR_EK_FLAGS, OlimarData::ODII_ForgedCourage
+
+#define NUM_POST_SH_EK_FLAGS NUM_POST_BK_EK_FLAGS + 1
+#define POST_SH_EK_FLAGS     POST_BK_EK_FLAGS, OlimarData::ODII_JusticeAlloy
+
+// AT Cave discovery cutscene flags
+#define NUM_EC_CAVE_FLAGS 1
+#define EC_CAVE_FLAGS     CAVE_EC
+
+#define NUM_WFG_CAVE_FLAGS NUM_EC_CAVE_FLAGS + 1
+#define WFG_CAVE_FLAGS     EC_CAVE_FLAGS, CAVE_WFG
+
+#define NUM_HOB_CAVE_FLAGS NUM_WFG_CAVE_FLAGS + 1
+#define HOB_CAVE_FLAGS     WFG_CAVE_FLAGS, CAVE_HoB
+
+#define NUM_SCX_CAVE_FLAGS NUM_HOB_CAVE_FLAGS + 1
+#define SCX_CAVE_FLAGS     HOB_CAVE_FLAGS, CAVE_SCx
+
+#define NUM_FC_CAVE_FLAGS NUM_SCX_CAVE_FLAGS + 1
+#define FC_CAVE_FLAGS     SCX_CAVE_FLAGS, CAVE_FC
+
+#define NUM_COS_CAVE_FLAGS NUM_FC_CAVE_FLAGS + 1
+#define COS_CAVE_FLAGS     FC_CAVE_FLAGS, CAVE_CoS
+
+#define NUM_GK_CAVE_FLAGS NUM_COS_CAVE_FLAGS + 1
+#define GK_CAVE_FLAGS     COS_CAVE_FLAGS, CAVE_GK
+
+#define NUM_SMC_CAVE_FLAGS NUM_GK_CAVE_FLAGS + 2
+#define SMC_CAVE_FLAGS     GK_CAVE_FLAGS, CAVE_SmC, CAVE_SR
+
+#define NUM_BK_CAVE_FLAGS NUM_SMC_CAVE_FLAGS + 2
+#define BK_CAVE_FLAGS     SMC_CAVE_FLAGS, CAVE_BK, CAVE_SH
+
+#define NUM_COC_CAVE_FLAGS NUM_BK_CAVE_FLAGS + 1
+#define COC_CAVE_FLAGS     BK_CAVE_FLAGS, CAVE_CoC
+
+#define NUM_DD_CAVE_FLAGS NUM_COC_CAVE_FLAGS + 1
+#define DD_CAVE_FLAGS     COC_CAVE_FLAGS, CAVE_DD
+
+#define NUM_HOH_CAVE_FLAGS NUM_DD_CAVE_FLAGS + 1
+#define HOH_CAVE_FLAGS     DD_CAVE_FLAGS, CAVE_HoH
+
+#endif
