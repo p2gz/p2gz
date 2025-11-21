@@ -30,8 +30,11 @@ public:
 	void set_demo_flags_for_color(Game::EPikiKind);
 	Game::PikiContainer get_squad();
 
-	/// @brief Kills all pikmin and sprouts on the field, including wild pikmin if specified.
-	void clear_all_pikmin(bool kill_wild = true);
+	/// @brief Kills all pikmin and sprouts on the field, including wild pikmin.
+	void clear_all_pikmin();
+
+	/// @brief Kills all pikmin currently on the field, not including wild pikmin.
+	void clear_field_pikmin();
 
 private:
 	RangeMenuOption* get_option(Game::EPikiKind, Game::EPikiHappa);

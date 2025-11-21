@@ -8,6 +8,7 @@
 #include <Game/PikiMgr.h>
 #include <Game/PikiState.h>
 #include <Game/gamePlayData.h>
+#include <Game/gameStat.h>
 #include <PikiAI.h>
 #include <og/Sound.h>
 
@@ -27,28 +28,28 @@ void SquadEditor::init()
 	// clang-format off
 	squad_menu
 		->push_to_row(PIK_OPT("rf", Game::Red,     Game::Flower, "red_flower"))
-		->push_to_row(PIK_OPT("rl", Game::Red,     Game::Leaf,   "red_leaf"))
 		->push_to_row(PIK_OPT("rb", Game::Red,     Game::Bud,    "red_bud"))
+		->push_to_row(PIK_OPT("rl", Game::Red,     Game::Leaf,   "red_leaf"))
 		->end_row()
 		->push_to_row(PIK_OPT("yf", Game::Yellow,  Game::Flower, "yellow_flower"))
-		->push_to_row(PIK_OPT("yl", Game::Yellow,  Game::Leaf,   "yellow_leaf"))
 		->push_to_row(PIK_OPT("yb", Game::Yellow,  Game::Bud,    "yellow_bud"))
+		->push_to_row(PIK_OPT("yl", Game::Yellow,  Game::Leaf,   "yellow_leaf"))
 		->end_row()
 		->push_to_row(PIK_OPT("bf", Game::Blue,    Game::Flower, "blue_flower"))
-		->push_to_row(PIK_OPT("bl", Game::Blue,    Game::Leaf,   "blue_leaf"))
 		->push_to_row(PIK_OPT("bb", Game::Blue,    Game::Bud,    "blue_bud"))
+		->push_to_row(PIK_OPT("bl", Game::Blue,    Game::Leaf,   "blue_leaf"))
 		->end_row()
 		->push_to_row(PIK_OPT("pf", Game::Purple,  Game::Flower, "purple_flower"))
-		->push_to_row(PIK_OPT("pl", Game::Purple,  Game::Leaf,   "purple_leaf"))
 		->push_to_row(PIK_OPT("pb", Game::Purple,  Game::Bud,    "purple_bud"))
+		->push_to_row(PIK_OPT("pl", Game::Purple,  Game::Leaf,   "purple_leaf"))
 		->end_row()
 		->push_to_row(PIK_OPT("wf", Game::White,   Game::Flower, "white_flower"))
-		->push_to_row(PIK_OPT("wl", Game::White,   Game::Leaf,   "white_leaf"))
 		->push_to_row(PIK_OPT("wb", Game::White,   Game::Bud,    "white_bud"))
+		->push_to_row(PIK_OPT("wl", Game::White,   Game::Leaf,   "white_leaf"))
 		->end_row()
 		->push_to_row(PIK_OPT("cf", Game::Bulbmin, Game::Flower, "bulbmin_flower"))
-		->push_to_row(PIK_OPT("cl", Game::Bulbmin, Game::Leaf,   "bulbmin_leaf"))
-		->push_to_row(PIK_OPT("cb", Game::Bulbmin, Game::Bud,    "bulbmin_bud"));
+		->push_to_row(PIK_OPT("cb", Game::Bulbmin, Game::Bud,    "bulbmin_bud"))
+		->push_to_row(PIK_OPT("cl", Game::Bulbmin, Game::Leaf,   "bulbmin_leaf"));
 	// clang-format on
 }
 
@@ -145,20 +146,8 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 	}
 }
 
-void SquadEditor::clear_all_pikmin(bool kill_wild)
+void kill_all_seeds()
 {
-	Game::playData->mPikiContainer.clear();
-	Game::playData->mCaveSaveData.mCavePikis.clear(); // clear saved cave pikmin
-	Iterator<Game::Piki> iterator(Game::pikiMgr);
-	CI_LOOP(iterator)
-	{
-		Game::Piki* piki = *iterator;
-		if (kill_wild || (!piki->isZikatu() && !piki->isWildBulbmin())) {
-			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-			piki->kill(&arg);
-		}
-	}
-
 	if (Game::ItemPikihead::mgr) {
 		Iterator<Game::ItemPikihead::Item> iPikihead = Game::ItemPikihead::mgr;
 		CI_LOOP(iPikihead)
@@ -167,9 +156,42 @@ void SquadEditor::clear_all_pikmin(bool kill_wild)
 			if (item->isAlive()) {
 				Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
 				item->kill(&arg);
+				Game::GameStat::mePikis.dec(item->mColor);
 			}
 		}
 	}
+	// Clear seed count. This isn't automatically decremented by killing the seeds for some reason
+	Game::GameStat::mePikis.clear();
+}
+
+void SquadEditor::clear_all_pikmin()
+{
+	Game::playData->mPikiContainer.clear();
+	Game::playData->mCaveSaveData.mCavePikis.clear(); // clear saved cave pikmin
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+		piki->kill(&arg);
+	}
+
+	kill_all_seeds();
+}
+
+void SquadEditor::clear_field_pikmin()
+{
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		if (!piki->isZikatu() && !piki->isWildBulbmin()) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
+		}
+	}
+
+	kill_all_seeds();
 }
 
 /// Get the counts for all living Pikmin on the field
