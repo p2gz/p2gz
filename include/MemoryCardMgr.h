@@ -74,6 +74,8 @@ struct MemoryCardMgr {
 	inline bool isSaveValid() { return mIsCard || checkStatus() != INSIDESTATUS_Unk11; }
 	inline bool isSaveInvalid() { return !mIsCard && checkStatus() != INSIDESTATUS_Unk11; }
 	inline bool isErrorNotOccured() { return (checkStatus() == 2); }
+	// @P2GZ: make memory card files equivalent
+	inline MemoryCardMgrCommand* getCommandQueue() { return mCommands; }
 
 	void cardProc(void*);
 	bool cardFormat(ECardSlot);
