@@ -32,7 +32,7 @@
 #include <p2gz/Trainers.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha3"
+#define P2GZ_VERSION "alpha4"
 
 struct P2GZ {
 public:
