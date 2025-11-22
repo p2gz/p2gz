@@ -1,3 +1,33 @@
+# alpha4
+
+Feature additions:
+- Fast Empress trainer is now available
+- Quick Retry from the gz menu is now available for above ground segments
+- Added an option to choose the active captain when warping to caves
+- Basic treasure debug info is now available with position and carry power
+- Hazard timers are now available in enemy debug info
+- The squad editor has been polished and reordered for convenience
+- Added above-ground presets for AT
+- Added presets for days 1, 3, and 4
+
+Presets have been improved in several ways:
+- Treasure counts are now set, which fixes the first treasure cutscene from ending the day in VoR presets
+- Several missing creatures have been added to the appropriate presets
+- Relevant treasures will now be moved back to their original positions when retrying AG segments
+- EK treasure discovery cutscenes and cave discovery cutscenes have been added to presets
+- After editing your squad, changing your warp destination will no longer automatically update your preset for convenience
+
+Bug fixes:
+- GK5 no longer crashes when using PAL or JP treasures
+- EK upgrades now apply correctly again
+- Retrying cave sublevels now correctly resets the cave treasure counter, so you won't get unexpected cave completes
+- Options that will crash the game are no longer shown in the gz menu on file select and in other places where they're invalid
+- Collision viewer no longer has tons of Z-fighting after warping with it enabled
+- Retrying the same sublevel 33 times no longer crashes
+- Fixed several memory leaks involving menu and segment code that could manifest as crashes after warping a bunch
+
+---
+
 # alpha3
 
 This release enables above-ground segment practice, supports PAL and JP treasures, and adds a host of new options for viewing and editing the game state.
