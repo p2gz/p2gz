@@ -160,11 +160,12 @@ const char* StructureEditor::get_gate_name(f32 x, f32 z, bool& generated)
 	return name;
 }
 
-void StructureEditor::set_gate_stages_left(const char* name, int stages_left)
+void StructureEditor::set_gate_stages_left(Vector2f pos, int stages_left)
 {
 	for (size_t i = 0; i < gates.len(); i++) {
 		GateWrapper* gate = gates[i];
-		if (strcmp(name, gate->name) == 0) {
+		Vector3f gate_pos = gate->gate->getPosition();
+		if ((absF(pos.x - gate_pos.x) < STRUCT_SEARCH_RADIUS) && (absF(pos.y - gate_pos.z) < STRUCT_SEARCH_RADIUS)) {
 			gate->set_gate_segments(stages_left);
 			return;
 		}
@@ -253,11 +254,12 @@ const char* StructureEditor::get_bridge_name(f32 x, f32 z)
 	GZASSERTLINE(false); // all bridges should be accounted for
 }
 
-void StructureEditor::set_bridge_stages_left(const char* name, int stages_left)
+void StructureEditor::set_bridge_stages_left(Vector2f pos, int stages_left)
 {
 	for (size_t i = 0; i < bridges.len(); i++) {
 		BridgeWrapper* bridge = bridges[i];
-		if (strcmp(name, bridge->name) == 0) {
+		Vector3f bridge_pos   = bridge->bridge->getPosition();
+		if ((absF(pos.x - bridge_pos.x) < STRUCT_SEARCH_RADIUS) && (absF(pos.y - bridge_pos.z) < STRUCT_SEARCH_RADIUS)) {
 			bridge->set_bridge_segments(stages_left);
 			return;
 		}
@@ -521,10 +523,11 @@ void StructureEditor::add_bag(Game::ItemDownFloor::Item* bag)
 	// clang-format on
 }
 
-void StructureEditor::set_bag_flattened(const char* name, bool flattened)
+void StructureEditor::set_bag_flattened(Vector2f pos, bool flattened)
 {
 	for (size_t i = 0; i < bags.len(); i++) {
-		if (strcmp(bags[i]->name, name) == 0) {
+		Vector3f bag_pos = bags[i]->bag->getPosition();
+		if ((absF(pos.x - bag_pos.x) < STRUCT_SEARCH_RADIUS) && (absF(pos.y - bag_pos.z) < STRUCT_SEARCH_RADIUS)) {
 			bags[i]->set_bag_state(!flattened);
 			return;
 		}

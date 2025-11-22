@@ -80,6 +80,7 @@ void P2GZ::init()
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
+	preset_mgr->init();
 	timer->init();
 	structure_editor->init();
 	warp->init();

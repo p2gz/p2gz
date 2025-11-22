@@ -8,6 +8,7 @@
 namespace gz {
 
 struct Preset;
+struct PresetPreview;
 struct PresetMenuOption;
 
 struct WarpDestination {
@@ -59,8 +60,13 @@ public:
 	bool using_set_seed() { return use_set_seed; }
 	u32 get_seed() { return seed; }
 
+	void set_preset(PresetPreview* preset, int preset_status);
 	void set_preset(Preset* preset, int preset_status);
-	Preset* get_preset() { return preset; }
+	Preset* get_preset_during_warp()
+	{
+		GZASSERTLINE(warping);
+		return preset_during_warp;
+	}
 
 	void do_warp();
 	void do_post_warp();
@@ -92,7 +98,14 @@ private:
 	void save_pikmin();
 	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
-	Preset* preset;
+	bool has_next_preset() { return next_preset_p != nullptr || next_preset != nullptr; }
+	int next_preset_category();
+
+	// only one of these two will be active at a time
+	PresetPreview* next_preset_p;
+	Preset* next_preset;
+
+	Preset* preset_during_warp;
 	PresetStatus preset_status;
 	WarpDestination dest;
 

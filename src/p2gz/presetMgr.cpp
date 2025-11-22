@@ -9,20 +9,45 @@
 #include <p2gz/PresetsPoD.h>
 
 using namespace gz;
-using namespace Game;
+
+static const char* ALL_PRESETS_FILE_PATH = "presets/all_presets.txt";
 
 PresetMgr::PresetMgr()
 {
-	presets.push((new Preset("everything", General))
-	                 ->set_pikmin(Flower, Red, 20)
-	                 ->set_pikmin(Flower, Yellow, 20)
-	                 ->set_pikmin(Flower, Blue, 20)
-	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, White, 20)
-	                 ->set_sprays(false, 0, true, 16));
+	// presets.push((new Preset("everything", General))
+	//                  ->set_pikmin(Flower, Red, 20)
+	//                  ->set_pikmin(Flower, Yellow, 20)
+	//                  ->set_pikmin(Flower, Blue, 20)
+	//                  ->set_pikmin(Flower, Purple, 20)
+	//                  ->set_pikmin(Flower, White, 20)
+	//                  ->set_sprays(false, 0, true, 16));
+
+	void* all_presets_file = JKRDvdRipper::loadToMainRAM(ALL_PRESETS_FILE_PATH, nullptr, Switch_0, 0, nullptr,
+	                                                     JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	GZEXPECT(all_presets_file, "%s not found", ALL_PRESETS_FILE_PATH);
+
+	RamStream filename_stream(all_presets_file, -1);
+	filename_stream.setMode(STREAM_MODE_TEXT, 1);
+
+	while (!filename_stream.eof()) {
+		const char* filename = filename_stream.readString(nullptr, 0);
+		if (strlen(filename) == 0) {
+			break;
+		}
+		PresetPreview* preview = new PresetPreview();
+		preview->read(filename);
+		preset_previews.push(preview);
+	}
+
+	delete[] all_presets_file;
 
 	init_pod_presets();
 	init_at_presets();
+}
+
+void PresetMgr::init()
+{
+	static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"))->init();
 }
 
 Preset* PresetMgr::create()
@@ -53,10 +78,10 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 {
 	GZASSERTLINE(preset);
 
-	Iterator<Piki> iterator(pikiMgr);
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
-		Piki* piki = *iterator;
+		Game::Piki* piki = *iterator;
 		if (piki->isAlive() && !piki->isZikatu() && !piki->isWildBulbmin()) {
 			preset->squad(piki)++;
 		}
@@ -64,7 +89,31 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 	preset->onion_pikis = Game::playData->mPikiContainer;
 }
 
-Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
+Preset* PresetMgr::load_preset(PresetPreview* preview)
+{
+	if (!preview) {
+		return nullptr;
+	}
+
+	for (u32 i = 0; i < presets.len(); i++) {
+		if (presets[i]->name == preview->name) {
+			return presets[i];
+		}
+	}
+
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
+	GZEXPECT(preview->filename, "PresetPreview %s has no filename", preview->name);
+	Preset* preset = new Preset();
+	preset->read(preview->filename);
+	preset->preview = preview;
+	presets.push(preset); // TODO: deallocate presets after some time
+
+	prev_heap->becomeCurrentHeap();
+	return preset;
+}
+
+PresetPreview* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
 {
 	gz::CaveIndex cave_e = which_cave(dest.area, dest.cave);
 	if (category == General) {
@@ -249,6 +298,15 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 	return nullptr;
 }
 
+Preset* PresetMgr::suggested_preset_p(WarpDestination dest, PresetCategory category)
+{
+	PresetPreview* preview = suggested_preset(dest, category);
+	if (preview) {
+		return load_preset(preview);
+	}
+	return nullptr;
+}
+
 gz::CaveIndex PresetMgr::which_cave(u32 area, u32 cave)
 {
 	if (cave == 0) {
@@ -273,16 +331,25 @@ gz::CaveIndex PresetMgr::which_cave(u32 area, u32 cave)
 	GZASSERTLINE(false);
 }
 
-Preset* PresetMgr::find(const char* name, PresetCategory category)
+PresetPreview* PresetMgr::find(const char* name, PresetCategory category)
 {
-	for (size_t i = 0; i < presets.len(); i++) {
-		Preset* preset = presets[i];
-		GZASSERTLINE(preset);
-		if (category == preset->category && strcmp(preset->name, name) == 0) {
-			return preset;
+	for (size_t i = 0; i < preset_previews.len(); i++) {
+		PresetPreview* preset_preview = preset_previews[i];
+		GZASSERTLINE(preset_preview);
+		if (category == preset_preview->category && strcmp(preset_preview->name, name) == 0) {
+			return preset_preview;
 		}
 	}
 
 	OSReport("Attempted to find preset \"%s\" that does not exist\n", name);
+	return nullptr;
+}
+
+Preset* PresetMgr::find_p(const char* name, PresetCategory category)
+{
+	PresetPreview* preview = find(name, category);
+	if (preview) {
+		return load_preset(preview);
+	}
 	return nullptr;
 }

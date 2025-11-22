@@ -125,12 +125,12 @@ public:
 	void draw();
 
 	void add_gate(Game::ItemGate* gate);
-	void set_gate_stages_left(const char* name, int stages_left);
+	void set_gate_stages_left(Vector2f pos, int stages_left);
 	void clear_gates();
 	void sync_gates();
 
 	void add_bridge(Game::ItemBridge::Item* bridge);
-	void set_bridge_stages_left(const char* name, int stages_left);
+	void set_bridge_stages_left(Vector2f pos, int stages_left);
 	void clear_bridges();
 	void sync_bridges();
 
@@ -140,7 +140,7 @@ public:
 	void sync_plugs();
 
 	void add_bag(Game::ItemDownFloor::Item* bag);
-	void set_bag_flattened(const char* name, bool flattened);
+	void set_bag_flattened(Vector2f pos, bool flattened);
 	void clear_bags();
 	void sync_bags();
 

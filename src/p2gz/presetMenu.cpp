@@ -5,7 +5,7 @@
 
 using namespace gz;
 
-PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
+PresetMenuOption::PresetMenuOption(IDelegate2<PresetPreview*, int>* on_select_)
     : MenuOption("preset")
 {
 	on_select        = on_select_;
@@ -25,47 +25,54 @@ PresetMenuOption::PresetMenuOption(IDelegate2<Preset*, int>* on_select_)
 	                           ->push(new OpenSubMenuOption("AT", at_presets_menu))
 	                           ->push(new OpenSubMenuOption("general", general_presets_menu));
 	preset_category_list->title = "preset categories";
+}
 
+void PresetMenuOption::init()
+{
 	// Add every preset to its appropriate menu
-	for (size_t i = 0; i < p2gz->preset_mgr->presets.len(); i++) {
-		Preset* preset = p2gz->preset_mgr->presets[i];
-		if (!preset) {
+	for (size_t i = 0; i < p2gz->preset_mgr->preset_previews.len(); i++) {
+		PresetPreview* preview = p2gz->preset_mgr->preset_previews[i];
+		if (!preview) {
 			continue;
 		}
 
-		PresetPreviewMenuOption* opt = new PresetPreviewMenuOption(preset, this);
-		if (preset->category == PoD) {
+		PresetPreviewMenuOption* opt = new PresetPreviewMenuOption(preview, this);
+		switch (preview->category) {
+		case PoD:
 			pod_presets_menu->push(opt);
-		} else if (preset->category == AT) {
+			break;
+		case AT:
 			at_presets_menu->push(opt);
-		} else if (preset->category == General) {
+			break;
+		case General:
 			general_presets_menu->push(opt);
+			break;
 		}
 	}
 
 	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
 	// when changing the warp menu selections
-	current_preset = p2gz->preset_mgr->find("EC1", PoD);
+	current_preview = p2gz->preset_mgr->find("EC1", PoD);
 	if (on_select) {
-		on_select->invoke(current_preset, PS_Stale);
+		on_select->invoke(current_preview, PS_Stale);
 	}
 }
 
 /// Adjusts the selection of a category menu when it's opened so the current preset is highlighted
 void PresetMenuOption::select_current_preset(ListMenu* menu, PresetCategory cat)
 {
-	if (!current_preset || current_preset->category != cat || !menu) {
+	if (!current_preview || current_preview->category != cat || !menu) {
 		return;
 	}
 
 	bool found          = false;
 	int idx_in_category = -1;
-	for (size_t i = 0; i < p2gz->preset_mgr->presets.len(); i++) {
-		Preset* preset = p2gz->preset_mgr->presets[i];
-		if (preset->category == current_preset->category) {
+	for (size_t i = 0; i < p2gz->preset_mgr->preset_previews.len(); i++) {
+		PresetPreview* preset_preview = p2gz->preset_mgr->preset_previews[i];
+		if (preset_preview->category == current_preview->category) {
 			idx_in_category += 1;
 		}
-		if (preset == current_preset) {
+		if (preset_preview == current_preview) {
 			found = true;
 			break;
 		}
@@ -147,11 +154,11 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": ");
-	if (current_preset) {
-		if (current_preset->name) {
-			x += j2d.print(x, z, "%s ", current_preset->name);
+	if (current_preview) {
+		if (current_preview->name) {
+			x += j2d.print(x, z, "%s ", current_preview->name);
 		}
-		draw_preset_preview(j2d, x, z, current_preset->squad, current_preset->onion_pikis);
+		draw_preset_preview(j2d, x, z, current_preview->squad, current_preview->onion_pikis);
 	} else {
 		x += j2d.print(x, z, "current squad ");
 		Game::PikiContainer current_squad = p2gz->squad_editor->get_squad();
@@ -169,26 +176,26 @@ bool PresetMenuOption::select()
 	return false;
 }
 
-void PresetMenuOption::do_on_preset_selected(Preset* preset)
+void PresetMenuOption::do_on_preset_selected(PresetPreview* preset_preview)
 {
 	if (on_select) {
-		on_select->invoke(preset, PS_Chosen);
+		on_select->invoke(preset_preview, PS_Chosen);
 	}
 }
 
-PresetPreviewMenuOption::PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_)
-    : MenuOption(preset_ ? preset_->name : nullptr)
+PresetPreviewMenuOption::PresetPreviewMenuOption(PresetPreview* preset_preview_, PresetMenuOption* parent_)
+    : MenuOption(preset_preview_ ? preset_preview_->name : nullptr)
 {
 	GZASSERTLINE(parent_);
 
-	preset = preset_;
+	preset_preview = preset_preview_;
 	parent = parent_;
 }
 
 bool PresetPreviewMenuOption::select()
 {
-	parent->current_preset = preset;
-	parent->do_on_preset_selected(preset);
+	parent->current_preview = preset_preview;
+	parent->do_on_preset_selected(preset_preview);
 	MenuLayer* warp_menu = p2gz->menu->get_option("warp")->get_sub_menu();
 	while (p2gz->menu->get_active_layer() != warp_menu) {
 		p2gz->menu->pop_layer();
@@ -198,12 +205,12 @@ bool PresetPreviewMenuOption::select()
 
 void PresetPreviewMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
-	if (preset) {
+	if (preset_preview) {
 		const f32 vmargin = 5.0; // some extra vertical space for the images
 		z += vmargin;
 		MenuOption::draw(j2d, x, z, selected);
 		x = 190.0f;
-		x += draw_preset_preview(j2d, x, z, preset->squad, preset->onion_pikis);
+		x += draw_preset_preview(j2d, x, z, preset_preview->squad, preset_preview->onion_pikis);
 		z += vmargin;
 
 	} else {

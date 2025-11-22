@@ -32,10 +32,10 @@ void EmpressTrainer::start()
 	polling = true;
 
 	WarpDestination dest;
-	dest.area      = 1;
-	dest.cave      = 1;
-	dest.sublevel  = 4;
-	Preset* preset = p2gz->preset_mgr->find("HoB5", PoD);
+	dest.area             = 1;
+	dest.cave             = 1;
+	dest.sublevel         = 4;
+	PresetPreview* preset = p2gz->preset_mgr->find("HoB5", PoD);
 
 	p2gz->warp->set_dest(dest);
 	p2gz->warp->set_preset(preset, PS_Chosen);

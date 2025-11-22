@@ -1,6 +1,7 @@
 import subprocess
 import shutil
 import os
+import glob
 
 version = "NO_VERSION"
 with open("include/p2gz/p2gz.h", "r") as f:
@@ -37,6 +38,7 @@ files_to_copy = [
     "root/files/memoryCard/memoryCardHeader.szs",
     "root/files/menu_images.szs",
     "root/files/user/Ebisawa/title/title.szs",
+    *glob.glob("root/files/presets/**/*.txt"),
 ]
 
 for file_path in files_to_copy:

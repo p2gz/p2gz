@@ -27,6 +27,20 @@ struct TreasureAreaMap {
 	u8 course_idx;
 };
 
+struct PresetPreview {
+public:
+	PresetPreview(); // To be used with `read()`
+	PresetPreview(PresetCategory category_, const char* name_, Game::PikiContainer squad_, Game::PikiContainer onion_pikis_);
+
+	void read(const char* filename_);
+
+	PresetCategory category;
+	const char* name;
+	const char* filename;
+	Game::PikiContainer squad;
+	Game::PikiContainer onion_pikis;
+};
+
 struct Preset {
 	struct EnemyGenSpawnOverride {
 		EnemyGenSpawnOverride()
@@ -80,10 +94,32 @@ struct Preset {
 		u8 stage_and_kind; // 4bit:stage + 4bit:kind
 	};
 
+	struct StructureOverride {
+	public:
+		StructureOverride()
+		{
+			area = 0xFF;
+			data = 0xFF;
+		}
+		StructureOverride(u8 area_, Vector2f position_, u8 data_)
+		{
+			area     = area_;
+			data     = data_;
+			position = position_;
+		}
+
+		u8 area;
+		u8 data; // stage for bridges and gates
+		Vector2f position;
+	};
+
 public:
+	Preset();
 	Preset(const char* name_, PresetCategory category_);
 	Preset(Preset& other);
 	~Preset() { }
+
+	void read(const char* filename);
 
 	void apply();
 	void apply_post_load();
@@ -110,6 +146,7 @@ public:
 	Preset* set_enemy_spawn_overrides(u32 num_spawns, EnemyGenSpawnOverride overrides[]);
 	Preset* set_treasure_spawn_overrides(u32 num_spawns, TreasureGenSpawnOverride overrides[]);
 
+	PresetPreview* preview;
 	PresetCategory category;
 	const char* name;
 	Game::PikiContainer squad;
@@ -124,9 +161,9 @@ public:
 	CutscenesBitfield cutscenes;
 	BitFlag<u16> ek_cutscenes;
 	BitFlag<u16> cave_cutscenes;
-	Vec<const char*> destroyed_gates;
-	Vec<const char*> finished_bridges;
-	Vec<const char*> bags_flattened;
+	Vec<StructureOverride> destroyed_gates;
+	Vec<StructureOverride> finished_bridges;
+	Vec<StructureOverride> bags_flattened;
 	EnterAreaKind enter_kind;
 	int pokos;
 	bool plug_destroyed; // no more than one plug per level
@@ -140,15 +177,23 @@ struct PresetMgr {
 public:
 	PresetMgr();
 
+	void init();
+
 	Preset* create();
 	static void fill_current_pikis(Preset* preset);
 
-	Preset* suggested_preset(WarpDestination dest, PresetCategory category);
-	Preset* find(const char* name, PresetCategory category);
+	PresetPreview* suggested_preset(WarpDestination dest, PresetCategory category);
+	Preset* suggested_preset_p(WarpDestination dest, PresetCategory category);
+	PresetPreview* find(const char* name, PresetCategory category);
+	Preset* find_p(const char* name, PresetCategory category);
+	Preset* load_preset(PresetPreview*);
+
+	Vec<PresetPreview*> preset_previews;
+
+private:
 	CaveIndex which_cave(u32 area, u32 cave);
 
 	void init_pod_presets();
-
 	void init_at_presets();
 	void init_at_vor1_presets();
 	void init_at_aw1_presets();
@@ -162,14 +207,16 @@ public:
 
 struct PresetMenuOption : public MenuOption {
 public:
-	PresetMenuOption(IDelegate2<Preset*, int>* on_select_);
+	PresetMenuOption(IDelegate2<PresetPreview*, int>* on_select_);
 
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual bool select();
-	void do_on_preset_selected(Preset*);
 
-	Preset* current_preset;
+	void init();
+	void do_on_preset_selected(PresetPreview*);
+
+	PresetPreview* current_preview;
 
 private:
 	void select_current_preset(ListMenu* menu, PresetCategory cat);
@@ -179,16 +226,16 @@ private:
 	ListMenu* at_presets_menu;
 	ListMenu* general_presets_menu;
 
-	IDelegate2<Preset*, int>* on_select;
+	IDelegate2<PresetPreview*, int>* on_select;
 };
 
 struct PresetPreviewMenuOption : public MenuOption {
-	PresetPreviewMenuOption(Preset* preset_, PresetMenuOption* parent_);
+	PresetPreviewMenuOption(PresetPreview* preset_preview_, PresetMenuOption* parent_);
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual bool select();
 
-	Preset* preset;
+	PresetPreview* preset_preview;
 	PresetMenuOption* parent;
 };
 

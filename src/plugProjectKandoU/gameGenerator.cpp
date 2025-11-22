@@ -307,7 +307,7 @@ void Generator::saveCreature(Stream& output)
 void Generator::generate()
 {
 	// @P2GZ - apply spawn overrides from preset if warping
-	gz::Preset* preset = p2gz->warp->get_preset();
+	gz::Preset* preset = p2gz->warp->get_preset_during_warp();
 	if (p2gz->warp->warping && preset) {
 		gz::GenSpawnOverride spawn_override = preset->get_enemy_gen_override(this);
 		if (spawn_override == gz::PSO_DontSpawn) {

@@ -47,6 +47,74 @@ static const TreasureAreaMap AG_treasure_IDs[] = {
 
 static const u8 AG_treasure_count = ARRAY_SIZE(AG_treasure_IDs);
 
+void read_piki_container(Stream& stream, Game::PikiContainer& container)
+{
+	for (u32 color = 0; color < 6; color++) {
+		for (u32 stage = 0; stage < 3; stage++) {
+			int amount                       = stream.readInt();
+			container.getCount(color, stage) = amount;
+		}
+	}
+}
+
+PresetPreview::PresetPreview()
+{
+	name = nullptr;
+}
+
+PresetPreview::PresetPreview(PresetCategory category_, const char* name_, Game::PikiContainer squad_, Game::PikiContainer onion_pikis_)
+{
+	category    = category_;
+	name        = name_;
+	squad       = squad_;
+	onion_pikis = onion_pikis_;
+}
+
+void PresetPreview::read(const char* filename_)
+{
+	filename = filename_;
+
+	char preset_file_path[256];
+	sprintf(preset_file_path, "presets/%s", filename);
+	OSReport("Loading preset preview from %s\n", preset_file_path);
+
+	void* preset_file
+	    = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	GZEXPECT(preset_file, "preset file %s not found", filename);
+
+	RamStream preset_stream(preset_file, -1);
+	preset_stream.setMode(STREAM_MODE_TEXT, 1);
+
+	name                     = preset_stream.readString(nullptr, 0);
+	const char* category_str = preset_stream.readString(nullptr, 0);
+	read_piki_container(preset_stream, squad);
+	read_piki_container(preset_stream, onion_pikis);
+
+	if (strcmp(category_str, "PoD") == 0) {
+		category = PoD;
+	} else if (strcmp(category_str, "AT") == 0) {
+		category = AT;
+	} else {
+		category = General;
+	}
+
+	delete[] preset_file;
+}
+
+Preset::Preset()
+    : destroyed_gates(0)
+    , finished_bridges(0)
+    , bags_flattened(0)
+    , enemy_spawn_overrides(0)
+    , treasure_spawn_overrides(0)
+    , sprouts(0)
+{
+	name    = nullptr;
+	preview = nullptr;
+	squad.clear();
+	onion_pikis.clear();
+}
+
 Preset::Preset(const char* name_, PresetCategory category_)
     : destroyed_gates(0)
     , finished_bridges(0)
@@ -64,6 +132,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
 	time             = 7.0f;
 	plug_destroyed   = false;
 	day              = 5;
+	preview          = nullptr;
 
 	squad.clear();
 	onion_pikis.clear();
@@ -89,6 +158,7 @@ Preset::Preset(Preset& other)
 	cutscenes        = other.cutscenes;
 	ek_cutscenes     = other.ek_cutscenes;
 	cave_cutscenes   = other.cave_cutscenes;
+	preview          = other.preview;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
 	for (u32 i = 0; i < other.destroyed_gates.len(); i++) {
@@ -157,6 +227,109 @@ Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverr
 	id                = id_;
 	spawn_override    = spawn_override_;
 	position_override = position_override_;
+}
+
+void read_structure_override_list(Stream& input, gz::Vec<Preset::StructureOverride>& dest)
+{
+	const int num_orides = input.readInt();
+	dest.expandCapacityTo(num_orides);
+	for (u32 i = 0; i < num_orides; i++) {
+		int area = input.readInt();
+		f32 x    = input.readFloat();
+		f32 z    = input.readFloat();
+		int data = input.readInt();
+		dest.push(Preset::StructureOverride(area, Vector2f(x, z), data));
+	}
+}
+
+void Preset::read(const char* filename)
+{
+	char preset_file_path[256];
+	sprintf(preset_file_path, "presets/%s", filename);
+	OSReport("Loading preset %s\n", preset_file_path);
+
+	void* preset_file
+	    = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	GZEXPECT(preset_file, "preset file %s not found", filename);
+
+	RamStream preset_stream(preset_file, -1);
+	preset_stream.setMode(STREAM_MODE_TEXT, 1);
+
+	name = preset_stream.readString(nullptr, 0);
+
+	char category_str[16];
+	preset_stream.readString(category_str, sizeof(category_str));
+	if (strcmp(category_str, "PoD") == 0) {
+		category = PoD;
+	} else if (strcmp(category_str, "AT") == 0) {
+		category = AT;
+	} else {
+		category = General;
+	}
+
+	read_piki_container(preset_stream, squad);
+	read_piki_container(preset_stream, onion_pikis);
+
+	num_bitters      = preset_stream.readInt();
+	bitters_unlocked = preset_stream.readInt() > 0;
+	num_spicies      = preset_stream.readInt();
+	spicies_unlocked = preset_stream.readInt() > 0;
+	time             = preset_stream.readFloat();
+	day              = preset_stream.readInt();
+	pokos            = preset_stream.readInt();
+	if (pokos == -1) {
+		pokos       = 0;
+		apply_pokos = false;
+	} else {
+		apply_pokos = true;
+	}
+
+	enter_kind = static_cast<EnterAreaKind>(preset_stream.readInt());
+
+	upgrades.clear();
+	const int num_upgrades = preset_stream.readInt();
+	for (u32 i = 0; i < num_upgrades; i++) {
+		int upgrade_idx = preset_stream.readInt();
+		GZASSERTLINE(upgrade_idx < 16);
+		const u16 bit = 1 << upgrade_idx;
+		upgrades.set(bit);
+	}
+
+	const int num_demo_flags = preset_stream.readInt();
+	for (u32 i = 0; i < num_demo_flags; i++) {
+		int demo_idx = preset_stream.readInt();
+		GZASSERTLINE(demo_idx < 64);
+		cutscenes.set_cutscene_played(static_cast<Game::DemoFlags>(demo_idx));
+	}
+
+	ek_cutscenes.clear();
+	const int num_ek_cutscenes = preset_stream.readInt();
+	for (u32 i = 0; i < num_ek_cutscenes; i++) {
+		int ek_cutscene_idx = preset_stream.readInt();
+		GZASSERTLINE(ek_cutscene_idx < 16);
+		const u16 bit = 1 << ek_cutscene_idx;
+		ek_cutscenes.set(bit);
+	}
+
+	cave_cutscenes.clear();
+	const int num_cave_cutscenes = preset_stream.readInt();
+	for (u32 i = 0; i < num_cave_cutscenes; i++) {
+		int cave_cutscene_idx = preset_stream.readInt();
+		GZASSERTLINE(cave_cutscene_idx < 16);
+		const u16 bit = 1 << cave_cutscene_idx;
+		cave_cutscenes.set(bit);
+	}
+
+	read_structure_override_list(preset_stream, destroyed_gates);
+	read_structure_override_list(preset_stream, finished_bridges);
+	read_structure_override_list(preset_stream, bags_flattened);
+	// read_structure_override_list(preset_stream, plugs_destroyed);
+
+	plug_destroyed = preset_stream.readInt() > 0;
+
+	// TODO: enemy and treasure spawn overrides
+
+	delete[] preset_file;
 }
 
 GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
@@ -258,30 +431,30 @@ Preset* Preset::set_upgrades(u32 num_upgrades, Game::OlimarData::ItemIndex items
 Preset* Preset::set_destroyed_gates(u32 num_gates, const char* gates[])
 {
 	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
-	for (u32 i = 0; i < num_gates; i++) {
-		GZASSERTLINE(gates[i]);
-		destroyed_gates.push(gates[i]);
-	}
+	// for (u32 i = 0; i < num_gates; i++) {
+	// 	GZASSERTLINE(gates[i]);
+	// 	destroyed_gates.push(gates[i]);
+	// }
 	return this;
 }
 
 Preset* Preset::set_finished_bridges(u32 num_bridges, const char* bridges[])
 {
 	finished_bridges.expandCapacityTo(finished_bridges.len() + num_bridges);
-	for (u32 i = 0; i < num_bridges; i++) {
-		GZASSERTLINE(bridges[i]);
-		finished_bridges.push(bridges[i]);
-	}
+	// for (u32 i = 0; i < num_bridges; i++) {
+	// 	GZASSERTLINE(bridges[i]);
+	// 	finished_bridges.push(bridges[i]);
+	// }
 	return this;
 }
 
 Preset* Preset::set_bags_flattened(u32 num_bags, const char* bags[])
 {
 	bags_flattened.expandCapacityTo(bags_flattened.len() + num_bags);
-	for (u32 i = 0; i < num_bags; i++) {
-		GZASSERTLINE(bags[i]);
-		bags_flattened.push(bags[i]);
-	}
+	// for (u32 i = 0; i < num_bags; i++) {
+	// 	GZASSERTLINE(bags[i]);
+	// 	bags_flattened.push(bags[i]);
+	// }
 	return this;
 }
 
@@ -460,13 +633,13 @@ void Preset::apply_post_load()
 	p2gz->structure_editor->reset_all_structures();
 
 	for (u32 i = 0; i < destroyed_gates.len(); i++) {
-		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
+		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i].position, destroyed_gates[i].data);
 	}
 	for (u32 i = 0; i < finished_bridges.len(); i++) {
-		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i], 0);
+		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i].position, finished_bridges[i].data);
 	}
 	for (u32 i = 0; i < bags_flattened.len(); i++) {
-		p2gz->structure_editor->set_bag_flattened(bags_flattened[i], true);
+		p2gz->structure_editor->set_bag_flattened(bags_flattened[i].position, true);
 	}
 	if (plug_destroyed) {
 		p2gz->structure_editor->set_plug_destroyed(true);
