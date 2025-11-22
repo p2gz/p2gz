@@ -306,14 +306,16 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 
 	for (int i = 0; i < counter_otakara.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_otakara(i) = 0;
+		Game::playData->mCaveCropMemory->mOtakara(i) = 0;
+		counter_otakara(i)                           = 0;
 	}
 
 	pelmgr                          = Game::PelletItem::mgr;
 	Game::KindCounter& counter_item = mem->mItem;
 	for (int i = 0; i < counter_item.getNumKinds(); i++) {
 		Game::playData->losePellet(pelmgr, i);
-		counter_item(i) = 0;
+		Game::playData->mCaveCropMemory->mItem(i) = 0;
+		counter_item(i)                           = 0;
 	}
 }
 
@@ -374,6 +376,7 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	game->mCaveID                               = caveID;
 	game->mCaveIndex                            = caveID.getID();
 	game->mCurrentFloor                         = dest.sublevel;
+	Game::playData->mCaveSaveData.mCurrentFloor = dest.sublevel;
 	Game::playData->mCaveSaveData.mActiveNaviID = active_captain;
 	strcpy(game->mCaveFilename, cave->mCaveFilename);
 

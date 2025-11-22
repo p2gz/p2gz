@@ -40,6 +40,23 @@ void expect_captain_hp(f32 expected)
 	GZEXPECT(absF(actual - expected) < 0.1f, "Captain health is incorrect");
 }
 
+#define ASSERT_LOCATION(area, cave, sublevel) (new FreeBoundDelegate3<int, int, int>(&assert_location, area, cave, sublevel))
+void assert_location(int area, int cave, int sublevel)
+{
+	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
+	OSReport("current area = %d\n", game->mCurrentCourseInfo->mCourseIndex);
+	GZASSERTLINE(game->mCurrentCourseInfo->mCourseIndex == area);
+
+	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(area);
+	ID32 caveID(dst_course_info->getCaveID_FromIndex(cave - 1));
+
+	OSReport("current cave ID = %d\n", game->mCaveID.getID());
+	GZASSERTLINE(game->mCaveID.getID() == caveID.getID());
+
+	OSReport("current floor = %d\n", game->mCurrentFloor);
+	GZASSERTLINE(game->mCurrentFloor == sublevel - 1);
+}
+
 void assert_has_cos_upgrades()
 {
 	GZASSERTLINE(Game::playData->mOlimarData->hasItem(Game::OlimarData::ODII_SphericalAtlas));
@@ -61,6 +78,15 @@ void TestRunner::create_all_tests()
         PRESS(PAD_BUTTON_UP)
         PRESS(PAD_BUTTON_A)
         SKIP_LOAD_CUTSCENES
+    ));
+    tests.push(TEST("sublevel retry works as expected",
+        DO_ACTION(WARP_TO_DEST(1, 1, 1))
+        SKIP_LOAD_CUTSCENES
+        DO_ACTION(WARP_TO_DEST(1, 1, 2))
+        SKIP_LOAD_CUTSCENES
+        RETRY_SEGMENT
+        SKIP_LOAD_CUTSCENES
+        DO_ACTION(ASSERT_LOCATION(1, 1, 2))
     ));
 	tests.push(TEST("warp to ww",
         DBL_DPAD_L

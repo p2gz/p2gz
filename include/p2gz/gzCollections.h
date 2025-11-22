@@ -40,7 +40,7 @@ struct RingBuffer {
 	{
 		GZASSERTLINE(mLen > 0);
 		GZASSERTLINE(n < mLen);
-		return mBuf[(mBufHead + N - n - 1) % N];
+		return mBuf[(mBufHead + N - n) % N];
 	}
 
 	bool atCapacity() { return mLen == N; }
@@ -49,7 +49,9 @@ struct RingBuffer {
 	T getLast()
 	{
 		GZASSERTLINE(mLen == N);
-		return peekN(N - 1);
+		// the oldest thing is the thing at the current head that will be overwritten
+		// on the next call to push.
+		return peekN(0);
 	}
 
 private:
