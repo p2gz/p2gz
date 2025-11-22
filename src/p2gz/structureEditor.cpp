@@ -41,7 +41,7 @@ static const StructureEditor::NameCoordinateMap GATE_COORD_TO_NAME[] = {
 	StructureEditor::NameCoordinateMap(-350.0f, 1025.0f, "DD gate"),
 	StructureEditor::NameCoordinateMap(-1220.0f, 727.0f, "bridge gate"),
 	StructureEditor::NameCoordinateMap(-2819.0f, 2463.0f, "HoH gate"),
-	StructureEditor::NameCoordinateMap(-3514.0f, 1153.0f, "water gate"),
+	StructureEditor::NameCoordinateMap(-3514.0f, 1153.0f, "crawmad gate"),
 };
 
 static const size_t NUM_GATE_NAMES = ARRAY_SIZE(GATE_COORD_TO_NAME); // 20
@@ -63,7 +63,7 @@ static const StructureEditor::NameCoordinateMap BRIDGE_COORD_TO_NAME[] = {
 	StructureEditor::NameCoordinateMap(1431.0f, 404.0f, "SR bridge"),
 	StructureEditor::NameCoordinateMap(-2159.0f, -857.0f, "CoS bridge"),
 	// WW
-	StructureEditor::NameCoordinateMap(-1479.3f, 558.3f, "water bridge"),
+	StructureEditor::NameCoordinateMap(-1479.3f, 558.3f, "DD bridge"),
 };
 
 static const size_t NUM_BRIDGE_NAMES = ARRAY_SIZE(BRIDGE_COORD_TO_NAME); // 9
