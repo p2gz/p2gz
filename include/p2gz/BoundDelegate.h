@@ -55,6 +55,25 @@ struct CurriedDelegate1 : public IDelegate1<B> {
 	void (T::*func)(A, B);
 };
 
+/// A Delegate1 for a three-argument function where two arguments are pre-applied
+template <typename T, typename A, typename B, typename C>
+struct CurriedDelegate2 : public IDelegate1<C> {
+	inline CurriedDelegate2(T* obj_, void (T::*func_)(A, B, C), A arg1_, B arg2_)
+	{
+		obj  = obj_;
+		func = func_;
+		arg1 = arg1_;
+		arg2 = arg2_;
+	}
+
+	virtual void invoke(C arg3) { (obj->*func)(arg1, arg2, arg3); }
+
+	T* obj;
+	A arg1;
+	B arg2;
+	void (T::*func)(A, B, C);
+};
+
 struct FreeDelegate : public IDelegate {
 	inline FreeDelegate(void (*func_)()) { func = func_; }
 

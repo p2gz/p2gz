@@ -145,6 +145,7 @@ public:
 	    , max(max_)
 	    , overflow_behavior(overflow_behavior_)
 	{
+		GZASSERTLINE(min <= max);
 	}
 	~RangeMenuOption();
 
@@ -155,15 +156,15 @@ public:
 
 	s32 get_selection() { return selected_val; }
 	void set_selection(s32 val) { selected_val = val; }
-
-	s32 min;
-	s32 max;
+	void set_bounds(s32 min_, s32 max_);
 
 private:
-	void check_overflow();
+	void update_selection(s32 delta);
 
 	IDelegate1<s32>* on_selected;
 	s32 selected_val;
+	s32 min;
+	s32 max;
 	OverflowBehavior overflow_behavior;
 };
 
