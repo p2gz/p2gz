@@ -186,6 +186,10 @@ PresetMgr::PresetMgr()
 	};
 
 	// Enemies
+	Preset::EnemyGenSpawnOverride e_pod_day_4[] = {
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_Spawn),
+	};
+
 	Preset::EnemyGenSpawnOverride e_pod_enter_hob[] = {
 		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),
 		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),
@@ -212,6 +216,10 @@ PresetMgr::PresetMgr()
 		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),
 		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),
 		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),
+	};
+
+	Preset::EnemyGenSpawnOverride e_pod_day_6[] = {
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_Spawn),
 	};
 
 	Preset::EnemyGenSpawnOverride e_pod_enter_scx[] = {
@@ -252,6 +260,10 @@ PresetMgr::PresetMgr()
 		    OlimarData::ODII_JusticeAlloy,   OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage,
 		    OlimarData::ODII_BruteKnuckles };
 
+	Preset::Sprout sp_day_3_4[] = {
+		Preset::Sprout(Leaf, Red, 4),
+	};
+
 	presets.push((new Preset("everything", General))
 	                 ->set_pikmin(Flower, Red, 20)
 	                 ->set_pikmin(Flower, Yellow, 20)
@@ -259,19 +271,24 @@ PresetMgr::PresetMgr()
 	                 ->set_pikmin(Flower, Purple, 20)
 	                 ->set_pikmin(Flower, White, 20)
 	                 ->set_sprays(false, 0, true, 16));
-	// presets.push((new Preset("Day 1", PoD))->set_day(1));
+	presets.push((new Preset("Day 1", PoD))->set_day(1)->set_enter_kind(PEK_FirstEnter));
 	// presets.push((new Preset("Day 2", PoD))
-	//                  ->set_onion_pikmin(Leaf, Red, 0)
 	//                  ->set_day(2)
-	//                  ->set_cutscene_flags(NUM_DAY_2_DEMO_FLAGS, (DemoFlags[NUM_DAY_2_DEMO_FLAGS]) { DAY_2_DEMO_FLAGS }));
-	// presets.push((new Preset("Day 3", PoD))
-	//                  ->set_onion_pikmin(Leaf, Red, 9)
-	//                  ->set_day(3)
-	//                  ->set_cutscene_flags(NUM_DAY_3_DEMO_FLAGS, (DemoFlags[NUM_DAY_3_DEMO_FLAGS]) { DAY_3_DEMO_FLAGS }));
-	// presets.push((new Preset("Day 4", PoD))
-	//                  ->set_onion_pikmin(Leaf, Red, 13)
-	//                  ->set_day(4)
-	//                  ->set_cutscene_flags(NUM_DAY_4_DEMO_FLAGS, (DemoFlags[NUM_DAY_4_DEMO_FLAGS]) { DAY_4_DEMO_FLAGS }));
+	//                  ->set_cutscene_flags(NUM_DAY_2_DEMO_FLAGS, (DemoFlags[NUM_DAY_2_DEMO_FLAGS]) { DAY_2_DEMO_FLAGS })
+	//                  ->set_enter_kind(PEK_FromMap));
+	presets.push((new Preset("Day 3", PoD))
+	                 ->set_onion_pikmin(Leaf, Red, 5)
+	                 ->set_sprouts(ARRAY_SIZE(sp_day_3_4), sp_day_3_4)
+	                 ->set_day(3)
+	                 ->set_cutscene_flags(NUM_DAY_3_DEMO_FLAGS, (DemoFlags[NUM_DAY_3_DEMO_FLAGS]) { DAY_3_DEMO_FLAGS })
+	                 ->set_enter_kind(PEK_FromMap));
+	presets.push((new Preset("Day 4", PoD))
+	                 ->set_onion_pikmin(Leaf, Red, 9)
+	                 ->set_sprouts(ARRAY_SIZE(sp_day_3_4), sp_day_3_4)
+	                 ->set_day(4)
+	                 ->set_cutscene_flags(NUM_DAY_4_DEMO_FLAGS, (DemoFlags[NUM_DAY_4_DEMO_FLAGS]) { DAY_4_DEMO_FLAGS })
+	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_day_4), e_pod_day_4)
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("EC1", PoD))
 	                 ->set_pikmin(Flower, Red, 46)
 	                 ->set_pikmin(Leaf, Red, 6)
@@ -538,6 +555,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
+	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_day_6), e_pod_day_6)
 	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("day 6 CR (25w)", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
@@ -553,6 +571,7 @@ PresetMgr::PresetMgr()
 	                 ->set_bags_flattened(ARRAY_SIZE(b_all), b_all)
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
+	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_day_6), e_pod_day_6)
 	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("enter SCx", PoD))
 	                 ->set_onion_pikmin(Flower, White, 20)

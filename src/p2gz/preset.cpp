@@ -4,10 +4,12 @@
 #include <p2gz/BoundDelegate.h>
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
+#include <Game/Entities/ItemPikihead.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
 #include <Game/gameGeneratorCache.h>
 #include <Game/Entities/PelletOtakara.h>
+#include <Dolphin/rand.h>
 
 using namespace gz;
 
@@ -51,6 +53,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
     , bags_flattened(0)
     , enemy_spawn_overrides(0)
     , treasure_spawn_overrides(0)
+    , sprouts(0)
 {
 	name             = name_;
 	category         = category_;
@@ -88,29 +91,50 @@ Preset::Preset(Preset& other)
 	cave_cutscenes   = other.cave_cutscenes;
 
 	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
-	for (size_t i = 0; i < other.destroyed_gates.len(); i++) {
+	for (u32 i = 0; i < other.destroyed_gates.len(); i++) {
 		destroyed_gates.push(other.destroyed_gates[i]);
 	}
 
 	finished_bridges.expandCapacityTo(other.finished_bridges.len());
-	for (size_t i = 0; i < other.finished_bridges.len(); i++) {
+	for (u32 i = 0; i < other.finished_bridges.len(); i++) {
 		finished_bridges.push(other.finished_bridges[i]);
 	}
 
 	bags_flattened.expandCapacityTo(other.bags_flattened.len());
-	for (size_t i = 0; i < other.bags_flattened.len(); i++) {
+	for (u32 i = 0; i < other.bags_flattened.len(); i++) {
 		bags_flattened.push(other.bags_flattened[i]);
 	}
 
 	enemy_spawn_overrides.expandCapacityTo(other.enemy_spawn_overrides.len());
-	for (size_t i = 0; i < other.enemy_spawn_overrides.len(); i++) {
+	for (u32 i = 0; i < other.enemy_spawn_overrides.len(); i++) {
 		enemy_spawn_overrides.push(other.enemy_spawn_overrides[i]);
 	}
 
 	treasure_spawn_overrides.expandCapacityTo(other.treasure_spawn_overrides.len());
-	for (size_t i = 0; i < other.treasure_spawn_overrides.len(); i++) {
+	for (u32 i = 0; i < other.treasure_spawn_overrides.len(); i++) {
 		treasure_spawn_overrides.push(other.treasure_spawn_overrides[i]);
 	}
+
+	sprouts.expandCapacityTo(other.sprouts.len());
+	for (u32 i = 0; i < other.sprouts.len(); i++) {
+		sprouts.push(other.sprouts[i]);
+	}
+}
+
+// Onion ring ctor
+Preset::Sprout::Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_)
+{
+	pos            = Vector3f::zero;
+	amount         = amount_;
+	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
+}
+
+// Single sprout in a fixed spot ctor
+Preset::Sprout::Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind)
+{
+	pos            = pos_;
+	amount         = 0;
+	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
 }
 
 Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
@@ -139,7 +163,7 @@ GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
 {
 	if (gen->mObject->mTypeID == 'teki') {
 		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
-		for (size_t i = 0; i < enemy_spawn_overrides.len(); i++) {
+		for (u32 i = 0; i < enemy_spawn_overrides.len(); i++) {
 			EnemyGenSpawnOverride& oride = enemy_spawn_overrides[i];
 			if (oride.enemy_id == gen_obj_enemy->mEnemyID && absF(oride.gen_pos.sqrDistance(gen->mPosition)) < 25.0f) {
 				return oride.spawn_override;
@@ -151,7 +175,7 @@ GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
 
 GenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
 {
-	for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+	for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
 		TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
 		if (treasure_id == oride.id) {
 			return oride.spawn_override;
@@ -172,6 +196,15 @@ Preset* Preset::set_onion_pikmin(int stage, int color, int amount)
 	return this;
 }
 
+Preset* Preset::set_sprouts(u32 num_sprouts, Sprout sprouts_[])
+{
+	sprouts.expandCapacityTo(num_sprouts);
+	for (u32 i = 0; i < num_sprouts; i++) {
+		sprouts.push(sprouts_[i]);
+	}
+	return this;
+}
+
 Preset* Preset::set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters)
 {
 	spicies_unlocked = spicies_unlocked_;
@@ -187,65 +220,65 @@ Preset* Preset::set_time(f32 time_)
 	return this;
 }
 
-Preset* Preset::set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[])
+Preset* Preset::set_cutscene_flags(u32 num_flags, Game::DemoFlags flags[])
 {
-	for (size_t i = 0; i < num_flags; i++) {
+	for (u32 i = 0; i < num_flags; i++) {
 		cutscenes.set_cutscene_played(flags[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIndex flags[])
+Preset* Preset::set_ek_cutscene_flags(u32 num_flags, Game::OlimarData::ItemIndex flags[])
 {
-	for (size_t i = 0; i < num_flags; i++) {
+	for (u32 i = 0; i < num_flags; i++) {
 		const u16 bit = 1 << flags[i];
 		ek_cutscenes.set(bit);
 	}
 	return this;
 }
 
-Preset* Preset::set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[])
+Preset* Preset::set_cave_cutscene_flags(u32 num_flags, CaveIndex flags[])
 {
-	for (size_t i = 0; i < num_flags; i++) {
+	for (u32 i = 0; i < num_flags; i++) {
 		const u16 bit = 1 << flags[i];
 		cave_cutscenes.set(bit);
 	}
 	return this;
 }
 
-Preset* Preset::set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[])
+Preset* Preset::set_upgrades(u32 num_upgrades, Game::OlimarData::ItemIndex items[])
 {
-	for (size_t i = 0; i < num_upgrades; i++) {
+	for (u32 i = 0; i < num_upgrades; i++) {
 		const u16 bit = 1 << items[i];
 		upgrades.set(bit);
 	}
 	return this;
 }
 
-Preset* Preset::set_destroyed_gates(size_t num_gates, const char* gates[])
+Preset* Preset::set_destroyed_gates(u32 num_gates, const char* gates[])
 {
 	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
-	for (size_t i = 0; i < num_gates; i++) {
+	for (u32 i = 0; i < num_gates; i++) {
 		GZASSERTLINE(gates[i]);
 		destroyed_gates.push(gates[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_finished_bridges(size_t num_bridges, const char* bridges[])
+Preset* Preset::set_finished_bridges(u32 num_bridges, const char* bridges[])
 {
 	finished_bridges.expandCapacityTo(finished_bridges.len() + num_bridges);
-	for (size_t i = 0; i < num_bridges; i++) {
+	for (u32 i = 0; i < num_bridges; i++) {
 		GZASSERTLINE(bridges[i]);
 		finished_bridges.push(bridges[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_bags_flattened(size_t num_bags, const char* bags[])
+Preset* Preset::set_bags_flattened(u32 num_bags, const char* bags[])
 {
 	bags_flattened.expandCapacityTo(bags_flattened.len() + num_bags);
-	for (size_t i = 0; i < num_bags; i++) {
+	for (u32 i = 0; i < num_bags; i++) {
 		GZASSERTLINE(bags[i]);
 		bags_flattened.push(bags[i]);
 	}
@@ -276,31 +309,38 @@ Preset* Preset::set_day(u8 day_)
 	day = day_;
 }
 
-Preset* Preset::set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[])
+Preset* Preset::set_enemy_spawn_overrides(u32 num_spawns, EnemyGenSpawnOverride overrides[])
 {
 	enemy_spawn_overrides.expandCapacityTo(enemy_spawn_overrides.len() + num_spawns);
-	for (size_t i = 0; i < num_spawns; i++) {
+	for (u32 i = 0; i < num_spawns; i++) {
 		enemy_spawn_overrides.push(overrides[i]);
 	}
 	return this;
 }
 
-Preset* Preset::set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[])
+Preset* Preset::set_treasure_spawn_overrides(u32 num_spawns, TreasureGenSpawnOverride overrides[])
 {
 	treasure_spawn_overrides.expandCapacityTo(treasure_spawn_overrides.len() + num_spawns);
-	for (size_t i = 0; i < num_spawns; i++) {
+	for (u32 i = 0; i < num_spawns; i++) {
 		treasure_spawn_overrides.push(overrides[i]);
 	}
 	return this;
 }
 
+Game::ItemPikihead::Item* birth_sprout(u8 kind, u8 stage)
+{
+	Game::ItemPikihead::Item* new_sprout = Game::ItemPikihead::mgr->birth();
+	GZASSERTLINE(new_sprout);
+
+	Game::ItemPikihead::InitArg new_sprout_arg(static_cast<Game::EPikiKind>(kind), Vector3f::zero, true, stage, 0.0f);
+	new_sprout->init(&new_sprout_arg);
+	return new_sprout;
+}
+
 void Preset::apply()
 {
-	// TODO: is this necessary?
-	// GameStat::mePikis.clear(); // clear sprouts
-
 	if (Game::naviMgr && Game::naviMgr->mArray) {
-		for (int i = 0; i < 2; i++) {
+		for (u32 i = 0; i < 2; i++) {
 			Game::Navi* navi = Game::naviMgr->getAt(i);
 			if (navi && navi->isAlive() && navi->isStickTo()) {
 				navi->endStick();
@@ -314,8 +354,8 @@ void Preset::apply()
 	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected
 
 	// Apply squad
-	for (int color = 0; color < 6; color++) {
-		for (int stage = 0; stage < 3; stage++) {
+	for (u32 color = 0; color < 6; color++) {
+		for (u32 stage = 0; stage < 3; stage++) {
 			int amount       = squad.getCount(color, stage);
 			int onion_amount = 0;
 			if (color < 5) { // no bulbmin onion
@@ -342,7 +382,7 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
 	// Apply upgrades
-	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+	for (u32 i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
 		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades.isSet(mask));
 	}
@@ -350,7 +390,7 @@ void Preset::apply()
 	// Set cutscene flags
 	p2gz->cutscene_mgr->reset_all();
 	// set regular cutscenes
-	for (size_t i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
+	for (u32 i = 0; i < Game::DEMO_FLAG_COUNT; i++) {
 		const Game::DemoFlags flag = static_cast<Game::DemoFlags>(i);
 		if (cutscenes.cutscene_played(flag)) {
 			CutsceneToggle* cutscene_toggle = p2gz->cutscene_mgr->get_toggle(flag);
@@ -360,7 +400,7 @@ void Preset::apply()
 		}
 	}
 	// set exploration kit discovery cutscenes
-	for (size_t i = 0; i < Game::OlimarData::ODII_COUNT; i++) {
+	for (u32 i = 0; i < Game::OlimarData::ODII_COUNT; i++) {
 		const Game::OlimarData::ItemIndex flag = static_cast<Game::OlimarData::ItemIndex>(i);
 		const u16 mask                         = 1 << i;
 		if (ek_cutscenes.isSet(mask)) {
@@ -372,7 +412,7 @@ void Preset::apply()
 	}
 	// set cave discovery cutscenes
 	// (from 1 because we can't "discover" above-ground)
-	for (size_t i = 1; i < CAVE_COUNT; i++) {
+	for (u32 i = 1; i < CAVE_COUNT; i++) {
 		const CaveIndex flag = static_cast<CaveIndex>(i);
 		const u16 mask       = 1 << i;
 		if (cave_cutscenes.isSet(mask)) {
@@ -387,13 +427,13 @@ void Preset::apply()
 	u8 treasure_counts[4];
 	treasure_counts[COURSE_VoR] = treasure_counts[COURSE_AW] = treasure_counts[COURSE_PP] = treasure_counts[COURSE_WW] = 0;
 
-	for (int i = 0; i < treasure_spawn_overrides.len(); i++) {
+	for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
 		// only interested in treasures we've "collected"
 		if (treasure_spawn_overrides[i].spawn_override != PSO_DontSpawn) {
 			continue;
 		}
 
-		int id = treasure_spawn_overrides[i].id;
+		u32 id = treasure_spawn_overrides[i].id;
 		for (u8 i = 0; i < AG_treasure_count; i++) {
 			if (AG_treasure_IDs[i].id == id) {
 				treasure_counts[AG_treasure_IDs[i].course_idx]++;
@@ -403,7 +443,7 @@ void Preset::apply()
 	}
 
 	// set treasure counts
-	for (int i = 0; i < 4; i++) {
+	for (u32 i = 0; i < 4; i++) {
 		Game::playData->mGroundOtakaraCollected[i]    = treasure_counts[i];
 		Game::playData->mGroundOtakaraCollectedOld[i] = treasure_counts[i];
 	}
@@ -419,17 +459,45 @@ void Preset::apply_post_load()
 {
 	p2gz->structure_editor->reset_all_structures();
 
-	for (size_t i = 0; i < destroyed_gates.len(); i++) {
+	for (u32 i = 0; i < destroyed_gates.len(); i++) {
 		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i], 0);
 	}
-	for (size_t i = 0; i < finished_bridges.len(); i++) {
+	for (u32 i = 0; i < finished_bridges.len(); i++) {
 		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i], 0);
 	}
-	for (size_t i = 0; i < bags_flattened.len(); i++) {
+	for (u32 i = 0; i < bags_flattened.len(); i++) {
 		p2gz->structure_editor->set_bag_flattened(bags_flattened[i], true);
 	}
 	if (plug_destroyed) {
 		p2gz->structure_editor->set_plug_destroyed(true);
+	}
+
+	// Apply sprouts
+	if (!Game::playData->mCaveSaveData.mIsInCave) {
+		for (u32 i = 0; i < sprouts.len(); i++) {
+			Sprout sprout = sprouts[i];
+			if (sprout.amount == 0) {
+				Game::ItemPikihead::Item* new_sprout = birth_sprout(sprout.get_kind(), sprout.get_stage());
+				new_sprout->setPosition(sprout.pos, false);
+			} else {
+				// randomly disperse around the base of an onion
+				static const f32 ONION_DIST = 65.8767f; // Determined by printing in ItemPikihead::BuryState::init
+
+				Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(sprout.get_kind());
+				if (!onion) {
+					OSReport("No onion of kind %d found for preset application. Skipping\n");
+					continue;
+				}
+				const Vector3f onion_pos = onion->getPosition();
+
+				for (u32 num_sprouts = 0; num_sprouts < sprout.amount; num_sprouts++) {
+					Game::ItemPikihead::Item* new_sprout = birth_sprout(sprout.get_kind(), sprout.get_stage());
+					const f32 angle                      = randFloat() * TAU;
+					Vector3f sprout_pos                  = onion_pos + Vector3f(sinf(angle) * ONION_DIST, 0.0f, cosf(angle) * ONION_DIST);
+					new_sprout->setPosition(sprout_pos, false);
+				}
+			}
+		}
 	}
 
 	// Force spawn or despawn treasures
@@ -439,7 +507,7 @@ void Preset::apply_post_load()
 			Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
 			int treasure_id             = gen_pellet->mGenParm->mIndex;
 			int kind                    = gen_pellet->mPelType;
-			for (size_t i = 0; i < treasure_spawn_overrides.len(); i++) {
+			for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
 				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
 				if (oride.id == treasure_id) {
 					if (oride.spawn_override >= PSO_Spawn) {

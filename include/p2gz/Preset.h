@@ -57,6 +57,29 @@ struct Preset {
 		Vector3f position_override; // only used if spawn_override is PSO_SpawnAndMove
 	};
 
+	struct Sprout {
+	public:
+		Sprout()
+		{
+			pos            = Vector3f::zero;
+			stage_and_kind = 0;
+			amount         = 0;
+		}
+		Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_);    // Onion ring (yum)
+		Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind); // Single in a fixed spot
+
+		inline u8 get_stage() { return (stage_and_kind & 0xF0) >> 4; }
+		inline u8 get_kind() { return stage_and_kind & 0x0F; }
+
+		Vector3f pos;
+		/// 0  -> single sprout in a fixed location
+		/// >0 -> n sprouts randomly distributed around an onion
+		u8 amount;
+
+	private:
+		u8 stage_and_kind; // 4bit:stage + 4bit:kind
+	};
+
 public:
 	Preset(const char* name_, PresetCategory category_);
 	Preset(Preset& other);
@@ -70,26 +93,28 @@ public:
 
 	Preset* set_pikmin(int stage, int color, int amount);
 	Preset* set_onion_pikmin(int stage, int color, int amount);
+	Preset* set_sprouts(u32 num_sprouts, Sprout sprouts_[]);
 	Preset* set_sprays(bool spicies_unlocked_, int spicies, bool bitters_unlocked_, int bitters);
 	Preset* set_time(f32 time_);
-	Preset* set_cutscene_flags(size_t num_flags, Game::DemoFlags flags[]);
-	Preset* set_ek_cutscene_flags(size_t num_flags, Game::OlimarData::ItemIndex flags[]);
-	Preset* set_cave_cutscene_flags(size_t num_flags, CaveIndex flags[]);
-	Preset* set_upgrades(size_t num_upgrades, Game::OlimarData::ItemIndex items[]);
-	Preset* set_destroyed_gates(size_t num_gates, const char* gates[]);
-	Preset* set_finished_bridges(size_t num_bridges, const char* bridges[]);
-	Preset* set_bags_flattened(size_t num_bags, const char* bags[]);
+	Preset* set_cutscene_flags(u32 num_flags, Game::DemoFlags flags[]);
+	Preset* set_ek_cutscene_flags(u32 num_flags, Game::OlimarData::ItemIndex flags[]);
+	Preset* set_cave_cutscene_flags(u32 num_flags, CaveIndex flags[]);
+	Preset* set_upgrades(u32 num_upgrades, Game::OlimarData::ItemIndex items[]);
+	Preset* set_destroyed_gates(u32 num_gates, const char* gates[]);
+	Preset* set_finished_bridges(u32 num_bridges, const char* bridges[]);
+	Preset* set_bags_flattened(u32 num_bags, const char* bags[]);
 	Preset* set_plug_destroyed(bool destroyed);
 	Preset* set_enter_kind(EnterAreaKind kind);
 	Preset* set_pokos(int pokos_);
 	Preset* set_day(u8 day_);
-	Preset* set_enemy_spawn_overrides(size_t num_spawns, EnemyGenSpawnOverride overrides[]);
-	Preset* set_treasure_spawn_overrides(size_t num_spawns, TreasureGenSpawnOverride overrides[]);
+	Preset* set_enemy_spawn_overrides(u32 num_spawns, EnemyGenSpawnOverride overrides[]);
+	Preset* set_treasure_spawn_overrides(u32 num_spawns, TreasureGenSpawnOverride overrides[]);
 
 	PresetCategory category;
 	const char* name;
 	Game::PikiContainer squad;
 	Game::PikiContainer onion_pikis;
+	Vec<Sprout> sprouts;
 	bool bitters_unlocked;
 	bool spicies_unlocked;
 	BitFlag<u16> upgrades;
