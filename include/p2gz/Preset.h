@@ -123,10 +123,6 @@ public:
 	CaveIndex which_cave(u32 area, u32 cave);
 
 	void init_pod_presets();
-	void init_pod_vor1_presets();
-	void init_pod_aw_presets();
-	void init_pod_vor2_presets();
-	void init_pod_pp_presets();
 
 	void init_at_presets();
 	void init_at_vor1_presets();

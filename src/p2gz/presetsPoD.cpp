@@ -4,162 +4,154 @@
 using namespace gz;
 using namespace Game;
 
-// Treasures
-static Preset::TreasureGenSpawnOverride t_pod_all[] = {
-	Preset::TreasureGenSpawnOverride(42, PSO_Spawn),  /* ichigo */
-	Preset::TreasureGenSpawnOverride(130, PSO_Spawn), /* pilgrim bulb */
-	Preset::TreasureGenSpawnOverride(11, PSO_Spawn),  /* globe */
-	Preset::TreasureGenSpawnOverride(155, PSO_Spawn), /* dice */
-	Preset::TreasureGenSpawnOverride(173, PSO_Spawn), /* healing cask */
-	Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
-	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
-	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
-	Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
-	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
-};
-
-static Preset::TreasureGenSpawnOverride t_pod_post_eb[] = {
-	Preset::TreasureGenSpawnOverride(42, PSO_Spawn),      /* ichigo */
-	Preset::TreasureGenSpawnOverride(130, PSO_Spawn),     /* pilgrim bulb */
-	Preset::TreasureGenSpawnOverride(11, PSO_Spawn),      /* globe */
-	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-	Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask */
-	Preset::TreasureGenSpawnOverride(142, PSO_Spawn),     /* battery */
-	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),      /* ring */
-	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),      /* scrap */
-	Preset::TreasureGenSpawnOverride(157, PSO_Spawn),     /* SAT */
-	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),      /* ursidae */
-};
-
-static Preset::TreasureGenSpawnOverride t_pod_post_enter_bk[] = {
-	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
-	Preset::TreasureGenSpawnOverride(142, PSO_Spawn),     /* battery */
-	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),      /* ring */
-	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),      /* scrap */
-	Preset::TreasureGenSpawnOverride(157, PSO_Spawn),     /* SAT */
-	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),      /* ursidae */
-};
-
-static Preset::TreasureGenSpawnOverride t_pod_post_day_6[] = {
-	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
-	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-	Preset::TreasureGenSpawnOverride(62, PSO_Spawn),      /* ring */
-	Preset::TreasureGenSpawnOverride(87, PSO_Spawn),      /* scrap */
-	Preset::TreasureGenSpawnOverride(157, PSO_Spawn),     /* SAT */
-	Preset::TreasureGenSpawnOverride(47, PSO_Spawn),      /* ursidae */
-};
-
-static Preset::TreasureGenSpawnOverride t_pod_post_enter_scx[] = {
-	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
-	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-	Preset::TreasureGenSpawnOverride(47, PSO_Ignore),     /* ursidae */
-};
-
-static Preset::TreasureGenSpawnOverride t_pod_post_enter_fc[] = {
-	Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
-	Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
-	Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
-	Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
-	Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
-	Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
-	Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
-	Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
-	Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
-	Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
-};
-
-// Enemies
-static Preset::EnemyGenSpawnOverride e_pod_enter_hob[] = {
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),
-};
-
-static Preset::EnemyGenSpawnOverride e_pod_post_hob[] = {
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),
-};
-
-static Preset::EnemyGenSpawnOverride e_pod_enter_scx[] = {
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn),
-	Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-548.0f, 100.0f, 546.0f), PSO_Spawn),
-};
-
-// Gates
-static const char* g_pod_ec[]             = { "EC gate" };
-static const char* g_pod_post_enter_hob[] = { "EC gate", "black gate" };
-static const char* g_pod_post_enter_sh[]  = { "EC gate", "black gate", "SH gate" };
-static const char* g_pod_post_enter_scx[] = { "EC gate", "black gate", "SH gate", "water gate" };
-
-// Bags
-static const char* b_post_ec[] = { "landing area bag (15)", "hubcap bag (35)" };
-static const char* b_all[]     = { "landing area bag (15)", "hubcap bag (35)", "WFG bag (200)" };
-
-// Bridges
-static const char* br_pod_post_enter_bk[]  = { "globe bridge" };
-static const char* br_pod_post_enter_scx[] = { "globe bridge", "water bridge" };
-static const char* br_pod_post_enter_fc[]  = { "globe bridge", "water bridge", "FC bridge" };
-
-// Upgrades
-static OlimarData::ItemIndex ek_pod_post_vor1[] = { OlimarData::ODII_SphericalAtlas };
-static OlimarData::ItemIndex ek_pod_post_hob[]  = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector };
-static OlimarData::ItemIndex ek_pod_post_wfg[]
-    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector, OlimarData::ODII_FiveManNapsack };
-static OlimarData::ItemIndex ek_pod_post_sh[] = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
-	                                              OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy };
-static OlimarData::ItemIndex ek_pod_post_enter_bk[]
-    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector, OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy,
-	    OlimarData::ODII_GeographicProjection };
-static OlimarData::ItemIndex ek_pod_post_bk[]
-    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,    OlimarData::ODII_FiveManNapsack,
-	    OlimarData::ODII_JusticeAlloy,   OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage };
-static OlimarData::ItemIndex ek_pod_post_fc5[]
-    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,    OlimarData::ODII_FiveManNapsack,
-	    OlimarData::ODII_JusticeAlloy,   OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage,
-	    OlimarData::ODII_BruteKnuckles };
-
 void PresetMgr::init_pod_presets()
 {
-	init_pod_vor1_presets();
-	init_pod_aw_presets();
-	init_pod_vor2_presets();
-	init_pod_pp_presets();
-}
+	// Treasures
+	Preset::TreasureGenSpawnOverride t_pod_all[] = {
+		Preset::TreasureGenSpawnOverride(42, PSO_Spawn),  /* ichigo */
+		Preset::TreasureGenSpawnOverride(130, PSO_Spawn), /* pilgrim bulb */
+		Preset::TreasureGenSpawnOverride(11, PSO_Spawn),  /* globe */
+		Preset::TreasureGenSpawnOverride(155, PSO_Spawn), /* dice */
+		Preset::TreasureGenSpawnOverride(173, PSO_Spawn), /* healing cask */
+		Preset::TreasureGenSpawnOverride(142, PSO_Spawn), /* battery */
+		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),  /* ring */
+		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),  /* scrap */
+		Preset::TreasureGenSpawnOverride(157, PSO_Spawn), /* SAT */
+		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),  /* ursidae */
+	};
 
-void PresetMgr::init_pod_vor1_presets()
-{
+	Preset::TreasureGenSpawnOverride t_pod_post_eb[] = {
+		Preset::TreasureGenSpawnOverride(42, PSO_Spawn),      /* ichigo */
+		Preset::TreasureGenSpawnOverride(130, PSO_Spawn),     /* pilgrim bulb */
+		Preset::TreasureGenSpawnOverride(11, PSO_Spawn),      /* globe */
+		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+		Preset::TreasureGenSpawnOverride(173, PSO_Spawn),     /* healing cask */
+		Preset::TreasureGenSpawnOverride(142, PSO_Spawn),     /* battery */
+		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),      /* ring */
+		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),      /* scrap */
+		Preset::TreasureGenSpawnOverride(157, PSO_Spawn),     /* SAT */
+		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),      /* ursidae */
+	};
+
+	Preset::TreasureGenSpawnOverride t_pod_post_enter_bk[] = {
+		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
+		Preset::TreasureGenSpawnOverride(142, PSO_Spawn),     /* battery */
+		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),      /* ring */
+		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),      /* scrap */
+		Preset::TreasureGenSpawnOverride(157, PSO_Spawn),     /* SAT */
+		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),      /* ursidae */
+	};
+
+	Preset::TreasureGenSpawnOverride t_pod_post_day_6[] = {
+		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
+		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+		Preset::TreasureGenSpawnOverride(62, PSO_Spawn),      /* ring */
+		Preset::TreasureGenSpawnOverride(87, PSO_Spawn),      /* scrap */
+		Preset::TreasureGenSpawnOverride(157, PSO_Spawn),     /* SAT */
+		Preset::TreasureGenSpawnOverride(47, PSO_Spawn),      /* ursidae */
+	};
+
+	Preset::TreasureGenSpawnOverride t_pod_post_enter_scx[] = {
+		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
+		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+		Preset::TreasureGenSpawnOverride(47, PSO_Ignore),     /* ursidae */
+	};
+
+	Preset::TreasureGenSpawnOverride t_pod_post_enter_fc[] = {
+		Preset::TreasureGenSpawnOverride(42, PSO_DontSpawn),  /* ichigo */
+		Preset::TreasureGenSpawnOverride(130, PSO_DontSpawn), /* pilgrim bulb */
+		Preset::TreasureGenSpawnOverride(11, PSO_DontSpawn),  /* globe */
+		Preset::TreasureGenSpawnOverride(155, PSO_DontSpawn), /* dice */
+		Preset::TreasureGenSpawnOverride(173, PSO_DontSpawn), /* healing cask */
+		Preset::TreasureGenSpawnOverride(142, PSO_DontSpawn), /* battery */
+		Preset::TreasureGenSpawnOverride(62, PSO_DontSpawn),  /* ring */
+		Preset::TreasureGenSpawnOverride(87, PSO_DontSpawn),  /* scrap */
+		Preset::TreasureGenSpawnOverride(157, PSO_DontSpawn), /* SAT */
+		Preset::TreasureGenSpawnOverride(47, PSO_DontSpawn),  /* ursidae */
+	};
+
+	// Enemies
+	Preset::EnemyGenSpawnOverride e_pod_enter_hob[] = {
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),
+	};
+
+	Preset::EnemyGenSpawnOverride e_pod_post_hob[] = {
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-179.69f, -70.0f, 2909.94f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Chappy, Vector3f(-486.16f, -70.0f, 3058.21f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Qurione, Vector3f(-544.00f, -38.0f, 1804.00f), PSO_DontSpawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Armor, Vector3f(-672.00f, -20.0f, 1392.00f), PSO_DontSpawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Wealthy, Vector3f(-738.00f, -28.0f, 2354.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kogane, Vector3f(518.00f, -75.0f, 3719.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(13.00f, 15.0f, 211.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(209.00f, 10.0f, -206.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(14.00f, 15.0f, -263.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Pelplant, Vector3f(-258.00f, 15.0f, -133.00f), PSO_Spawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tadpole, Vector3f(-36.44f, 15.0f, -104.84f), PSO_Spawn),
+	};
+
+	Preset::EnemyGenSpawnOverride e_pod_enter_scx[] = {
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_DontSpawn),
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Tank, Vector3f(-548.0f, 100.0f, 546.0f), PSO_Spawn),
+	};
+
+	// Gates
+	const char* g_pod_ec[]             = { "EC gate" };
+	const char* g_pod_post_enter_hob[] = { "EC gate", "black gate" };
+	const char* g_pod_post_enter_sh[]  = { "EC gate", "black gate", "SH gate" };
+	const char* g_pod_post_enter_scx[] = { "EC gate", "black gate", "SH gate", "water gate" };
+
+	// Bags
+	const char* b_post_ec[] = { "landing area bag (15)", "hubcap bag (35)" };
+	const char* b_all[]     = { "landing area bag (15)", "hubcap bag (35)", "WFG bag (200)" };
+
+	// Bridges
+	const char* br_pod_post_enter_bk[]  = { "globe bridge" };
+	const char* br_pod_post_enter_scx[] = { "globe bridge", "water bridge" };
+	const char* br_pod_post_enter_fc[]  = { "globe bridge", "water bridge", "FC bridge" };
+
+	// Upgrades
+	OlimarData::ItemIndex ek_pod_post_vor1[] = { OlimarData::ODII_SphericalAtlas };
+	OlimarData::ItemIndex ek_pod_post_hob[]  = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector };
+	OlimarData::ItemIndex ek_pod_post_wfg[]
+	    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector, OlimarData::ODII_FiveManNapsack };
+	OlimarData::ItemIndex ek_pod_post_sh[] = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,
+		                                       OlimarData::ODII_FiveManNapsack, OlimarData::ODII_JusticeAlloy };
+	OlimarData::ItemIndex ek_pod_post_enter_bk[]
+	    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector, OlimarData::ODII_FiveManNapsack,
+		    OlimarData::ODII_JusticeAlloy, OlimarData::ODII_GeographicProjection };
+	OlimarData::ItemIndex ek_pod_post_bk[]
+	    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,    OlimarData::ODII_FiveManNapsack,
+		    OlimarData::ODII_JusticeAlloy,   OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage };
+	OlimarData::ItemIndex ek_pod_post_fc5[]
+	    = { OlimarData::ODII_SphericalAtlas, OlimarData::ODII_PrototypeDetector,    OlimarData::ODII_FiveManNapsack,
+		    OlimarData::ODII_JusticeAlloy,   OlimarData::ODII_GeographicProjection, OlimarData::ODII_ForgedCourage,
+		    OlimarData::ODII_BruteKnuckles };
+
 	// presets.push((new Preset("Day 1", PoD))->set_day(1));
 	// presets.push((new Preset("Day 2", PoD))
 	//                  ->set_onion_pikmin(Leaf, Red, 0)
@@ -194,10 +186,6 @@ void PresetMgr::init_pod_vor1_presets()
 	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_pod_enter_hob), e_pod_enter_hob)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_all), t_pod_all)
 	                 ->set_enter_kind(PEK_FromMap));
-}
-
-void PresetMgr::init_pod_aw_presets()
-{
 	presets.push((new Preset("enter HoB", PoD))
 	                 ->set_onion_pikmin(Flower, Red, 36)
 	                 ->set_onion_pikmin(Leaf, Red, 6)
@@ -429,10 +417,6 @@ void PresetMgr::init_pod_aw_presets()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_bk), br_pod_post_enter_bk)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_bk), t_pod_post_enter_bk)
 	                 ->set_enter_kind(PEK_FromCave));
-}
-
-void PresetMgr::init_pod_vor2_presets()
-{
 	presets.push((new Preset("day 6 CR", PoD))
 	                 ->set_onion_pikmin(Leaf, Blue, 60)
 	                 ->set_onion_pikmin(Flower, Purple, 20)
@@ -639,10 +623,6 @@ void PresetMgr::init_pod_vor2_presets()
 	                 ->set_finished_bridges(ARRAY_SIZE(br_pod_post_enter_fc), br_pod_post_enter_fc)
 	                 ->set_treasure_spawn_overrides(ARRAY_SIZE(t_pod_post_enter_fc), t_pod_post_enter_fc)
 	                 ->set_enter_kind(PEK_FromCave));
-}
-
-void PresetMgr::init_pod_pp_presets()
-{
 	presets.push((new Preset("CoS", PoD))
 	                 ->set_pikmin(Flower, White, 35)
 	                 ->set_pikmin(Flower, Purple, 20)
