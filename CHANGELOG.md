@@ -8,6 +8,7 @@ Feature additions:
 - Hazard timers are now available in enemy debug info
 - The squad editor has been polished and reordered for convenience
 - Added above-ground presets for AT
+- Added presets for days 1, 3, and 4
 
 Presets have been improved in several ways:
 - Treasure counts are now set, which fixes the first treasure cutscene from ending the day in VoR presets
