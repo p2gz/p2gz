@@ -3,6 +3,7 @@
 #include <Game/PikiMgr.h>
 #include <Game/SingleGameSection.h>
 #include <p2gz/p2gz.h>
+#include <efx/Container.h>
 
 using namespace gz;
 
@@ -120,6 +121,9 @@ void OnionEditor::kill_onion(int color)
 // Moves the onion to the given position and rotation.
 void OnionEditor::move_onion(Game::Onyon* onion, Vector3f position, f32 rotation)
 {
+	onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
+	onion->startWaitMotion();
+
 	onion->setPosition(position, false);
 	onion->mFaceDir = rotation;
 	onion->onSetPosition();
