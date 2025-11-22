@@ -18,19 +18,33 @@ void PresetMgr::init_at_vor1_presets()
 {
 	const char* g_at_post_enter_ec[] = { "EC gate" };
 	const char* b_post_enter_ec[]    = { "landing area bag (15)", "hubcap bag (35)" };
-	// presets.push((new Preset("Day 1", AT))->set_day(1));
+
+	Preset::EnemyGenSpawnOverride e_at_day_4[] = {
+		Preset::EnemyGenSpawnOverride(EnemyTypeID::EnemyID_Kochappy, Vector3f(-1153.0f, 47.0f, 2231.0f), PSO_Spawn),
+	};
+
+	Preset::Sprout sp_day_3_4[] = {
+		Preset::Sprout(Leaf, Red, 4),
+	};
+
+	presets.push((new Preset("Day 1", AT))->set_day(1)->set_enter_kind(PEK_FirstEnter));
 	// presets.push((new Preset("Day 2", AT))
 	//                  ->set_onion_pikmin(Leaf, Red, 0)
 	//                  ->set_day(2)
 	//                  ->set_cutscene_flags(NUM_DAY_2_DEMO_FLAGS, (DemoFlags[NUM_DAY_2_DEMO_FLAGS]) { DAY_2_DEMO_FLAGS }));
-	// presets.push((new Preset("Day 3", AT))
-	//                  ->set_onion_pikmin(Leaf, Red, 9)
-	//                  ->set_day(3)
-	//                  ->set_cutscene_flags(NUM_DAY_3_DEMO_FLAGS, (DemoFlags[NUM_DAY_3_DEMO_FLAGS]) { DAY_3_DEMO_FLAGS }));
-	// presets.push((new Preset("Day 4", AT))
-	//                  ->set_onion_pikmin(Leaf, Red, 13)
-	//                  ->set_day(4)
-	//                  ->set_cutscene_flags(NUM_DAY_4_DEMO_FLAGS, (DemoFlags[NUM_DAY_4_DEMO_FLAGS]) { DAY_4_DEMO_FLAGS }));
+	presets.push((new Preset("Day 3", AT))
+	                 ->set_onion_pikmin(Leaf, Red, 5)
+	                 ->set_sprouts(ARRAY_SIZE(sp_day_3_4), sp_day_3_4)
+	                 ->set_day(3)
+	                 ->set_cutscene_flags(NUM_DAY_3_DEMO_FLAGS, (DemoFlags[NUM_DAY_3_DEMO_FLAGS]) { DAY_3_DEMO_FLAGS })
+	                 ->set_enter_kind(PEK_FromMap));
+	presets.push((new Preset("Day 4", AT))
+	                 ->set_onion_pikmin(Leaf, Red, 9)
+	                 ->set_sprouts(ARRAY_SIZE(sp_day_3_4), sp_day_3_4)
+	                 ->set_day(4)
+	                 ->set_cutscene_flags(NUM_DAY_4_DEMO_FLAGS, (DemoFlags[NUM_DAY_4_DEMO_FLAGS]) { DAY_4_DEMO_FLAGS })
+	                 ->set_enemy_spawn_overrides(ARRAY_SIZE(e_at_day_4), e_at_day_4)
+	                 ->set_enter_kind(PEK_FromMap));
 	presets.push((new Preset("EC1 (1st visit)", AT))
 	                 ->set_pikmin(Flower, Red, 46)
 	                 ->set_pikmin(Leaf, Red, 6)
