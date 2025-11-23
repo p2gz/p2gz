@@ -1174,6 +1174,8 @@ bool ActPathMove::contextCheck(int idx)
 		if (len > 700.0f) {
 			return false;
 		}
+
+		return true;
 	}
 
 	Vector3f point           = crGetPoint(idx);
