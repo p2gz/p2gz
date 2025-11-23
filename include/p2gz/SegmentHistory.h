@@ -13,6 +13,7 @@ public:
 	{
 		preset = nullptr;
 		dest   = WarpDestination();
+		use_set_seed = false;
 	}
 
 	~Segment()
@@ -25,6 +26,8 @@ public:
 
 	Preset* preset;
 	WarpDestination dest;
+	u32 seed;
+	bool use_set_seed;
 };
 
 struct SegmentHistory {

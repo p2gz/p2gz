@@ -19,17 +19,12 @@ public:
 		cave         = 0;
 		sublevel     = 0;
 		day          = 2;
-		use_set_seed = false;
 	}
-
-	~WarpDestination() { }
 
 	u8 area;
 	u8 cave;
 	u8 sublevel;
 	u8 day;
-	u32 seed;
-	bool use_set_seed;
 
 	// whether to do the falling animation or the ship fly-in animation when warping to AG
 	u8 enter_area_type;
@@ -59,14 +54,14 @@ public:
 	void set_allow_zero_piki_in_caves(bool allow) { allow_zero_pikmin_in_caves = allow; }
 	void set_enter_area_type(size_t type) { dest.enter_area_type = type; }
 	void set_active_captain(size_t captain) { active_captain = captain; }
+
 	void set_seed(u32);
-	void set_random_seed() { dest.use_set_seed = false; }
+	void set_random_seed();
+	bool using_set_seed() { return use_set_seed; }
+	u32 get_seed() { return seed; }
 
 	void set_preset(Preset* preset, int preset_status);
 	Preset* get_preset() { return preset; }
-
-	bool using_set_seed() { return dest.use_set_seed; }
-	u32 get_seed() { return dest.seed; }
 
 	void do_warp();
 	void do_post_warp();
@@ -110,6 +105,9 @@ private:
 	RadioMenuOption* enter_area_type_opt;
 	HexInputOption* seed_opt;
 	PresetMenuOption* preset_opt;
+
+	u32 seed;
+	bool use_set_seed;
 
 	Game::ItemCave::Item* cave;
 

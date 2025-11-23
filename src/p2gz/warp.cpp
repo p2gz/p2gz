@@ -66,6 +66,7 @@ Warp::Warp()
 	cave                       = nullptr;
 	lockout_frames             = 0;
 	active_captain             = NAVIID_Olimar;
+	use_set_seed               = false;
 }
 
 void Warp::init()
@@ -161,11 +162,17 @@ void Warp::set_warp_sublevel(s32 sublevel)
 	update_preset_opt();
 }
 
-void Warp::set_seed(u32 seed)
+void Warp::set_seed(u32 seed_)
 {
-	dest.use_set_seed = true;
-	dest.seed         = seed;
+	use_set_seed = true;
+	seed         = seed_;
 	seed_opt->set_selected_val(seed);
+}
+
+void Warp::set_random_seed()
+{
+	use_set_seed = false;
+	seed_opt->set_unselected();
 }
 
 void Warp::update_cave_opt()
@@ -507,8 +514,12 @@ void Warp::do_post_warp()
 
 	if (needs_post_load_action && preset) {
 		preset->apply_post_load();
-		preset_status     = PS_Stale;
-		dest.use_set_seed = false;
+		preset_status = PS_Stale;
 	}
+
+	if (use_set_seed) {
+		set_random_seed();
+	}
+
 	needs_post_load_action = false;
 }

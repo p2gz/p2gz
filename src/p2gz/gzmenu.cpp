@@ -740,7 +740,7 @@ HexKeypad::HexKeypad(const char* title_, const char* cancel_text_, IDelegate1<u3
 		->end_row()
 		->push_to_row(new PerformActionMenuOption("submit", new Delegate<HexKeypad>(this, &submit)))
 		->end_row()
-		->push_to_row(new PerformActionMenuOption(cancel_text, new Delegate<HexKeypad>(this, &set_unselected)));
+		->push_to_row(new PerformActionMenuOption(cancel_text, new Delegate<HexKeypad>(this, &set_unselected_and_pop)));
 	// clang-format on
 }
 
@@ -758,7 +758,12 @@ HexKeypad::~HexKeypad()
 void HexKeypad::select_digit(u32 digit)
 {
 	unselected = false;
-	value |= digit << ((7 - cur_digit) * 4);
+
+	const u32 shift_amt   = (7 - cur_digit) * 4; // digit 0 = most significant bit; shift 4 bits for each hex char
+	const u32 clear_digit = (0xFFFFFFF0 << shift_amt) | (0xFFFFFFF0 >> (32 - shift_amt)); // bit rotate
+	value &= clear_digit;
+	value |= digit << shift_amt;
+
 	if (cur_digit < 7) {
 		cur_digit += 1;
 	}
@@ -767,7 +772,7 @@ void HexKeypad::select_digit(u32 digit)
 	}
 }
 
-void HexKeypad::set_unselected()
+void HexKeypad::set_unselected_and_pop()
 {
 	unselected = true;
 	if (on_unselected) {
@@ -1359,6 +1364,11 @@ u32 HexInputOption::get_selected_val()
 void HexInputOption::set_selected_val(u32 val)
 {
 	keypad->set_value(val);
+}
+
+void HexInputOption::set_unselected()
+{
+	keypad->unselected = true;
 }
 
 DecimalInputOption::DecimalInputOption(const char* title_, IDelegate1<u32>* on_selected, IDelegate* on_opened, const char* image_name_,
