@@ -213,6 +213,7 @@ public:
 	bool is_selected();
 	u32 get_selected_val();
 	void set_selected_val(u32);
+	void set_unselected();
 
 private:
 	HexKeypad* keypad;
@@ -370,17 +371,17 @@ public:
 		unselected = false;
 	}
 	bool is_unselected() { return unselected; }
+	bool unselected;
 
 private:
 	void select_digit(u32);
 	void submit();
-	void set_unselected();
+	void set_unselected_and_pop();
 
 	GridMenu* keypad;
 	u32 value;
 	u8 cur_digit;
 	const char* cancel_text;
-	bool unselected;
 
 	IDelegate1<u32>* on_selected;
 	IDelegate* on_unselected;

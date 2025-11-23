@@ -50,10 +50,8 @@ void SegmentHistory::retry_segment()
 	if (!current_segment) {
 		return;
 	}
-	WarpDestination current_dest = current_segment->dest;
 
-	current_dest.use_set_seed = false;
-	p2gz->warp->set_dest(current_dest);
+	p2gz->warp->set_dest(current_segment->dest);
 	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 	p2gz->warp->do_warp();
 
@@ -66,11 +64,9 @@ void SegmentHistory::retry_same_seed()
 	if (!current_segment) {
 		return;
 	}
-	WarpDestination current_dest = current_segment->dest;
 
-	current_dest.use_set_seed = true;
-
-	p2gz->warp->set_dest(current_dest);
+	p2gz->warp->set_dest(current_segment->dest);
+	p2gz->warp->set_seed(current_segment->seed);
 	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 	p2gz->warp->do_warp();
 
@@ -112,7 +108,6 @@ void SegmentHistory::retry_cave()
 	}
 
 	WarpDestination floor0_dest = floor0_segment->dest;
-	floor0_dest.use_set_seed    = false;
 	if (floor0_dest.sublevel != 0) {
 		floor0_dest.sublevel = 0;
 		// If we don't find history for floor 0 in this cave, get the recommended preset for it.
@@ -179,7 +174,7 @@ void SegmentHistory::draw_cur_seed()
 	if (!seg) {
 		return;
 	}
-	const u32 seed = seg->dest.seed;
+	const u32 seed = seg->seed;
 
 	J2DPrint j2d = init_j2d();
 

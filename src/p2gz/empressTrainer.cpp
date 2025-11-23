@@ -34,7 +34,6 @@ void EmpressTrainer::start()
 	dest.area         = 1;
 	dest.cave         = 1;
 	dest.sublevel     = 4;
-	dest.use_set_seed = false;
 	Preset* preset    = p2gz->preset_mgr->find("HoB5", PoD);
 
 	p2gz->warp->set_dest(dest);
@@ -123,9 +122,7 @@ void EmpressTrainer::update()
 		const Segment* current_segment = p2gz->segment_history->cur_segment();
 		GZASSERTLINE(current_segment);
 
-		WarpDestination current_dest = current_segment->dest;
-		current_dest.use_set_seed    = false;
-		p2gz->warp->set_dest(current_dest);
+		p2gz->warp->set_dest(current_segment->dest);
 		p2gz->warp->set_preset(current_segment->preset, PS_Generated);
 		p2gz->warp->do_warp();
 	}

@@ -31,8 +31,14 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	// @P2GZ - record seed for this sublevel
 	p2gz->segment_history->started_creating_map = true;
 	gz::Segment* segment                        = p2gz->segment_history->cur_segment();
-	segment->dest.seed                          = get_rng_seed();
-	segment->dest.use_set_seed                  = true;
+	GZASSERTLINE(segment);
+	if (segment->use_set_seed) {
+		// seed was set via warp menu - apply it here
+		srand(segment->seed);
+	} else {
+		// seed was not set - record it in case we want to retry
+		segment->seed = get_rng_seed();
+	}
 
 	Cave::randMapMgr = new Cave::RandMapMgr(isVersusHiba);
 	Cave::randMapMgr->loadResource(muiArray, p2, floorInfo, lastFloor, unit);
