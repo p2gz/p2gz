@@ -17,7 +17,6 @@
 #include <Game/SingleGame.h>
 #include <PikiAi.h>
 #include <Game/PikiState.h>
-#include <Game/Entities/ItemCave.h>
 #include <Game/generalEnemyMgr.h>
 #include <Game/MapMgr.h>
 #include <Dolphin/rand.h>
@@ -63,7 +62,6 @@ Warp::Warp()
 	warping                    = false;
 	already_saved_generators   = false;
 	preset_status              = PS_Stale;
-	cave                       = nullptr;
 	lockout_frames             = 0;
 	active_captain             = NAVIID_Olimar;
 	use_set_seed               = false;
@@ -362,12 +360,9 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
 	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest.cave - 1));
-	if (!cave) {
-		cave = new Game::ItemCave::Item;
-	}
-	cave->mCaveID       = caveID;
-	cave->mCaveFilename = dst_course_info->getCaveinfoFilename_FromID(caveID);
-
+	Game::playData->setSaveFlag(Game::STORYSAVE_Cave, nullptr);
+	Game::playData->setCurrentCourse(dst_course_info->mCourseIndex);
+	Game::playData->setCurrentCave(caveID, 0);
 	Game::gameSystem->mTimeMgr->mDayCount        = dest.day; // set day
 	Game::playData->mCaveSaveData.mTime          = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
 	Game::playData->mCaveSaveData.mCourseIdx     = dst_course_info->mCourseIndex;
@@ -379,13 +374,14 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	}
 
 	game->mCurrentCourseInfo                    = dst_course_info;
-	game->mCurrentCave                          = cave;
-	game->mCaveID                               = caveID;
+	game->mCurrentCave                          = nullptr;
+	game->mCaveID.setID(caveID.getID());
 	game->mCaveIndex                            = caveID.getID();
 	game->mCurrentFloor                         = dest.sublevel;
+	game->mInCave                               = true;
+	strcpy(game->mCaveFilename, dst_course_info->getCaveinfoFilename_FromID(caveID));
 	Game::playData->mCaveSaveData.mCurrentFloor = dest.sublevel;
 	Game::playData->mCaveSaveData.mActiveNaviID = active_captain;
-	strcpy(game->mCaveFilename, cave->mCaveFilename);
 
 	// adjust timer to account for saving + enable sub timer
 	// usually we'd only reset the sub timer between sublevels, but on warp we reset both
