@@ -769,7 +769,7 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    40.0,                           // radius
 	    40.0,                           // pradius
 	    35.0,                           // height
-	    1000.0,                         // inertial scaling
+	    800.0,                          // inertial scaling
 	    "simple",                       // particle type
 	    8,                              // number of particle
 	    1.0,                            // particle size
@@ -788,7 +788,7 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    20.0,                           // depth C (for burying stuff)
 	    20.0,                           // depth D (for burying stuff)
 	    0,                              // code (special properties)
-	    172,                            // index in piklopedia
+	    160,                            // index in piklopedia
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 	{
@@ -1843,7 +1843,108 @@ const LocalizedTreasureConfig treasure_region_map[] = {
 	    Game::PelletConfig::Indirect_No // indirect state
 	},
 
-	//// Glutton's Kitchen - 3
+	//// Glutton's Kitchen - 4
+	// Master's Instrument (GK1) - different in JP
+	{
+	    // Master's Instrument
+	    Treasure_US,                    // region
+	    "bane_red",                     // internal name
+	    "bane_red.szs",                 // archive filename
+	    "us_crayon.bmd",                // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    15.0,                           // radius
+	    10.0,                           // pradius
+	    13.0,                           // height
+	    220.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    6,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    73.0,                           // max depth (for burying stuff)
+	    33.0,                           // depth A (for burying stuff)
+	    33.0,                           // depth B (for burying stuff)
+	    33.0,                           // depth C (for burying stuff)
+	    33.0,                           // depth D (for burying stuff)
+	    1,                              // code (special properties)
+	    65,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Master's Instrument
+	    Treasure_PAL,                   // region
+	    "bane_red",                     // internal name
+	    "bane_red.szs",                 // archive filename
+	    "us_crayon.bmd",                // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    15.0,                           // radius
+	    10.0,                           // pradius
+	    13.0,                           // height
+	    220.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    6,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    73.0,                           // max depth (for burying stuff)
+	    33.0,                           // depth A (for burying stuff)
+	    33.0,                           // depth B (for burying stuff)
+	    33.0,                           // depth C (for burying stuff)
+	    33.0,                           // depth D (for burying stuff)
+	    1,                              // code (special properties)
+	    65,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+	{
+	    // Master's Instrument
+	    Treasure_JP,                    // region
+	    "bane_red",                     // internal name
+	    "bane_red.szs",                 // archive filename
+	    "bane_red.bmd",                 // bmd filename
+	    "animmgr.txt",                  // anmmgr filename
+	    "collInfo.txt",                 // collinfo filename
+	    15.0,                           // radius
+	    10.0,                           // pradius
+	    13.0,                           // height
+	    220.0,                          // inertial scaling
+	    "simple",                       // particle type
+	    6,                              // number of particle
+	    1.0,                            // particle size
+	    0.1,                            // friction
+	    4,                              // min carry
+	    8,                              // max carry
+	    "lod",                          // dynamics
+	    30,                             // poko value
+	    "yes",                          // unqiue
+	    "no",                           // indirect
+	    0,                              // num of pmotions
+	    0.0,                            // depth (for burying stuff)
+	    73.0,                           // max depth (for burying stuff)
+	    33.0,                           // depth A (for burying stuff)
+	    33.0,                           // depth B (for burying stuff)
+	    33.0,                           // depth C (for burying stuff)
+	    33.0,                           // depth D (for burying stuff)
+	    1,                              // code (special properties)
+	    64,                             // index in piklopedia
+	    Game::PelletConfig::Indirect_No // indirect state
+	},
+
 	// Massive Lid (GK2) - different in all three
 	{
 	    // Massive Lid

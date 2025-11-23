@@ -26,6 +26,8 @@ P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Ebisawa', 'title', 'title.szs'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'otakara_texts.szs'),
+    os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'momiji_normal.szs'),
+    os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'g_futa_kajiwara.szs'),
     os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
 ]
 
