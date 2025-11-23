@@ -214,9 +214,6 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	// @P2GZ - post-load actions on warp
 	p2gz->warp->do_post_warp();
 
-	// @P2GZ - clear list of spawnpoints to draw
-	p2gz->cave_debug_info->clear();
-
 	// @P2GZ - segment history
 	// Record squad into preset if it's a generated preset.
 	p2gz->segment_history->record_squad();
