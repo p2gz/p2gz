@@ -23,11 +23,6 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 		isVersusHiba = true;
 	}
 
-	// @P2GZ - set seed
-	if (p2gz->warp->using_set_seed()) {
-		srand(p2gz->warp->get_seed());
-	}
-
 	// @P2GZ - record seed for this sublevel
 	p2gz->segment_history->started_creating_map = true;
 	gz::Segment* segment                        = p2gz->segment_history->cur_segment();
@@ -43,9 +38,6 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	Cave::randMapMgr = new Cave::RandMapMgr(isVersusHiba);
 	Cave::randMapMgr->loadResource(muiArray, p2, floorInfo, lastFloor, unit);
 	Cave::randMapMgr->create();
-
-	// @P2GZ - register spawn points for debug drawing
-	p2gz->cave_debug_info->register_spawn_points();
 
 	const int numRooms = Cave::randMapMgr->getNumRooms();
 	for (int i = 0; i < numRooms; i++) {

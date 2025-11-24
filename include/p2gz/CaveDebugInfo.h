@@ -4,6 +4,7 @@
 #include <Vector3.h>
 #include <Game/Cave/Info.h>
 #include <p2gz/gzCollections.h>
+#include <Game/Cave/RandMapMgr.h>
 
 namespace gz {
 
@@ -33,17 +34,13 @@ public:
 	~CaveDebugInfo() { }
 
 	void draw();
-
-	void register_spawn_points();
 	void set_draw_spawn_points(bool enabled) { draw_spawn_points = enabled; }
-
-	void clear() { spawn_points.clear(); }
 
 private:
 	void do_draw_spawn_points();
+	void draw_spawn_point(Game::Cave::MapNode* node, Game::Cave::BaseGen* spawn);
 
 	bool draw_spawn_points;
-	Vec<SpawnPoint> spawn_points;
 };
 
 } // namespace gz

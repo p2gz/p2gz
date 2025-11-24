@@ -4,7 +4,6 @@
 #include <types.h>
 #include <p2gz/Preset.h>
 #include <Game/SingleGameSection.h>
-#include <Game/Entities/ItemCave.h>
 
 namespace gz {
 
@@ -108,8 +107,6 @@ private:
 
 	u32 seed;
 	bool use_set_seed;
-
-	Game::ItemCave::Item* cave;
 
 	bool needs_post_load_action;
 
