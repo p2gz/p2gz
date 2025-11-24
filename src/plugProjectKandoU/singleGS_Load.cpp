@@ -109,6 +109,7 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	if (p2gz->warp->warping) {
 		if (preset) {
 			segment->preset = preset;
+			preset->ref();
 		}
 		if (p2gz->warp->using_set_seed()) {
 			segment->seed         = p2gz->warp->get_seed();

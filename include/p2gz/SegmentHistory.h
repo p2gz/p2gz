@@ -18,10 +18,10 @@ public:
 
 	~Segment()
 	{
-		// We cannot delete preset even if it's generated because it's now
-		// potentially shared between more than one segment due to retries.
-		// TODO: can we store generated presets with a ref count or something
-		// so we can free them eventually?
+		if (preset) {
+			preset->del();
+		}
+		preset = nullptr;
 	}
 
 	Preset* preset;

@@ -124,7 +124,8 @@ int Warp::next_preset_category()
 
 void Warp::set_preset(Preset* preset, int preset_status_)
 {
-	next_preset   = preset;
+	next_preset = preset;
+	preset->ref();
 	next_preset_p = nullptr;
 	preset_status = static_cast<PresetStatus>(preset_status_);
 
@@ -526,9 +527,16 @@ void Warp::do_post_warp()
 		}
 	}
 
-	if (needs_post_load_action && preset_during_warp) {
-		preset_during_warp->apply_post_load();
-		preset_status = PS_Stale;
+	if (preset_during_warp) {
+		if (needs_post_load_action) {
+			preset_during_warp->apply_post_load();
+			preset_status = PS_Stale;
+		}
+		preset_during_warp->del();
+	}
+
+	if (next_preset_p) {
+		next_preset = nullptr;
 	}
 
 	if (use_set_seed) {

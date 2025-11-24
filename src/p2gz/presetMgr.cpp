@@ -298,15 +298,6 @@ PresetPreview* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory 
 	return nullptr;
 }
 
-Preset* PresetMgr::suggested_preset_p(WarpDestination dest, PresetCategory category)
-{
-	PresetPreview* preview = suggested_preset(dest, category);
-	if (preview) {
-		return load_preset(preview);
-	}
-	return nullptr;
-}
-
 gz::CaveIndex PresetMgr::which_cave(u32 area, u32 cave)
 {
 	if (cave == 0) {
@@ -342,14 +333,5 @@ PresetPreview* PresetMgr::find(const char* name, PresetCategory category)
 	}
 
 	OSReport("Attempted to find preset \"%s\" that does not exist\n", name);
-	return nullptr;
-}
-
-Preset* PresetMgr::find_p(const char* name, PresetCategory category)
-{
-	PresetPreview* preview = find(name, category);
-	if (preview) {
-		return load_preset(preview);
-	}
 	return nullptr;
 }

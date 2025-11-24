@@ -108,6 +108,7 @@ Preset::Preset()
     , enemy_spawn_overrides(0)
     , treasure_spawn_overrides(0)
     , sprouts(0)
+    , ref_count(1)
 {
 	name    = nullptr;
 	preview = nullptr;
@@ -122,6 +123,7 @@ Preset::Preset(const char* name_, PresetCategory category_)
     , enemy_spawn_overrides(0)
     , treasure_spawn_overrides(0)
     , sprouts(0)
+    , ref_count(1)
 {
 	name             = name_;
 	category         = category_;
@@ -140,6 +142,8 @@ Preset::Preset(const char* name_, PresetCategory category_)
 
 Preset::Preset(Preset& other)
 {
+	ref_count = 1;
+
 	name             = other.name;
 	category         = other.category;
 	bitters_unlocked = other.bitters_unlocked;
@@ -188,6 +192,21 @@ Preset::Preset(Preset& other)
 	sprouts.expandCapacityTo(other.sprouts.len());
 	for (u32 i = 0; i < other.sprouts.len(); i++) {
 		sprouts.push(other.sprouts[i]);
+	}
+}
+
+Preset::~Preset()
+{
+	delete name;
+	preview = nullptr;
+	name    = nullptr;
+}
+
+void Preset::del()
+{
+	ref_count -= 1;
+	if (ref_count <= 0) {
+		delete this;
 	}
 }
 

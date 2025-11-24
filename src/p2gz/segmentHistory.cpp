@@ -223,7 +223,7 @@ Segment* SegmentHistory::start_segment()
 	}
 
 	Segment* segment = new Segment();
-	segment->preset  = nullptr; // pikis are not alive when this is run. it will be set later
+	segment->preset  = nullptr;
 	segments.push(segment);
 
 	prev_heap->becomeCurrentHeap();

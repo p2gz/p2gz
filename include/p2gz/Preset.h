@@ -117,9 +117,11 @@ public:
 	Preset();
 	Preset(const char* name_, PresetCategory category_);
 	Preset(Preset& other);
-	~Preset() { }
+	~Preset();
 
 	void read(const char* filename);
+	void ref() { ref_count += 1; }
+	void del();
 
 	void apply();
 	void apply_post_load();
@@ -171,6 +173,9 @@ public:
 	u8 day;
 	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
 	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
+
+private:
+	int ref_count;
 };
 
 struct PresetMgr {
@@ -183,9 +188,7 @@ public:
 	static void fill_current_pikis(Preset* preset);
 
 	PresetPreview* suggested_preset(WarpDestination dest, PresetCategory category);
-	Preset* suggested_preset_p(WarpDestination dest, PresetCategory category);
 	PresetPreview* find(const char* name, PresetCategory category);
-	Preset* find_p(const char* name, PresetCategory category);
 	Preset* load_preset(PresetPreview*);
 
 	Vec<PresetPreview*> preset_previews;
