@@ -51,6 +51,8 @@ struct Preset {
 		}
 		EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_, GenSpawnOverride spawn_override_);
 
+		void read(Stream& input);
+
 		Game::EnemyTypeID::EEnemyTypeID enemy_id;
 		Vector3f gen_pos;
 		GenSpawnOverride spawn_override;
@@ -65,6 +67,8 @@ struct Preset {
 		}
 		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
 		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_);
+
+		void read(Stream& input);
 
 		u8 id;
 		GenSpawnOverride spawn_override;
@@ -81,6 +85,8 @@ struct Preset {
 		}
 		Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_);    // Onion ring (yum)
 		Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind); // Single in a fixed spot
+
+		void read(Stream& input);
 
 		inline u8 get_stage() { return (stage_and_kind & 0xF0) >> 4; }
 		inline u8 get_kind() { return stage_and_kind & 0x0F; }

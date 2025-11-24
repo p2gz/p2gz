@@ -226,12 +226,33 @@ Preset::Sprout::Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind ki
 	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
 }
 
+void Preset::Sprout::read(Stream& input)
+{
+	pos.x  = input.readFloat();
+	pos.y  = input.readFloat();
+	pos.z  = input.readFloat();
+	amount = input.readInt();
+
+	int stage      = input.readInt();
+	int kind       = input.readInt();
+	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
+}
+
 Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
                                                      GenSpawnOverride spawn_override_)
 {
 	enemy_id       = enemy_id_;
 	gen_pos        = gen_pos_;
 	spawn_override = spawn_override_;
+}
+
+void Preset::EnemyGenSpawnOverride::read(Stream& input)
+{
+	enemy_id       = static_cast<Game::EnemyTypeID::EEnemyTypeID>(input.readInt());
+	gen_pos.x      = input.readFloat();
+	gen_pos.y      = input.readFloat();
+	gen_pos.z      = input.readFloat();
+	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
 }
 
 Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_)
@@ -246,6 +267,17 @@ Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverr
 	id                = id_;
 	spawn_override    = spawn_override_;
 	position_override = position_override_;
+}
+
+void Preset::TreasureGenSpawnOverride::read(Stream& input)
+{
+	id             = input.readInt();
+	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
+	if (spawn_override == PSO_SpawnAndMove) {
+		position_override.x = input.readFloat();
+		position_override.y = input.readFloat();
+		position_override.z = input.readFloat();
+	}
 }
 
 void read_structure_override_list(Stream& input, gz::Vec<Preset::StructureOverride>& dest)
@@ -288,6 +320,13 @@ void Preset::read(const char* filename)
 
 	read_piki_container(preset_stream, squad);
 	read_piki_container(preset_stream, onion_pikis);
+
+	int num_sprouts = preset_stream.readInt();
+	for (u32 i = 0; i < num_sprouts; i++) {
+		Sprout sprout;
+		sprout.read(preset_stream);
+		sprouts.push(sprout);
+	}
 
 	num_bitters      = preset_stream.readInt();
 	bitters_unlocked = preset_stream.readInt() > 0;
@@ -342,12 +381,24 @@ void Preset::read(const char* filename)
 	read_structure_override_list(preset_stream, destroyed_gates);
 	read_structure_override_list(preset_stream, finished_bridges);
 	read_structure_override_list(preset_stream, bags_flattened);
-	// read_structure_override_list(preset_stream, plugs_destroyed);
 
 	plug_destroyed = preset_stream.readInt() > 0;
 
-	// TODO: enemy and treasure spawn overrides
+	const int num_enemy_spawn_overrides = preset_stream.readInt();
+	for (u32 i = 0; i < num_enemy_spawn_overrides; i++) {
+		EnemyGenSpawnOverride oride;
+		oride.read(preset_stream);
+		enemy_spawn_overrides.push(oride);
+	}
 
+	const int num_treasure_spawn_overrides = preset_stream.readInt();
+	for (u32 i = 0; i < num_treasure_spawn_overrides; i++) {
+		TreasureGenSpawnOverride oride;
+		oride.read(preset_stream);
+		treasure_spawn_overrides.push(oride);
+	}
+
+	// Done
 	delete[] preset_file;
 }
 

@@ -3,6 +3,7 @@ PoD    # category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
    0  0  0  6  0  46 0  0  0  0  0  0  0  0  0  0  0  0   # pikmin
    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0   # onions
+0      # num sprouts
 0 0    # bitters, bitters unlocked
 0 0    # spicies, spicies unlocked
 8.0    # time of day
