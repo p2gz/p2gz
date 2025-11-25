@@ -47,16 +47,6 @@ static const TreasureAreaMap AG_treasure_IDs[] = {
 
 static const u8 AG_treasure_count = ARRAY_SIZE(AG_treasure_IDs);
 
-void read_piki_container(Stream& stream, Game::PikiContainer& container)
-{
-	for (u32 color = 0; color < 6; color++) {
-		for (u32 stage = 0; stage < 3; stage++) {
-			int amount                       = stream.readInt();
-			container.getCount(color, stage) = amount;
-		}
-	}
-}
-
 PresetPreview::PresetPreview()
 {
 	name = nullptr;
@@ -68,37 +58,6 @@ PresetPreview::PresetPreview(PresetCategory category_, const char* name_, Game::
 	name        = name_;
 	squad       = squad_;
 	onion_pikis = onion_pikis_;
-}
-
-void PresetPreview::read(const char* filename_)
-{
-	filename = filename_;
-
-	char preset_file_path[256];
-	sprintf(preset_file_path, "presets/%s", filename);
-	OSReport("Loading preset preview from %s\n", preset_file_path);
-
-	void* preset_file
-	    = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
-	GZEXPECT(preset_file, "preset file %s not found", filename);
-
-	RamStream preset_stream(preset_file, -1);
-	preset_stream.setMode(STREAM_MODE_TEXT, 1);
-
-	name                     = preset_stream.readString(nullptr, 0);
-	const char* category_str = preset_stream.readString(nullptr, 0);
-	read_piki_container(preset_stream, squad);
-	read_piki_container(preset_stream, onion_pikis);
-
-	if (strcmp(category_str, "PoD") == 0) {
-		category = PoD;
-	} else if (strcmp(category_str, "AT") == 0) {
-		category = AT;
-	} else {
-		category = General;
-	}
-
-	delete[] preset_file;
 }
 
 Preset::Preset()
@@ -210,49 +169,12 @@ void Preset::del()
 	}
 }
 
-// Onion ring ctor
-Preset::Sprout::Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_)
-{
-	pos            = Vector3f::zero;
-	amount         = amount_;
-	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
-}
-
-// Single sprout in a fixed spot ctor
-Preset::Sprout::Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind)
-{
-	pos            = pos_;
-	amount         = 0;
-	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
-}
-
-void Preset::Sprout::read(Stream& input)
-{
-	pos.x  = input.readFloat();
-	pos.y  = input.readFloat();
-	pos.z  = input.readFloat();
-	amount = input.readInt();
-
-	int stage      = input.readInt();
-	int kind       = input.readInt();
-	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
-}
-
 Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
                                                      GenSpawnOverride spawn_override_)
 {
 	enemy_id       = enemy_id_;
 	gen_pos        = gen_pos_;
 	spawn_override = spawn_override_;
-}
-
-void Preset::EnemyGenSpawnOverride::read(Stream& input)
-{
-	enemy_id       = static_cast<Game::EnemyTypeID::EEnemyTypeID>(input.readInt());
-	gen_pos.x      = input.readFloat();
-	gen_pos.y      = input.readFloat();
-	gen_pos.z      = input.readFloat();
-	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
 }
 
 Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_)
@@ -269,137 +191,33 @@ Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverr
 	position_override = position_override_;
 }
 
-void Preset::TreasureGenSpawnOverride::read(Stream& input)
+// Onion ring ctor
+Preset::Sprout::Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_)
 {
-	id             = input.readInt();
-	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
-	if (spawn_override == PSO_SpawnAndMove) {
-		position_override.x = input.readFloat();
-		position_override.y = input.readFloat();
-		position_override.z = input.readFloat();
-	}
+	pos            = Vector3f::zero;
+	amount         = amount_;
+	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
 }
 
-void read_structure_override_list(Stream& input, gz::Vec<Preset::StructureOverride>& dest)
+// Single sprout in a fixed spot ctor
+Preset::Sprout::Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind)
 {
-	const int num_orides = input.readInt();
-	dest.expandCapacityTo(num_orides);
-	for (u32 i = 0; i < num_orides; i++) {
-		int area = input.readInt();
-		f32 x    = input.readFloat();
-		f32 z    = input.readFloat();
-		int data = input.readInt();
-		dest.push(Preset::StructureOverride(area, Vector2f(x, z), data));
-	}
+	pos            = pos_;
+	amount         = 0;
+	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
 }
 
-void Preset::read(const char* filename)
+Preset::StructureOverride::StructureOverride()
 {
-	char preset_file_path[256];
-	sprintf(preset_file_path, "presets/%s", filename);
-	OSReport("Loading preset %s\n", preset_file_path);
+	area = 0xFF;
+	data = 0xFF;
+}
 
-	void* preset_file
-	    = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
-	GZEXPECT(preset_file, "preset file %s not found", filename);
-
-	RamStream preset_stream(preset_file, -1);
-	preset_stream.setMode(STREAM_MODE_TEXT, 1);
-
-	name = preset_stream.readString(nullptr, 0);
-
-	char category_str[16];
-	preset_stream.readString(category_str, sizeof(category_str));
-	if (strcmp(category_str, "PoD") == 0) {
-		category = PoD;
-	} else if (strcmp(category_str, "AT") == 0) {
-		category = AT;
-	} else {
-		category = General;
-	}
-
-	read_piki_container(preset_stream, squad);
-	read_piki_container(preset_stream, onion_pikis);
-
-	int num_sprouts = preset_stream.readInt();
-	for (u32 i = 0; i < num_sprouts; i++) {
-		Sprout sprout;
-		sprout.read(preset_stream);
-		sprouts.push(sprout);
-	}
-
-	num_bitters      = preset_stream.readInt();
-	bitters_unlocked = preset_stream.readInt() > 0;
-	num_spicies      = preset_stream.readInt();
-	spicies_unlocked = preset_stream.readInt() > 0;
-	time             = preset_stream.readFloat();
-	day              = preset_stream.readInt();
-	pokos            = preset_stream.readInt();
-	if (pokos == -1) {
-		pokos       = 0;
-		apply_pokos = false;
-	} else {
-		apply_pokos = true;
-	}
-
-	enter_kind = static_cast<EnterAreaKind>(preset_stream.readInt());
-
-	upgrades.clear();
-	const int num_upgrades = preset_stream.readInt();
-	for (u32 i = 0; i < num_upgrades; i++) {
-		int upgrade_idx = preset_stream.readInt();
-		GZASSERTLINE(upgrade_idx < 16);
-		const u16 bit = 1 << upgrade_idx;
-		upgrades.set(bit);
-	}
-
-	const int num_demo_flags = preset_stream.readInt();
-	for (u32 i = 0; i < num_demo_flags; i++) {
-		int demo_idx = preset_stream.readInt();
-		GZASSERTLINE(demo_idx < 64);
-		cutscenes.set_cutscene_played(static_cast<Game::DemoFlags>(demo_idx));
-	}
-
-	ek_cutscenes.clear();
-	const int num_ek_cutscenes = preset_stream.readInt();
-	for (u32 i = 0; i < num_ek_cutscenes; i++) {
-		int ek_cutscene_idx = preset_stream.readInt();
-		GZASSERTLINE(ek_cutscene_idx < 16);
-		const u16 bit = 1 << ek_cutscene_idx;
-		ek_cutscenes.set(bit);
-	}
-
-	cave_cutscenes.clear();
-	const int num_cave_cutscenes = preset_stream.readInt();
-	for (u32 i = 0; i < num_cave_cutscenes; i++) {
-		int cave_cutscene_idx = preset_stream.readInt();
-		GZASSERTLINE(cave_cutscene_idx < 16);
-		const u16 bit = 1 << cave_cutscene_idx;
-		cave_cutscenes.set(bit);
-	}
-
-	read_structure_override_list(preset_stream, destroyed_gates);
-	read_structure_override_list(preset_stream, finished_bridges);
-	read_structure_override_list(preset_stream, bags_flattened);
-
-	plug_destroyed = preset_stream.readInt() > 0;
-
-	const int num_enemy_spawn_overrides = preset_stream.readInt();
-	for (u32 i = 0; i < num_enemy_spawn_overrides; i++) {
-		EnemyGenSpawnOverride oride;
-		oride.read(preset_stream);
-		enemy_spawn_overrides.push(oride);
-	}
-
-	const int num_treasure_spawn_overrides = preset_stream.readInt();
-	for (u32 i = 0; i < num_treasure_spawn_overrides; i++) {
-		TreasureGenSpawnOverride oride;
-		oride.read(preset_stream);
-		treasure_spawn_overrides.push(oride);
-	}
-
-	// Done
-	delete[] preset_file;
+Preset::StructureOverride::StructureOverride(u8 area_, Vector2f position_, u8 data_)
+{
+	area     = area_;
+	data     = data_;
+	position = position_;
 }
 
 GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)

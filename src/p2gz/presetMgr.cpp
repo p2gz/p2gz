@@ -54,8 +54,10 @@ Preset* PresetMgr::create()
 {
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
-	Preset* preset           = new Preset(nullptr, Generated);
+	Preset* preset           = new Preset();
 	preset->name             = "generated preset";
+	preset->origin           = PO_Generated;
+
 	preset->spicies_unlocked = p2gz->spray_editor->get_spicies_unlocked();
 	preset->bitters_unlocked = p2gz->spray_editor->get_bitters_unlocked();
 	preset->num_spicies      = p2gz->spray_editor->get_spicies();
@@ -105,9 +107,9 @@ Preset* PresetMgr::load_preset(PresetPreview* preview)
 
 	GZEXPECT(preview->filename, "PresetPreview %s has no filename", preview->name);
 	Preset* preset = new Preset();
-	preset->read(preview->filename);
+	preset->read_file(preview->filename);
 	preset->preview = preview;
-	presets.push(preset); // TODO: deallocate presets after some time
+	presets.push(preset);
 
 	prev_heap->becomeCurrentHeap();
 	return preset;

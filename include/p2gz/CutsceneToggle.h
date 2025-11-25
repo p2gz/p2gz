@@ -211,15 +211,17 @@ private:
 
 struct CutscenesBitfield {
 public:
-	CutscenesBitfield()
-	{
-		bf1 = 0;
-		bf2 = 0;
-	}
+	CutscenesBitfield() { clear(); }
 	CutscenesBitfield(CutscenesBitfield& other)
 	{
 		bf1 = other.bf1;
 		bf2 = other.bf2;
+	}
+
+	void clear()
+	{
+		bf1 = 0;
+		bf2 = 0;
 	}
 
 	bool cutscene_played(Game::DemoFlags flag)

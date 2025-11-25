@@ -16,7 +16,8 @@ namespace gz {
 struct Warp;
 struct WarpDestination;
 
-enum PresetCategory { PoD, AT, General, Generated };
+enum PresetCategory { PoD, AT, General };
+enum PresetOrigin { PO_File, PO_Memcard, PO_Generated };
 
 enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
 
@@ -52,6 +53,7 @@ struct Preset {
 		EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_, GenSpawnOverride spawn_override_);
 
 		void read(Stream& input);
+		void write(Stream& output);
 
 		Game::EnemyTypeID::EEnemyTypeID enemy_id;
 		Vector3f gen_pos;
@@ -69,6 +71,7 @@ struct Preset {
 		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_);
 
 		void read(Stream& input);
+		void write(Stream& output);
 
 		u8 id;
 		GenSpawnOverride spawn_override;
@@ -87,6 +90,7 @@ struct Preset {
 		Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind); // Single in a fixed spot
 
 		void read(Stream& input);
+		void write(Stream& output);
 
 		inline u8 get_stage() { return (stage_and_kind & 0xF0) >> 4; }
 		inline u8 get_kind() { return stage_and_kind & 0x0F; }
@@ -102,17 +106,11 @@ struct Preset {
 
 	struct StructureOverride {
 	public:
-		StructureOverride()
-		{
-			area = 0xFF;
-			data = 0xFF;
-		}
-		StructureOverride(u8 area_, Vector2f position_, u8 data_)
-		{
-			area     = area_;
-			data     = data_;
-			position = position_;
-		}
+		StructureOverride();
+		StructureOverride(u8 area_, Vector2f position_, u8 data_);
+
+		void read(Stream& input);
+		void write(Stream& output);
 
 		u8 area;
 		u8 data; // stage for bridges and gates
@@ -125,7 +123,10 @@ public:
 	Preset(Preset& other);
 	~Preset();
 
-	void read(const char* filename);
+	void read_file(const char* filename);
+	void read(Stream& input);
+	void write(Stream& output);
+
 	void ref() { ref_count += 1; }
 	void del();
 
@@ -156,6 +157,7 @@ public:
 
 	PresetPreview* preview;
 	PresetCategory category;
+	PresetOrigin origin;
 	const char* name;
 	Game::PikiContainer squad;
 	Game::PikiContainer onion_pikis;
