@@ -268,6 +268,7 @@ void Warp::do_warp()
 
 	reset_cave_treasure_collections(game);
 	p2gz->poko_editor->apply_cave_pokos();
+	game->disableTimer(Game::DEMOTIMER_None);
 
 	if (dest.cave == 0) {
 		warp_to_area(game);
