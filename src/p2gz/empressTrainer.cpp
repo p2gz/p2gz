@@ -102,14 +102,13 @@ void EmpressTrainer::update()
 	}
 
 	if (polling) {
+		last_flick_count = (int)empress->mFlickTimer;
 		if (empress->getStateID() == Game::Queen::QUEEN_Sleep) {
-			last_flick_count = (int)empress->mFlickTimer;
 			if (last_flick_count > 0 && first_damage_frame == -1) {
 				first_damage_frame = empress->mAnimator->getAnimator(0).mTimer - 59;
 			}
 		} else if (empress->getStateID() == Game::Queen::QUEEN_Damage || empress->getStateID() == Game::Queen::QUEEN_Flick) {
-			last_flick_count = (int)empress->mFlickTimer;
-			polling          = false;
+			polling = false;
 		}
 	}
 
