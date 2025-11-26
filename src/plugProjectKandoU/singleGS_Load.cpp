@@ -115,7 +115,9 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 			segment->seed         = p2gz->warp->get_seed();
 			segment->use_set_seed = true;
 		}
-	} else {
+	}
+
+	if (!preset) {
 		segment->preset      = p2gz->preset_mgr->create();
 		segment->preset->day = Game::gameSystem->mTimeMgr->mDayCount;
 	}

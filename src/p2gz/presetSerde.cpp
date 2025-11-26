@@ -196,8 +196,8 @@ void Preset::read_file(const char* filename)
 	sprintf(preset_file_path, "presets/%s", filename);
 	OSReport("Loading preset %s\n", preset_file_path);
 
-	void* preset_file
-	    = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	void* preset_file = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, sys->mSysHeap, JKRDvdRipper::ALLOC_DIR_BOTTOM,
+	                                                0, nullptr, nullptr);
 	GZEXPECT(preset_file, "preset file %s not found", filename);
 
 	RamStream preset_stream(preset_file, -1);
@@ -448,8 +448,8 @@ void PresetPreview::read(const char* filename_)
 	sprintf(preset_file_path, "presets/%s", filename);
 	OSReport("Loading preset preview from %s\n", preset_file_path);
 
-	void* preset_file
-	    = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	void* preset_file = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, sys->mSysHeap, JKRDvdRipper::ALLOC_DIR_BOTTOM,
+	                                                0, nullptr, nullptr);
 	GZEXPECT(preset_file, "preset file %s not found", filename);
 
 	RamStream preset_stream(preset_file, -1);
