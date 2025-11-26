@@ -446,7 +446,6 @@ void PresetPreview::read(const char* filename_)
 
 	char preset_file_path[256];
 	sprintf(preset_file_path, "presets/%s", filename);
-	OSReport("Loading preset preview from %s\n", preset_file_path);
 
 	void* preset_file = JKRDvdRipper::loadToMainRAM(preset_file_path, nullptr, Switch_0, 0, sys->mSysHeap, JKRDvdRipper::ALLOC_DIR_BOTTOM,
 	                                                0, nullptr, nullptr);

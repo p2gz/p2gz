@@ -181,6 +181,7 @@ void PresetMenuOption::do_on_preset_selected(PresetPreview* preset_preview)
 	if (on_select) {
 		on_select->invoke(preset_preview, PS_Chosen);
 	}
+	current_preview = preset_preview;
 }
 
 PresetPreviewMenuOption::PresetPreviewMenuOption(PresetPreview* preset_preview_, PresetMenuOption* parent_)

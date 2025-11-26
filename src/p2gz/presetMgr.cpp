@@ -29,6 +29,7 @@ PresetMgr::PresetMgr()
 		preview->read(filename);
 		preset_previews.push(preview);
 	}
+	OSReport("Loaded %d preset previews\n", preset_previews.len());
 
 	delete[] all_presets_file;
 
@@ -139,9 +140,9 @@ PresetPreview* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory 
 				return find("HoB5", PoD);
 		case CAVE_WFG:
 			if (dest.sublevel < 3)
-				return find("WFG1-WFG3", PoD);
+				return find("WFG1-3", PoD);
 			else
-				return find("WFG4-WFG5", PoD);
+				return find("WFG4-5", PoD);
 		case CAVE_SH:
 			if (dest.sublevel < 2)
 				return find("SH1-2", PoD);

@@ -230,6 +230,7 @@ void Warp::update_preset_opt()
 	PresetPreview* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
 	if (suggested_preset) {
 		set_preset(suggested_preset, PS_Suggested);
+		preset_opt->current_preview = suggested_preset;
 	}
 }
 

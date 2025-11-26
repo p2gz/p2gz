@@ -61,6 +61,7 @@ at/vor_cleanup.txt
 at/wfg1.txt
 at/wfg2-3.txt
 at/wfg4-5.txt
+general/everything.txt
 pod/bk.txt
 pod/bk_25w.txt
 pod/cos.txt
