@@ -1,0 +1,41 @@
+EC2_(1st_visit) 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+AT 	# category
+#  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
+   0  0  0  6  0  46 0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# onions
+0 	# num sprouts
+0 0 	# bitters, bitters unlocked
+0 0 	# spicies, spicies unlocked
+10.250000 	# time of day
+4 	# day number
+-1 	# pokos (-1 if not applied)
+0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# num upgrades
+15 	# num demo flags
+	0 	# DEMO_Pluck_First_Pikmin
+	1 	# DEMO_Discover_Treasure
+	3 	# DEMO_Find_Cave_Deeper_Hole
+	5 	# DEMO_First_Cave_Enter
+	8 	# DEMO_First_Gate_Down
+	15 	# DEMO_Reds_In_Onion
+	20 	# DEMO_First_Nectar_Use
+	31 	# DEMO_Day_One_Start
+	35 	# DEMO_Meet_Red_Pikmin
+	36 	# DEMO_Louie_Finds_Red_Onion
+	37 	# DEMO_Unlock_Captain_Switch
+	38 	# DEMO_First_Use_Louie
+	39 	# DEMO_Reunite_Captains
+	48 	# DEMO_You_Appear_Lost
+	49 	# DEMO_First_Number_Pellet
+0 	# num EK cutscenes
+1 	# num cave cutscene flags
+	1 	# EC
+1 	# num destroyed gates
+	0 	-591.000000 1427.000000 	0 	# EC gate
+0 	# num finished bridges
+2 	# num flattened bags
+	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
+	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
+0 	# plugs destroyed
+0 	# num enemy spawns
+0 	# num treasure spawn overrides

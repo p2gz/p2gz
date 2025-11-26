@@ -6,7 +6,6 @@
 #include <Game/PikiMgr.h>
 #include <types.h>
 #include <Vector3.h>
-#include <p2gz/PresetsPoD.h>
 
 using namespace gz;
 
@@ -14,14 +13,6 @@ static const char* ALL_PRESETS_FILE_PATH = "presets/all_presets.txt";
 
 PresetMgr::PresetMgr()
 {
-	// presets.push((new Preset("everything", General))
-	//                  ->set_pikmin(Flower, Red, 20)
-	//                  ->set_pikmin(Flower, Yellow, 20)
-	//                  ->set_pikmin(Flower, Blue, 20)
-	//                  ->set_pikmin(Flower, Purple, 20)
-	//                  ->set_pikmin(Flower, White, 20)
-	//                  ->set_sprays(false, 0, true, 16));
-
 	void* all_presets_file = JKRDvdRipper::loadToMainRAM(ALL_PRESETS_FILE_PATH, nullptr, Switch_0, 0, nullptr,
 	                                                     JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
 	GZEXPECT(all_presets_file, "%s not found", ALL_PRESETS_FILE_PATH);
@@ -41,19 +32,18 @@ PresetMgr::PresetMgr()
 
 	delete[] all_presets_file;
 
-	// init_pod_presets();
-	// init_at_presets();
-
-	FOREACH_VEC(presets)
-	{
-		char buf[10000];
-		RamStream stream(&buf, 10000);
-		stream.setMode(STREAM_MODE_TEXT, true);
-		presets[i]->write(stream);
-		stream.setMode(STREAM_MODE_BINARY, true);
-		stream.writeByte('\0');
-		OSReport("%s\n", buf);
-	}
+	// Code to serialize and print all presets. Left here for future use
+	// (but hopefully shouldn't be necessary.)
+	// FOREACH_VEC(presets)
+	// {
+	// 	char buf[10000];
+	// 	RamStream stream(&buf, 10000);
+	// 	stream.setMode(STREAM_MODE_TEXT, true);
+	// 	presets[i]->write(stream);
+	// 	stream.setMode(STREAM_MODE_BINARY, true);
+	// 	stream.writeByte('\0');
+	// 	OSReport("%s\n", buf);
+	// }
 }
 
 void PresetMgr::init()

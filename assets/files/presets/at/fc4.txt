@@ -1,0 +1,133 @@
+FC4 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+AT 	# category
+#  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
+   0  0  25 0  0  0  0  0  0  0  0  20 0  0  35 10 0  0  	# pikmin
+   0  0  20 0  0  7  0  0  0  0  0  29 0  0  0  0  0  0  	# onions
+0 	# num sprouts
+12 1 	# bitters, bitters unlocked
+5 1 	# spicies, spicies unlocked
+10.000000 	# time of day
+6 	# day number
+-1 	# pokos (-1 if not applied)
+0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+5 	# num upgrades
+	4 	# ODII_StellarOrb
+	8 	# ODII_PrototypeDetector
+	9 	# ODII_FiveManNapsack
+	10 	# ODII_SphericalAtlas
+	11 	# ODII_GeographicProjection
+42 	# num demo flags
+	0 	# DEMO_Pluck_First_Pikmin
+	1 	# DEMO_Discover_Treasure
+	3 	# DEMO_Find_Cave_Deeper_Hole
+	4 	# DEMO_Find_Cave_Geyser
+	5 	# DEMO_First_Cave_Enter
+	6 	# DEMO_First_Cave_Return
+	7 	# DEMO_Max_Pikmin_On_Field
+	8 	# DEMO_First_Gate_Down
+	10 	# DEMO_First_Spicy_Use
+	11 	# DEMO_First_Bitter_Use
+	12 	# DEMO_Eat_White_Pikmin
+	13 	# DEMO_Purples_In_Ship
+	14 	# DEMO_Whites_In_Ship
+	15 	# DEMO_Reds_In_Onion
+	16 	# DEMO_Find_Spicy_Drop
+	17 	# DEMO_Find_Bitter_Drop
+	18 	# DEMO_First_Globe_Day_End
+	20 	# DEMO_First_Nectar_Use
+	25 	# DEMO_White_Candypop
+	26 	# DEMO_Purple_Candypop
+	27 	# DEMO_First_Spicy_Berry
+	28 	# DEMO_First_Bitter_Berry
+	29 	# DEMO_First_Spicy_Spray_Made
+	30 	# DEMO_First_Bitter_Spray_Made
+	31 	# DEMO_Day_One_Start
+	32 	# DEMO_Enter_Awakening_Wood
+	35 	# DEMO_Meet_Red_Pikmin
+	36 	# DEMO_Louie_Finds_Red_Onion
+	37 	# DEMO_Unlock_Captain_Switch
+	38 	# DEMO_First_Use_Louie
+	39 	# DEMO_Reunite_Captains
+	40 	# DEMO_First_Corpse_In_Cave
+	43 	# DEMO_Find_Blue_Onion
+	45 	# DEMO_Whites_Digging
+	46 	# DEMO_Reds_Purples_Tutorial
+	47 	# DEMO_Pikmin_In_Danger_Fire
+	48 	# DEMO_You_Appear_Lost
+	49 	# DEMO_First_Number_Pellet
+	51 	# DEMO_Pikmin_In_Danger_Water
+	52 	# DEMO_Pikmin_In_Danger_Poison
+	55 	# DEMO_SPICY_ENABLED
+	56 	# DEMO_BITTER_ENABLED
+5 	# num EK cutscenes
+	4 	# ODII_StellarOrb
+	8 	# ODII_PrototypeDetector
+	9 	# ODII_FiveManNapsack
+	10 	# ODII_SphericalAtlas
+	11 	# ODII_GeographicProjection
+5 	# num cave cutscene flags
+	1 	# EC
+	2 	# SCx
+	3 	# FC
+	4 	# HoB
+	5 	# WFG
+3 	# num destroyed gates
+	0 	-591.000000 1427.000000 	0 	# EC gate
+	1 	-503.000000 1639.000000 	0 	# black gate
+	0 	369.000000 1565.000000 	0 	# water gate
+3 	# num finished bridges
+	1 	-1250.000000 2260.000000 	0 	# globe bridge
+	0 	540.000000 775.000000 	0 	# water bridge
+	0 	-316.799988 -1664.500000 	0 	# FC bridge
+3 	# num flattened bags
+	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
+	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
+	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
+0 	# plugs destroyed
+19 	# num enemy spawns
+	1 	-1153.000000 47.000000 2231.000000 	1
+	24 	548.539978 100.000000 546.479980 	1
+	24 	300.910004 100.000000 361.600006 	2
+	26 	340.790009 15.000000 868.559998 	2
+	26 	145.539993 18.870001 618.030029 	2
+	95 	-244.220001 100.000000 326.779999 	2
+	95 	302.179993 100.000000 -177.910004 	1
+	96 	182.160004 210.000000 -1559.790039 	1
+	55 	-271.089996 114.000000 -1387.319946 	1
+	26 	-679.409973 60.000000 -24.930000 	2
+	26 	-810.080017 60.000000 -378.640015 	2
+	33 	-616.059998 100.000000 -778.380005 	2
+	0 	-259.880005 50.000000 2476.479980 	2
+	0 	52.869999 9.170000 3055.310059 	2
+	0 	-1342.390015 4.200000 2825.760010 	2
+	0 	-1340.810059 0.000000 2606.399902 	2
+	0 	-584.419983 0.000000 3160.870117 	2
+	0 	-21.920000 0.000000 2870.729980 	2
+	0 	-400.920013 0.000000 2646.800049 	2
+26 	# num treasure spawn overrides
+	47 	2 	# Fossilized Ursidae
+	62 	2 	# Pink Menace
+	71 	2 	# Unspeakable Wonder
+	73 	2 	# Temporal Mechanism
+	87 	0 	# Utter Scrap
+	142 	2 	# Courage Reactor
+	157 	2 	# Spiny Alien Treat
+	11 	1 	# Geographic Projection
+	42 	1 	# Sunseed Berry
+	43 	0
+	130 	1 	# Pilgrim Bulb
+	155 	1 	# Chance Totem
+	173 	2 	# Healing Cask
+	185 	0 	# Air Brake
+	53 	2 	# Onion Replica
+	72 	2 	# Aquatic Mine
+	77 	2 	# Impediment Scourge
+	118 	2 	# Massage Girdle
+	140 	2 	# Optical Illustration
+	152 	2 	# Fortified Delicacy
+	172 	2 	# Gherkin Gate
+	27 	2 	# Armored Nut
+	45 	2 	# Anti-hiccup Fungus
+	50 	2 	# Conifer Spire
+	76 	2 	# Doomsday Apparatus
+	183 	2 	# Seed of Greed

@@ -204,14 +204,6 @@ public:
 private:
 	CaveIndex which_cave(u32 area, u32 cave);
 
-	void init_at_presets();
-	void init_at_vor1_presets();
-	void init_at_aw1_presets();
-	void init_at_vor2_presets();
-	void init_at_pp_presets();
-	void init_at_aw2_presets();
-	void init_at_ww_presets();
-
 	Vec<Preset*> presets;
 };
 
