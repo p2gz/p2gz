@@ -6,7 +6,12 @@
 namespace gz {
 struct EmpressTrainer {
 public:
-	EmpressTrainer() { first_damage_frame = -1; }
+	EmpressTrainer()
+	{
+		enabled            = false;
+		polling            = false;
+		first_damage_frame = -1;
+	}
 	~EmpressTrainer() { }
 
 	void stop() { enabled = false; }
@@ -19,6 +24,7 @@ private:
 	Game::Queen::Obj* get_empress();
 
 	bool enabled;
+	bool polling;
 	int last_flick_count;
 	int first_damage_frame;
 	int fade_out_frames;

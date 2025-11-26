@@ -29,12 +29,13 @@ Game::Queen::Obj* EmpressTrainer::get_empress()
 void EmpressTrainer::start()
 {
 	enabled = true;
+	polling = true;
 
 	WarpDestination dest;
-	dest.area         = 1;
-	dest.cave         = 1;
-	dest.sublevel     = 4;
-	Preset* preset    = p2gz->preset_mgr->find("HoB5", PoD);
+	dest.area      = 1;
+	dest.cave      = 1;
+	dest.sublevel  = 4;
+	Preset* preset = p2gz->preset_mgr->find("HoB5", PoD);
 
 	p2gz->warp->set_dest(dest);
 	p2gz->warp->set_preset(preset, PS_Chosen);
@@ -100,10 +101,15 @@ void EmpressTrainer::update()
 		return;
 	}
 
-	if (empress->getStateID() == Game::Queen::QUEEN_Sleep) {
-		last_flick_count = (int)empress->mFlickTimer;
-		if (last_flick_count > 0 && first_damage_frame == -1) {
-			first_damage_frame = empress->mAnimator->getAnimator(0).mTimer - 59;
+	if (polling) {
+		if (empress->getStateID() == Game::Queen::QUEEN_Sleep) {
+			last_flick_count = (int)empress->mFlickTimer;
+			if (last_flick_count > 0 && first_damage_frame == -1) {
+				first_damage_frame = empress->mAnimator->getAnimator(0).mTimer - 59;
+			}
+		} else if (empress->getStateID() == Game::Queen::QUEEN_Damage || empress->getStateID() == Game::Queen::QUEEN_Flick) {
+			last_flick_count = (int)empress->mFlickTimer;
+			polling          = false;
 		}
 	}
 
@@ -118,6 +124,7 @@ void EmpressTrainer::update()
 	if (fade_out_frames == 60) {
 		fade_out_frames    = 0;
 		first_damage_frame = -1;
+		polling            = true;
 
 		const Segment* current_segment = p2gz->segment_history->cur_segment();
 		GZASSERTLINE(current_segment);
