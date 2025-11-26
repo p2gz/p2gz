@@ -1,4 +1,4 @@
-EC1 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+EC2 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
 PoD 	# category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
    0  0  0  6  0  46 0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
@@ -9,11 +9,13 @@ PoD 	# category
 8.000000 	# time of day
 4 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+1 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
 0 	# num upgrades
-14 	# num demo flags
+16 	# num demo flags
 	0 	# DEMO_Pluck_First_Pikmin
 	1 	# DEMO_Discover_Treasure
+	3 	# DEMO_Find_Cave_Deeper_Hole
+	5 	# DEMO_First_Cave_Enter
 	8 	# DEMO_First_Gate_Down
 	9 	# DEMO_Find_Spiderwort_Mold
 	15 	# DEMO_Reds_In_Onion
@@ -36,5 +38,26 @@ PoD 	# category
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 0 	# plugs destroyed
-0 	# num enemy spawns
-0 	# num treasure spawn overrides
+11 	# num enemy spawns
+	1 	-179.690002 -70.000000 2909.939941 	2
+	2 	-486.160004 -70.000000 3058.209961 	2
+	16 	-544.000000 -38.000000 1804.000000 	2
+	15 	-672.000000 -20.000000 1392.000000 	2
+	10 	-738.000000 -28.000000 2354.000000 	2
+	9 	518.000000 -75.000000 3719.000000 	2
+	0 	13.000000 15.000000 211.000000 	2
+	0 	209.000000 10.000000 -206.000000 	2
+	0 	14.000000 15.000000 -263.000000 	2
+	0 	-258.000000 15.000000 -133.000000 	2
+	27 	-36.439999 15.000000 -104.839996 	2
+10 	# num treasure spawn overrides
+	42 	2 	# Sunseed Berry
+	130 	2 	# Pilgrim Bulb
+	11 	2 	# Geographic Projection
+	155 	2 	# Chance Totem
+	173 	2 	# Healing Cask
+	142 	2 	# Courage Reactor
+	62 	2 	# Pink Menace
+	87 	2 	# Utter Scrap
+	157 	2 	# Spiny Alien Treat
+	47 	2 	# Fossilized Ursidae

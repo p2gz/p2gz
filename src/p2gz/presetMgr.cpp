@@ -41,8 +41,19 @@ PresetMgr::PresetMgr()
 
 	delete[] all_presets_file;
 
-	init_pod_presets();
-	init_at_presets();
+	// init_pod_presets();
+	// init_at_presets();
+
+	FOREACH_VEC(presets)
+	{
+		char buf[10000];
+		RamStream stream(&buf, 10000);
+		stream.setMode(STREAM_MODE_TEXT, true);
+		presets[i]->write(stream);
+		stream.setMode(STREAM_MODE_BINARY, true);
+		stream.writeByte('\0');
+		OSReport("%s\n", buf);
+	}
 }
 
 void PresetMgr::init()

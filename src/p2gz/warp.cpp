@@ -223,7 +223,7 @@ void Warp::update_preset_opt()
 	}
 
 	PresetCategory category = PoD;
-	if (has_next_preset() && next_preset_category() != Generated) {
+	if (has_next_preset()) {
 		category = static_cast<PresetCategory>(next_preset_category());
 	}
 

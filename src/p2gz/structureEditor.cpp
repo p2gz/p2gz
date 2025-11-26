@@ -19,29 +19,29 @@ using namespace gz;
 
 static const StructureEditor::NameCoordinateMap GATE_COORD_TO_NAME[] = {
 	// VoR
-	StructureEditor::NameCoordinateMap(-591.0f, 1427.0f, "EC gate"),
-	StructureEditor::NameCoordinateMap(369.0f, 1565.0f, "water gate"),
-	StructureEditor::NameCoordinateMap(798.0f, -520.0f, "SCx gate"),
+	StructureEditor::NameCoordinateMap(-591.0f, 1427.0f, 0, "EC gate"),
+	StructureEditor::NameCoordinateMap(369.0f, 1565.0f, 0, "water gate"),
+	StructureEditor::NameCoordinateMap(798.0f, -520.0f, 0, "SCx gate"),
 	// AW
-	StructureEditor::NameCoordinateMap(-503.0f, 1639.0f, "black gate"),
-	StructureEditor::NameCoordinateMap(450.0f, 1905.0f, "plug gate"),
-	StructureEditor::NameCoordinateMap(-1463.0f, 1767.0f, "globe gate"),
-	StructureEditor::NameCoordinateMap(460.0f, 994.0f, "WFG gate"),
-	StructureEditor::NameCoordinateMap(470.0f, 1575.0f, "BK gate"),
-	StructureEditor::NameCoordinateMap(-375.0f, 375.0f, "blue onion gate"),
-	StructureEditor::NameCoordinateMap(-820.0f, 4280.0f, "SH gate"),
+	StructureEditor::NameCoordinateMap(-503.0f, 1639.0f, 1, "black gate"),
+	StructureEditor::NameCoordinateMap(450.0f, 1905.0f, 1, "plug gate"),
+	StructureEditor::NameCoordinateMap(-1463.0f, 1767.0f, 1, "globe gate"),
+	StructureEditor::NameCoordinateMap(460.0f, 994.0f, 1, "WFG gate"),
+	StructureEditor::NameCoordinateMap(470.0f, 1575.0f, 1, "BK gate"),
+	StructureEditor::NameCoordinateMap(-375.0f, 375.0f, 1, "blue onion gate"),
+	StructureEditor::NameCoordinateMap(-820.0f, 4280.0f, 1, "SH gate"),
 	// PP
-	StructureEditor::NameCoordinateMap(-1180.0f, 980.0f, "onion replica gate"),
-	StructureEditor::NameCoordinateMap(-1510.0f, -2550.0f, "SMC area gate"),
-	StructureEditor::NameCoordinateMap(-390.0f, -1290.0f, "yellow onion gate"),
-	StructureEditor::NameCoordinateMap(-1162.0f, -2375.0f, "GK gate"),
-	StructureEditor::NameCoordinateMap(-1612.0f, -1798.0f, "zirconium rotor gate"),
-	StructureEditor::NameCoordinateMap(1390.0f, 1083.0f, "SR gate"),
+	StructureEditor::NameCoordinateMap(-1180.0f, 980.0f, 2, "onion replica gate"),
+	StructureEditor::NameCoordinateMap(-1510.0f, -2550.0f, 2, "SMC area gate"),
+	StructureEditor::NameCoordinateMap(-390.0f, -1290.0f, 2, "yellow onion gate"),
+	StructureEditor::NameCoordinateMap(-1162.0f, -2375.0f, 2, "GK gate"),
+	StructureEditor::NameCoordinateMap(-1612.0f, -1798.0f, 2, "zirconium rotor gate"),
+	StructureEditor::NameCoordinateMap(1390.0f, 1083.0f, 2, "SR gate"),
 	// WW
-	StructureEditor::NameCoordinateMap(-350.0f, 1025.0f, "DD gate"),
-	StructureEditor::NameCoordinateMap(-1220.0f, 727.0f, "bridge gate"),
-	StructureEditor::NameCoordinateMap(-2819.0f, 2463.0f, "HoH gate"),
-	StructureEditor::NameCoordinateMap(-3514.0f, 1153.0f, "crawmad gate"),
+	StructureEditor::NameCoordinateMap(-350.0f, 1025.0f, 3, "DD gate"),
+	StructureEditor::NameCoordinateMap(-1220.0f, 727.0f, 3, "bridge gate"),
+	StructureEditor::NameCoordinateMap(-2819.0f, 2463.0f, 3, "HoH gate"),
+	StructureEditor::NameCoordinateMap(-3514.0f, 1153.0f, 3, "crawmad gate"),
 };
 
 static const size_t NUM_GATE_NAMES = ARRAY_SIZE(GATE_COORD_TO_NAME); // 20
@@ -52,18 +52,18 @@ static const size_t NUM_GATE_NAMES = ARRAY_SIZE(GATE_COORD_TO_NAME); // 20
 
 static const StructureEditor::NameCoordinateMap BRIDGE_COORD_TO_NAME[] = {
 	// VoR
-	StructureEditor::NameCoordinateMap(540.0f, 775.0f, "water bridge"),
-	StructureEditor::NameCoordinateMap(-316.8f, -1664.5f, "FC bridge"),
+	StructureEditor::NameCoordinateMap(540.0f, 775.0f, 0, "water bridge"),
+	StructureEditor::NameCoordinateMap(-316.8f, -1664.5f, 0, "FC bridge"),
 	// AW
-	StructureEditor::NameCoordinateMap(-1250.0f, 2260.0f, "globe bridge"),
-	StructureEditor::NameCoordinateMap(-1517.3f, 3529.5f, "air brake bridge to globe"),
-	StructureEditor::NameCoordinateMap(-1353.2f, 3760.6f, "air brake bridge to SH"),
+	StructureEditor::NameCoordinateMap(-1250.0f, 2260.0f, 1, "globe bridge"),
+	StructureEditor::NameCoordinateMap(-1517.3f, 3529.5f, 1, "air brake bridge to globe"),
+	StructureEditor::NameCoordinateMap(-1353.2f, 3760.6f, 1, "air brake bridge to SH"),
 	// PP
-	StructureEditor::NameCoordinateMap(326.0f, -759.0f, "bitter plant bridge"),
-	StructureEditor::NameCoordinateMap(1431.0f, 404.0f, "SR bridge"),
-	StructureEditor::NameCoordinateMap(-2159.0f, -857.0f, "CoS bridge"),
+	StructureEditor::NameCoordinateMap(326.0f, -759.0f, 2, "bitter plant bridge"),
+	StructureEditor::NameCoordinateMap(1431.0f, 404.0f, 2, "SR bridge"),
+	StructureEditor::NameCoordinateMap(-2159.0f, -857.0f, 2, "CoS bridge"),
 	// WW
-	StructureEditor::NameCoordinateMap(-1479.3f, 558.3f, "DD bridge"),
+	StructureEditor::NameCoordinateMap(-1479.3f, 558.3f, 3, "DD bridge"),
 };
 
 static const size_t NUM_BRIDGE_NAMES = ARRAY_SIZE(BRIDGE_COORD_TO_NAME); // 9
@@ -74,13 +74,13 @@ static const size_t NUM_BRIDGE_NAMES = ARRAY_SIZE(BRIDGE_COORD_TO_NAME); // 9
 
 static const StructureEditor::NameCoordinateMap PLUG_COORD_TO_NAME[] = {
 	// VoR
-	StructureEditor::NameCoordinateMap(800.0f, 1380.0f, "bridge plug"),
+	StructureEditor::NameCoordinateMap(800.0f, 1380.0f, 0, "bridge plug"),
 	// AW
-	StructureEditor::NameCoordinateMap(380.5f, 1948.9f, "BK plug"),
+	StructureEditor::NameCoordinateMap(380.5f, 1948.9f, 1, "BK plug"),
 	// PP
-	StructureEditor::NameCoordinateMap(1408.7f, 1625.2f, "SR plug"),
+	StructureEditor::NameCoordinateMap(1408.7f, 1625.2f, 2, "SR plug"),
 	// WW
-	StructureEditor::NameCoordinateMap(-2773.3f, 1328.5f, "plants plug"),
+	StructureEditor::NameCoordinateMap(-2773.3f, 1328.5f, 3, "plants plug"),
 };
 
 static const StructureEditor::WaterBoxMap PLUG_NAME_TO_WATERBOX[] = {
@@ -102,10 +102,10 @@ static const size_t NUM_PLUG_NAMES = ARRAY_SIZE(PLUG_COORD_TO_NAME); // 4
 
 static const StructureEditor::NameCoordinateMap BAG_COORD_TO_NAME[] = {
 	// VoR
-	StructureEditor::NameCoordinateMap(-910.7f, 2769.2f, "landing area bag (15)"),
-	StructureEditor::NameCoordinateMap(-1150.0f, 2455.0f, "hubcap bag (35)"),
+	StructureEditor::NameCoordinateMap(-910.7f, 2769.2f, 0, "landing area bag (15)"),
+	StructureEditor::NameCoordinateMap(-1150.0f, 2455.0f, 0, "hubcap bag (35)"),
 	// AW
-	StructureEditor::NameCoordinateMap(-395.0f, 1115.0f, "WFG bag (200)"),
+	StructureEditor::NameCoordinateMap(-395.0f, 1115.0f, 1, "WFG bag (200)"),
 };
 
 static const size_t NUM_BAG_NAMES = ARRAY_SIZE(BAG_COORD_TO_NAME); // 3
@@ -170,6 +170,17 @@ void StructureEditor::set_gate_stages_left(Vector2f pos, int stages_left)
 			return;
 		}
 	}
+}
+
+const char* StructureEditor::find_gate_name(Vector2f pos, int area)
+{
+	for (size_t i = 0; i < NUM_GATE_NAMES; i++) {
+		const NameCoordinateMap& map = GATE_COORD_TO_NAME[i];
+		if (area == map.area && (absF(pos.x - map.x) < STRUCT_SEARCH_RADIUS) && (absF(pos.y - map.z) < STRUCT_SEARCH_RADIUS)) {
+			return map.name;
+		}
+	}
+	return nullptr;
 }
 
 void StructureEditor::GateWrapper::set_gate_segments(s32 segments)
@@ -264,6 +275,17 @@ void StructureEditor::set_bridge_stages_left(Vector2f pos, int stages_left)
 			return;
 		}
 	}
+}
+
+const char* StructureEditor::find_bridge_name(Vector2f pos, int area)
+{
+	for (size_t i = 0; i < NUM_BRIDGE_NAMES; i++) {
+		const NameCoordinateMap& map = BRIDGE_COORD_TO_NAME[i];
+		if (area == map.area && (absF(pos.x - map.x) < STRUCT_SEARCH_RADIUS) && (absF(pos.y - map.z) < STRUCT_SEARCH_RADIUS)) {
+			return map.name;
+		}
+	}
+	return nullptr;
 }
 
 void StructureEditor::BridgeWrapper::set_bridge_segments(s32 segments)
@@ -532,6 +554,17 @@ void StructureEditor::set_bag_flattened(Vector2f pos, bool flattened)
 			return;
 		}
 	}
+}
+
+const char* StructureEditor::find_bag_name(Vector2f pos, int area)
+{
+	for (size_t i = 0; i < NUM_BAG_NAMES; i++) {
+		const NameCoordinateMap& map = BAG_COORD_TO_NAME[i];
+		if (area == map.area && (absF(pos.x - map.x) < STRUCT_SEARCH_RADIUS) && (absF(pos.y - map.z) < STRUCT_SEARCH_RADIUS)) {
+			return map.name;
+		}
+	}
+	return nullptr;
 }
 
 void StructureEditor::clear_bags()

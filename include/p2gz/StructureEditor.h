@@ -84,15 +84,17 @@ struct StructureEditor {
 	};
 
 	struct NameCoordinateMap {
-		NameCoordinateMap(f32 x_, f32 z_, const char* name_)
+		NameCoordinateMap(f32 x_, f32 z_, int area_, const char* name_)
 		    : x(x_)
 		    , z(z_)
+		    , area(area_)
 		    , name(name_)
 		{
 		}
 
 		const f32 x;
 		const f32 z;
+		const int area;
 		const char* name;
 	};
 
@@ -126,11 +128,13 @@ public:
 
 	void add_gate(Game::ItemGate* gate);
 	void set_gate_stages_left(Vector2f pos, int stages_left);
+	static const char* find_gate_name(Vector2f pos, int area);
 	void clear_gates();
 	void sync_gates();
 
 	void add_bridge(Game::ItemBridge::Item* bridge);
 	void set_bridge_stages_left(Vector2f pos, int stages_left);
+	static const char* find_bridge_name(Vector2f pos, int area);
 	void clear_bridges();
 	void sync_bridges();
 
@@ -141,6 +145,7 @@ public:
 
 	void add_bag(Game::ItemDownFloor::Item* bag);
 	void set_bag_flattened(Vector2f pos, bool flattened);
+	static const char* find_bag_name(Vector2f pos, int area);
 	void clear_bags();
 	void sync_bags();
 

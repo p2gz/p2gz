@@ -80,7 +80,6 @@ void P2GZ::init()
 	// Menu must come first since other inits might change menu options
 	menu->init_menu();
 
-	preset_mgr->init();
 	timer->init();
 	structure_editor->init();
 	warp->init();
@@ -93,6 +92,7 @@ void P2GZ::init()
 	ek_editor->init();
 	treasure_editor->init();
 	localization_op->init_menu();
+	preset_mgr->init();
 
 #ifdef GZ_TEST
 	test_runner->init();

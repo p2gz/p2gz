@@ -10,6 +10,7 @@
 #include <Game/gameGeneratorCache.h>
 #include <Game/Entities/PelletOtakara.h>
 #include <Dolphin/rand.h>
+#include <p2gz/StructureEditor.h>
 
 using namespace gz;
 
@@ -318,31 +319,110 @@ Preset* Preset::set_upgrades(u32 num_upgrades, Game::OlimarData::ItemIndex items
 
 Preset* Preset::set_destroyed_gates(u32 num_gates, const char* gates[])
 {
+	static const StructureEditor::NameCoordinateMap GATE_COORD_TO_NAME[] = {
+		// VoR
+		StructureEditor::NameCoordinateMap(-591.0f, 1427.0f, 0, "EC gate"),
+		StructureEditor::NameCoordinateMap(369.0f, 1565.0f, 0, "water gate"),
+		StructureEditor::NameCoordinateMap(798.0f, -520.0f, 0, "SCx gate"),
+		// AW
+		StructureEditor::NameCoordinateMap(-503.0f, 1639.0f, 1, "black gate"),
+		StructureEditor::NameCoordinateMap(450.0f, 1905.0f, 1, "plug gate"),
+		StructureEditor::NameCoordinateMap(-1463.0f, 1767.0f, 1, "globe gate"),
+		StructureEditor::NameCoordinateMap(460.0f, 994.0f, 1, "WFG gate"),
+		StructureEditor::NameCoordinateMap(470.0f, 1575.0f, 1, "BK gate"),
+		StructureEditor::NameCoordinateMap(-375.0f, 375.0f, 1, "blue onion gate"),
+		StructureEditor::NameCoordinateMap(-820.0f, 4280.0f, 1, "SH gate"),
+		// PP
+		StructureEditor::NameCoordinateMap(-1180.0f, 980.0f, 2, "onion replica gate"),
+		StructureEditor::NameCoordinateMap(-1510.0f, -2550.0f, 2, "SMC area gate"),
+		StructureEditor::NameCoordinateMap(-390.0f, -1290.0f, 2, "yellow onion gate"),
+		StructureEditor::NameCoordinateMap(-1162.0f, -2375.0f, 2, "GK gate"),
+		StructureEditor::NameCoordinateMap(-1612.0f, -1798.0f, 2, "zirconium rotor gate"),
+		StructureEditor::NameCoordinateMap(1390.0f, 1083.0f, 2, "SR gate"),
+		// WW
+		StructureEditor::NameCoordinateMap(-350.0f, 1025.0f, 3, "DD gate"),
+		StructureEditor::NameCoordinateMap(-1220.0f, 727.0f, 3, "bridge gate"),
+		StructureEditor::NameCoordinateMap(-2819.0f, 2463.0f, 3, "HoH gate"),
+		StructureEditor::NameCoordinateMap(-3514.0f, 1153.0f, 3, "crawmad gate"),
+	};
+
 	destroyed_gates.expandCapacityTo(destroyed_gates.len() + num_gates);
-	// for (u32 i = 0; i < num_gates; i++) {
-	// 	GZASSERTLINE(gates[i]);
-	// 	destroyed_gates.push(gates[i]);
-	// }
+	for (u32 i = 0; i < num_gates; i++) {
+		GZASSERTLINE(gates[i]);
+		StructureOverride oride;
+		oride.data = 0;
+		for (u32 j = 0; j < ARRAY_SIZE(GATE_COORD_TO_NAME); j++) {
+			if (strcmp(GATE_COORD_TO_NAME[j].name, gates[i]) == 0) {
+				oride.area     = GATE_COORD_TO_NAME[j].area;
+				oride.position = Vector2f(GATE_COORD_TO_NAME[j].x, GATE_COORD_TO_NAME[j].z);
+				destroyed_gates.push(oride);
+				break;
+			}
+		}
+	}
 	return this;
 }
 
 Preset* Preset::set_finished_bridges(u32 num_bridges, const char* bridges[])
 {
-	finished_bridges.expandCapacityTo(finished_bridges.len() + num_bridges);
-	// for (u32 i = 0; i < num_bridges; i++) {
-	// 	GZASSERTLINE(bridges[i]);
-	// 	finished_bridges.push(bridges[i]);
-	// }
+	static const StructureEditor::NameCoordinateMap BRIDGE_COORD_TO_NAME[] = {
+		// VoR
+		StructureEditor::NameCoordinateMap(540.0f, 775.0f, 0, "water bridge"),
+		StructureEditor::NameCoordinateMap(-316.8f, -1664.5f, 0, "FC bridge"),
+		// AW
+		StructureEditor::NameCoordinateMap(-1250.0f, 2260.0f, 1, "globe bridge"),
+		StructureEditor::NameCoordinateMap(-1517.3f, 3529.5f, 1, "air brake bridge to globe"),
+		StructureEditor::NameCoordinateMap(-1353.2f, 3760.6f, 1, "air brake bridge to SH"),
+		// PP
+		StructureEditor::NameCoordinateMap(326.0f, -759.0f, 2, "bitter plant bridge"),
+		StructureEditor::NameCoordinateMap(1431.0f, 404.0f, 2, "SR bridge"),
+		StructureEditor::NameCoordinateMap(-2159.0f, -857.0f, 2, "CoS bridge"),
+		// WW
+		StructureEditor::NameCoordinateMap(-1479.3f, 558.3f, 3, "DD bridge"),
+	};
+
+	finished_bridges.expandCapacityTo(destroyed_gates.len() + num_bridges);
+	for (u32 i = 0; i < num_bridges; i++) {
+		GZASSERTLINE(bridges[i]);
+		StructureOverride oride;
+		oride.data = 0;
+		for (u32 j = 0; j < ARRAY_SIZE(BRIDGE_COORD_TO_NAME); j++) {
+			if (strcmp(BRIDGE_COORD_TO_NAME[j].name, bridges[i]) == 0) {
+				oride.area     = BRIDGE_COORD_TO_NAME[j].area;
+				oride.position = Vector2f(BRIDGE_COORD_TO_NAME[j].x, BRIDGE_COORD_TO_NAME[j].z);
+				finished_bridges.push(oride);
+				break;
+			}
+		}
+	}
 	return this;
 }
 
 Preset* Preset::set_bags_flattened(u32 num_bags, const char* bags[])
 {
+	static const StructureEditor::NameCoordinateMap BAG_COORD_TO_NAME[] = {
+		// VoR
+		StructureEditor::NameCoordinateMap(-910.7f, 2769.2f, 0, "landing area bag (15)"),
+		StructureEditor::NameCoordinateMap(-1150.0f, 2455.0f, 0, "hubcap bag (35)"),
+		// AW
+		StructureEditor::NameCoordinateMap(-395.0f, 1115.0f, 1, "WFG bag (200)"),
+	};
+
 	bags_flattened.expandCapacityTo(bags_flattened.len() + num_bags);
-	// for (u32 i = 0; i < num_bags; i++) {
-	// 	GZASSERTLINE(bags[i]);
-	// 	bags_flattened.push(bags[i]);
-	// }
+	for (u32 i = 0; i < num_bags; i++) {
+		GZASSERTLINE(bags[i]);
+		StructureOverride oride;
+
+		oride.data = 0;
+		for (u32 j = 0; j < ARRAY_SIZE(BAG_COORD_TO_NAME); j++) {
+			if (strcmp(BAG_COORD_TO_NAME[j].name, bags[i]) == 0) {
+				oride.area     = BAG_COORD_TO_NAME[j].area;
+				oride.position = Vector2f(BAG_COORD_TO_NAME[j].x, BAG_COORD_TO_NAME[j].z);
+				bags_flattened.push(oride);
+				break;
+			}
+		}
+	}
 	return this;
 }
 

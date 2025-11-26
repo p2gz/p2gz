@@ -1,0 +1,22 @@
+Day_1 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+PoD 	# category
+#  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# onions
+0 	# num sprouts
+0 0 	# bitters, bitters unlocked
+0 0 	# spicies, spicies unlocked
+7.000000 	# time of day
+1 	# day number
+-1 	# pokos (-1 if not applied)
+2 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# num upgrades
+0 	# num demo flags
+0 	# num EK cutscenes
+0 	# num cave cutscene flags
+0 	# num destroyed gates
+0 	# num finished bridges
+0 	# num flattened bags
+0 	# plugs destroyed
+0 	# num enemy spawns
+0 	# num treasure spawn overrides

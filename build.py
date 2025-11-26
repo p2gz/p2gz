@@ -57,7 +57,7 @@ start_time = time.time()
 
 with open(all_presets_list, "w+") as f:
     f.writelines(preset_file.removeprefix(os.path.join(P2GZ_ASSETS, 'files', 'presets'))
-                .replace('\\', '/').removeprefix('/')
+                .replace('\\', '/').removeprefix('/') + "\n"
                 for preset_file in all_preset_files)
 
 # extract iso
