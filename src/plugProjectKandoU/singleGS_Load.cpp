@@ -105,8 +105,9 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	// @P2GZ - segment history
 	// Start new segment on any loading screen
 	gz::Segment* segment = p2gz->segment_history->start_segment();
-	gz::Preset* preset   = p2gz->warp->get_preset_during_warp();
+	gz::Preset* preset   = nullptr;
 	if (p2gz->warp->warping) {
+		preset = p2gz->warp->get_preset_during_warp();
 		if (preset) {
 			segment->preset = preset;
 			preset->ref();
