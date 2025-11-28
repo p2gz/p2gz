@@ -6,6 +6,7 @@
 #include <Vector3.h>
 
 namespace gz {
+
 struct OnionConfig {
 	OnionConfig(Vector3f up, f32 ur, Vector3f lp = Vector3f::zero, f32 lr = 0.0f)
 	    : unlocked_position(up)
@@ -27,19 +28,21 @@ public:
 	~OnionEditor() { }
 
 	void init();
-	void set_unlocked(bool);
-	void set_count(s32);
+	void sync();
+
+	void set_onion_unlocked(Game::EPikiKind color, bool unlocked);
+	inline void set_piki_count(Game::EPikiKind color, Game::EPikiHappa stage, s32 selection);
 	void move_onion(Game::Onyon*, Vector3f, f32);
-	void toggle_default_position(bool);
 	void kill_onion(int);
-	void update();
 
 private:
-	bool is_at_default_position(Game::Onyon*);
+	RangeMenuOption* get_pik_option(Game::EPikiKind color, Game::EPikiHappa stage);
+	ToggleMenuOption* get_onion_option(Game::EPikiKind color);
 	bool is_in_unlock_course(Game::Onyon*);
-	int get_unlocked_course_index(Game::Onyon*);
+
 	GridMenu* onion_menu;
 };
-} // namespace gz
+
+}; // namespace gz
 
 #endif

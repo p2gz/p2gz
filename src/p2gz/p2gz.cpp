@@ -88,11 +88,11 @@ void P2GZ::init()
 	images->init();
 	spray_editor->init();
 	squad_editor->init();
+	onion_editor->init();
 	cutscene_mgr->init();
 	poko_editor->init();
 	ek_editor->init();
 	treasure_editor->init();
-	onion_editor->init();
 	localization_op->init_menu();
 
 #ifdef GZ_TEST
@@ -122,7 +122,6 @@ void P2GZ::update()
 	dismiss_positions->update();
 	navi_tools->update();
 	empress_trainer->update();
-	onion_editor->update();
 
 	warp->update_lockout_frames();
 

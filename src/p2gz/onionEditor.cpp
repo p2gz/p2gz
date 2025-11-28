@@ -7,8 +7,16 @@
 
 using namespace gz;
 
-const int LOCKED   = 0;
-const int UNLOCKED = 1;
+#define SET_PIK(color, stage) \
+	(new CurriedDelegate2<OnionEditor, Game::EPikiKind, Game::EPikiHappa, s32>(this, &set_piki_count, color, stage))
+#define PIK_OPT(opt_name, color, stage, image_name) \
+	(new RangeMenuOption(opt_name, 0, 100, 0, RangeMenuOption::WRAP, SET_PIK(color, stage), image_name, true))
+
+#define SET_ONION(color)                       (new CurriedDelegate1<OnionEditor, Game::EPikiKind, bool>(this, &set_onion_unlocked, color))
+#define ONION_OPT(opt_name, color, image_name) (new ToggleMenuOption(opt_name, false, SET_ONION(color), image_name, true))
+
+#define LOCKED   0
+#define UNLOCKED 1
 
 // clang-format off
 // from root/files/user/Abe/map/${area}/defaultgen.txt
@@ -43,36 +51,42 @@ const OnionConfig ONION_CONFIG[4][3] = {
 void OnionEditor::init()
 {
 	onion_menu = static_cast<GridMenu*>(p2gz->menu->get_option("pikmin/onions")->get_sub_menu());
+
+	// clang-format off
+	onion_menu
+		->push_to_row(PIK_OPT("rf", Game::Red,     Game::Flower, "red_flower"))
+		->push_to_row(PIK_OPT("rb", Game::Red,     Game::Bud,    "red_bud"))
+		->push_to_row(PIK_OPT("rl", Game::Red,     Game::Leaf,   "red_leaf"))
+		->push_to_row(ONION_OPT("ro", Game::Red, "onion_red"))
+		->end_row()
+		->push_to_row(PIK_OPT("yf", Game::Yellow,  Game::Flower, "yellow_flower"))
+		->push_to_row(PIK_OPT("yb", Game::Yellow,  Game::Bud,    "yellow_bud"))
+		->push_to_row(PIK_OPT("yl", Game::Yellow,  Game::Leaf,   "yellow_leaf"))
+		->push_to_row(ONION_OPT("yo", Game::Yellow, "onion_yellow"))
+		->end_row()
+		->push_to_row(PIK_OPT("bf", Game::Blue,    Game::Flower, "blue_flower"))
+		->push_to_row(PIK_OPT("bb", Game::Blue,    Game::Bud,    "blue_bud"))
+		->push_to_row(PIK_OPT("bl", Game::Blue,    Game::Leaf,   "blue_leaf"))
+		->push_to_row(ONION_OPT("bo", Game::Blue, "onion_blue"))
+		->end_row()
+		->push_to_row(PIK_OPT("pf", Game::Purple,  Game::Flower, "purple_flower"))
+		->push_to_row(PIK_OPT("pb", Game::Purple,  Game::Bud,    "purple_bud"))
+		->push_to_row(PIK_OPT("pl", Game::Purple,  Game::Leaf,   "purple_leaf"))
+		->push_to_row(ONION_OPT("po", Game::Purple, "ship_purple"))
+		->end_row()
+		->push_to_row(PIK_OPT("wf", Game::White,   Game::Flower, "white_flower"))
+		->push_to_row(PIK_OPT("wb", Game::White,   Game::Bud,    "white_bud"))
+		->push_to_row(PIK_OPT("wl", Game::White,   Game::Leaf,   "white_leaf"))
+		->push_to_row(ONION_OPT("wo", Game::White, "ship_white"));
+	// clang-format on
 }
 
-void OnionEditor::update()
+void OnionEditor::sync()
 {
-	if (p2gz->menu->is_active_menu("onions")) {
-		return;
-	}
-
-	if (!Game::playData) {
-		return;
-	}
-
-	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
-	if (!game) {
-		return;
-	}
-
-	if (game->mInCave) {
-		return;
-	}
-
-	if (!Game::ItemOnyon::mgr) {
-		return;
-	}
-
 	for (int color = 0; color < 5; color++) {
-		Vec<MenuOption*>* row = onion_menu->options[color];
-		static_cast<ToggleMenuOption*>((*row)[3])->set_selection(Game::playData->hasContainer(color));
+		get_onion_option(static_cast<Game::EPikiKind>(color))->set_selection(Game::playData->hasContainer(color));
 		for (int stage = 0; stage < 3; stage++) {
-			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
+			RangeMenuOption* opt = get_pik_option(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage));
 			opt->set_selection(Game::playData->mPikiContainer.getCount(color, stage));
 		}
 	}
@@ -97,33 +111,26 @@ void OnionEditor::kill_onion(int color)
 		return;
 	}
 
-	Iterator<Game::Piki> iterator(Game::pikiMgr);
-	CI_LOOP(iterator)
-	{
-		Game::Piki* piki = *iterator;
-		if (piki->mPikiKind == color && !piki->isZikatu()) {
-			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
-			piki->kill(&arg);
-		}
-	}
-
 	for (int stage = 0; stage < 3; stage++) {
 		Game::playData->mPikiContainer.getCount(color, stage) = 0;
-		static_cast<RangeMenuOption*>((*onion_menu->options[color])[stage])->set_selection(0);
+		p2gz->squad_editor->kill_piki(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage), 100);
 	}
 
 	onion->mPosition.y -= 300.0f;
+	onion->mGoalWayPoint->setFlag(Game::WPF_Closed);
+
+	onion->mContainer->startDemoDrawOff();
+	delete onion->mSpotbeamModel;
+	onion->mSpotbeamModel = nullptr;
 	onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
 	onion->startWaitMotion();
-	onion->mGoalWayPoint->setFlag(Game::WPF_Closed);
+
+	sync();
 }
 
 // Moves the onion to the given position and rotation.
 void OnionEditor::move_onion(Game::Onyon* onion, Vector3f position, f32 rotation)
 {
-	onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
-	onion->startWaitMotion();
-
 	onion->setPosition(position, false);
 	onion->mFaceDir = rotation;
 	onion->onSetPosition();
@@ -133,71 +140,74 @@ void OnionEditor::move_onion(Game::Onyon* onion, Vector3f position, f32 rotation
 	onion->startWaitMotion();
 }
 
+static const char COLOR_LETTERS[7] = "brypwc";
+static const char STAGE_LETTERS[4] = "lbf";
+RangeMenuOption* OnionEditor::get_pik_option(Game::EPikiKind color, Game::EPikiHappa stage)
+{
+	char opt_name[3];
+	opt_name[0] = COLOR_LETTERS[color];
+	opt_name[1] = STAGE_LETTERS[stage];
+	opt_name[2] = '\0';
+
+	return static_cast<RangeMenuOption*>(onion_menu->get_option(opt_name));
+}
+
+ToggleMenuOption* OnionEditor::get_onion_option(Game::EPikiKind color)
+{
+	char opt_name[3];
+	opt_name[0] = COLOR_LETTERS[color];
+	opt_name[1] = 'o';
+	opt_name[2] = '\0';
+
+	return static_cast<ToggleMenuOption*>(onion_menu->get_option(opt_name));
+}
+
 // Toggles whether the given onion is unlocked. Spawns it if it is not unlocked and is not discovered in the current area.
 // Kills it if it is unlocked and is not discovered in the current area.
-void OnionEditor::set_unlocked(bool _)
+void OnionEditor::set_onion_unlocked(Game::EPikiKind color, bool unlocked)
 {
 	Game::SingleGameSection* section = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	if (section->mInCave) {
 		return;
 	}
 
-	for (int color = 0; color < 5; color++) {
-		Vec<MenuOption*>* row = onion_menu->options[color];
-		bool unlocked         = static_cast<ToggleMenuOption*>((*row)[3])->get_selection();
-
-		// Didn't update this onion.
-		if (unlocked == Game::playData->hasContainer(color)) {
-			continue;
+	if (unlocked) {
+		p2gz->squad_editor->set_demo_flags_for_color(static_cast<Game::EPikiKind>(color));
+	} else {
+		if (color != Game::Purple && color != Game::White) {
+			Game::playData->mHasBootContainerFlags &= ~(1 << color);
 		}
-
-		if (unlocked) {
-			p2gz->squad_editor->set_demo_flags_for_color(static_cast<Game::EPikiKind>(color));
-		} else {
-			if (color != Game::Purple && color != Game::White) {
-				Game::playData->mHasBootContainerFlags &= ~(1 << color);
-			}
-			Game::playData->mHasContainerFlags &= ~(1 << color);
-			Game::playData->mMeetPikminFlags &= ~(1 << color);
-		}
-
-		if (color == Game::Purple || color == Game::White) {
-			continue;
-		}
-
-		int area           = section->mCurrentCourseInfo->mCourseIndex;
-		Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(color);
-
-		if (unlocked) {
-			if (onion == nullptr) {
-				onion = Game::ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, color);
-			}
-			move_onion(onion, ONION_CONFIG[area][color].unlocked_position, ONION_CONFIG[area][color].unlocked_rotation);
-		} else if (is_in_unlock_course(onion)) {
-			move_onion(onion, ONION_CONFIG[area][color].locked_position, ONION_CONFIG[area][color].locked_rotation);
-		} else {
-			kill_onion(color);
-		}
+		Game::playData->mHasContainerFlags &= ~(1 << color);
+		Game::playData->mMeetPikminFlags &= ~(1 << color);
 	}
 
-	for (int color = 3; color < 5; color++) {
-		Vec<MenuOption*>* row = onion_menu->options[color];
-		bool unlocked         = static_cast<ToggleMenuOption*>((*row)[3])->get_selection();
-		if (unlocked == Game::playData->hasContainer(color)) {
-			continue;
+	if (color == Game::Purple || color == Game::White) {
+		return;
+	}
+
+	int area           = section->mCurrentCourseInfo->mCourseIndex;
+	Game::Onyon* onion = Game::ItemOnyon::mgr->getOnyon(color);
+
+	if (unlocked) {
+		if (onion == nullptr) {
+			onion = Game::ItemOnyon::mgr->birth(ONYON_OBJECT_ONYON, color);
 		}
+		move_onion(onion, ONION_CONFIG[area][color].unlocked_position, ONION_CONFIG[area][color].unlocked_rotation);
+	} else if (is_in_unlock_course(onion)) {
+		// Remove old spot effect before moving
+		onion->mContainer->startDemoDrawOff();
+		delete onion->mSpotbeamModel;
+		onion->mSpotbeamModel = nullptr;
+		onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
+		onion->startWaitMotion();
+
+		move_onion(onion, ONION_CONFIG[area][color].locked_position, ONION_CONFIG[area][color].locked_rotation);
+	} else {
+		kill_onion(color);
 	}
 }
 
-void OnionEditor::set_count(s32 _)
+void OnionEditor::set_piki_count(Game::EPikiKind color, Game::EPikiHappa stage, s32 selection)
 {
-	for (int color = 0; color < 5; color++) {
-		Vec<MenuOption*>* row = onion_menu->options[color];
-		for (int stage = 0; stage < 3; stage++) {
-			RangeMenuOption* opt = static_cast<RangeMenuOption*>((*row)[stage]);
-			if (opt->get_selection() != Game::playData->mPikiContainer.getCount(color, stage)) {
-				Game::playData->mPikiContainer.getCount(color, stage) = opt->get_selection();
-			}
-		}
-	}
+	Game::playData->mPikiContainer.getCount(color, stage) = selection;
 }
