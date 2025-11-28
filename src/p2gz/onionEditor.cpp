@@ -92,6 +92,15 @@ void OnionEditor::sync()
 	}
 }
 
+void destroy_onion_spot_fx(Game::Onyon* onion)
+{
+	onion->mContainer->startDemoDrawOff();
+	onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
+	onion->startWaitMotion();
+	delete onion->mSpotbeamModel;
+	onion->mSpotbeamModel = nullptr;
+}
+
 // Returns whether we are currently in the area in which this onion is discovered.
 bool OnionEditor::is_in_unlock_course(Game::Onyon* onion)
 {
@@ -119,12 +128,7 @@ void OnionEditor::kill_onion(int color)
 	onion->mPosition.y -= 300.0f;
 	onion->mGoalWayPoint->setFlag(Game::WPF_Closed);
 
-	onion->mContainer->startDemoDrawOff();
-	delete onion->mSpotbeamModel;
-	onion->mSpotbeamModel = nullptr;
-	onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
-	onion->startWaitMotion();
-
+	destroy_onion_spot_fx(onion);
 	sync();
 }
 
@@ -194,13 +198,7 @@ void OnionEditor::set_onion_unlocked(Game::EPikiKind color, bool unlocked)
 		}
 		move_onion(onion, ONION_CONFIG[area][color].unlocked_position, ONION_CONFIG[area][color].unlocked_rotation);
 	} else if (is_in_unlock_course(onion)) {
-		// Remove old spot effect before moving
-		onion->mContainer->startDemoDrawOff();
-		delete onion->mSpotbeamModel;
-		onion->mSpotbeamModel = nullptr;
-		onion->setSpotState(Game::Onyon::SPOTSTATE_Closed);
-		onion->startWaitMotion();
-
+		destroy_onion_spot_fx(onion);
 		move_onion(onion, ONION_CONFIG[area][color].locked_position, ONION_CONFIG[area][color].locked_rotation);
 	} else {
 		kill_onion(color);

@@ -115,4 +115,10 @@ ModelEffect* OnyonSpotData::onCreate(ModelEffectCreateArg* arg)
 	return spot;
 }
 
+// @P2GZ - define dtor for OnyonSpot
+OnyonSpot::~OnyonSpot()
+{
+	delete mModel;
+}
+
 } // namespace efx
