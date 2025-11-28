@@ -140,7 +140,22 @@ void SquadEditor::kill_piki(Game::EPikiKind color, Game::EPikiHappa stage, int c
 			piki->kill(&arg);
 			killed++;
 			if (killed == count) {
-				break;
+				return;
+			}
+		}
+	}
+
+	Iterator<Game::ItemPikihead::Item> iPikihead = Game::ItemPikihead::mgr;
+	CI_LOOP(iPikihead)
+	{
+		Game::ItemPikihead::Item* item = *iPikihead;
+		if (item->isAlive() && item->mColor == color && item->mHeadType == stage) {
+			Game::CreatureKillArg arg(Game::CKILL_DontCountAsDeath);
+			item->kill(&arg);
+			Game::GameStat::mePikis.dec(item->mColor);
+			killed++;
+			if (killed == count) {
+				return;
 			}
 		}
 	}
@@ -205,6 +220,16 @@ Game::PikiContainer SquadEditor::get_squad()
 		Game::Piki* piki = *iterator;
 		squad.getCount(piki->mPikiKind, piki->mHappaKind)++;
 	}
+
+	Iterator<Game::ItemPikihead::Item> iPikihead = Game::ItemPikihead::mgr;
+	CI_LOOP(iPikihead)
+	{
+		Game::ItemPikihead::Item* item = *iPikihead;
+		if (item->isAlive()) {
+			squad.getCount(item->mColor, item->mHeadType)++;
+		}
+	}
+
 	return squad;
 }
 
