@@ -67,6 +67,5 @@
         "stdio_api.h": "c",
         "string.h": "c",
         "stdarg.h": "c"
-    },
-    "C_Cpp.errorSquiggles": "enabled"
+    }
 }
