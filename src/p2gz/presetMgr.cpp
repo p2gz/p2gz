@@ -68,7 +68,8 @@ Preset* PresetMgr::create()
 	preset->squad.clear();
 	preset->onion_pikis.clear();
 
-	preset->set_pokos(p2gz->poko_editor->get_pokos());
+	preset->pokos          = p2gz->poko_editor->get_pokos();
+	preset->apply_pokos    = true;
 	preset->upgrades       = p2gz->ek_editor->get_upgrades_bitfield();
 	preset->cutscenes      = p2gz->cutscene_mgr->get_cur_cutscenes();
 	preset->ek_cutscenes   = p2gz->cutscene_mgr->get_cur_ek_cutscenes();
