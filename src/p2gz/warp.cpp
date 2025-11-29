@@ -280,6 +280,8 @@ void Warp::do_warp()
 		GZASSERTLINE(preset_during_warp);
 		preset_during_warp->apply();
 		needs_post_load_action = true;
+	} else {
+		dest.day = day_opt->get_selection() - 1;
 	}
 
 	if (particle2dMgr) {

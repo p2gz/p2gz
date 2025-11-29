@@ -119,8 +119,7 @@ struct Preset {
 
 public:
 	Preset();
-	Preset(const char* name_, PresetCategory category_);
-	Preset(Preset& other);
+	Preset(Preset& other) { GZEXPECT(false, "do not use Preset copy ctor"); }
 	~Preset();
 
 	void read_file(const char* filename);

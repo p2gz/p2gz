@@ -76,85 +76,6 @@ Preset::Preset()
 	onion_pikis.clear();
 }
 
-Preset::Preset(const char* name_, PresetCategory category_)
-    : destroyed_gates(0)
-    , finished_bridges(0)
-    , bags_flattened(0)
-    , enemy_spawn_overrides(0)
-    , treasure_spawn_overrides(0)
-    , sprouts(0)
-    , ref_count(1)
-{
-	name             = name_;
-	category         = category_;
-	bitters_unlocked = false;
-	spicies_unlocked = false;
-	num_bitters      = 0;
-	num_spicies      = 0;
-	time             = 7.0f;
-	plug_destroyed   = false;
-	day              = 5;
-	preview          = nullptr;
-
-	squad.clear();
-	onion_pikis.clear();
-}
-
-Preset::Preset(Preset& other)
-{
-	ref_count = 1;
-
-	name             = other.name;
-	category         = other.category;
-	bitters_unlocked = other.bitters_unlocked;
-	spicies_unlocked = other.spicies_unlocked;
-	num_bitters      = other.num_bitters;
-	num_spicies      = other.num_spicies;
-	squad            = other.squad;
-	onion_pikis      = other.onion_pikis;
-	time             = other.time;
-	day              = other.day;
-	apply_pokos      = false;
-	pokos            = 0;
-	enter_kind       = PEK_FromCave;
-	plug_destroyed   = other.plug_destroyed;
-	upgrades         = other.upgrades;
-	cutscenes        = other.cutscenes;
-	ek_cutscenes     = other.ek_cutscenes;
-	cave_cutscenes   = other.cave_cutscenes;
-	preview          = other.preview;
-
-	destroyed_gates.expandCapacityTo(other.destroyed_gates.len());
-	for (u32 i = 0; i < other.destroyed_gates.len(); i++) {
-		destroyed_gates.push(other.destroyed_gates[i]);
-	}
-
-	finished_bridges.expandCapacityTo(other.finished_bridges.len());
-	for (u32 i = 0; i < other.finished_bridges.len(); i++) {
-		finished_bridges.push(other.finished_bridges[i]);
-	}
-
-	bags_flattened.expandCapacityTo(other.bags_flattened.len());
-	for (u32 i = 0; i < other.bags_flattened.len(); i++) {
-		bags_flattened.push(other.bags_flattened[i]);
-	}
-
-	enemy_spawn_overrides.expandCapacityTo(other.enemy_spawn_overrides.len());
-	for (u32 i = 0; i < other.enemy_spawn_overrides.len(); i++) {
-		enemy_spawn_overrides.push(other.enemy_spawn_overrides[i]);
-	}
-
-	treasure_spawn_overrides.expandCapacityTo(other.treasure_spawn_overrides.len());
-	for (u32 i = 0; i < other.treasure_spawn_overrides.len(); i++) {
-		treasure_spawn_overrides.push(other.treasure_spawn_overrides[i]);
-	}
-
-	sprouts.expandCapacityTo(other.sprouts.len());
-	for (u32 i = 0; i < other.sprouts.len(); i++) {
-		sprouts.push(other.sprouts[i]);
-	}
-}
-
 Preset::~Preset()
 {
 	delete name;
@@ -269,6 +190,7 @@ void Preset::apply()
 
 	p2gz->day_editor->set_time(time);
 	p2gz->squad_editor->clear_all_pikmin();
+	p2gz->warp->set_warp_day(day);
 	Game::playData->resetContainerFlag();                     // Reset container flags for onions/ship space unlocks
 	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected
 
