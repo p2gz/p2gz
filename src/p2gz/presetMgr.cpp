@@ -6,31 +6,60 @@
 #include <Game/PikiMgr.h>
 #include <types.h>
 #include <Vector3.h>
-#include <p2gz/PresetsPoD.h>
 
 using namespace gz;
-using namespace Game;
+
+static const char* ALL_PRESETS_FILE_PATH = "presets/all_presets.txt";
 
 PresetMgr::PresetMgr()
 {
-	presets.push((new Preset("everything", General))
-	                 ->set_pikmin(Flower, Red, 20)
-	                 ->set_pikmin(Flower, Yellow, 20)
-	                 ->set_pikmin(Flower, Blue, 20)
-	                 ->set_pikmin(Flower, Purple, 20)
-	                 ->set_pikmin(Flower, White, 20)
-	                 ->set_sprays(false, 0, true, 16));
+	void* all_presets_file = JKRDvdRipper::loadToMainRAM(ALL_PRESETS_FILE_PATH, nullptr, Switch_0, 0, nullptr,
+	                                                     JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
+	GZEXPECT(all_presets_file, "%s not found", ALL_PRESETS_FILE_PATH);
 
-	init_pod_presets();
-	init_at_presets();
+	RamStream filename_stream(all_presets_file, -1);
+	filename_stream.setMode(STREAM_MODE_TEXT, 1);
+
+	while (!filename_stream.eof()) {
+		const char* filename = filename_stream.readString(nullptr, 0);
+		if (strlen(filename) == 0) {
+			break;
+		}
+		PresetPreview* preview = new PresetPreview();
+		preview->read(filename);
+		preset_previews.push(preview);
+	}
+	OSReport("Loaded %d preset previews\n", preset_previews.len());
+
+	delete[] all_presets_file;
+
+	// Code to serialize and print all presets. Left here for future use
+	// (but hopefully shouldn't be necessary.)
+	// FOREACH_VEC(presets)
+	// {
+	// 	char buf[10000];
+	// 	RamStream stream(&buf, 10000);
+	// 	stream.setMode(STREAM_MODE_TEXT, true);
+	// 	presets[i]->write(stream);
+	// 	stream.setMode(STREAM_MODE_BINARY, true);
+	// 	stream.writeByte('\0');
+	// 	OSReport("%s\n", buf);
+	// }
+}
+
+void PresetMgr::init()
+{
+	static_cast<PresetMenuOption*>(p2gz->menu->get_option("warp/preset"))->init();
 }
 
 Preset* PresetMgr::create()
 {
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
-	Preset* preset           = new Preset(nullptr, Generated);
+	Preset* preset           = new Preset();
 	preset->name             = "generated preset";
+	preset->origin           = PO_Generated;
+
 	preset->spicies_unlocked = p2gz->spray_editor->get_spicies_unlocked();
 	preset->bitters_unlocked = p2gz->spray_editor->get_bitters_unlocked();
 	preset->num_spicies      = p2gz->spray_editor->get_spicies();
@@ -39,7 +68,8 @@ Preset* PresetMgr::create()
 	preset->squad.clear();
 	preset->onion_pikis.clear();
 
-	preset->set_pokos(p2gz->poko_editor->get_pokos());
+	preset->pokos          = p2gz->poko_editor->get_pokos();
+	preset->apply_pokos    = true;
 	preset->upgrades       = p2gz->ek_editor->get_upgrades_bitfield();
 	preset->cutscenes      = p2gz->cutscene_mgr->get_cur_cutscenes();
 	preset->ek_cutscenes   = p2gz->cutscene_mgr->get_cur_ek_cutscenes();
@@ -53,10 +83,10 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 {
 	GZASSERTLINE(preset);
 
-	Iterator<Piki> iterator(pikiMgr);
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
-		Piki* piki = *iterator;
+		Game::Piki* piki = *iterator;
 		if (piki->isAlive() && !piki->isZikatu() && !piki->isWildBulbmin()) {
 			preset->squad(piki)++;
 		}
@@ -64,7 +94,31 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 	preset->onion_pikis = Game::playData->mPikiContainer;
 }
 
-Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
+Preset* PresetMgr::load_preset(PresetPreview* preview)
+{
+	if (!preview) {
+		return nullptr;
+	}
+
+	for (u32 i = 0; i < presets.len(); i++) {
+		if (presets[i]->name == preview->name) {
+			return presets[i];
+		}
+	}
+
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
+	GZEXPECT(preview->filename, "PresetPreview %s has no filename", preview->name);
+	Preset* preset = new Preset();
+	preset->read_file(preview->filename);
+	preset->preview = preview;
+	presets.push(preset);
+
+	prev_heap->becomeCurrentHeap();
+	return preset;
+}
+
+PresetPreview* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory category)
 {
 	gz::CaveIndex cave_e = which_cave(dest.area, dest.cave);
 	if (category == General) {
@@ -87,9 +141,9 @@ Preset* PresetMgr::suggested_preset(WarpDestination dest, PresetCategory categor
 				return find("HoB5", PoD);
 		case CAVE_WFG:
 			if (dest.sublevel < 3)
-				return find("WFG1-WFG3", PoD);
+				return find("WFG1-3", PoD);
 			else
-				return find("WFG4-WFG5", PoD);
+				return find("WFG4-5", PoD);
 		case CAVE_SH:
 			if (dest.sublevel < 2)
 				return find("SH1-2", PoD);
@@ -273,13 +327,13 @@ gz::CaveIndex PresetMgr::which_cave(u32 area, u32 cave)
 	GZASSERTLINE(false);
 }
 
-Preset* PresetMgr::find(const char* name, PresetCategory category)
+PresetPreview* PresetMgr::find(const char* name, PresetCategory category)
 {
-	for (size_t i = 0; i < presets.len(); i++) {
-		Preset* preset = presets[i];
-		GZASSERTLINE(preset);
-		if (category == preset->category && strcmp(preset->name, name) == 0) {
-			return preset;
+	for (size_t i = 0; i < preset_previews.len(); i++) {
+		PresetPreview* preset_preview = preset_previews[i];
+		GZASSERTLINE(preset_preview);
+		if (category == preset_preview->category && strcmp(preset_preview->name, name) == 0) {
+			return preset_preview;
 		}
 	}
 

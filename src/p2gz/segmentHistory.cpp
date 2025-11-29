@@ -113,14 +113,14 @@ void SegmentHistory::retry_cave()
 		// If we don't find history for floor 0 in this cave, get the recommended preset for it.
 		// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
 		PresetCategory cat = PoD;
-		if (floor0_segment->preset && floor0_segment->preset->category != Generated) {
+		if (floor0_segment->preset) {
 			cat = floor0_segment->preset->category;
 		}
 		p2gz->warp->set_dest(floor0_dest);
 		p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
 	} else {
 		p2gz->warp->set_dest(floor0_dest);
-		p2gz->warp->set_preset(floor0_segment->preset, PS_Generated);
+		p2gz->warp->set_preset(floor0_segment->preset, PS_Suggested);
 	}
 
 	p2gz->warp->do_warp();
@@ -223,7 +223,7 @@ Segment* SegmentHistory::start_segment()
 	}
 
 	Segment* segment = new Segment();
-	segment->preset  = nullptr; // pikis are not alive when this is run. it will be set later
+	segment->preset  = nullptr;
 	segments.push(segment);
 
 	prev_heap->becomeCurrentHeap();
@@ -234,7 +234,7 @@ Segment* SegmentHistory::start_segment()
 void SegmentHistory::record_squad()
 {
 	Segment* segment = cur_segment();
-	if (!segment || !segment->preset || segment->preset->category != Generated) {
+	if (!segment || !segment->preset || segment->preset->origin != PO_Generated) {
 		return;
 	}
 

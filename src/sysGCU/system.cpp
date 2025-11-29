@@ -34,7 +34,7 @@
 #define DEFAULT_SYSHEAP_SIZE (0x438000)
 
 // @P2GZ: heap expansion size, in bytes - for later use (if necessary)
-#define P2GZ_SYSHEAP_EXPAND_SIZE (0x0)
+#define P2GZ_SYSHEAP_EXPAND_SIZE (0xA000)
 
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth

@@ -1,0 +1,168 @@
+enter_DD 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+AT 	# category
+#  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
+   0  0  30 0  0  0  0  0  0  1  0  29 0  0  40 0  0  0  	# pikmin
+   1  0  15 0  0  2  25 0  27 19 0  55 0  0  0  0  0  0  	# onions
+0 	# num sprouts
+6 1 	# bitters, bitters unlocked
+5 1 	# spicies, spicies unlocked
+10.250000 	# time of day
+10 	# day number
+-1 	# pokos (-1 if not applied)
+0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+12 	# num upgrades
+	0 	# ODII_BruteKnuckles
+	1 	# ODII_DreamMaterial
+	2 	# ODII_AmplifiedAmplifier
+	3 	# ODII_ProfessionalNoisemaker
+	4 	# ODII_StellarOrb
+	5 	# ODII_JusticeAlloy
+	6 	# ODII_ForgedCourage
+	7 	# ODII_RepugnantAppendage
+	8 	# ODII_PrototypeDetector
+	9 	# ODII_FiveManNapsack
+	10 	# ODII_SphericalAtlas
+	11 	# ODII_GeographicProjection
+49 	# num demo flags
+	0 	# DEMO_Pluck_First_Pikmin
+	1 	# DEMO_Discover_Treasure
+	3 	# DEMO_Find_Cave_Deeper_Hole
+	4 	# DEMO_Find_Cave_Geyser
+	5 	# DEMO_First_Cave_Enter
+	6 	# DEMO_First_Cave_Return
+	7 	# DEMO_Max_Pikmin_On_Field
+	8 	# DEMO_First_Gate_Down
+	9 	# DEMO_Find_Spiderwort_Mold
+	10 	# DEMO_First_Spicy_Use
+	11 	# DEMO_First_Bitter_Use
+	12 	# DEMO_Eat_White_Pikmin
+	13 	# DEMO_Purples_In_Ship
+	14 	# DEMO_Whites_In_Ship
+	15 	# DEMO_Reds_In_Onion
+	16 	# DEMO_Find_Spicy_Drop
+	17 	# DEMO_Find_Bitter_Drop
+	18 	# DEMO_First_Globe_Day_End
+	20 	# DEMO_First_Nectar_Use
+	22 	# DEMO_President_Start
+	25 	# DEMO_White_Candypop
+	26 	# DEMO_Purple_Candypop
+	27 	# DEMO_First_Spicy_Berry
+	28 	# DEMO_First_Bitter_Berry
+	29 	# DEMO_First_Spicy_Spray_Made
+	30 	# DEMO_First_Bitter_Spray_Made
+	31 	# DEMO_Day_One_Start
+	32 	# DEMO_Enter_Awakening_Wood
+	33 	# DEMO_Enter_Perplexing_Pool
+	34 	# DEMO_Enter_Wistful_Wild
+	35 	# DEMO_Meet_Red_Pikmin
+	36 	# DEMO_Louie_Finds_Red_Onion
+	37 	# DEMO_Unlock_Captain_Switch
+	38 	# DEMO_First_Use_Louie
+	39 	# DEMO_Reunite_Captains
+	40 	# DEMO_First_Corpse_In_Cave
+	42 	# DEMO_Find_Yellow_Onion
+	43 	# DEMO_Find_Blue_Onion
+	44 	# DEMO_Discover_Bulbmin
+	45 	# DEMO_Whites_Digging
+	46 	# DEMO_Reds_Purples_Tutorial
+	47 	# DEMO_Pikmin_In_Danger_Fire
+	48 	# DEMO_You_Appear_Lost
+	49 	# DEMO_First_Number_Pellet
+	50 	# DEMO_Waterwraith_Appears
+	51 	# DEMO_Pikmin_In_Danger_Water
+	52 	# DEMO_Pikmin_In_Danger_Poison
+	55 	# DEMO_SPICY_ENABLED
+	56 	# DEMO_BITTER_ENABLED
+13 	# num EK cutscenes
+	0 	# ODII_BruteKnuckles
+	1 	# ODII_DreamMaterial
+	2 	# ODII_AmplifiedAmplifier
+	3 	# ODII_ProfessionalNoisemaker
+	4 	# ODII_StellarOrb
+	5 	# ODII_JusticeAlloy
+	6 	# ODII_ForgedCourage
+	7 	# ODII_RepugnantAppendage
+	8 	# ODII_PrototypeDetector
+	9 	# ODII_FiveManNapsack
+	10 	# ODII_SphericalAtlas
+	11 	# ODII_GeographicProjection
+	12 	# ODII_TheKey
+12 	# num cave cutscene flags
+	1 	# EC
+	2 	# SCx
+	3 	# FC
+	4 	# HoB
+	5 	# WFG
+	6 	# BK
+	7 	# SH
+	8 	# CoS
+	9 	# GK
+	10 	# SR
+	11 	# SmC
+	12 	# CoC
+6 	# num destroyed gates
+	0 	-591.000000 1427.000000 	0 	# EC gate
+	1 	-503.000000 1639.000000 	0 	# black gate
+	0 	369.000000 1565.000000 	0 	# water gate
+	2 	-1612.000000 -1798.000000 	0 	# zirconium rotor gate
+	1 	-375.000000 375.000000 	0 	# blue onion gate
+	1 	-820.000000 4280.000000 	0 	# SH gate
+5 	# num finished bridges
+	1 	-1250.000000 2260.000000 	0 	# globe bridge
+	0 	540.000000 775.000000 	0 	# water bridge
+	0 	-316.799988 -1664.500000 	0 	# FC bridge
+	2 	326.000000 -759.000000 	0 	# bitter plant bridge
+	2 	1431.000000 404.000000 	0 	# SR bridge
+3 	# num flattened bags
+	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
+	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
+	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
+0 	# plugs destroyed
+20 	# num enemy spawns
+	78 	-1576.150024 20.000000 1320.489990 	1
+	1 	-3232.669922 0.000000 -123.870003 	1
+	1 	-2245.250000 50.000000 676.880005 	1
+	23 	-2781.399902 -30.000000 162.669998 	2
+	95 	-3007.169922 -30.000000 574.859985 	1
+	15 	-1340.170044 30.000000 491.329987 	1
+	24 	-1310.869995 30.000000 346.839996 	1
+	21 	-1218.459961 23.950001 766.489990 	2
+	21 	-1220.699951 22.190001 679.390015 	2
+	17 	-1500.079956 -10.000000 1002.669983 	2
+	55 	-342.399994 0.000000 1391.130005 	2
+	55 	-92.239998 0.000000 1681.890015 	2
+	84 	-145.679993 0.000000 1537.790039 	2
+	84 	-467.910004 0.000000 1477.599976 	2
+	84 	-241.839996 0.000000 1716.819946 	2
+	63 	-3538.899902 -30.000000 1044.170044 	2
+	14 	-2976.199951 0.000000 2237.370117 	2
+	75 	-2172.050049 30.000000 2714.399902 	2
+	24 	-2992.959961 0.000000 1651.540039 	2
+	25 	-3244.419922 0.000000 2052.760010 	2
+26 	# num treasure spawn overrides
+	47 	1 	# Fossilized Ursidae
+	62 	1 	# Pink Menace
+	71 	1 	# Unspeakable Wonder
+	73 	1 	# Temporal Mechanism
+	87 	1 	# Utter Scrap
+	142 	1 	# Courage Reactor
+	157 	1 	# Spiny Alien Treat
+	11 	1 	# Geographic Projection
+	42 	1 	# Sunseed Berry
+	43 	1
+	130 	1 	# Pilgrim Bulb
+	155 	1 	# Chance Totem
+	173 	1 	# Healing Cask
+	185 	1 	# Air Brake
+	53 	1 	# Onion Replica
+	72 	1 	# Aquatic Mine
+	77 	1 	# Impediment Scourge
+	118 	1 	# Massage Girdle
+	140 	1 	# Optical Illustration
+	152 	1 	# Fortified Delicacy
+	172 	1 	# Gherkin Gate
+	27 	2 	# Armored Nut
+	45 	2 	# Anti-hiccup Fungus
+	50 	2 	# Conifer Spire
+	76 	1 	# Doomsday Apparatus
+	183 	2 	# Seed of Greed

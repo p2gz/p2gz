@@ -105,23 +105,28 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	// @P2GZ - segment history
 	// Start new segment on any loading screen
 	gz::Segment* segment = p2gz->segment_history->start_segment();
-	gz::Preset* preset   = p2gz->warp->get_preset();
+	gz::Preset* preset   = nullptr;
+	gz::WarpDestination dest;
+	dest.area = game->mCurrentCourseInfo->mCourseIndex;
+
 	if (p2gz->warp->warping) {
+		preset = p2gz->warp->get_preset_during_warp();
 		if (preset) {
 			segment->preset = preset;
+			dest.day        = preset->day;
+			preset->ref();
 		}
 		if (p2gz->warp->using_set_seed()) {
 			segment->seed         = p2gz->warp->get_seed();
 			segment->use_set_seed = true;
 		}
-	} else {
-		segment->preset      = p2gz->preset_mgr->create();
-		segment->preset->day = Game::gameSystem->mTimeMgr->mDayCount;
 	}
 
-	gz::WarpDestination dest;
-	dest.area         = game->mCurrentCourseInfo->mCourseIndex;
-	dest.day          = Game::gameSystem->mTimeMgr->mDayCount;
+	if (!preset) {
+		segment->preset      = p2gz->preset_mgr->create();
+		segment->preset->day = Game::gameSystem->mTimeMgr->mDayCount;
+		dest.day             = Game::gameSystem->mTimeMgr->mDayCount;
+	}
 
 	if (!(mIsCaveLoad || mIsCaveDeeper)) {
 		dest.cave = 0;

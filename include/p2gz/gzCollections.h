@@ -161,6 +161,8 @@ static void copy_vec(Vec<T>& dst, Vec<T>& src)
 	}
 }
 
+#define FOREACH_VEC(vec) for (u32 i = 0; i < vec.len(); i++)
+
 #define DELETE_ALL(vec)                      \
 	for (size_t i = 0; i < vec.len(); i++) { \
 		delete vec[i];                       \

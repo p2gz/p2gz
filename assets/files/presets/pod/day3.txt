@@ -1,0 +1,30 @@
+Day_3 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+PoD 	# category
+#  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
+   0  0  0  5  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# onions
+1 	# num sprouts
+	4 	0 	1 	0.000000 0.000000 0.000000
+0 0 	# bitters, bitters unlocked
+0 0 	# spicies, spicies unlocked
+7.000000 	# time of day
+3 	# day number
+-1 	# pokos (-1 if not applied)
+1 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# num upgrades
+7 	# num demo flags
+	0 	# DEMO_Pluck_First_Pikmin
+	9 	# DEMO_Find_Spiderwort_Mold
+	31 	# DEMO_Day_One_Start
+	35 	# DEMO_Meet_Red_Pikmin
+	37 	# DEMO_Unlock_Captain_Switch
+	38 	# DEMO_First_Use_Louie
+	49 	# DEMO_First_Number_Pellet
+0 	# num EK cutscenes
+0 	# num cave cutscene flags
+0 	# num destroyed gates
+0 	# num finished bridges
+0 	# num flattened bags
+0 	# plugs destroyed
+0 	# num enemy spawns
+0 	# num treasure spawn overrides

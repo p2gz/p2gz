@@ -22,6 +22,8 @@ P2GZ_CUSTOM_ASSETS_COMPRESSED = [
 ]
 
 # Any asset that is NOT compressed - this is just the file path to the file itself to be replaced
+all_presets_list = os.path.join(P2GZ_ASSETS, 'files', 'presets', 'all_presets.txt')
+all_preset_files = glob.glob(os.path.join(P2GZ_ASSETS, 'files', 'presets', '**', '*.txt'))
 P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'opening.bnr'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Ebisawa', 'title', 'title.szs'),
@@ -29,6 +31,8 @@ P2GZ_CUSTOM_ASSETS_UNCOMPRESSED = [
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'momiji_normal.szs'),
     os.path.join(P2GZ_ASSETS, 'files', 'user', 'Abe', 'Pellet', 'pal', 'g_futa_kajiwara.szs'),
     os.path.join(P2GZ_ASSETS, 'sys', 'boot.bin'),
+    all_presets_list,
+    *all_preset_files
 ]
 
 # argument parsing
@@ -50,6 +54,11 @@ if args.clean:
     subprocess.run('ninja -t clean', shell=True)
 
 start_time = time.time()
+
+with open(all_presets_list, "w+") as f:
+    f.writelines(preset_file.removeprefix(os.path.join(P2GZ_ASSETS, 'files', 'presets'))
+                .replace('\\', '/').removeprefix('/') + "\n"
+                for preset_file in all_preset_files)
 
 # extract iso
 try:
@@ -112,7 +121,7 @@ for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
         path_dir = os.path.dirname(path)
         iso_new_dir = os.path.dirname(iso_path)
         print(f'Creating new directory {path_dir} in {iso_new_dir}')
-        shutil.copytree(path_dir, iso_new_dir)
+        shutil.copytree(path_dir, iso_new_dir, dirs_exist_ok=True)
         print(f'Adding {path} to {iso_path}')
         shutil.copy(path, iso_path)
 

@@ -92,6 +92,7 @@ void P2GZ::init()
 	ek_editor->init();
 	treasure_editor->init();
 	localization_op->init_menu();
+	preset_mgr->init();
 
 #ifdef GZ_TEST
 	test_runner->init();

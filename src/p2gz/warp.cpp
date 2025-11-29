@@ -65,6 +65,7 @@ Warp::Warp()
 	lockout_frames             = 0;
 	active_captain             = NAVIID_Olimar;
 	use_set_seed               = false;
+	preset_during_warp         = nullptr;
 }
 
 void Warp::init()
@@ -102,20 +103,31 @@ void Warp::sync()
 	captain_opt->set_selection(active_captain);
 }
 
-void Warp::set_preset(Preset* preset_, int preset_status_)
+void Warp::set_preset(PresetPreview* preset, int preset_status_)
 {
-	preset        = preset_;
+	next_preset_p = preset;
+	next_preset   = nullptr;
 	preset_status = static_cast<PresetStatus>(preset_status_);
-	if (preset_opt) {
-		preset_opt->current_preset = preset;
-	}
 
-	if (preset) {
-		set_warp_day(preset->day);
-		if (day_opt) {
-			day_opt->set_selection(preset->day);
-		}
+	update_day_opt();
+	update_enter_type_opt();
+}
+
+int Warp::next_preset_category()
+{
+	if (next_preset) {
+		return next_preset->category;
+	} else {
+		return next_preset_p->category;
 	}
+}
+
+void Warp::set_preset(Preset* preset, int preset_status_)
+{
+	next_preset = preset;
+	preset->ref();
+	next_preset_p = nullptr;
+	preset_status = static_cast<PresetStatus>(preset_status_);
 
 	update_day_opt();
 	update_enter_type_opt();
@@ -211,13 +223,14 @@ void Warp::update_preset_opt()
 	}
 
 	PresetCategory category = PoD;
-	if (preset && preset->category != Generated) {
-		category = preset->category;
+	if (has_next_preset()) {
+		category = static_cast<PresetCategory>(next_preset_category());
 	}
 
-	Preset* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
+	PresetPreview* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
 	if (suggested_preset) {
 		set_preset(suggested_preset, PS_Suggested);
+		preset_opt->current_preview = suggested_preset;
 	}
 }
 
@@ -225,7 +238,7 @@ void Warp::update_preset_opt()
 void Warp::update_day_opt()
 {
 	if (day_opt) {
-		if (preset == nullptr) {
+		if (!has_next_preset()) {
 			day_opt->visible = true;
 		} else {
 			day_opt->visible = false;
@@ -237,7 +250,7 @@ void Warp::update_day_opt()
 void Warp::update_enter_type_opt()
 {
 	if (enter_area_type_opt) {
-		if (dest.cave == 0 && preset == nullptr) {
+		if (dest.cave == 0 && !has_next_preset()) {
 			enter_area_type_opt->visible = true;
 		} else {
 			enter_area_type_opt->visible = false;
@@ -257,9 +270,18 @@ void Warp::do_warp()
 	Game::SingleGameSection* game = static_cast<Game::SingleGameSection*>(Game::gameSystem->mSection);
 	p2gz->menu->close();
 
-	if (preset) {
-		preset->apply();
+	if (has_next_preset()) {
+		if (next_preset) {
+			preset_during_warp = next_preset;
+		} else {
+			preset_during_warp = p2gz->preset_mgr->load_preset(next_preset_p);
+		}
+
+		GZASSERTLINE(preset_during_warp);
+		preset_during_warp->apply();
 		needs_post_load_action = true;
+	} else {
+		dest.day = day_opt->get_selection() - 1;
 	}
 
 	if (particle2dMgr) {
@@ -374,12 +396,12 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
-	game->mCurrentCourseInfo                    = dst_course_info;
-	game->mCurrentCave                          = nullptr;
+	game->mCurrentCourseInfo = dst_course_info;
+	game->mCurrentCave       = nullptr;
 	game->mCaveID.setID(caveID.getID());
-	game->mCaveIndex                            = caveID.getID();
-	game->mCurrentFloor                         = dest.sublevel;
-	game->mInCave                               = true;
+	game->mCaveIndex    = caveID.getID();
+	game->mCurrentFloor = dest.sublevel;
+	game->mInCave       = true;
 	strcpy(game->mCaveFilename, dst_course_info->getCaveinfoFilename_FromID(caveID));
 	Game::playData->mCaveSaveData.mCurrentFloor = dest.sublevel;
 	Game::playData->mCaveSaveData.mActiveNaviID = active_captain;
@@ -509,14 +531,22 @@ void Warp::do_post_warp()
 		}
 	}
 
-	if (needs_post_load_action && preset) {
-		preset->apply_post_load();
-		preset_status = PS_Stale;
+	if (preset_during_warp) {
+		if (needs_post_load_action) {
+			preset_during_warp->apply_post_load();
+			preset_status = PS_Stale;
+		}
+		preset_during_warp->del();
+	}
+
+	if (next_preset_p) {
+		next_preset = nullptr;
 	}
 
 	if (use_set_seed) {
 		set_random_seed();
 	}
 
+	preset_during_warp     = nullptr;
 	needs_post_load_action = false;
 }
