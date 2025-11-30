@@ -23,39 +23,35 @@ void TreasureEditor::init()
 // Release treasures captured by breadbugs.
 Game::Pellet* handle_breadbug(Game::EnemyBase* enemy, const char* config_name)
 {
-	Game::Pellet* released_pellet      = nullptr;
 	Game::PanModokiBase::Obj* breadbug = static_cast<Game::PanModokiBase::Obj*>(enemy);
 	for (int i = 0; i < breadbug->mHeldTreasureNum; i++) {
-		if (breadbug->mHeldTreasures[0]) {
-			Game::PelletKillArg killArg;
-			breadbug->mHeldTreasures[0]->kill(&killArg);
-		}
-
-		Game::PelletInitArg initArg;
-		if (Game::pelletMgr->makePelletInitArg(initArg, breadbug->mHeldTreasures[i]->getConfigName())) {
+		// if (breadbug->mHeldTreasures[0]) {
+		// 	Game::PelletKillArg killArg;
+		// 	breadbug->mHeldTreasures[0]->kill(&killArg);
+		// }
+		if (strcmp(config_name, breadbug->mHeldTreasures[i]->getConfigName()) == 0) {
+			Game::PelletInitArg initArg;
+			Game::pelletMgr->makePelletInitArg(initArg, breadbug->mHeldTreasures[i]->getConfigName());
 			Game::Pellet* pellet = breadbug->mHeldTreasures[i];
-			if (pellet) {
-				pellet->mMgr->setComeAlive(pellet);
-				initArg.mState             = Game::PelBirthType_Normal;
-				initArg.mDoSkipCreateModel = 1;
-				pellet->init(&initArg);
+			GZEXPECT(pellet, "breadbug pellet bad");
 
-				Vector3f pos = breadbug->mHomePosition;
-				pos.y += 10.0f;
-				pellet->setPosition(pos, false);
+			pellet->mMgr->setComeAlive(pellet);
+			initArg.mState             = Game::PelBirthType_Normal;
+			initArg.mDoSkipCreateModel = 1;
+			pellet->init(&initArg);
 
-				if (strcmp(pellet->getConfigName(), config_name) == 0) {
-					released_pellet = pellet;
-				}
+			Vector3f pos = breadbug->mHomePosition;
+			pos.y += 10.0f;
+			pellet->setPosition(pos, false);
 
-				breadbug->mHeldTreasureNum--;
-				breadbug->mHeldTreasures[i] = nullptr;
-			}
+			breadbug->mHeldTreasureNum--;
+			breadbug->mHeldTreasures[i] = nullptr;
+
+			return pellet;
 		}
 	}
 
-	GZEXPECT(released_pellet, "breadbug did not have expected treasure %s", config_name);
-	return released_pellet;
+	GZEXPECT(false, "breadbug did not have expected treasure %s", config_name);
 }
 
 // Drop treasures carried by dweevils.
@@ -149,11 +145,8 @@ Game::Creature* find_treasure(const char* config_name)
 		if (id == Game::EnemyTypeID::EnemyID_PanModoki || id == Game::EnemyTypeID::EnemyID_OoPanModoki) {
 			Game::PanModokiBase::Obj* breadbug = static_cast<Game::PanModokiBase::Obj*>(enemy);
 			for (int i = 0; i < breadbug->mHeldTreasureNum; i++) {
-				Game::PelletInitArg initArg;
-				if (Game::pelletMgr->makePelletInitArg(initArg, breadbug->mHeldTreasures[i]->getConfigName())) {
-					if (strcmp(initArg.getName(), config_name) == 0) {
-						return enemy;
-					}
+				if (strcmp(config_name, breadbug->mHeldTreasures[i]->getConfigName()) == 0) {
+					return enemy;
 				}
 			}
 			continue;
@@ -234,18 +227,20 @@ Game::Pellet* release_treasure(Game::Creature* creature, const char* config_name
 // Enable treasure editor.
 void TreasureEditor::start_move(const char* treasure_name)
 {
-	enabled = true;
-
 	// either the treasure itself or the creature holding it
 	Game::Creature* creature = find_treasure(treasure_name);
-
 	if (!creature || !creature->isAlive()) {
 		active_treasure = spawn_treasure(treasure_name);
 	} else {
 		active_treasure = release_treasure(creature, treasure_name);
 	}
-	GZEXPECT(active_treasure, "no treasure %s found", treasure_name);
 
+	if (!active_treasure) {
+		OSReport("couldn't find treasure %s to move\n", treasure_name);
+		return;
+	}
+
+	enabled = true;
 	p2gz->waypoint_viewer->toggle(true);
 	p2gz->freecam->enable();
 	p2gz->freecam->set_position(active_treasure->getPosition());
@@ -304,24 +299,56 @@ void TreasureEditor::add(Game::Pellet* treasure)
 		}
 	}
 
+	const char* treasure_name = treasure->getConfigName();
+
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// clang-format off
 	ToggleMenuOption* collected_opt = new ToggleMenuOption(
-		"collected", false, new CurriedDelegate1<TreasureEditor, const char*, bool>(this, &set_collected, treasure->getConfigName()));
+		"collected", false, new CurriedDelegate1<TreasureEditor, const char*, bool>(this, &set_collected, treasure_name));
 
-	treasures->push(new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu(
-	    new BoundDelegate2<TreasureEditor, Game::Pellet*, ToggleMenuOption*>(this, &sync_treasure_option, treasure, collected_opt)))
-		->push(new PerformActionMenuOption("move", new BoundDelegate1<TreasureEditor, const char*>(this, &start_move, treasure->getConfigName())))
-		->push(collected_opt)));
+	OpenSubMenuOption* treasure_opt = new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu(
+	    new BoundDelegate2<TreasureEditor, const char*, ToggleMenuOption*>(this, &sync_treasure_option, treasure_name, collected_opt)))
+		->push(new PerformActionMenuOption("move", new BoundDelegate1<TreasureEditor, const char*>(this, &start_move, treasure_name)))
+		->push(collected_opt));
+
+	treasure_opt->on_focus = new BoundDelegate1<TreasureEditor, const char*>(this, &focus_treasure, treasure_name);
+
+	treasures->push(treasure_opt);
 	// clang-format on
 
 	prev_heap->becomeCurrentHeap();
 }
 
-void TreasureEditor::sync_treasure_option(Game::Pellet* treasure, ToggleMenuOption* treasure_collected_opt)
+void TreasureEditor::focus_treasure(const char* treasure_name)
 {
-	treasure_collected_opt->set_selection(!treasure->isAlive());
+	Game::Creature* treasure = find_treasure(treasure_name);
+
+	// Move camera to treasure if we found it
+	if (treasure) {
+		Game::PlayCamera* camera = Game::cameraMgr->mCameraObjList[p2gz->navi_tools->active_navi()->getNaviID()];
+		if (camera) {
+			treasure->mLod.setFlag(AILOD_IsVisibleBoth);
+			camera->mGoalPosition = treasure->getPosition();
+		}
+	}
+}
+
+void TreasureEditor::sync_treasure_option(const char* treasure_name, ToggleMenuOption* treasure_collected_opt)
+{
+	Game::Creature* treasure = find_treasure(treasure_name);
+	treasure_collected_opt->set_selection(!treasure || !treasure->isAlive());
+}
+
+Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int kind)
+{
+	Game::PelletInitArg arg;
+	arg.mDontCheckCollected = true;
+	arg.mTextIdentifier     = const_cast<char*>(config_name);
+	arg.mPelletType         = kind;
+	arg.mPelletIndex        = cfg->mParams.mIndex;
+	arg.mPelView            = nullptr;
+	return Game::pelletMgr->birth(&arg);
 }
 
 Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
@@ -339,37 +366,46 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 	}
 	GZEXPECT(cfg, "no pellet config found for %s", config_name);
 
-	FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
-	{
-		if (gen->mObject->mTypeID == 'pelt') {
-			Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
-			int treasure_id             = gen_pellet->mGenParm->mIndex;
-			int kind                    = gen_pellet->mPelType;
-			const char* treasure_name
-			    = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(treasure_id)->mParams.mName.mData;
-			if ((!gen->mCreature || !gen->mCreature->isAlive()) && strcmp(treasure_name, config_name) == 0) {
-				gen->generate();
-				GZEXPECT(gen->mCreature, "treasure generator failed");
-				return static_cast<Game::Pellet*>(gen->mCreature);
-			}
-		} else if (gen->mObject->mTypeID == 'teki') {
-			Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
-			if (gen_obj_enemy->mOtakaraItemCode.getPelletKind() == kind
-			    && gen_obj_enemy->mOtakaraItemCode.getPelletIndex() == cfg->mParams.mIndex) {
-				// Respawning the enemy is difficult because many of them are handled differently after
-				// dying or when not spawned. This is left as an improvement for the future.
-				// Instead we just spawn the treasure where the enemy would be.
-				Game::PelletInitArg arg;
-				arg.mDontCheckCollected = true;
-				arg.mTextIdentifier     = const_cast<char*>(config_name);
-				arg.mPelletType         = kind;
-				arg.mPelletIndex        = cfg->mParams.mIndex;
-				arg.mPelView            = nullptr;
-				Game::Pellet* pellet    = Game::pelletMgr->birth(&arg);
-				pellet->setPosition(gen->mPosition, false);
-				return pellet;
+	// TODO: different thing for caves
+	if (in_above_ground_play()) {
+		FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+		{
+			if (gen->mObject->mTypeID == 'pelt') {
+				Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+				int treasure_id             = gen_pellet->mGenParm->mIndex;
+				int kind                    = gen_pellet->mPelType;
+				const char* treasure_name
+				    = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(treasure_id)->mParams.mName.mData;
+				if ((!gen->mCreature || !gen->mCreature->isAlive()) && strcmp(treasure_name, config_name) == 0) {
+					gen->generate();
+					GZEXPECT(gen->mCreature, "treasure generator failed");
+					return static_cast<Game::Pellet*>(gen->mCreature);
+				}
+			} else if (gen->mObject->mTypeID == 'teki') {
+				Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
+				if (gen_obj_enemy->mOtakaraItemCode.getPelletKind() == kind
+				    && gen_obj_enemy->mOtakaraItemCode.getPelletIndex() == cfg->mParams.mIndex) {
+					// Respawning the enemy is difficult because many of them are handled differently after
+					// dying or when not spawned. This is left as an improvement for the future.
+					// Instead we just spawn the treasure where the enemy would be.
+					Game::Pellet* pellet = birth_pellet(cfg, config_name, kind);
+					pellet->setPosition(gen->mPosition, false);
+					return pellet;
+				}
 			}
 		}
+		GZEXPECT(false, "no suitable pellet or teki generator found for treasure %s", config_name);
+	} else if (in_cave_play()) {
+		Game::Pellet* pellet = birth_pellet(cfg, config_name, kind);
+
+		// We don't know which spawn point the treasure spawned at, so just place it on the active captain.
+		Game::Navi* navi = p2gz->navi_tools->active_navi();
+		f32 y            = Game::mapMgr->getMinY(navi->mPosition) + (pellet->getCylinderHeight() * 0.5f);
+		Vector3f pos     = Vector3f(navi->mPosition.x, y, navi->mPosition.z);
+		pellet->setPosition(pos, false);
+		return pellet;
+	} else {
+		GZEXPECT(false, "must be in cave or AG to spawn treasure");
 	}
 }
 
@@ -389,6 +425,7 @@ void TreasureEditor::set_collected(const char* treasure_name, bool collected)
 			return;
 		}
 		spawn_treasure(treasure_name);
+		focus_treasure(treasure_name);
 	}
 }
 

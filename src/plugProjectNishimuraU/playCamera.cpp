@@ -207,8 +207,8 @@ void PlayCamera::doUpdate()
 	}
 	changeTargetTheta();
 
-	// @P2GZ: freecam
-	if (!p2gz->freecam->is_enabled()) {
+	// @P2GZ: allow moving the camera in freecam and when the menu is open
+	if (!p2gz->menu->is_open() && !p2gz->freecam->is_enabled()) {
 		changeTargetAtPosition();
 	}
 

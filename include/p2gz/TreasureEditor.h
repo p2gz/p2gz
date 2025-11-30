@@ -15,7 +15,11 @@ public:
 	void sync();
 
 	void start_move(const char* treasure_name);
-	void end_move() { enabled = false; }
+	void end_move()
+	{
+		enabled         = false;
+		active_treasure = nullptr;
+	}
 	bool is_enabled() { return enabled; }
 
 	Game::Pellet* get_active_treasure() { return active_treasure; }
@@ -29,11 +33,12 @@ public:
 
 private:
 	Game::Pellet* spawn_treasure(const char* config_name);
-	void sync_treasure_option(Game::Pellet*, ToggleMenuOption* treasure_collected_opt);
+	void sync_treasure_option(const char* treasure_name, ToggleMenuOption* treasure_collected_opt);
+	void focus_treasure(const char* treasure_name);
 
 	ListMenu* treasures;
 	Game::Pellet* active_treasure;
-	Vector3f initial_position;
+	Vector3f initial_position; // used when moving a treasure
 	bool enabled;
 };
 
