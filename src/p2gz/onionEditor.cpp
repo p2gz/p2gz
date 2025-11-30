@@ -57,34 +57,35 @@ void OnionEditor::init()
 		->push_to_row(PIK_OPT("rf", Game::Red,     Game::Flower, "red_flower"))
 		->push_to_row(PIK_OPT("rb", Game::Red,     Game::Bud,    "red_bud"))
 		->push_to_row(PIK_OPT("rl", Game::Red,     Game::Leaf,   "red_leaf"))
-		->push_to_row(ONION_OPT("ro", Game::Red, "onion_red"))
+		// ->push_to_row(ONION_OPT("ro", Game::Red, "onion_red"))
 		->end_row()
 		->push_to_row(PIK_OPT("yf", Game::Yellow,  Game::Flower, "yellow_flower"))
 		->push_to_row(PIK_OPT("yb", Game::Yellow,  Game::Bud,    "yellow_bud"))
 		->push_to_row(PIK_OPT("yl", Game::Yellow,  Game::Leaf,   "yellow_leaf"))
-		->push_to_row(ONION_OPT("yo", Game::Yellow, "onion_yellow"))
+		// ->push_to_row(ONION_OPT("yo", Game::Yellow, "onion_yellow"))
 		->end_row()
 		->push_to_row(PIK_OPT("bf", Game::Blue,    Game::Flower, "blue_flower"))
 		->push_to_row(PIK_OPT("bb", Game::Blue,    Game::Bud,    "blue_bud"))
 		->push_to_row(PIK_OPT("bl", Game::Blue,    Game::Leaf,   "blue_leaf"))
-		->push_to_row(ONION_OPT("bo", Game::Blue, "onion_blue"))
+		// ->push_to_row(ONION_OPT("bo", Game::Blue, "onion_blue"))
 		->end_row()
 		->push_to_row(PIK_OPT("pf", Game::Purple,  Game::Flower, "purple_flower"))
 		->push_to_row(PIK_OPT("pb", Game::Purple,  Game::Bud,    "purple_bud"))
 		->push_to_row(PIK_OPT("pl", Game::Purple,  Game::Leaf,   "purple_leaf"))
-		->push_to_row(ONION_OPT("po", Game::Purple, "ship_purple"))
+		// ->push_to_row(ONION_OPT("po", Game::Purple, "ship_purple"))
 		->end_row()
 		->push_to_row(PIK_OPT("wf", Game::White,   Game::Flower, "white_flower"))
 		->push_to_row(PIK_OPT("wb", Game::White,   Game::Bud,    "white_bud"))
 		->push_to_row(PIK_OPT("wl", Game::White,   Game::Leaf,   "white_leaf"))
-		->push_to_row(ONION_OPT("wo", Game::White, "ship_white"));
+		// ->push_to_row(ONION_OPT("wo", Game::White, "ship_white"))
+		;
 	// clang-format on
 }
 
 void OnionEditor::sync()
 {
 	for (int color = 0; color < 5; color++) {
-		get_onion_option(static_cast<Game::EPikiKind>(color))->set_selection(Game::playData->hasContainer(color));
+		// get_onion_option(static_cast<Game::EPikiKind>(color))->set_selection(Game::playData->hasContainer(color));
 		for (int stage = 0; stage < 3; stage++) {
 			RangeMenuOption* opt = get_pik_option(static_cast<Game::EPikiKind>(color), static_cast<Game::EPikiHappa>(stage));
 			opt->set_selection(Game::playData->mPikiContainer.getCount(color, stage));
