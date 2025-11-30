@@ -25,10 +25,6 @@ Game::Pellet* handle_breadbug(Game::EnemyBase* enemy, const char* config_name)
 {
 	Game::PanModokiBase::Obj* breadbug = static_cast<Game::PanModokiBase::Obj*>(enemy);
 	for (int i = 0; i < breadbug->mHeldTreasureNum; i++) {
-		// if (breadbug->mHeldTreasures[0]) {
-		// 	Game::PelletKillArg killArg;
-		// 	breadbug->mHeldTreasures[0]->kill(&killArg);
-		// }
 		if (strcmp(config_name, breadbug->mHeldTreasures[i]->getConfigName()) == 0) {
 			Game::PelletInitArg initArg;
 			Game::pelletMgr->makePelletInitArg(initArg, breadbug->mHeldTreasures[i]->getConfigName());
@@ -366,7 +362,6 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 	}
 	GZEXPECT(cfg, "no pellet config found for %s", config_name);
 
-	// TODO: different thing for caves
 	if (in_above_ground_play()) {
 		FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
 		{
