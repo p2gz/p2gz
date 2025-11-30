@@ -350,6 +350,14 @@ void StructureEditor::BridgeWrapper::set_bridge_glitch(bool glitched)
 	static_cast<FloatRangeMenuOption*>(bridge_submenu->get_option("segment health"))->set_selection(bridge->getCurrentStageHealth());
 }
 
+void StructureEditor::set_bridge_glitch(bool glitched)
+{
+	FOREACH_VEC(bridges)
+	{
+		bridges[i]->set_bridge_glitch(glitched);
+	}
+}
+
 void StructureEditor::sync_bridges()
 {
 	for (size_t i = 0; i < bridges.len(); i++) {

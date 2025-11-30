@@ -115,3 +115,4 @@ AT 	# category
 	50 	2 	# Conifer Spire
 	76 	2 	# Doomsday Apparatus
 	183 	2 	# Seed of Greed
+1	# bridge glitch active

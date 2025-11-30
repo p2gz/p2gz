@@ -1,4 +1,4 @@
-SCx5-8 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+enter_FC 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
 PoD 	# category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
    0  0  45 0  0  0  0  0  0  0  0  20 0  0  35 0  0  0  	# pikmin
@@ -69,30 +69,30 @@ PoD 	# category
 	0 	-591.000000 1427.000000 	0 	# EC gate
 	1 	-503.000000 1639.000000 	0 	# black gate
 	1 	-820.000000 4280.000000 	0 	# SH gate
-	0 	369.000000 1565.000000 	0 	# water gate
+	0 	369.000000 1565.000000 	    0 	# water gate
 2 	# num finished bridges
 	1 	-1250.000000 2260.000000 	0 	# globe bridge
-	0 	540.000000 775.000000 	0 	# water bridge
+	0 	540.000000 775.000000 	    0 	# water bridge
 3 	# num flattened bags
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
-0 	# plugs destroyed
+1 	# plugs destroyed
 5 	# num enemy spawns
-	1 	-1153.000000 47.000000 2231.000000 	1
+	1 	-1153.000000 47.000000 2231.000000 	1  # dwarf bulborb
 	24 	548.54 100.0 546.48 	2  # fiery blowhog
     24  300.91 100.0 361.60     2  # fiery blowhog
     95  302.18 100.0 -177.91    2  # cannon beetle larvae
     55  -271.09 114.0 -1387.32  2  # withering blowhog
 10 	# num treasure spawn overrides
-	42 	1 	# Sunseed Berry
+	42 	    1 	# Sunseed Berry
 	130 	1 	# Pilgrim Bulb
-	11 	1 	# Geographic Projection
+	11 	    1 	# Geographic Projection
 	155 	1 	# Chance Totem
 	173 	1 	# Healing Cask
 	142 	1 	# Courage Reactor
-	62 	1 	# Pink Menace
-	87 	1 	# Utter Scrap
+	62 	    1 	# Pink Menace
+	87 	    1 	# Utter Scrap
 	157 	1 	# Spiny Alien Treat
-	47 	0 	# Fossilized Ursidae
+	47 	    3   -973.11 80.24 1721.64 	# Fossilized Ursidae
 1	# bridge glitch active

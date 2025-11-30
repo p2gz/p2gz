@@ -161,6 +161,7 @@ public:
 	u8 day;
 	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
 	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
+	bool bridge_glitch_active;
 
 private:
 	int ref_count;

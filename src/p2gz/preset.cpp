@@ -72,6 +72,7 @@ Preset::Preset()
 {
 	name    = nullptr;
 	preview = nullptr;
+	bridge_glitch_active = true;
 	squad.clear();
 	onion_pikis.clear();
 }
@@ -306,6 +307,7 @@ void Preset::apply_post_load()
 	for (u32 i = 0; i < finished_bridges.len(); i++) {
 		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i].position, finished_bridges[i].data);
 	}
+	p2gz->structure_editor->set_bridge_glitch(bridge_glitch_active);
 	for (u32 i = 0; i < bags_flattened.len(); i++) {
 		p2gz->structure_editor->set_bag_flattened(bags_flattened[i].position, true);
 	}

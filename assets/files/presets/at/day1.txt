@@ -20,3 +20,4 @@ AT 	# category
 0 	# plugs destroyed
 0 	# num enemy spawns
 0 	# num treasure spawn overrides
+0	# bridge glitch active

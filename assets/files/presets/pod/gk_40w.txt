@@ -100,3 +100,4 @@ PoD 	# category
 	87 	1 	# Utter Scrap
 	157 	1 	# Spiny Alien Treat
 	47 	1 	# Fossilized Ursidae
+1	# bridge glitch active
