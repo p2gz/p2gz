@@ -115,7 +115,7 @@ void FreeCam::update()
 		if (p2gz->treasure_editor->is_enabled()) {
 			p2gz->menu->navigate_to("level/treasures");
 			og::ogSound->setDecide();
-			p2gz->treasure_editor->disable();
+			p2gz->treasure_editor->end_move();
 			p2gz->waypoint_viewer->toggle(false);
 			disable(true);
 		} else {
@@ -138,7 +138,7 @@ void FreeCam::update()
 			if (p2gz->treasure_editor->is_enabled()) {
 				p2gz->menu->navigate_to("level/treasures");
 				p2gz->treasure_editor->reset_active_treasure();
-				p2gz->treasure_editor->disable();
+				p2gz->treasure_editor->end_move();
 				p2gz->waypoint_viewer->toggle(false);
 			} else {
 				p2gz->menu->navigate_to("tools/freecam");

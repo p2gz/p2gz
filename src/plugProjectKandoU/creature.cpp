@@ -92,7 +92,9 @@ void Creature::kill(CreatureKillArg* arg)
 
 	if (mGenerator) {
 		mGenerator->informDeath(this);
-		mGenerator = nullptr;
+
+		// @P2GZ - don't null out generator so we can respawn objects
+		// mGenerator = nullptr;
 	}
 }
 
