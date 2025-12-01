@@ -9,6 +9,7 @@
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "System.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace MemoryCard {
@@ -1330,6 +1331,11 @@ bool Mgr::testCheckSumPlayerInfo(PlayerInfo* playerInfo)
  */
 u32 Mgr::getCardStatus()
 {
+	// @P2GZ - emulate a memory card error for every save after warping from file select
+	if (!p2gz->in_save_file) {
+		return 0;
+	}
+
 	u32 result;
 	if (checkStatus() == 2) {
 		switch (mErrorCode) {
