@@ -110,6 +110,7 @@ struct MovieConfig : public CNode {
 	// @P2GZ: skippable cutscenes
 	// add inlines for easier setting/resetting of skipping
 	inline void enableSkippable() { mFlags = (mFlags & ~0x2) | 0x1; }
+	inline void enableSkippableWithStart() { mFlags = 0; }
 	inline void disableSkippable() { mFlags = (mFlags & ~0x1) | 0x2; }
 
 	// _00     = VTBL

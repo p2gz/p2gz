@@ -67,7 +67,7 @@ void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* conf
 	    || config->is("s17_suck_equipment")) {
 		if (enabled) {
 			is_treasure_collected = false;
-			config->enableSkippable();
+			config->enableSkippableWithStart();
 
 			// set skip timer
 			p2gz->timer->reset_skip_timer();
