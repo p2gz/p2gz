@@ -62,14 +62,8 @@ PresetPreview::PresetPreview(PresetCategory category_, const char* name_, Game::
 }
 
 Preset::Preset()
-    : destroyed_gates(0)
-    , finished_bridges(0)
-    , bags_flattened(0)
-    , enemy_spawn_overrides(0)
-    , treasure_spawn_overrides(0)
-    , sprouts(0)
-    , ref_count(1)
 {
+	ref_count            = 1;
 	name    = nullptr;
 	preview = nullptr;
 	bridge_glitch_active = true;
@@ -92,55 +86,10 @@ void Preset::del()
 	}
 }
 
-Preset::EnemyGenSpawnOverride::EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_,
-                                                     GenSpawnOverride spawn_override_)
-{
-	enemy_id       = enemy_id_;
-	gen_pos        = gen_pos_;
-	spawn_override = spawn_override_;
-}
-
-Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_)
-{
-	id             = id_;
-	spawn_override = spawn_override_;
-}
-
-Preset::TreasureGenSpawnOverride::TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_)
-{
-	GZASSERTLINE(spawn_override_ == PSO_SpawnAndMove); // Doesn't make sense to use this ctor otherwise
-	id                = id_;
-	spawn_override    = spawn_override_;
-	position_override = position_override_;
-}
-
-// Onion ring ctor
-Preset::Sprout::Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_)
-{
-	pos            = Vector3f::zero;
-	amount         = amount_;
-	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
-}
-
-// Single sprout in a fixed spot ctor
-Preset::Sprout::Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind)
-{
-	pos            = pos_;
-	amount         = 0;
-	stage_and_kind = ((static_cast<u8>(stage) & 0x0F) << 4) | (static_cast<u8>(kind) & 0x0F);
-}
-
 Preset::StructureOverride::StructureOverride()
 {
 	area = 0xFF;
 	data = 0xFF;
-}
-
-Preset::StructureOverride::StructureOverride(u8 area_, Vector2f position_, u8 data_)
-{
-	area     = area_;
-	data     = data_;
-	position = position_;
 }
 
 GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
@@ -192,8 +141,7 @@ void Preset::apply()
 	p2gz->day_editor->set_time(time);
 	p2gz->squad_editor->clear_all_pikmin();
 	p2gz->warp->set_warp_day(day);
-	Game::playData->resetContainerFlag();                     // Reset container flags for onions/ship space unlocks
-	p2gz->squad_editor->birth_piki(Game::Red, Game::Leaf, 0); // set red onion container flag since it's pretty much always expected
+	Game::playData->resetContainerFlag(); // Reset container flags for onions/ship space unlocks
 
 	// Apply squad
 	for (u32 color = 0; color < 6; color++) {

@@ -4,7 +4,7 @@ PoD 	# category
    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
    0  0  0  9  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# onions
 1 	# num sprouts
-	4 	0 	1 	0.000000 0.000000 0.000000
+	4 	0 	1
 0 0 	# bitters, bitters unlocked
 0 0 	# spicies, spicies unlocked
 7.000000 	# time of day
@@ -28,7 +28,26 @@ PoD 	# category
 0 	# num finished bridges
 0 	# num flattened bags
 0 	# plugs destroyed
-1 	# num enemy spawns
-	1 	-1153.000000 47.000000 2231.000000 	2
-0 	# num treasure spawn overrides
+10 	# num enemy spawns
+	1 	-1153.00	47.00	2231.00 2		# dwarf bulborb on manhole cover
+	1	-585.96		0.00	2782.99	1		# dwarf bulborb in landing site
+	0	52.87		9.17	3055.30	2		# 5 pellet behind ship
+	0	-21.92		0.00	2870.73	2		# 1 pellets behind red onion
+	37	424.30		125.00	2897.12	2		# eggs behind ship
+	0	-400.92		0.00	2646.80	2		# 1 pellet next to red onion
+	0	-259.88		50.00	2476.48	2		# 10 pellet on ledge
+	0	-584.42		0.00	3160.87	2		# 1 pellet near blue onion spot
+	0	-1342.39	4.20	2825.76	2		# left 5 pellet in bag area
+	0	-1340.81	0.00	2606.40	2		# right 5 pellet in bag area
+10 	# num treasure spawn overrides
+	42 		2 	# Sunseed Berry
+	130 	2 	# Pilgrim Bulb
+	11 		2 	# Geographic Projection
+	155 	2 	# Chance Totem
+	173 	2 	# Healing Cask
+	142 	2 	# Courage Reactor
+	62 		2 	# Pink Menace
+	87 		2 	# Utter Scrap
+	157 	2 	# Spiny Alien Treat
+	47 		2 	# Fossilized Ursidae
 1	# bridge glitch active

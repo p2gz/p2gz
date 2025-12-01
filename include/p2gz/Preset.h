@@ -44,13 +44,7 @@ public:
 
 struct Preset {
 	struct EnemyGenSpawnOverride {
-		EnemyGenSpawnOverride()
-		{
-			enemy_id       = Game::EnemyTypeID::EnemyID_Armor;
-			gen_pos        = Vector3f::zero;
-			spawn_override = PSO_Ignore;
-		}
-		EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_, GenSpawnOverride spawn_override_);
+		EnemyGenSpawnOverride() { spawn_override = PSO_Ignore; }
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -65,10 +59,7 @@ struct Preset {
 		{
 			id                = 255;
 			spawn_override    = PSO_Ignore;
-			position_override = Vector3f::zero;
 		}
-		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
-		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_);
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -86,8 +77,6 @@ struct Preset {
 			stage_and_kind = 0;
 			amount         = 0;
 		}
-		Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_);    // Onion ring (yum)
-		Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind); // Single in a fixed spot
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -107,7 +96,6 @@ struct Preset {
 	struct StructureOverride {
 	public:
 		StructureOverride();
-		StructureOverride(u8 area_, Vector2f position_, u8 data_);
 
 		void read(Stream& input);
 		void write(Stream& output);

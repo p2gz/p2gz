@@ -15,7 +15,7 @@ struct RingBuffer {
 	{
 		GZASSERTLINE(N > 0);
 		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
-		mBuf     = new T[N];
+		mBuf              = new T[N];
 		prevHeap->becomeCurrentHeap();
 		mBufHead = N;
 		mLen     = 0;
@@ -70,12 +70,20 @@ struct Vec {
 	{
 		mCapacity = capacity;
 		mLen      = 0;
-		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
-		mBuf      = new T[capacity];
-		prevHeap->becomeCurrentHeap();
+		if (mCapacity > 0) {
+			JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
+			mBuf              = new T[capacity];
+			prevHeap->becomeCurrentHeap();
+		} else {
+			mBuf = nullptr;
+		}
 	}
 
-	~Vec() { delete[] mBuf; }
+	~Vec()
+	{
+		if (mBuf)
+			delete[] mBuf;
+	}
 
 	inline size_t len() { return mLen; }
 
@@ -86,12 +94,14 @@ struct Vec {
 		if (mLen >= mCapacity) {
 			_grow(mCapacity * 2);
 		}
+		GZASSERTLINE(mBuf);
 		mBuf[mLen] = val;
 		mLen++;
 	}
 
 	int find(T val)
 	{
+		GZASSERTLINE(mBuf);
 		for (size_t i = 0; i < mLen; i++) {
 			if (mBuf[i] == val) {
 				return i;
@@ -102,6 +112,7 @@ struct Vec {
 
 	T removeAt(size_t idx)
 	{
+		GZASSERTLINE(mBuf);
 		GZASSERTLINE(idx < mLen);
 		T val = mBuf[idx];
 		if (idx < mLen - 1) {
@@ -113,6 +124,7 @@ struct Vec {
 
 	T pop()
 	{
+		GZASSERTLINE(mBuf);
 		GZASSERTLINE(mLen > 0);
 		mLen--;
 		return mBuf[mLen];
@@ -120,6 +132,7 @@ struct Vec {
 
 	T& operator[](size_t idx)
 	{
+		GZASSERTLINE(mBuf);
 		GZASSERTLINE(idx < mLen);
 		return mBuf[idx];
 	}
@@ -134,6 +147,7 @@ struct Vec {
 	void extend(Vec<T>& other)
 	{
 		expandCapacityTo(len() + other.len());
+		GZASSERTLINE(mBuf);
 		for (size_t i = 0; i < other.len(); i++) {
 			push(other[i]);
 		}
@@ -145,9 +159,11 @@ private:
 	void _grow(size_t newCapacity)
 	{
 		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
-		T* newBuf = new T[newCapacity];
-		memmove(newBuf, mBuf, sizeof(T) * mLen);
-		delete[] mBuf;
+		T* newBuf         = new T[newCapacity];
+		if (mBuf) {
+			memmove(newBuf, mBuf, sizeof(T) * mLen);
+			delete[] mBuf;
+		}
 		mBuf      = newBuf;
 		mCapacity = newCapacity;
 		prevHeap->becomeCurrentHeap();

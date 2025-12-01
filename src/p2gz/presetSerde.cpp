@@ -533,7 +533,7 @@ void Preset::Sprout::write(Stream& output)
 	output.textWriteTab(1);
 	output.writeInt(get_kind());
 
-	if (amount > 0) {
+	if (amount == 0) {
 		output.textWriteTab(1);
 		output.writeFloat(pos.x);
 		output.writeFloat(pos.y);
