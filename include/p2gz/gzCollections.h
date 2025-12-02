@@ -2,8 +2,10 @@
 #define _GZCOLLECTIONS_H
 
 #include <types.h>
+#include <System.h>
 #include <stl/mem.h>
 #include <p2gz/gzMacros.h>
+#include <JSystem/JKernel/JKRHeap.h>
 
 namespace gz {
 
@@ -12,7 +14,9 @@ struct RingBuffer {
 	RingBuffer()
 	{
 		GZASSERTLINE(N > 0);
+		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
 		mBuf     = new T[N];
+		prevHeap->becomeCurrentHeap();
 		mBufHead = N;
 		mLen     = 0;
 	}
@@ -66,7 +70,9 @@ struct Vec {
 	{
 		mCapacity = capacity;
 		mLen      = 0;
+		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
 		mBuf      = new T[capacity];
+		prevHeap->becomeCurrentHeap();
 	}
 
 	~Vec() { delete[] mBuf; }
@@ -138,11 +144,13 @@ struct Vec {
 private:
 	void _grow(size_t newCapacity)
 	{
+		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
 		T* newBuf = new T[newCapacity];
 		memmove(newBuf, mBuf, sizeof(T) * mLen);
 		delete[] mBuf;
 		mBuf      = newBuf;
 		mCapacity = newCapacity;
+		prevHeap->becomeCurrentHeap();
 	}
 
 	size_t mCapacity;

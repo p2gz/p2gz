@@ -5,42 +5,43 @@
 #include <Game/Entities/PelletItem.h>
 
 namespace gz {
+
 struct TreasureEditor {
 public:
 	TreasureEditor() { }
 	~TreasureEditor() { }
 
-	void disable() { enabled = false; }
+	void init();
 	void sync();
-	Game::Pellet* get_active_treasure() { return active_treasure; }
+
+	void start_move(const char* treasure_name);
+	void end_move()
+	{
+		enabled         = false;
+		active_treasure = nullptr;
+	}
 	bool is_enabled() { return enabled; }
+
+	Game::Pellet* get_active_treasure() { return active_treasure; }
 	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }
 
 	void add(Game::Pellet*);
 	void clear_treasures();
-	void enable();
-	void init();
-	void set_collected(Game::Pellet*, bool);
+
+	void set_collected(const char* treasure_name, bool);
 	void snap_to_nearest_waypoint();
 
 private:
-	void toggle_collected(bool) { }
-
-	void find_treasure();
-	void handle_breadbug(Game::EnemyBase*);
-	void handle_dweevil(Game::EnemyBase*);
+	Game::Pellet* spawn_treasure(const char* config_name);
+	void sync_treasure_option(const char* treasure_name, ToggleMenuOption* treasure_collected_opt);
+	void focus_treasure(const char* treasure_name);
 
 	ListMenu* treasures;
 	Game::Pellet* active_treasure;
-	Vector3f initial_position;
+	Vector3f initial_position; // used when moving a treasure
 	bool enabled;
 };
 
-struct TreasureConfig {
-	const char* internal_name;
-	const char* external_name;
-	Vector3f spawnpoint;
-};
 } // namespace gz
 
 #endif

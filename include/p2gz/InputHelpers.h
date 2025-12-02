@@ -42,8 +42,8 @@ private:
 
 class PressAndHold {
 public:
-	static const size_t INIT_REPEAT_DELAY = 11;
-	static const size_t REPEAT_DELAY      = 3;
+	static const size_t INIT_REPEAT_DELAY = 9;
+	static const size_t REPEAT_DELAY      = 2;
 
 	PressAndHold(JUTGamePad::EButton button_, size_t initial_repeat_delay_ = INIT_REPEAT_DELAY, size_t repeat_delay_ = REPEAT_DELAY)
 	    : button(button_)

@@ -196,6 +196,23 @@ void GZMenu::decrease_text_size()
 	line_height -= 2.0;
 }
 
+void focus_captain()
+{
+	if (!Game::cameraMgr || !Game::naviMgr) {
+		return;
+	}
+
+	Game::Navi* navi = Game::naviMgr->getActiveNavi();
+	if (!navi) {
+		return;
+	}
+
+	Game::PlayCamera* camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
+	if (camera) {
+		camera->changeTargetAtPosition();
+	}
+}
+
 void GZMenu::push_layer(MenuLayer* layer_)
 {
 	if (layer_) {
@@ -207,6 +224,10 @@ void GZMenu::push_layer(MenuLayer* layer_)
 		if (layer->on_opened) {
 			layer->on_opened->invoke();
 		}
+		MenuOption* initial_option = layer->cur_option();
+		if (initial_option && initial_option->on_focus) {
+			initial_option->on_focus->invoke();
+		}
 	}
 }
 
@@ -215,6 +236,14 @@ void GZMenu::pop_layer()
 	if (layer->parent) {
 		layer = layer->parent;
 		breadcrumbs.pop();
+		focus_captain();
+		if (layer->on_opened) {
+			layer->on_opened->invoke();
+			MenuOption* initial_option = layer->cur_option();
+			if (initial_option && initial_option->on_focus) {
+				initial_option->on_focus->invoke();
+			}
+		}
 	} else {
 		close();
 	}
@@ -458,6 +487,10 @@ void ListMenu::update()
 		do {
 			selected = (selected + options.len() - 1) % options.len(); // subtract with wrap
 		} while (!options[selected]->visible);
+
+		if (options[selected]->on_focus) {
+			options[selected]->on_focus->invoke();
+		}
 	}
 	if (pah_down.check(p2gz->controller) && options.len() > 0) {
 		if (selected >= options.len() - 1) {
@@ -466,6 +499,10 @@ void ListMenu::update()
 		do {
 			selected += 1;
 		} while (!options[selected]->visible);
+
+		if (options[selected]->on_focus) {
+			options[selected]->on_focus->invoke();
+		}
 	}
 	if (btn & Controller::PRESS_A) {
 		options[selected]->select();

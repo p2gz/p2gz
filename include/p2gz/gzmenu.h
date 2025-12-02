@@ -30,8 +30,14 @@ public:
 	    , image_only(image_only_)
 	    , visible(true)
 	{
+		on_focus = nullptr;
 	}
-	virtual ~MenuOption() { }
+	virtual ~MenuOption()
+	{
+		if (on_focus) {
+			delete on_focus;
+		}
+	}
 
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual void update() { }
@@ -42,6 +48,7 @@ public:
 	bool visible;
 	const char* image_name;
 	bool image_only;
+	IDelegate* on_focus;
 };
 
 struct OpenSubMenuOption : public MenuOption {
@@ -250,6 +257,7 @@ public:
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z) = 0;
 	virtual void reset_selection()                   = 0;
 	virtual MenuOption* get_option(const char* path) { return nullptr; }
+	virtual MenuOption* cur_option() { return nullptr; }
 	virtual void navigate_to(const char* path) { }
 
 	const char* title;
@@ -280,7 +288,7 @@ public:
 	virtual void navigate_to(const char* path);
 	virtual void reset_selection() { selected = 0; }
 
-	MenuOption* cur_option()
+	virtual MenuOption* cur_option()
 	{
 		{
 			if (options.len() > 0)
@@ -331,7 +339,7 @@ public:
 		selected_col = 0;
 	}
 
-	MenuOption* cur_option() { return (*options[selected_row])[selected_col]; }
+	virtual MenuOption* cur_option() { return (*options[selected_row])[selected_col]; }
 
 	GridMenu* push_to_row(MenuOption* option);
 	GridMenu* end_row();

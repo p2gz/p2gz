@@ -72,13 +72,6 @@ void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* conf
 			// set skip timer
 			p2gz->timer->reset_skip_timer();
 
-			// Record treasure as being collected for the treasure editor
-
-			Pellet* pellet = static_cast<Pellet*>(cutscene_target);
-			if (pellet->getKind() == PelletType::Treasure || pellet->getKind() == PelletType::Upgrade) {
-				p2gz->treasure_editor->set_collected(pellet, true);
-			}
-
 			// TODO: this is where we'd also record the treasure being collected for the purposes of collection statistics
 		} else {
 			config->disableSkippable();
