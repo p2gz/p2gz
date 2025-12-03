@@ -120,6 +120,7 @@ void StructureEditor::init()
 
 void StructureEditor::add_gate(Game::ItemGate* gate)
 {
+	JKRHeap* prev_heap           = sys->mSysHeap->becomeCurrentHeap();
 	bool generated               = false;
 	GateWrapper* gate_wrapper    = new GateWrapper();
 	gate_wrapper->gate           = gate;
@@ -128,13 +129,13 @@ void StructureEditor::add_gate(Game::ItemGate* gate)
 	gates.push(gate_wrapper);
 
 	// clang-format off
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	gate_menu->push(new OpenSubMenuOption(gate_wrapper->name, (new ListMenu())
 	    ->push(new RangeMenuOption("segments remaining", 0, 3, 3 - gate->mSegmentsDown, RangeMenuOption::CAP, new Delegate1<GateWrapper, s32>(gates[gates.len()-1], &GateWrapper::set_gate_segments)))
 		->push(new FloatRangeMenuOption("segment health", 0.0f, gate->mMaxSegmentHealth, gate->mCurrentSegmentHealth, new Delegate1<GateWrapper, f32>(gates[gates.len()-1], &GateWrapper::set_gate_segment_health)))
     ));
-	prev_heap->becomeCurrentHeap();
 	// clang-format on
+
+	prev_heap->becomeCurrentHeap();
 }
 
 void StructureEditor::clear_gates()
@@ -223,26 +224,26 @@ void StructureEditor::sync_gates()
 
 void StructureEditor::add_bridge(Game::ItemBridge::Item* bridge)
 {
+	Game::ItemBridge::Mgr* mgr = Game::ItemBridge::mgr;
+	if (!mgr) {
+		return;
+	}
+
+	JKRHeap* prev_heap     = sys->mSysHeap->becomeCurrentHeap();
 	BridgeWrapper* wrapper = new BridgeWrapper();
 	wrapper->bridge        = bridge;
 	wrapper->name          = get_bridge_name(bridge->mPosition.x, bridge->mPosition.z);
 	bridges.push(wrapper);
 
-	Game::ItemBridge::Mgr* mgr = Game::ItemBridge::mgr;
-
-	if (!mgr) {
-		return;
-	}
-
 	// clang-format off
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	bridge_menu->push(new OpenSubMenuOption(wrapper->name, (new ListMenu())
 	    ->push(new RangeMenuOption("segments remaining", 0, bridge->mStageCount, bridge->mStageCount - bridge->mCurrStageIdx, RangeMenuOption::CAP, new Delegate1<BridgeWrapper, s32>(bridges[bridges.len()-1], &BridgeWrapper::set_bridge_segments)))
 		->push(new FloatRangeMenuOption("segment health", 0.0f, mgr->mParms->mBridgeParms.mHealth(), bridge->getCurrentStageHealth(), new Delegate1<BridgeWrapper, f32>(bridges[bridges.len()-1], &BridgeWrapper::set_bridge_segment_health)))
 		->push(new ToggleMenuOption("bridge glitch", true, new Delegate1<BridgeWrapper, bool>(bridges[bridges.len()-1], &BridgeWrapper::set_bridge_glitch)))
     ));
-	prev_heap->becomeCurrentHeap();
 	// clang-format on
+
+	prev_heap->becomeCurrentHeap();
 }
 
 void StructureEditor::clear_bridges()
@@ -370,6 +371,12 @@ void StructureEditor::sync_bridges()
 
 void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
 {
+	Game::ItemBarrel::Mgr* mgr = Game::ItemBarrel::mgr;
+	if (!mgr) {
+		return;
+	}
+
+	JKRHeap* prev_heap    = sys->mSysHeap->becomeCurrentHeap();
 	bool generated        = false;
 	const char* plug_name = get_plug_name(plug->mPosition.x, plug->mPosition.z, generated);
 	// check if we already have a menu item for this plug
@@ -392,19 +399,14 @@ void StructureEditor::add_plug(Game::ItemBarrel::Item* plug)
 	wrapper->generated_name = generated;
 	plugs.push(wrapper);
 
-	Game::ItemBarrel::Mgr* mgr = Game::ItemBarrel::mgr;
-	if (!mgr) {
-		return;
-	}
-
 	// clang-format off
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	plug_menu->push(new OpenSubMenuOption(wrapper->name, (new ListMenu())
 		->push(new ToggleMenuOption("plug alive", true, new Delegate1<PlugWrapper, bool>(plugs[plugs.len()-1], &PlugWrapper::set_plug_state)))
 		->push(new FloatRangeMenuOption("plug health", 0.0f, mgr->mParms->mBarrelParms.mHealth(), plug->mHealth, new Delegate1<PlugWrapper, f32>(plugs[plugs.len()-1], &PlugWrapper::set_plug_health)))
     ));
-	prev_heap->becomeCurrentHeap();
 	// clang-format on
+
+	prev_heap->becomeCurrentHeap();
 }
 
 void StructureEditor::set_plug_destroyed(bool destroyed)
@@ -525,24 +527,24 @@ void StructureEditor::sync_plugs()
 
 void StructureEditor::add_bag(Game::ItemDownFloor::Item* bag)
 {
+	Game::ItemDownFloor::Mgr* mgr = Game::ItemDownFloor::mgr;
+	if (!mgr) {
+		return;
+	}
+
+	JKRHeap* prev_heap  = sys->mSysHeap->becomeCurrentHeap();
 	BagWrapper* wrapper = new BagWrapper();
 	wrapper->bag        = bag;
 	wrapper->name       = get_bag_name(bag->mPosition.x, bag->mPosition.z);
 	bags.push(wrapper);
 
-	Game::ItemDownFloor::Mgr* mgr = Game::ItemDownFloor::mgr;
-
-	if (!mgr) {
-		return;
-	}
-
 	// clang-format off
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 	bag_menu->push(new OpenSubMenuOption(wrapper->name, (new ListMenu())
 		->push(new ToggleMenuOption("bag alive", true, new Delegate1<BagWrapper, bool>(bags[bags.len()-1], &BagWrapper::set_bag_state)))
     ));
-	prev_heap->becomeCurrentHeap();
 	// clang-format on
+
+	prev_heap->becomeCurrentHeap();
 }
 
 void StructureEditor::set_bag_flattened(Vector2f pos, bool flattened)
