@@ -59,6 +59,7 @@ P2GZ::P2GZ()
 	poko_editor          = new PokoEditor();
 	ek_editor            = new EKEditor();
 	treasure_editor      = new TreasureEditor();
+	onion_editor         = new OnionEditor();
 	localization_op      = new Localization();
 	empress_trainer      = new EmpressTrainer();
 
@@ -87,6 +88,7 @@ void P2GZ::init()
 	images->init();
 	spray_editor->init();
 	squad_editor->init();
+	onion_editor->init();
 	cutscene_mgr->init();
 	poko_editor->init();
 	ek_editor->init();

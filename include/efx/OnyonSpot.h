@@ -36,6 +36,7 @@ struct OnyonSpotData : public ModelEffectData {
 };
 
 struct OnyonSpot : public ModelEffect {
+	virtual ~OnyonSpot();                              // @P2GZ - define dtor for OnyonSpot
 	virtual void changeMaterial();                     // _1C
 	virtual void getLODSphere(Sys::Sphere& lodSphere); // _20
 	virtual bool useCylinderLOD() { return true; }     // _24 (weak)

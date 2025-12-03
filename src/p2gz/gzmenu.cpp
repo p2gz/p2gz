@@ -12,6 +12,7 @@
 #include <p2gz/Preset.h>
 #include <p2gz/DismissPositions.h>
 #include <p2gz/PokoEditor.h>
+#include <p2gz/OnionEditor.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
@@ -65,6 +66,7 @@ void GZMenu::init_menu()
 		->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
 		->push(new OpenSubMenuOption("pikmin", (new ListMenu())
 			->push(new OpenSubMenuOption("squad", (new GridMenu(100.0f, 36.0f, new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::sync)))))
+			->push(new OpenSubMenuOption("onions", (new GridMenu(100.0f, 36.0f, new Delegate<OnionEditor>(p2gz->onion_editor, &OnionEditor::sync)))))
 			->push(new PerformActionMenuOption("clear all", new Delegate<SquadEditor>(p2gz->squad_editor, &SquadEditor::clear_field_pikmin)))
 		))
 		->push(new OpenSubMenuOption("trainers", (new ListMenu())

@@ -14,9 +14,8 @@
 
 using namespace gz;
 
-#define SET_PIK(color, stage)                                                                                                           \
-	(new CurriedDelegate2<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(p2gz->squad_editor, &SquadEditor::set_piki_count, color, \
-	                                                                           stage))
+#define SET_PIK(color, stage) \
+	(new CurriedDelegate2<SquadEditor, Game::EPikiKind, Game::EPikiHappa, s32>(this, &set_piki_count, color, stage))
 #define PIK_OPT(opt_name, color, stage, image_name) \
 	(new RangeMenuOption(opt_name, 0, 100, 0, RangeMenuOption::WRAP, SET_PIK(color, stage), image_name, true))
 
