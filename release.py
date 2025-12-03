@@ -38,7 +38,8 @@ files_to_copy = [
     "root/files/memoryCard/memoryCardHeader.szs",
     "root/files/menu_images.szs",
     "root/files/user/Ebisawa/title/title.szs",
-    *glob.glob("root/files/presets/**/*.txt"),
+    "root/files/presets/all_presets.txt",
+    *[f.replace('\\', '/') for f in glob.glob("root/files/presets/**/*.txt")],
 ]
 
 for file_path in files_to_copy:
