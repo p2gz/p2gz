@@ -20,11 +20,13 @@ PresetMgr::PresetMgr()
 	RamStream filename_stream(all_presets_file, -1);
 	filename_stream.setMode(STREAM_MODE_TEXT, 1);
 
-	while (!filename_stream.eof()) {
+	const int num_files = filename_stream.readInt();
+	for (int i = 0; i < num_files; i++) {
 		const char* filename = filename_stream.readString(nullptr, 0);
 		if (strlen(filename) == 0) {
 			break;
 		}
+
 		PresetPreview* preview = new PresetPreview();
 		preview->read(filename);
 		preset_previews.push(preview);

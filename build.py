@@ -56,6 +56,7 @@ if args.clean:
 start_time = time.time()
 
 with open(all_presets_list, "w+") as f:
+    f.write(f"{len(all_preset_files)}\n")
     f.writelines(preset_file.removeprefix(os.path.join(P2GZ_ASSETS, 'files', 'presets'))
                 .replace('\\', '/').removeprefix('/') + "\n"
                 for preset_file in all_preset_files)
