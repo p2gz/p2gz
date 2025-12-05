@@ -83,6 +83,8 @@ public:
 
 	gz::test::TestRunner* test_runner;
 
+	bool in_save_file;
+
 private:
 	bool inited;
 };

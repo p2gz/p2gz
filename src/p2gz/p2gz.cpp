@@ -29,6 +29,7 @@ P2GZ* p2gz;
 P2GZ::P2GZ()
 {
 	inited             = false;
+	in_save_file       = true;
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// Setup all our P2GZ menus/features here
