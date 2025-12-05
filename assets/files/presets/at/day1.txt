@@ -9,7 +9,7 @@ AT 	# category
 7.000000 	# time of day
 1 	# day number
 -1 	# pokos (-1 if not applied)
-2 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+1 	# enter kind (FromCave = 0, FromMap = 1)
 0 	# num upgrades
 0 	# num demo flags
 0 	# num EK cutscenes

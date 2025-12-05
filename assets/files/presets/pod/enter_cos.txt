@@ -9,7 +9,7 @@ PoD 	# category
 7.000000 	# time of day
 8 	# day number
 -1 	# pokos (-1 if not applied)
-2 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+1 	# enter kind (FromCave = 0, FromMap = 1)
 7 	# num upgrades
 	0 	# ODII_BruteKnuckles
 	5 	# ODII_JusticeAlloy
@@ -18,7 +18,7 @@ PoD 	# category
 	9 	# ODII_FiveManNapsack
 	10 	# ODII_SphericalAtlas
 	11 	# ODII_GeographicProjection
-35 	# num demo flags
+34 	# num demo flags
 	0 	# DEMO_Pluck_First_Pikmin
 	1 	# DEMO_Discover_Treasure
 	3 	# DEMO_Find_Cave_Deeper_Hole
@@ -38,7 +38,6 @@ PoD 	# category
 	26 	# DEMO_Purple_Candypop
 	31 	# DEMO_Day_One_Start
 	32 	# DEMO_Enter_Awakening_Wood
-	33 	# DEMO_Enter_Perplexing_Pool
 	35 	# DEMO_Meet_Red_Pikmin
 	36 	# DEMO_Louie_Finds_Red_Onion
 	37 	# DEMO_Unlock_Captain_Switch

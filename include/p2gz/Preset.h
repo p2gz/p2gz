@@ -19,7 +19,7 @@ struct WarpDestination;
 enum PresetCategory { PoD, AT, General };
 enum PresetOrigin { PO_File, PO_Memcard, PO_Generated };
 
-enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
+enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1 };
 
 enum GenSpawnOverride { PSO_Ignore = 0, PSO_DontSpawn = 1, PSO_Spawn = 2, PSO_SpawnAndMove = 3 };
 

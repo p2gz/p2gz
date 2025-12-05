@@ -9,7 +9,7 @@ PoD 	# category
 10.500000 	# time of day
 5 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# enter kind (FromCave = 0, FromMap = 1)
 4 	# num upgrades
 	5 	# ODII_JusticeAlloy
 	8 	# ODII_PrototypeDetector

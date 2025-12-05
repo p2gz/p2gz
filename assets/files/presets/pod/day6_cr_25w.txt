@@ -9,7 +9,7 @@ PoD 	# category
 7.000000 	# time of day
 6 	# day number
 -1 	# pokos (-1 if not applied)
-1 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+1 	# enter kind (FromCave = 0, FromMap = 1)
 6 	# num upgrades
 	5 	# ODII_JusticeAlloy
 	6 	# ODII_ForgedCourage
