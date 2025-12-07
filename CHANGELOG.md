@@ -1,3 +1,28 @@
+# alpha5
+
+This update greatly improves stability, adds new presets, and polishes several existing features.
+
+Features:
+- Added an editor for pikmin counts inside onions
+- The treasure editor now supports spawning and deleting treasures in real time
+- The treasure editor now focuses the camera on selected treasures
+- Treasure cutscenes are now only skippable with Start to make normal treasure cutscene mashing easier
+- Presets for Enter WFG, Enter FC, and Enter CoS have been added
+- Presets for all AT cave segments have been added.
+
+Bug fixes:
+- Seed input in the warp menu now behaves as expected
+- Sublevel retries no longer use the same seed incorrectly
+- Pikmin pathing no longer recalculates in unexpected places such as the BK stump napsack
+- Retrying certain sublevels repeatedly no longer crashes mysteriously
+- Empress flick count now displays correctly in the Fast Empress Trainer
+- Cutscene timers are now cleared upon warp, so accidentally triggering cutscene timer storage crashes should no longer be possible
+- Fixed a crash when using the squad editor while there are seeds on the field
+- Attempting to save after warping from file select no longer crashes, and instead just shows the "no memory card" screen
+- Bridge glitch is now appropriately active in splits where it should be
+
+---
+
 # alpha4
 
 Feature additions:
