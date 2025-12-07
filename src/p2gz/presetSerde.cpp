@@ -278,6 +278,8 @@ void Preset::read(Stream& input)
 
 	READ_LIST_T(input, EnemyGenSpawnOverride, enemy_spawn_overrides);
 	READ_LIST_T(input, TreasureGenSpawnOverride, treasure_spawn_overrides);
+
+	bridge_glitch_active = input.readInt() > 0;
 }
 
 void Preset::write(Stream& output)
@@ -438,6 +440,9 @@ void Preset::write(Stream& output)
 			output.textWriteText("\n");
 		}
 	}
+
+	output.writeInt(bridge_glitch_active ? 1 : 0);
+	output.textWriteText("\t# bridge glitch active\n");
 }
 
 void PresetPreview::read(const char* filename_)
@@ -528,7 +533,7 @@ void Preset::Sprout::write(Stream& output)
 	output.textWriteTab(1);
 	output.writeInt(get_kind());
 
-	if (amount > 0) {
+	if (amount == 0) {
 		output.textWriteTab(1);
 		output.writeFloat(pos.x);
 		output.writeFloat(pos.y);

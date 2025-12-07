@@ -9,7 +9,7 @@ PoD 	# category
 9.500000 	# time of day
 7 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# enter kind (FromCave = 0, FromMap = 1)
 6 	# num upgrades
 	5 	# ODII_JusticeAlloy
 	6 	# ODII_ForgedCourage
@@ -80,7 +80,12 @@ PoD 	# category
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
 1 	# plugs destroyed
-0 	# num enemy spawns
+5 	# num enemy spawns
+	1 	-1153.000000 47.000000 2231.000000 	1
+	24 	548.54 100.0 546.48 	2  # fiery blowhog
+    24  300.91 100.0 361.60     2  # fiery blowhog
+    95  302.18 100.0 -177.91    2  # cannon beetle larvae
+    55  -271.09 114.0 -1387.32  1  # withering blowhog
 10 	# num treasure spawn overrides
 	42 	1 	# Sunseed Berry
 	130 	1 	# Pilgrim Bulb
@@ -92,3 +97,4 @@ PoD 	# category
 	87 	1 	# Utter Scrap
 	157 	1 	# Spiny Alien Treat
 	47 	1 	# Fossilized Ursidae
+1	# bridge glitch active

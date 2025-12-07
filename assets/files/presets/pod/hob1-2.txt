@@ -9,7 +9,7 @@ PoD 	# category
 8.000000 	# time of day
 5 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# enter kind (FromCave = 0, FromMap = 1)
 1 	# num upgrades
 	10 	# ODII_SphericalAtlas
 25 	# num demo flags
@@ -74,3 +74,4 @@ PoD 	# category
 	87 	2 	# Utter Scrap
 	157 	2 	# Spiny Alien Treat
 	47 	2 	# Fossilized Ursidae
+1	# bridge glitch active

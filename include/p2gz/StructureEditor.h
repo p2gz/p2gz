@@ -134,6 +134,7 @@ public:
 
 	void add_bridge(Game::ItemBridge::Item* bridge);
 	void set_bridge_stages_left(Vector2f pos, int stages_left);
+	void set_bridge_glitch(bool);
 	static const char* find_bridge_name(Vector2f pos, int area);
 	void clear_bridges();
 	void sync_bridges();

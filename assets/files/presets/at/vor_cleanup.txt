@@ -9,7 +9,7 @@ AT 	# category
 7.000000 	# time of day
 7 	# day number
 -1 	# pokos (-1 if not applied)
-1 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+1 	# enter kind (FromCave = 0, FromMap = 1)
 7 	# num upgrades
 	0 	# ODII_BruteKnuckles
 	4 	# ODII_StellarOrb
@@ -136,3 +136,4 @@ AT 	# category
 	50 	2 	# Conifer Spire
 	76 	2 	# Doomsday Apparatus
 	183 	2 	# Seed of Greed
+1	# bridge glitch active

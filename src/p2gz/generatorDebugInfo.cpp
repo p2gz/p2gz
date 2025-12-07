@@ -47,7 +47,7 @@ void GeneratorDebugInfo::draw_gen_dbg(Game::Generator* gen, Graphics* gfx)
 	if (gen->mObject->mTypeID == 'teki') {
 		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
 		const char* gen_name                = Game::EnemyInfoFunc::getEnemyName(gen_obj_enemy->mEnemyID, 0xFFFF);
-		gfx->perspPrintf(info, pos, "%s (gen)", gen_name);
+		gfx->perspPrintf(info, pos, "%d %s (gen)", gen_obj_enemy->mEnemyID, gen_name);
 	} else if (gen->mObject->mTypeID == 'pelt') {
 		Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
 		int treasure_id             = gen_pellet->mGenParm->mIndex;

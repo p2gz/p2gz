@@ -9,7 +9,7 @@ AT 	# category
 11.000000 	# time of day
 5 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# enter kind (FromCave = 0, FromMap = 1)
 3 	# num upgrades
 	8 	# ODII_PrototypeDetector
 	9 	# ODII_FiveManNapsack
@@ -102,3 +102,4 @@ AT 	# category
 	50 	2 	# Conifer Spire
 	76 	2 	# Doomsday Apparatus
 	183 	2 	# Seed of Greed
+1	# bridge glitch active

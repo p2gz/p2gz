@@ -9,7 +9,7 @@ PoD 	# category
 8.500000 	# time of day
 8 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+0 	# enter kind (FromCave = 0, FromMap = 1)
 7 	# num upgrades
 	0 	# ODII_BruteKnuckles
 	5 	# ODII_JusticeAlloy
@@ -100,3 +100,4 @@ PoD 	# category
 	87 	1 	# Utter Scrap
 	157 	1 	# Spiny Alien Treat
 	47 	1 	# Fossilized Ursidae
+1	# bridge glitch active

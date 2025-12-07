@@ -19,7 +19,7 @@ struct WarpDestination;
 enum PresetCategory { PoD, AT, General };
 enum PresetOrigin { PO_File, PO_Memcard, PO_Generated };
 
-enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1, PEK_FirstEnter = 2 };
+enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1 };
 
 enum GenSpawnOverride { PSO_Ignore = 0, PSO_DontSpawn = 1, PSO_Spawn = 2, PSO_SpawnAndMove = 3 };
 
@@ -44,13 +44,7 @@ public:
 
 struct Preset {
 	struct EnemyGenSpawnOverride {
-		EnemyGenSpawnOverride()
-		{
-			enemy_id       = Game::EnemyTypeID::EnemyID_Armor;
-			gen_pos        = Vector3f::zero;
-			spawn_override = PSO_Ignore;
-		}
-		EnemyGenSpawnOverride(Game::EnemyTypeID::EEnemyTypeID enemy_id_, Vector3f gen_pos_, GenSpawnOverride spawn_override_);
+		EnemyGenSpawnOverride() { spawn_override = PSO_Ignore; }
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -65,10 +59,7 @@ struct Preset {
 		{
 			id                = 255;
 			spawn_override    = PSO_Ignore;
-			position_override = Vector3f::zero;
 		}
-		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_);
-		TreasureGenSpawnOverride(u8 id_, GenSpawnOverride spawn_override_, Vector3f position_override_);
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -86,8 +77,6 @@ struct Preset {
 			stage_and_kind = 0;
 			amount         = 0;
 		}
-		Sprout(Game::EPikiHappa stage, Game::EPikiKind kind, u8 amount_);    // Onion ring (yum)
-		Sprout(Vector3f pos_, Game::EPikiHappa stage, Game::EPikiKind kind); // Single in a fixed spot
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -107,7 +96,6 @@ struct Preset {
 	struct StructureOverride {
 	public:
 		StructureOverride();
-		StructureOverride(u8 area_, Vector2f position_, u8 data_);
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -161,6 +149,7 @@ public:
 	u8 day;
 	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
 	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
+	bool bridge_glitch_active;
 
 private:
 	int ref_count;

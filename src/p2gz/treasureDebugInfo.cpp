@@ -52,7 +52,7 @@ void TreasureDebugInfo::draw_treasure_dbg(Game::Pellet* pellet, Graphics* gfx)
 	info.mColorA        = Color4(255, 255, 255, 200);
 	info.mColorB        = Color4(255, 255, 255, 200);
 	Vector3f pellet_pos = pellet->getPosition();
-	Vector3f pos        = pellet_pos + Vector3f(0, 45.0f, 0);
+	Vector3f pos        = pellet_pos + Vector3f(0, 70.0f, 0);
 
 	const int treasure_id     = pellet->getConfigIndex();
 	const char* treasure_name = pellet->getConfigName();

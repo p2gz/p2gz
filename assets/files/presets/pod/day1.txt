@@ -9,7 +9,7 @@ PoD 	# category
 7.000000 	# time of day
 1 	# day number
 -1 	# pokos (-1 if not applied)
-2 	# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)
+1 	# enter kind (FromCave = 0, FromMap = 1)
 0 	# num upgrades
 0 	# num demo flags
 0 	# num EK cutscenes
@@ -18,5 +18,31 @@ PoD 	# category
 0 	# num finished bridges
 0 	# num flattened bags
 0 	# plugs destroyed
-0 	# num enemy spawns
-0 	# num treasure spawn overrides
+15 	# num enemy spawns
+	1 	-1153.00 	47.00 	2231.00  2		# dwarf bulborb on manhole cover
+	1	-585.96		0.00	   2782.99	2		# dwarf bulborb in landing site
+	0	52.87 		9.17 	   3055.3 	1		# 5 pellet behind ship
+	0	-21.92 		0.00 	   2870.73	1		# 1 pellets behind red onion
+	37	424.30		125.00 	2897.12	1		# eggs behind ship
+	0	-400.92  	0.00 	   2646.80	1		# 1 pellet next to red onion
+	0	-259.88 	   50.00 	2476.48	1		# 10 pellet on ledge
+	0	-584.42 	   0.00 	   3160.87	1		# 1 pellet near blue onion spot
+	0	-1342.39 	4.20 	   2825.76	1		# left 5 pellet in bag area
+	0	-1340.81 	0.00 	   2606.4	1		# right 5 pellet in bag area
+   0  -524.84     60.00    3718.10  2     # left 1 pellet in louie area
+   0  -113.63     60.00    3915.37  2     # middle 1 pellet in louie area
+   0  -221.42     60.00    4188.80  2     # right 1 pellet in louie area
+   0  -14.46      100.00   3721.81  2     # left ledge 1 pellet in louie area
+   0  62.66       100.00   3768.90  2     # right ledge 1 pellet in louie area
+10 	# num treasure spawn overrides
+   42 	2 	# Sunseed Berry
+	130 	2 	# Pilgrim Bulb
+	11 	2 	# Geographic Projection
+	155 	2 	# Chance Totem
+	173 	2 	# Healing Cask
+	142 	2 	# Courage Reactor
+	62 	2 	# Pink Menace
+	87 	2 	# Utter Scrap
+	157 	2 	# Spiny Alien Treat
+	47 	2 	# Fossilized Ursidae
+0	# bridge glitch active

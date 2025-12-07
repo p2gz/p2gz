@@ -1,31 +1,36 @@
-enter_BK_(15/5w) 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+enter_CoS 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
 PoD 	# category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
-   0  0  0  0  0  27 0  0  0  0  0  18 5  0  15 0  0  0  	# pikmin
-   16 0  0  0  0  1  0  0  0  0  0  2  0  0  0  0  0  0  	# onions
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
+   0  0  45 0  0  28 0  0  0  0  0  20 0  0  40 0  0  0  	# onions
 0 	# num sprouts
 0 0 	# bitters, bitters unlocked
 0 0 	# spicies, spicies unlocked
-10.500000 	# time of day
-5 	# day number
+7.000000 	# time of day
+8 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1)
-4 	# num upgrades
+1 	# enter kind (FromCave = 0, FromMap = 1)
+7 	# num upgrades
+	0 	# ODII_BruteKnuckles
 	5 	# ODII_JusticeAlloy
+	6 	# ODII_ForgedCourage
 	8 	# ODII_PrototypeDetector
 	9 	# ODII_FiveManNapsack
 	10 	# ODII_SphericalAtlas
-31 	# num demo flags
+	11 	# ODII_GeographicProjection
+34 	# num demo flags
 	0 	# DEMO_Pluck_First_Pikmin
 	1 	# DEMO_Discover_Treasure
 	3 	# DEMO_Find_Cave_Deeper_Hole
 	4 	# DEMO_Find_Cave_Geyser
 	5 	# DEMO_First_Cave_Enter
 	6 	# DEMO_First_Cave_Return
+	7 	# DEMO_Max_Pikmin_On_Field
 	8 	# DEMO_First_Gate_Down
 	9 	# DEMO_Find_Spiderwort_Mold
 	12 	# DEMO_Eat_White_Pikmin
 	13 	# DEMO_Purples_In_Ship
+	14 	# DEMO_Whites_In_Ship
 	15 	# DEMO_Reds_In_Onion
 	18 	# DEMO_First_Globe_Day_End
 	20 	# DEMO_First_Nectar_Use
@@ -40,6 +45,7 @@ PoD 	# category
 	39 	# DEMO_Reunite_Captains
 	40 	# DEMO_First_Corpse_In_Cave
 	43 	# DEMO_Find_Blue_Onion
+	44 	# DEMO_Discover_Bulbmin
 	45 	# DEMO_Whites_Digging
 	46 	# DEMO_Reds_Purples_Tutorial
 	47 	# DEMO_Pikmin_In_Danger_Fire
@@ -47,47 +53,46 @@ PoD 	# category
 	49 	# DEMO_First_Number_Pellet
 	51 	# DEMO_Pikmin_In_Danger_Water
 	52 	# DEMO_Pikmin_In_Danger_Poison
-4 	# num EK cutscenes
+7 	# num EK cutscenes
+	0 	# ODII_BruteKnuckles
 	5 	# ODII_JusticeAlloy
+	6 	# ODII_ForgedCourage
 	8 	# ODII_PrototypeDetector
 	9 	# ODII_FiveManNapsack
 	10 	# ODII_SphericalAtlas
-4 	# num cave cutscene flags
+	11 	# ODII_GeographicProjection
+7 	# num cave cutscene flags
 	1 	# EC
+	2 	# SCx
+	3 	# FC
 	4 	# HoB
 	5 	# WFG
+	6 	# BK
 	7 	# SH
-3 	# num destroyed gates
+4 	# num destroyed gates
 	0 	-591.000000 1427.000000 	0 	# EC gate
 	1 	-503.000000 1639.000000 	0 	# black gate
 	1 	-820.000000 4280.000000 	0 	# SH gate
-0 	# num finished bridges
+	0 	369.000000 1565.000000 	0 	# water gate
+3 	# num finished bridges
+	1 	-1250.000000 2260.000000 	0 	# globe bridge
+	0 	540.000000 775.000000 	0 	# water bridge
+	0 	-316.799988 -1664.500000 	0 	# FC bridge
 3 	# num flattened bags
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
 0 	# plugs destroyed
-11 	# num enemy spawns
-	1 	-179.690002 -70.000000 2909.939941 	2
-	2 	-486.160004 -70.000000 3058.209961 	2
-	16 	-544.000000 -38.000000 1804.000000 	1
-	15 	-672.000000 -20.000000 1392.000000 	1
-	10 	-738.000000 -28.000000 2354.000000 	2
-	9 	518.000000 -75.000000 3719.000000 	2
-	0 	13.000000 15.000000 211.000000 	2
-	0 	209.000000 10.000000 -206.000000 	2
-	0 	14.000000 15.000000 -263.000000 	2
-	0 	-258.000000 15.000000 -133.000000 	2
-	27 	-36.439999 15.000000 -104.839996 	2
+0 	# num enemy spawns
 10 	# num treasure spawn overrides
-	42 	2 	# Sunseed Berry
-	130 	2 	# Pilgrim Bulb
-	11 	2 	# Geographic Projection
+	42 	1 	# Sunseed Berry
+	130 	1 	# Pilgrim Bulb
+	11 	1 	# Geographic Projection
 	155 	1 	# Chance Totem
-	173 	2 	# Healing Cask
-	142 	2 	# Courage Reactor
-	62 	2 	# Pink Menace
-	87 	2 	# Utter Scrap
-	157 	2 	# Spiny Alien Treat
-	47 	2 	# Fossilized Ursidae
-1	# bridge glitch active
+	173 	1 	# Healing Cask
+	142 	1 	# Courage Reactor
+	62 	1 	# Pink Menace
+	87 	1 	# Utter Scrap
+	157 	1 	# Spiny Alien Treat
+	47 	1 	# Fossilized Ursidae
+0	# bridge glitch active
