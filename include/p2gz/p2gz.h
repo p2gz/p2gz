@@ -33,7 +33,7 @@
 #include <p2gz/OnionEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha4"
+#define P2GZ_VERSION "alpha5"
 
 struct P2GZ {
 public:
