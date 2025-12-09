@@ -63,6 +63,7 @@ P2GZ::P2GZ()
 	onion_editor         = new OnionEditor();
 	localization_op      = new Localization();
 	empress_trainer      = new EmpressTrainer();
+	drop_editor          = new DropEditor();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();

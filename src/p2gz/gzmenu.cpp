@@ -138,6 +138,7 @@ void GZMenu::init_menu()
             ->push(new ToggleMenuOption("skippable cutscenes", true, new Delegate1<SkippableCutscenes, bool>(p2gz->skippable_cutscenes, &SkippableCutscenes::toggle_skippable)))
             ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
 			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
+			->push(new ToggleMenuOption("eggs always drop mitites", false, new Delegate1<DropEditor, bool>(p2gz->drop_editor, &DropEditor::set_egg_always_mitites)))
 			->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
         ));

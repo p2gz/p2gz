@@ -6,6 +6,7 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/Entities/PelletNumber.h"
 #include "Dolphin/rand.h"
+#include <p2gz/p2gz.h>
 
 namespace Game {
 namespace Egg {
@@ -286,6 +287,11 @@ void Obj::genItem()
 		} else if (dropType == EGGDROP_Bitter && !playData->isDemoFlag(DEMO_First_Bitter_Spray_Made)) {
 			dropType = EGGDROP_SingleNectar;
 		}
+	}
+
+	// @P2GZ: eggs always drop mitites setting
+	if (p2gz->drop_editor->is_egg_always_mitites()) {
+		dropType = EGGDROP_Mitites;
 	}
 
 	mititeGroup = nullptr;
