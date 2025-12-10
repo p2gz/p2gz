@@ -7,6 +7,8 @@
 #include <GameFlow.h>
 #include <PikiAI.h>
 #include <Game/MoviePlayer.h>
+#include <Game/Navi.h>
+#include <Game/NaviState.h>
 #include <Screen/Game2DMgr.h>
 #include <p2gz/gzMacros.h>
 
@@ -256,6 +258,12 @@ inline bool in_cave_gameplay()
 	return Game::moviePlayer->mDemoState == Game::DEMOSTATE_Inactive;
 }
 
+/// Either `in_cave_play` or `in_above_ground_play`
+inline bool in_play()
+{
+	return in_cave_play() || in_above_ground_play();
+}
+
 /// Either `in_cave_gameplay` or `in_above_ground_gameplay`
 inline bool in_gameplay()
 {
@@ -462,6 +470,75 @@ inline void skip_movie()
 {
 	if (Game::moviePlayer && Game::moviePlayer->mDemoState == Game::DEMOSTATE_Playing) {
 		Game::moviePlayer->skip();
+	}
+}
+
+inline const char* get_navi_state_name(Game::Navi* navi)
+{
+	if (!navi) {
+		return "NONAVI";
+	}
+	if (!navi->getCurrState()) {
+		return "NOSTATE";
+	}
+
+	switch (navi->getCurrState()->getCurrStateID()) {
+	case Game::NSID_Walk:
+		return "Walk";
+	case Game::NSID_Follow:
+		return "Follow";
+	case Game::NSID_Punch:
+		return "Punch";
+	case Game::NSID_Change:
+		return "Change";
+	case Game::NSID_Gather:
+		return "Gather";
+	case Game::NSID_Throw:
+		return "Throw";
+	case Game::NSID_ThrowWait:
+		return "ThrowWait";
+	case Game::NSID_Dope:
+		return "Dope";
+	case Game::NSID_Nuku:
+		return "Nuku";
+	case Game::NSID_NukuAdjust:
+		return "NukuAdjust";
+	case Game::NSID_Container:
+		return "Container";
+	case Game::NSID_Absorb:
+		return "Absorb";
+	case Game::NSID_Flick:
+		return "Flick";
+	case Game::NSID_Damaged:
+		return "Damaged";
+	case Game::NSID_Pressed:
+		return "Pressed";
+	case Game::NSID_FallMeck:
+		return "FallMeck";
+	case Game::NSID_KokeDamage:
+		return "KokeDamage";
+	case Game::NSID_Sarai:
+		return "Sarai";
+	case Game::NSID_SaraiExit:
+		return "SaraiExit";
+	case Game::NSID_Dead:
+		return "Dead";
+	case Game::NSID_Stuck:
+		return "Stuck";
+	case Game::NSID_Demo_Ufo:
+		return "DemoUfo";
+	case Game::NSID_Demo_HoleIn:
+		return "DemoHoleIn";
+	case Game::NSID_Pellet:
+		return "Pellet";
+	case Game::NSID_CarryBomb:
+		return "CarryBomb";
+	case Game::NSID_Climb:
+		return "Climb";
+	case Game::NSID_PathMove:
+		return "PathMove";
+	default:
+		return "UNKNOWN";
 	}
 }
 

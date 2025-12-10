@@ -64,6 +64,7 @@ P2GZ::P2GZ()
 	localization_op      = new Localization();
 	empress_trainer      = new EmpressTrainer();
 	drop_editor          = new DropEditor();
+	navi_debug_info      = new NaviDebugInfo();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();
@@ -149,6 +150,7 @@ void P2GZ::draw_2d()
 	timer->draw();
 	segment_history->draw_2d();
 	empress_trainer->draw();
+	navi_debug_info->draw();
 }
 
 // Anything that needs to be drawn in 3D space should be drawn here.
