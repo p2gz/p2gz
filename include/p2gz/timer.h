@@ -63,6 +63,10 @@ public:
 	void pause();
 	void unpause();
 
+	void reset_navi_swap_timer();
+	f32 stop_navi_swap_timer();
+	void cancel_navi_swap_timer();
+
 	void set_FS_map_flag(bool flag) { FS_map_flag = flag; }
 	bool get_FS_map_flag() { return FS_map_flag; }
 
@@ -84,6 +88,7 @@ private:
 	bool sub_timer_enabled;
 	bool skip_timer_set;
 	bool pause_timer_set;
+	bool navi_swap_timer_set;
 
 	bool FS_map_flag;     // are we loading into the world map/select area from file select?
 	bool in_freecam_mode; // handle pausing timer differently when we close the menu for freecam
@@ -92,6 +97,8 @@ private:
 	u32 sub_timer;   // sublevel timer
 	u32 skip_timer;  // for offsets because of P2GZ toggles
 	u32 pause_timer; // for when gz menu is open
+
+	u32 navi_swap_timer; // for measuring captain swap times
 
 	// menu hook
 	ListMenu* timer_menu;

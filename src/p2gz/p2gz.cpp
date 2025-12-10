@@ -126,6 +126,7 @@ void P2GZ::update()
 	dismiss_positions->update();
 	navi_tools->update();
 	empress_trainer->update();
+	navi_debug_info->update();
 
 	warp->update_lockout_frames();
 
