@@ -31,6 +31,7 @@
 #include <p2gz/Test.h>
 #include <p2gz/Trainers.h>
 #include <p2gz/OnionEditor.h>
+#include <p2gz/DropEditor.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "alpha5"
@@ -80,6 +81,7 @@ public:
 	gz::Localization* localization_op;
 	gz::EmpressTrainer* empress_trainer;
 	gz::OnionEditor* onion_editor;
+	gz::DropEditor* drop_editor;
 
 	gz::test::TestRunner* test_runner;
 
