@@ -987,6 +987,10 @@ void BaseGameSection::saveToGeneratorCache(CourseInfo* courseinfo)
 
 void BaseGameSection::pmTogglePlayer()
 {
+	// @P2GZ: display navi swap time
+	if (!p2gz->navi_debug_info->is_swapping()) {
+		p2gz->navi_debug_info->swap_start(mPrevNaviIdx);
+	}
 	if (mPrevNaviIdx == NAVIID_Olimar) {
 		setPlayerMode(NAVIID_Louie);
 		moviePlayer->mViewport     = sys->mGfx->getViewport(PLAYER2_VIEWPORT);
@@ -1085,6 +1089,12 @@ void BaseGameSection::setPlayerMode(int mode)
 void BaseGameSection::onCameraBlendFinished(CameraArg* arg)
 {
 	setCamController();
+
+	// @P2GZ: display navi swap time
+	if (p2gz->navi_debug_info->is_swapping()) {
+		p2gz->navi_debug_info->swap_complete();
+	}
+
 	if (gameSystem->isStoryMode()) {
 		if (!playData->isDemoFlag(DEMO_First_Use_Louie) && playData->isDemoFlag(DEMO_Unlock_Captain_Switch)) {
 			Navi* louie = naviMgr->getAt(NAVIID_Louie);

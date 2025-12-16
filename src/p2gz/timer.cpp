@@ -20,12 +20,14 @@ Timer::Timer()
     , sub_timer_enabled(true)
     , skip_timer_set(false)
     , pause_timer_set(false)
+    , navi_swap_timer_set(false)
     , FS_map_flag(false)
     , in_freecam_mode(false)
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
     , pause_timer(0)
+    , navi_swap_timer(0)
 {
 	color        = JUtility::TColor(255, 255, 255, 130);
 	glyph_width  = 16.0;
@@ -295,6 +297,39 @@ void Timer::set_enabled(bool on)
 void Timer::set_sub_timer_enabled(bool on)
 {
 	sub_timer_enabled = on;
+}
+
+void Timer::reset_navi_swap_timer()
+{
+	if (navi_swap_timer_set) {
+		return;
+	}
+	navi_swap_timer     = get_cur_time();
+	navi_swap_timer_set = true;
+}
+
+f32 Timer::stop_navi_swap_timer()
+{
+	if (!navi_swap_timer_set) {
+		return;
+	}
+
+	// duration in milliseconds
+	int diff = get_cur_time() - navi_swap_timer;
+	if (diff < 0) {
+		diff = 0;
+	}
+
+	return (f32)(diff) / 1000.0f;
+}
+
+void Timer::cancel_navi_swap_timer()
+{
+	if (!navi_swap_timer_set) {
+		return;
+	}
+	navi_swap_timer     = 0;
+	navi_swap_timer_set = false;
 }
 
 // @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv
