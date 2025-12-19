@@ -547,6 +547,7 @@ GeneratorMgr::GeneratorMgr()
 	}
 	mUnusedFlag = 0;
 	mName       = "GeneratorMgr";
+	mDisabled   = false; // @P2GZ
 }
 
 /**

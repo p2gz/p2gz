@@ -1444,6 +1444,14 @@ void PlayData::visitCourse(int index)
 	mBitfieldPerCourse[index] |= PDCF_Visited;
 }
 
+// @P2GZ
+void PlayData::clearVisitAllCourses()
+{
+	for (int i = 0; i < stageList->getCourseCount(); i++) {
+		mBitfieldPerCourse[i] &= ~PDCF_Visited;
+	}
+}
+
 bool PlayData::closeCourse(int)
 {
 }

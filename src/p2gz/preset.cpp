@@ -243,6 +243,9 @@ void Preset::apply()
 	if (apply_pokos) {
 		p2gz->poko_editor->set_pokos(pokos);
 	}
+
+	Game::generatorCache->clearCache();
+	Game::playData->clearVisitAllCourses();
 }
 
 void Preset::apply_post_load()

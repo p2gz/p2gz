@@ -141,6 +141,7 @@ struct GeneratorMgr : public CNode {
 	f32 mStartDir;            // _68, v0.1 adds the start direction
 	u8 mUnusedFlag;           // _6C, set to true for nonloop/loop, not used
 	u8 mUnusedFlag2;          // _6D
+	bool mDisabled;           // @P2GZ - disable some generator mgrs so we can load them in at unusual times
 
 	static Delegate1<struct BaseGameSection, Vector3f&>* cursorCallback;
 };

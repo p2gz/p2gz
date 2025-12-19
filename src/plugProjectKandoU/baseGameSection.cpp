@@ -712,10 +712,14 @@ void BaseGameSection::initGenerators()
 			for (int i = 0; i < courseInfo->mLimitGenInfo.mCount; i++) {
 				LimitGen* currentGen = static_cast<LimitGen*>(courseInfo->mLimitGenInfo.mOwner.getChildAt(i));
 
-				if (currentGen->mMinimumDay > today || today > currentGen->mMaximumDay)
-					continue;
-				if (playData->mLimitGen[courseInfo->mCourseIndex].mNonLoops.isFlag(i))
-					continue;
+				// @P2GZ - always load nonloop genfiles, but mark them as disabled if necessary
+				// if (currentGen->mMinimumDay > today || today > currentGen->mMaximumDay)
+				// 	continue;
+				// if (playData->mLimitGen[courseInfo->mCourseIndex].mNonLoops.isFlag(i))
+				// 	continue;
+				bool disabled = false;
+				if (currentGen->mMinimumDay > today)
+					disabled = true;
 
 				sprintf(filenameCharArr, "%s/nonloop/%s", courseInfo->mAbeFolder, currentGen->mName);
 
@@ -727,6 +731,7 @@ void BaseGameSection::initGenerators()
 
 					GeneratorMgr* currentNonloopMgr = new GeneratorMgr;
 					currentNonloopMgr->mUnusedFlag  = true; // is nonrepeating?
+					currentNonloopMgr->mDisabled    = disabled; // @P2GZ
 
 					currentNonloopMgr->read(noonloopTxt, false);
 					currentNonloopMgr->setDayLimit(currentGen->mDayLimit);
@@ -822,7 +827,10 @@ void BaseGameSection::initGenerators()
 		}
 
 		for (int i = 0; i < fileIdx; i++) {
-			generatorManagers[i]->generate();
+			// @P2GZ - only generate genmgrs that aren't disabled
+			if (!generatorManagers[i]->mDisabled) {
+				generatorManagers[i]->generate();
+			}
 		}
 
 		generatorCache->createNumberGenerators();
