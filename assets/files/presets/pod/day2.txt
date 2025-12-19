@@ -11,8 +11,7 @@ PoD 	# category
 -1 	# pokos (-1 if not applied)
 1 	# enter kind (FromCave = 0, FromMap = 1)
 0 	# num upgrades
-4 	# num demo flags
-	0 	# DEMO_Pluck_First_Pikmin
+3 	# num demo flags
 	9 	# DEMO_Find_Spiderwort_Mold
 	31 	# DEMO_Day_One_Start
 	35 	# DEMO_Meet_Red_Pikmin

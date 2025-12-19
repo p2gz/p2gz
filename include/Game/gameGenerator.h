@@ -98,6 +98,7 @@ struct Generator : public CNode {
 	Vector3f mOffset;          // _A0
 	u8 mIsInactive;            // _AC, if true, the object wont spawn or need its assets loaded
 	int mIndex;                // _B0
+	bool mIsDisabled;          // @P2GZ - flag for generators that shouldn't be saved UNLESS spawned via preset.
 
 	enum RamMode {
 		RM_Disc        = 0,
