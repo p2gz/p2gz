@@ -47,7 +47,7 @@ Game::Pellet* handle_breadbug(Game::EnemyBase* enemy, const char* config_name)
 		}
 	}
 
-	GZEXPECT(false, "breadbug did not have expected treasure %s", config_name);
+	return nullptr;
 }
 
 // Drop treasures carried by dweevils.
@@ -162,7 +162,10 @@ Game::Pellet* release_treasure(Game::Creature* creature, const char* config_name
 		Game::EnemyBase* enemy             = static_cast<Game::EnemyBase*>(creature);
 		Game::EnemyTypeID::EEnemyTypeID id = enemy->getEnemyTypeID();
 		if (id == Game::EnemyTypeID::EnemyID_PanModoki || id == Game::EnemyTypeID::EnemyID_OoPanModoki) {
-			return handle_breadbug(enemy, config_name);
+			Game::Pellet* released = handle_breadbug(enemy, config_name);
+			if (released) {
+				return released;
+			}
 		}
 
 		if (enemy->mPelletDropCode != 0) {
