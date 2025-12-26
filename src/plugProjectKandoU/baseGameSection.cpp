@@ -718,7 +718,7 @@ void BaseGameSection::initGenerators()
 				if (playData->mLimitGen[courseInfo->mCourseIndex].mNonLoops.isFlag(i))
 					continue;
 				bool disabled = false;
-				if (currentGen->mMinimumDay > today)
+				if (currentGen->mMinimumDay > today || today > currentGen->mMaximumDay)
 					disabled = true;
 
 				sprintf(filenameCharArr, "%s/nonloop/%s", courseInfo->mAbeFolder, currentGen->mName);
