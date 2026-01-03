@@ -11,8 +11,7 @@ PoD 	# category
 -1 	# pokos (-1 if not applied)
 1 	# enter kind (FromCave = 0, FromMap = 1)
 0 	# num upgrades
-4 	# num demo flags
-	0 	# DEMO_Pluck_First_Pikmin
+3 	# num demo flags
 	9 	# DEMO_Find_Spiderwort_Mold
 	31 	# DEMO_Day_One_Start
 	35 	# DEMO_Meet_Red_Pikmin
@@ -24,7 +23,7 @@ PoD 	# category
 0 	# plugs destroyed
 10 	# num enemy spawns
 	1 	-1153.00	47.00	2231.00 2		# dwarf bulborb on manhole cover
-	1	-585.96		0.00	2782.99	1		# dwarf bulborb in landing site
+	1	-585.96		0.00	2782.99	2		# dwarf bulborb in landing site
 	0	52.87		9.17	3055.3 	1		# 5 pellet behind ship
 	0	-21.92		0.00	2870.73	2		# 1 pellets behind red onion
 	37	424.30		125.00	2897.12	1		# eggs behind ship

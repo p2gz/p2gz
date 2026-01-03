@@ -243,6 +243,16 @@ void Preset::apply()
 	if (apply_pokos) {
 		p2gz->poko_editor->set_pokos(pokos);
 	}
+
+	Game::generatorCache->clearCache();
+	Game::playData->clearVisitAllCourses();
+	Game::playData->mLimitGen->mNonLoops.all_zero();
+
+	// Set red onion flags so that it appears in the correct place for Day 2 presets
+	if (day > 1) {
+		Game::playData->setBootContainer(Game::Red);
+		Game::playData->setContainer(Game::Red);
+	}
 }
 
 void Preset::apply_post_load()
@@ -293,7 +303,6 @@ void Preset::apply_post_load()
 
 	// Carve out for Day 2 presets. Makes the onion emit a single seed instead of playing the extinction cutscene immediately.
 	if (in_above_ground_play() && squad.getTotalSum() == 0 && onion_pikis.getTotalSum() == 0 && day > 1) {
-		p2gz->squad_editor->set_demo_flags_for_color(Game::Red);
 		Game::SingleGame::GameState* game_state = static_cast<Game::SingleGame::GameState*>(get_SGS()->mCurrentState);
 		game_state->mIsPostExtinct              = true;
 	}

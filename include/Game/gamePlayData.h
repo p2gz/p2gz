@@ -390,6 +390,7 @@ struct PlayData : public CNode {
 	void initCourses(bool);
 	void openCourse(int);
 	void visitCourse(int);
+	void clearVisitAllCourses(); // @P2GZ
 	bool courseOpen(int);
 	bool courseJustOpen(int);
 	bool courseFirstTime(int);

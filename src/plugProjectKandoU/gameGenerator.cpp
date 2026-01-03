@@ -184,6 +184,7 @@ Generator::Generator()
 	mDeathCount           = 0;
 	mDayNum               = 0;
 	mDaysTillResurrection = 0;
+	mIsDisabled           = false; // @P2GZ
 }
 
 /**
@@ -317,6 +318,7 @@ void Generator::generate()
 				mDayNum     = gameSystem->mTimeMgr->mDayCount;
 				mDeathCount = 0;
 				mCreature   = mObject->generate(this);
+				mIsDisabled = false;
 				if (mCreature) {
 					mCreature->mGenerator = this;
 				}
@@ -547,6 +549,7 @@ GeneratorMgr::GeneratorMgr()
 	}
 	mUnusedFlag = 0;
 	mName       = "GeneratorMgr";
+	mDisabled   = false; // @P2GZ
 }
 
 /**
@@ -678,11 +681,13 @@ void GeneratorMgr::read(Stream& input, bool)
 			mGenerator = new Generator();
 			mGenerator->read(input);
 			mGenerator->mMgr = this;
+			mGenerator->mIsDisabled = mDisabled; // @P2GZ
 			generatorCache->addGenerator(mGenerator);
 		} else {
 			Generator* newGenerator = new Generator();
 			newGenerator->mMgr      = this;
 			newGenerator->read(input);
+			newGenerator->mIsDisabled = mDisabled; // @P2GZ
 
 			Generator* gen = mGenerator;
 			for (gen; gen->mNextGenerator; gen = gen->mNextGenerator) {

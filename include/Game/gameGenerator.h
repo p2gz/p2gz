@@ -98,6 +98,7 @@ struct Generator : public CNode {
 	Vector3f mOffset;          // _A0
 	u8 mIsInactive;            // _AC, if true, the object wont spawn or need its assets loaded
 	int mIndex;                // _B0
+	bool mIsDisabled;          // @P2GZ - flag for generators that shouldn't be saved UNLESS spawned via preset.
 
 	enum RamMode {
 		RM_Disc        = 0,
@@ -141,6 +142,7 @@ struct GeneratorMgr : public CNode {
 	f32 mStartDir;            // _68, v0.1 adds the start direction
 	u8 mUnusedFlag;           // _6C, set to true for nonloop/loop, not used
 	u8 mUnusedFlag2;          // _6D
+	bool mDisabled;           // @P2GZ - disable some generator mgrs so we can load them in at unusual times
 
 	static Delegate1<struct BaseGameSection, Vector3f&>* cursorCallback;
 };
