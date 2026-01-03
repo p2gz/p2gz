@@ -35,7 +35,7 @@
 #include <p2gz/NaviDebugInfo.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "alpha5"
+#define P2GZ_VERSION "beta1-pre"
 
 struct P2GZ {
 public:

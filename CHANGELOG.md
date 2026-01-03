@@ -1,3 +1,19 @@
+# beta1-pre
+
+This is a staging release for the first public release of P2GZ. Changes are minimal but we expect the hack to be somewhat stable already.
+
+Features:
+- Added a setting to make eggs always drop mitites
+- Added debug info for captain position, velocity, state, etc.
+- Added a preset for Day 2
+
+Bug fixes:
+- Fixed an issue where the day 1 preset would cause an instant pikmin extinction
+- Fixed a crash when attempting to move GBB's treasure on GK6
+- Fixed pellets and eggs not respawning properly in some VoR presets
+
+---
+
 # alpha5
 
 This update greatly improves stability, adds new presets, and polishes several existing features.
