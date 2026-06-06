@@ -9,6 +9,10 @@ using namespace gz;
 TreasureDebugInfo::TreasureDebugInfo()
 {
 	enabled = false;
+	draw_name_id = true;
+	draw_position = true; 
+	draw_carry_power = true;  
+	draw_velocity = false; 
 }
 
 void TreasureDebugInfo::draw()
@@ -57,9 +61,23 @@ void TreasureDebugInfo::draw_treasure_dbg(Game::Pellet* pellet, Graphics* gfx)
 	const int treasure_id     = pellet->getConfigIndex();
 	const char* treasure_name = pellet->getConfigName();
 
-	gfx->perspPrintf(info, pos, "%d: %s", treasure_id, treasure_name);
-	info.mPerspectiveOffsetY += 22;
-	gfx->perspPrintf(info, pos, "(%.2f, %.2f, %.2f)", pellet->getPosition().x, pellet->getPosition().y, pellet->getPosition().z);
-	info.mPerspectiveOffsetY += 22;
-	gfx->perspPrintf(info, pos, "carry power: %.1f", pellet->mCarryPower);
+	if (draw_name_id) {
+		gfx->perspPrintf(info, pos, "%d: %s", treasure_id, treasure_name);
+		info.mPerspectiveOffsetY += 22;
+	}
+	if (draw_position) {
+		gfx->perspPrintf(info, pos, "(%.2f, %.2f, %.2f)", pellet->getPosition().x, pellet->getPosition().y, pellet->getPosition().z);
+		info.mPerspectiveOffsetY += 22;
+	}
+	if (draw_carry_power) {
+		gfx->perspPrintf(info, pos, "carry power: %.1f", pellet->mCarryPower);
+		info.mPerspectiveOffsetY += 22;
+	}
+	if (draw_velocity) {
+		Vector3f speed;
+		speed.x = pellet->getVelocity().x;
+		speed.y = pellet->getVelocity().y;
+		speed.z = pellet->getVelocity().z;
+		gfx->perspPrintf(info, pos, "velocity: %.1f", speed.sqrMagnitude() / 100.0f);
+	}
 }

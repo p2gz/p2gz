@@ -26,7 +26,7 @@ struct EnemyDebugInfo {
 	void set_draw_position_enabled(bool enabled_) { draw_position = enabled_; }
 	void set_draw_collision_enabled(bool enabled_) { draw_collision = enabled_; }
 	void set_draw_timers_enabled(bool enabled_) { draw_timers = enabled_; }
-	void set_draw_stuck_pikmin(bool enabled_) { draw_stuck_pikmin = enabled_; }
+	void set_draw_stuck_pikmin_enabled(bool enabled_) { draw_stuck_pikmin = enabled_; }
 
 private:
 	void draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx);
