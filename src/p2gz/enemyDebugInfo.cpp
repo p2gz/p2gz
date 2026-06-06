@@ -278,6 +278,10 @@ void EnemyDebugInfo::draw_enemy_dbg(Game::EnemyBase* enemy, Graphics* gfx)
 		draw_timer(enemy, gfx, info, pos);
 		info.mPerspectiveOffsetY += line_height;
 	}
+	if (draw_stuck_pikmin) {
+		gfx->perspPrintf(info, pos, "stuck: %d", (int)enemy->mStuckPikminCount);
+		info.mPerspectiveOffsetY += line_height;
+	}
 
 	// Setup sphere draw next (drawing shapes vs. text needs a different init call)
 	gfx->initPrimDraw(nullptr);
