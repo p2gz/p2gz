@@ -78,6 +78,6 @@ void TreasureDebugInfo::draw_treasure_dbg(Game::Pellet* pellet, Graphics* gfx)
 		speed.x = pellet->getVelocity().x;
 		speed.y = pellet->getVelocity().y;
 		speed.z = pellet->getVelocity().z;
-		gfx->perspPrintf(info, pos, "velocity: %.1f", speed.sqrMagnitude() / 100.0f);
+		gfx->perspPrintf(info, pos, "velocity: %.1f", speed.length());
 	}
 }
