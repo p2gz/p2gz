@@ -59,7 +59,6 @@ release_assets/version.txt
 !release_assets/*.bat
 !release_assets/*.sh
 p2gz-*.zip
-assets/files/presets/all_presets.txt
 
 *.iso
 root
