@@ -392,6 +392,16 @@ void BaseGameSection::doDraw(Graphics& gfx)
 	pre2dDraw(gfx);
 	gfx.setToken("2d");
 	draw2D(gfx);
+
+	// @P2GZ: early blues trainer inset camera, drawn over the HUD like a separate
+	// little game view. newdraw_draw3D_all kept the draw buffers alive for this;
+	// reset them here in its place
+	if (p2gz->early_blues_trainer->is_inset_active()) {
+		p2gz->early_blues_trainer->draw_inset(this, gfx);
+		mOpaqueDrawBuffer->frameInitAll();
+		mTransparentDrawBuffer->frameInitAll();
+	}
+
 	if (mDraw2DCreature) {
 		drawOtakaraWindow(gfx);
 	}

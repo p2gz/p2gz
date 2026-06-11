@@ -314,6 +314,10 @@ void Warp::do_warp()
 	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
 		p2gz->empress_trainer->stop();
 	}
+	// same hack: leaving AW above ground ends the early blues trainer
+	if (dest.area != 1 || dest.cave != 0) {
+		p2gz->early_blues_trainer->stop();
+	}
 
 	if (p2gz->collision_viewer->is_enabled()) {
 		p2gz->collision_viewer->handle_warp();

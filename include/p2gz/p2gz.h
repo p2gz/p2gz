@@ -81,6 +81,7 @@ public:
 	gz::TreasureEditor* treasure_editor;
 	gz::Localization* localization_op;
 	gz::EmpressTrainer* empress_trainer;
+	gz::EarlyBluesTrainer* early_blues_trainer;
 	gz::OnionEditor* onion_editor;
 	gz::DropEditor* drop_editor;
 	gz::NaviDebugInfo* navi_debug_info;

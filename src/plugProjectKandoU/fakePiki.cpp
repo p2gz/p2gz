@@ -13,6 +13,9 @@
 #include "trig.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 f32 efx::TCursor::kAngleSpeed = PI / 60.0f;
 
 namespace Game {
@@ -1548,6 +1551,18 @@ void FakePiki::doSimulation(f32 rate)
 	}
 
 	if (isNavi()) {
+		// @P2GZ: while the early blues trainer is running, olimar respawns at the
+		// trainer start position instead of the ship/onyon. not while riding the
+		// napsack pellet though: his position is synced from the pellet during the
+		// ride (see doAnimation above), and the ride must play out for the trick
+		if (p2gz->early_blues_trainer->is_enabled() && static_cast<Navi*>(this)->mNaviIndex == NAVIID_Olimar
+		    && !static_cast<Navi*>(this)->mPellet) {
+			p2gz->early_blues_trainer->on_death_plane_warp();
+			Vector3f dropPos = p2gz->early_blues_trainer->respawn_position();
+			setPosition(dropPos, false);
+			return;
+		}
+
 		// warp navi to ship/pod/onyon (if vs mode, since ship or pod should be loaded otherwise)
 		Onyon* dropLocation = ItemOnyon::mgr->mUfo; // default to ship
 		if (!ItemOnyon::mgr->mUfo) {
