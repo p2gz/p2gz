@@ -73,6 +73,9 @@ public:
 	void set_freecam_mode(bool set) { in_freecam_mode = set; }
 	bool is_freecam_mode() { return in_freecam_mode; }
 
+	void add_split_times(); 
+	void reset_split_times(); 
+
 private:
 	struct TimeComponents {
 		u32 minutes;
@@ -92,13 +95,16 @@ private:
 
 	bool FS_map_flag;     // are we loading into the world map/select area from file select?
 	bool in_freecam_mode; // handle pausing timer differently when we close the menu for freecam
+	bool segment_timer_enabled; // are we using the segment timer? 
 
-	u32 main_timer;  // overall/default timer
-	u32 sub_timer;   // sublevel timer
+	u32 main_timer;  // overall/default timer starting point
+	u32 sub_timer;   // sublevel timer starting point
 	u32 skip_timer;  // for offsets because of P2GZ toggles
 	u32 pause_timer; // for when gz menu is open
 
 	u32 navi_swap_timer; // for measuring captain swap times
+
+	u32 split_times[20]; // for tracking segment times 
 
 	// menu hook
 	ListMenu* timer_menu;

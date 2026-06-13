@@ -48,6 +48,7 @@ void NaviDebugInfo::swap_start(int startNaviID)
 	swap_navi_source_ID     = startNaviID; // record who we're swapping from (for text color)
 	p2gz->timer->cancel_navi_swap_timer(); // make sure we don't have a timer running already somehow
 	p2gz->timer->reset_navi_swap_timer();  // start timer
+	p2gz->timer->add_split_times(); 
 }
 
 /// Call when captain swap ends, so we can calc and print the time taken

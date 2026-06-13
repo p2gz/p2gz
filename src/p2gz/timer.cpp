@@ -23,6 +23,7 @@ Timer::Timer()
     , navi_swap_timer_set(false)
     , FS_map_flag(false)
     , in_freecam_mode(false)
+	, segment_timer_enabled(true)
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
@@ -34,6 +35,9 @@ Timer::Timer()
 	glyph_height = 16.0;
 	x            = 12.0;
 	z            = 12.0;
+	for (int i = 0; i < 20; i++) {
+		split_times[i] = 0;
+	}
 }
 
 void Timer::init()
@@ -76,6 +80,24 @@ void Timer::draw()
 		}
 		j2d.print(x + sub_offset, z, "(%ld:%.2ld.%.1ld)", sub_c.minutes, sub_c.seconds, sub_c.tenths);
 	}
+
+	if (segment_timer_enabled) {
+		f32 starting_seg_offset = z + glyph_height + 10.0f; 
+		u32 start = 0;
+		// Draw segment times
+		for (int i = 0; i < 20; i++) {
+			if (split_times[i] > 0) {
+				Timer::TimeComponents seg_c;
+				if (i == 0) {
+					seg_c = calc_time(main_timer, split_times[0]);
+				}
+				else {
+					seg_c = calc_time(split_times[i - 1], split_times[i]);
+				}
+				j2d.print(x, starting_seg_offset + (i * 20), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+			}
+		}
+	}
 }
 
 void Timer::sync()
@@ -116,12 +138,14 @@ void Timer::on_reset()
 	if (pause_timer_set) {
 		pause_timer = get_cur_time();
 	}
+	reset_split_times(); 
 }
 
 void Timer::reset_main_timer()
 {
 	main_timer = get_cur_time();
 	reset_sub_timer();
+	reset_split_times(); 
 }
 
 void Timer::reset_main_timer(f32 offset_seconds)
@@ -330,6 +354,32 @@ void Timer::cancel_navi_swap_timer()
 	}
 	navi_swap_timer     = 0;
 	navi_swap_timer_set = false;
+}
+
+void Timer::add_split_times()
+{
+	if (!segment_timer_enabled){
+		return;
+	}
+
+	u32 split_time = get_cur_time(); 
+	// stretch goal: optimize this 
+	for (int i = 0; i < 20; i++) {
+		if (split_times[i] == 0) {
+			split_times[i] = split_time; 
+			return; 
+		}
+	}
+}
+
+void Timer::reset_split_times(){
+	if (!segment_timer_enabled){
+		return;
+	}
+
+	for (int i = 0; i < 20; i++){
+		split_times[i] = 0;
+	}
 }
 
 // @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv
