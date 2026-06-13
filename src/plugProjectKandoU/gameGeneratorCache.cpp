@@ -1,6 +1,9 @@
 #include "Game/gameGeneratorCache.h"
 #include "Game/gameStages.h"
 #include "Game/Entities/ItemPikihead.h"
+#include "Game/GameSystem.h"    // @P2GZ
+#include "Game/TimeMgr.h"       // @P2GZ
+#include "Game/Entities/Item.h" // @P2GZ
 
 namespace Game {
 
@@ -678,4 +681,72 @@ void CourseCache::read(Stream& input)
 	mPikiheadCount  = input.readInt();
 	mPikiheadSize   = input.readInt();
 }
+
+// @P2GZ - write a creature record for a pellet or structure generator without loading the object
+void GeneratorCache::reconstructCreatureRecord(Generator* gen, CreatureRecordState state)
+{
+	// skip expired generators
+	if ((gen->mDayLimit != -1) && (gameSystem->mTimeMgr->mDayCount >= gen->mDayLimit)) {
+		return;
+	}
+	if (!gen->mObject) {
+		return;
+	}
+
+	RamStream output(mHeapBuffer + mFreeOffset, mFreeSize);
+	Generator::ramMode = Generator::RM_MemoryCache;
+	output.writeInt(gen->mIndex);
+
+	if (gen->mObject->mTypeID == 'pelt') {
+		// for pellets, defer to saveCreature
+		gen->saveCreature(output);
+
+	} else if (gen->mObject->mTypeID == 'item') {
+		// bridges, gates, bags, plugs - write the correct params based on their write functions
+		GenItem* genItem = static_cast<GenItem*>(gen->mObject);
+		u32 id           = genItem->mItemMgr ? genItem->mItemMgr->generatorGetID() : 0;
+		switch (id) {
+		case 'gate': // normal + electric gates write currentSegmentHealth and segmentsDown
+		case 'dgat':
+			output.writeFloat(state.gate_destroyed ? 0.0f : static_cast<GenGateParm*>(genItem->mParm)->mLife);
+			output.writeInt(state.gate_destroyed ? 3 : 0); // mMaxSegments = 3 (hardcoded); triggers dead-gate branch in doLoad
+			break;
+		case 'brdg': // bridges write currStageIdx and stage length
+			// finished: write a sentinel - the real mStageCount isn't knowable here (the parse-only temp
+			// ItemBridge::Mgr never ran onLoadResources, so getBridgeInfo()/mBridgeInfos is invalid).
+			// ItemBridge::Item::doLoad resolves the sentinel to the live mStageCount. mParms is safe
+			// (allocated in the Mgr ctor), so the intact path can still read full stage health.
+			output.writeInt(state.bridge_finished ? BRIDGE_FINISHED_SENTINEL : 0);
+			output.writeFloat(state.bridge_finished ? 999.0f
+			                                        : static_cast<ItemBridge::Mgr*>(genItem->mItemMgr)->mParms->mBridgeParms.mHealth.mValue);
+			break;
+		case 'dwfl': // bags write isPressed
+			if (static_cast<GenDownFloorParm*>(genItem->mParm)->mDownFloorType == DFTYPE_PaperBag) {
+				output.writeByte(state.bag_pressed ? 1 : 0);
+			}
+			break;
+		case 'barl': // plugs write isAlive
+			output.writeByte(state.plug_alive ? 1 : 0);
+			break;
+		default:
+			// we aren't handling the item, so it will get eaten and not spawn
+			// need to check if this is an issue for e.g. ItemHole, ItemPlant, ItemRock, ItemTreasure etc
+			Generator::ramMode = Generator::RM_Disc;
+			return;
+		}
+	} else {
+		Generator::ramMode = Generator::RM_Disc;
+		return;
+	}
+
+	Generator::ramMode = Generator::RM_Disc;
+	int size           = output.mPosition;
+
+	mFreeOffset += size;
+	mFreeSize -= size;
+	mCurrentCache->mCreatureCount++;
+	mCurrentCache->mSize += size;
+	mCurrentCache->mCreatureSize += size;
+}
+
 } // namespace Game

@@ -64,8 +64,8 @@ PresetPreview::PresetPreview(PresetCategory category_, const char* name_, Game::
 Preset::Preset()
 {
 	ref_count            = 1;
-	name    = nullptr;
-	preview = nullptr;
+	name                 = nullptr;
+	preview              = nullptr;
 	bridge_glitch_active = true;
 	squad.clear();
 	onion_pikis.clear();
@@ -92,29 +92,74 @@ Preset::StructureOverride::StructureOverride()
 	data = 0xFF;
 }
 
-GenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
+bool Preset::AreaStructureState::has_any_state() const
+{
+	return destroyed_gates.len() > 0 || finished_bridges.len() > 0 || bags_flattened.len() > 0 || plug_destroyed;
+}
+
+bool Preset::AreaStructureState::is_gate_destroyed(const char* name) const
+{
+	for (u32 i = 0; i < destroyed_gates.len(); i++) {
+		if (strcmp(destroyed_gates[i], name) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Preset::AreaStructureState::is_bridge_finished(const char* name) const
+{
+	for (u32 i = 0; i < finished_bridges.len(); i++) {
+		if (strcmp(finished_bridges[i], name) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Preset::AreaStructureState::is_bag_flattened_flag(const char* name) const
+{
+	for (u32 i = 0; i < bags_flattened.len(); i++) {
+		if (strcmp(bags_flattened[i], name) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+Preset::EnemyGenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
 {
 	if (gen->mObject->mTypeID == 'teki') {
 		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
 		for (u32 i = 0; i < enemy_spawn_overrides.len(); i++) {
 			EnemyGenSpawnOverride& oride = enemy_spawn_overrides[i];
 			if (oride.enemy_id == gen_obj_enemy->mEnemyID && absF(oride.gen_pos.sqrDistance(gen->mPosition)) < 25.0f) {
-				return oride.spawn_override;
+				return oride;
 			}
 		}
 	}
-	return PSO_Ignore;
+	return EnemyGenSpawnOverride();
 }
 
-GenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
+Preset::TreasureGenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
 {
 	for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
 		TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
 		if (treasure_id == oride.id) {
-			return oride.spawn_override;
+			return oride;
 		}
 	}
-	return PSO_Ignore;
+	return TreasureGenSpawnOverride();
+}
+
+bool Preset::is_area_visited(int course) const
+{
+	if (area_states[course].has_any_state()) {
+		return true;
+	}
+	// conservative: rebuild all areas when any gen overrides exist,
+	// since overrides don't carry per-area indexing
+	return enemy_spawn_overrides.len() > 0 || treasure_spawn_overrides.len() > 0;
 }
 
 Game::ItemPikihead::Item* birth_sprout(u8 kind, u8 stage)
@@ -171,10 +216,22 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_bitters(bitters_unlocked);
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
+	// Clear open area flags before applying upgrades, so we don't have persistent open areas
+	for (int i = 1; i < 4; i++) {
+		Game::playData->mBitfieldPerCourse[i] = Game::PlayData::PDCF_Unset;
+	}
+
 	// Apply upgrades
 	for (u32 i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
 		p2gz->ek_editor->set_upgrade(static_cast<Game::OlimarData::ItemIndex>(i), upgrades.isSet(mask));
+	}
+
+	// make sure map-screen zoom effect is correct
+	for (int i = 0; i < 4; i++) {
+		if (Game::playData->courseOpen(i) && !new_area_zoom.isSet(1 << i)) {
+			Game::playData->mBitfieldPerCourse[i] |= Game::PlayData::PDCF_JustOpen;
+		}
 	}
 
 	// Set cutscene flags
@@ -248,6 +305,33 @@ void Preset::apply()
 	Game::playData->clearVisitAllCourses();
 	Game::playData->mLimitGen->mNonLoops.all_zero();
 
+	// Convert position-based StructureOverride data into per-area name-based state
+	// for use by reconstruct_generator_cache() during the upcoming load
+	for (u32 i = 0; i < destroyed_gates.len(); i++) {
+		const StructureOverride& o = destroyed_gates[i];
+		const char* name           = p2gz->structure_editor->find_gate_name(o.position, o.area);
+		if (name)
+			area_states[o.area].destroyed_gates.push(name);
+	}
+	for (u32 i = 0; i < finished_bridges.len(); i++) {
+		const StructureOverride& o = finished_bridges[i];
+		const char* name           = p2gz->structure_editor->find_bridge_name(o.position, o.area);
+		if (name)
+			area_states[o.area].finished_bridges.push(name);
+	}
+	for (u32 i = 0; i < bags_flattened.len(); i++) {
+		const StructureOverride& o = bags_flattened[i];
+		const char* name           = p2gz->structure_editor->find_bag_name(o.position, o.area);
+		if (name)
+			area_states[o.area].bags_flattened.push(name);
+	}
+	for (u32 i = 0; i < plugs_destroyed.len(); i++) {
+		const StructureOverride& o = plugs_destroyed[i];
+		const char* name           = p2gz->structure_editor->find_plug_name(o.position, o.area);
+		if (name)
+			area_states[o.area].plug_destroyed = true;
+	}
+
 	// Set red onion flags so that it appears in the correct place for Day 2 presets
 	if (day > 1) {
 		Game::playData->setBootContainer(Game::Red);
@@ -257,21 +341,12 @@ void Preset::apply()
 
 void Preset::apply_post_load()
 {
-	p2gz->structure_editor->reset_all_structures();
+	// Gates, bridges (stage count), bags, plugs are pre-baked into the generator cache
+	// by reconstruct_generator_cache() before initGenerators() runs.
 
-	for (u32 i = 0; i < destroyed_gates.len(); i++) {
-		p2gz->structure_editor->set_gate_stages_left(destroyed_gates[i].position, destroyed_gates[i].data);
-	}
-	for (u32 i = 0; i < finished_bridges.len(); i++) {
-		p2gz->structure_editor->set_bridge_stages_left(finished_bridges[i].position, finished_bridges[i].data);
-	}
+	// Bridge glitch is a runtime flag on the live ItemBridge object, not a cached field,
+	// so it must be applied here after the destination area has loaded.
 	p2gz->structure_editor->set_bridge_glitch(bridge_glitch_active);
-	for (u32 i = 0; i < bags_flattened.len(); i++) {
-		p2gz->structure_editor->set_bag_flattened(bags_flattened[i].position, true);
-	}
-	if (plug_destroyed) {
-		p2gz->structure_editor->set_plug_destroyed(true);
-	}
 
 	// Apply sprouts
 	if (!Game::playData->mCaveSaveData.mIsInCave) {
@@ -308,31 +383,31 @@ void Preset::apply_post_load()
 	}
 
 	// Force spawn or despawn treasures
-	FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
-	{
-		if (gen->mObject->mTypeID == 'pelt') {
-			Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
-			int treasure_id             = gen_pellet->mGenParm->mIndex;
-			int kind                    = gen_pellet->mPelType;
-			for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
-				TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
-				if (oride.id == treasure_id) {
-					if (oride.spawn_override >= PSO_Spawn) {
-						if (!gen->mCreature) {
-							gen->generate();
-						}
-						GZASSERTLINE(gen->mCreature);
-						if (oride.spawn_override == PSO_SpawnAndMove) {
-							gen->mCreature->setPosition(oride.position_override, false);
-						} else {
-							gen->mCreature->setPosition(gen->mPosition, false);
-						}
-					} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
-						Game::PelletKillArg arg;
-						gen->mCreature->kill(&arg);
-					}
-				}
-			}
-		}
-	}
+	// FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+	// {
+	// 	if (gen->mObject->mTypeID == 'pelt') {
+	// 		Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+	// 		int treasure_id             = gen_pellet->mGenParm->mIndex;
+	// 		int kind                    = gen_pellet->mPelType;
+	// 		for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
+	// 			TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
+	// 			if (oride.id == treasure_id) {
+	// 				if (oride.spawn_override >= PSO_Spawn) {
+	// 					if (!gen->mCreature) {
+	// 						gen->generate();
+	// 					}
+	// 					GZASSERTLINE(gen->mCreature);
+	// 					if (oride.spawn_override == PSO_SpawnAndMove) {
+	// 						gen->mCreature->setPosition(oride.position_override, false);
+	// 					} else {
+	// 						gen->mCreature->setPosition(gen->mPosition, false);
+	// 					}
+	// 				} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
+	// 					Game::PelletKillArg arg;
+	// 					gen->mCreature->kill(&arg);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 }

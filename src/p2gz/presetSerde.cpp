@@ -273,13 +273,15 @@ void Preset::read(Stream& input)
 	READ_LIST_T(input, StructureOverride, destroyed_gates);
 	READ_LIST_T(input, StructureOverride, finished_bridges);
 	READ_LIST_T(input, StructureOverride, bags_flattened);
-
-	plug_destroyed = input.readInt() > 0;
+	READ_LIST_T(input, StructureOverride, plugs_destroyed);
 
 	READ_LIST_T(input, EnemyGenSpawnOverride, enemy_spawn_overrides);
 	READ_LIST_T(input, TreasureGenSpawnOverride, treasure_spawn_overrides);
 
 	bridge_glitch_active = input.readInt() > 0;
+
+	new_area_zoom.clear();
+	new_area_zoom.typeView = static_cast<u16>(input.readInt());
 }
 
 void Preset::write(Stream& output)
@@ -414,8 +416,20 @@ void Preset::write(Stream& output)
 		}
 	}
 
-	output.writeInt(plug_destroyed ? 1 : 0);
-	output.textWriteText("\t# plugs destroyed\n");
+	output.writeInt(plugs_destroyed.len());
+	output.textWriteText("\t# num plugs destroyed\n");
+	FOREACH_VEC(plugs_destroyed)
+	{
+		StructureOverride& oride = plugs_destroyed[i];
+		output.textWriteTab(1);
+		oride.write(output);
+		const char* plug_name = p2gz->structure_editor->find_plug_name(oride.position, oride.area);
+		if (plug_name) {
+			output.textWriteText("\t# %s\n", plug_name);
+		} else {
+			output.textWriteText("\n");
+		}
+	}
 
 	write_vec(enemy_spawn_overrides, output, "num enemy spawns");
 
@@ -443,6 +457,9 @@ void Preset::write(Stream& output)
 
 	output.writeInt(bridge_glitch_active ? 1 : 0);
 	output.textWriteText("\t# bridge glitch active\n");
+
+	output.writeInt(static_cast<int>(new_area_zoom.typeView));
+	output.textWriteText("\t# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)\n");
 }
 
 void PresetPreview::read(const char* filename_)
@@ -572,6 +589,7 @@ void Preset::EnemyGenSpawnOverride::read(Stream& input)
 	gen_pos.y      = input.readFloat();
 	gen_pos.z      = input.readFloat();
 	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
+	kill_day       = input.readInt();
 }
 
 void Preset::EnemyGenSpawnOverride::write(Stream& output)
@@ -583,4 +601,6 @@ void Preset::EnemyGenSpawnOverride::write(Stream& output)
 	output.writeFloat(gen_pos.z);
 	output.textWriteTab(1);
 	output.writeInt(spawn_override);
+	output.textWriteTab(1);
+	output.writeInt(kill_day);
 }

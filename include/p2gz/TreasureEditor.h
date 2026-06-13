@@ -26,6 +26,7 @@ public:
 	void reset_active_treasure() { active_treasure->setPosition(initial_position, false); }
 
 	void add(Game::Pellet*);
+	void add(const char* config_name);
 	void clear_treasures();
 
 	void set_collected(const char* treasure_name, bool);

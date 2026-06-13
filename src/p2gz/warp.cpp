@@ -56,16 +56,19 @@ static const char* ENTER_KINDS[3] = {
 
 Warp::Warp()
 {
-	allow_zero_pikmin_in_caves = true;
-	warping_from_menu          = false;
-	needs_post_load_action     = false;
-	warping                    = false;
-	already_saved_generators   = false;
-	preset_status              = PS_Stale;
-	lockout_frames             = 0;
-	active_captain             = NAVIID_Olimar;
-	use_set_seed               = false;
-	preset_during_warp         = nullptr;
+	allow_zero_pikmin_in_caves           = true;
+	warping_from_menu                    = false;
+	needs_post_load_action               = false;
+	applying_generators                  = false;
+	needs_generator_cache_reconstruction = false;
+	do_egate_parse_only_load             = false;
+	warping                              = false;
+	already_saved_generators             = false;
+	preset_status                        = PS_Stale;
+	lockout_frames                       = 0;
+	active_captain                       = NAVIID_Olimar;
+	use_set_seed                         = false;
+	preset_during_warp                   = nullptr;
 }
 
 void Warp::init()
@@ -279,7 +282,8 @@ void Warp::do_warp()
 
 		GZASSERTLINE(preset_during_warp);
 		preset_during_warp->apply();
-		needs_post_load_action = true;
+		needs_post_load_action               = true;
+		needs_generator_cache_reconstruction = true; // rebuild caches when we warp
 	} else {
 		dest.day = day_opt->get_selection() - 1;
 	}

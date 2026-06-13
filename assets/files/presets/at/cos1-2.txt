@@ -91,13 +91,14 @@ AT 	# category
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
-0 	# plugs destroyed
+1	# num plugs destroyed
+	0	800.0	1380.0				0	# bridge plug
 5 	# num enemy spawns
-	17 	-950.000000 6.250000 -150.000000 	1
-	0 	-480.000000 89.010002 -1115.000000 	1
-	0 	-666.000000 89.010002 -800.000000 	1
-	0 	-375.000000 89.010002 -800.000000 	1
-	23 	-650.000000 52.889999 -1800.000000 	2
+	17 	-950.000000 6.250000 -150.000000 	1	-1
+	0 	-480.000000 89.010002 -1115.000000 	1	-1
+	0 	-666.000000 89.010002 -800.000000 	1	-1
+	0 	-375.000000 89.010002 -800.000000 	1	-1
+	23 	-650.000000 52.889999 -1800.000000 	2	-1
 26 	# num treasure spawn overrides
 	47 	1 	# Fossilized Ursidae
 	62 	1 	# Pink Menace
@@ -126,3 +127,4 @@ AT 	# category
 	76 	2 	# Doomsday Apparatus
 	183 	2 	# Seed of Greed
 1	# bridge glitch active
+0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

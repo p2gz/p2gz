@@ -43,8 +43,30 @@ public:
 };
 
 struct Preset {
+	// per-area structure state used during generator cache reconstruction, indexed by CourseIndex (0=VoR, etc)
+	struct AreaStructureState {
+		AreaStructureState()
+		    : plug_destroyed(false)
+		{
+		}
+
+		bool has_any_state() const;
+		bool is_gate_destroyed(const char* name) const;
+		bool is_bridge_finished(const char* name) const;
+		bool is_bag_flattened_flag(const char* name) const;
+
+		Vec<const char*> destroyed_gates;
+		Vec<const char*> finished_bridges;
+		Vec<const char*> bags_flattened;
+		bool plug_destroyed;
+	};
+
 	struct EnemyGenSpawnOverride {
-		EnemyGenSpawnOverride() { spawn_override = PSO_Ignore; }
+		EnemyGenSpawnOverride()
+		{
+			spawn_override = PSO_Ignore;
+			kill_day       = -1;
+		}
 
 		void read(Stream& input);
 		void write(Stream& output);
@@ -52,13 +74,14 @@ struct Preset {
 		Game::EnemyTypeID::EEnemyTypeID enemy_id;
 		Vector3f gen_pos;
 		GenSpawnOverride spawn_override;
+		int kill_day; // day enemy should've been killed, to set respawn day correctly (-1 = killed on day we're warping to)
 	};
 
 	struct TreasureGenSpawnOverride {
 		TreasureGenSpawnOverride()
 		{
-			id                = 255;
-			spawn_override    = PSO_Ignore;
+			id             = 255;
+			spawn_override = PSO_Ignore;
 		}
 
 		void read(Stream& input);
@@ -120,8 +143,8 @@ public:
 	void apply();
 	void apply_post_load();
 
-	GenSpawnOverride get_enemy_gen_override(Game::Generator* gen);
-	GenSpawnOverride get_treasure_gen_override(int treasure_id, u8 pellet_type);
+	EnemyGenSpawnOverride get_enemy_gen_override(Game::Generator* gen);
+	TreasureGenSpawnOverride get_treasure_gen_override(int treasure_id, u8 pellet_type = 0);
 
 	PresetPreview* preview;
 	PresetCategory category;
@@ -142,14 +165,18 @@ public:
 	Vec<StructureOverride> destroyed_gates;
 	Vec<StructureOverride> finished_bridges;
 	Vec<StructureOverride> bags_flattened;
+	Vec<StructureOverride> plugs_destroyed;
 	EnterAreaKind enter_kind;
 	int pokos;
-	bool plug_destroyed; // no more than one plug per level
 	bool apply_pokos;
 	u8 day;
 	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
 	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
 	bool bridge_glitch_active;
+	BitFlag<u16> new_area_zoom;        // bit per course: VoR=1 AW=2 PP=4 WW=8; set = allow zoom on next world-map visit
+	AreaStructureState area_states[4]; // per-area structure state, indexed by CourseIndex (0=VoR…3=WW)
+
+	bool is_area_visited(int course) const;
 
 private:
 	int ref_count;

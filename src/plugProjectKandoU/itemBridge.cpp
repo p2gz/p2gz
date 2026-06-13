@@ -196,6 +196,11 @@ void Item::doLoad(Stream& input)
 	mIsGlitched = true;
 
 	mCurrStageIdx = input.readInt();
+	// @P2GZ - finished-bridge sentinel written by generator-cache reconstruction (no live mgr to query
+	// stage count at save time). Resolve to mStageCount now that the real manager exists.
+	if (mCurrStageIdx == BRIDGE_FINISHED_SENTINEL) {
+		mCurrStageIdx = mStageCount;
+	}
 	for (int i = 0; i < mStageCount; i++) {
 		mStageHealths[i] = 0.0f;
 	}
@@ -246,7 +251,10 @@ void Item::onSetPosition()
 	// Register created bridge with structure editor.
 	// Done in onSetPosition because StructureEditor uses
 	// coords to determine the name for the bridge.
-	p2gz->structure_editor->add_bridge(this);
+	// (skip if we're in the middle of generator nonsense)
+	if (!p2gz->warp->applying_generators) {
+		p2gz->structure_editor->add_bridge(this);
+	}
 }
 
 /**

@@ -85,9 +85,9 @@ struct Vec {
 			delete[] mBuf;
 	}
 
-	inline size_t len() { return mLen; }
+	inline size_t len() const { return mLen; }
 
-	inline size_t capacity() { return mCapacity; }
+	inline size_t capacity() const { return mCapacity; }
 
 	void push(T val)
 	{
@@ -131,6 +131,13 @@ struct Vec {
 	}
 
 	T& operator[](size_t idx)
+	{
+		GZASSERTLINE(mBuf);
+		GZASSERTLINE(idx < mLen);
+		return mBuf[idx];
+	}
+
+	const T& operator[](size_t idx) const
 	{
 		GZASSERTLINE(mBuf);
 		GZASSERTLINE(idx < mLen);
