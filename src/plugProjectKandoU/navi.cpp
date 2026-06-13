@@ -2843,7 +2843,9 @@ void Navi::control()
 		makeVelocity();
 	}
 
-	makeCStick(false);
+	// @P2GZ: while the early blues trainer owns the c-stick for its inset camera,
+	// hide it from the swarm system entirely (also silences the marching jingle)
+	makeCStick(p2gz->early_blues_trainer->is_inset_active());
 
 	if (isMovieActor()) {
 		return;
