@@ -3,6 +3,7 @@
 
 #include <Game/mapMgr.h>
 #include <Game/mapParts.h>
+#include <Color4.h>
 #include <Sys/Edge.h>
 #include <Sys/TriIndexList.h>
 #include <Sys/Triangle.h>
@@ -59,7 +60,8 @@ public:
 
 private:
 	bool is_navi_on_triangle(Sys::Triangle*, Sys::Triangle*, Sys::VertexTable*);
-	void draw_triangles(Sys::Sphere&, int mode);
+	Color4 fill_color(Sys::Triangle* tri, Sys::VertexTable* vertTable, u32 q);
+	void emit_fills(Sys::TriangleTable* triTable, Sys::VertexTable* vertTable, bool opaque);
 	bool enabled;
 	bool need_to_reenable;
 	Sys::Sphere olimarSphere;
