@@ -21,6 +21,8 @@
 #include "ebi/Progre.h"
 #include "trig.h"
 
+#include <p2gz/p2gz.h>
+
 static u32 unused[4] = { 1, 2, 3, 0 }; // has to be generated before nans
 #include "nans.h"
 #include "Game/Piki.h"
@@ -920,6 +922,9 @@ void BootSection::updateLoadResourceFirst()
 			sys->mPlayData->mIsRumble = false;
 		} else if (!Game::gGameConfig.mParms.mE3version.mData) {
 			sys->mCardMgr->loadGameOption();
+			// @P2GZ: settings on mem card
+			// queue our settings load behind the option load
+			sys->mCardMgr->loadP2GZData();
 		}
 		// THIS IS ALL FOR DEMO 1
 #if BUILDTARGET == USADEMO1
@@ -950,6 +955,11 @@ void BootSection::updateLoadMemoryCard()
 	if (sys->mCardMgr->isSaveInvalid() && !handle) {
 		sys->mCardMgr->checkStatus();
 		sys->mPlayData->setup();
+
+		// @P2GZ: settings on mem card
+		// apply custom settings from card
+		p2gz->settings->apply();
+
 		sys->loadResourceSecond();
 		setModeEpilepsy();
 		sys->resetPermissionOn();

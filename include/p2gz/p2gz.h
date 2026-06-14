@@ -33,6 +33,7 @@
 #include <p2gz/OnionEditor.h>
 #include <p2gz/DropEditor.h>
 #include <p2gz/NaviDebugInfo.h>
+#include <p2gz/Settings.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "beta1-pre"
@@ -84,6 +85,7 @@ public:
 	gz::OnionEditor* onion_editor;
 	gz::DropEditor* drop_editor;
 	gz::NaviDebugInfo* navi_debug_info;
+	gz::Settings* settings;
 
 	gz::test::TestRunner* test_runner;
 

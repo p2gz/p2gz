@@ -20,6 +20,9 @@ void Localization::init_menu()
 	region_opt->options.push("US");
 	region_opt->options.push("JP");
 	region_opt->options.push("PAL");
+
+	// reflect the saved-to-mem-card region pref in the menu
+	region_opt->set_selection(p2gz->settings->treasure_region);
 }
 
 void Localization::set_treasure_region(size_t new_treasure_region_id)

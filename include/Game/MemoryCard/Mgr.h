@@ -71,6 +71,16 @@ struct Mgr : public MemoryCardMgr {
 		MCS_PlayerDataBroken = 14,
 	};
 
+	// @P2GZ: settings on mem card
+	// layout of dedicated settings file (see cP2GZFileName)
+	// the file is pre-sized with spare data capacity so the written payload can grow later
+	// - to increase size, change P2GZ_PAYLOAD_SIZE from 0x2000 up to a max of 0x6000
+	enum P2GZDataLayout {
+		P2GZ_FILE_SIZE    = 0x8000, // total allocation: 0x2000 header + 0x6000 data capacity (4 blocks)
+		P2GZ_DATA_OFFSET  = 0x2000, // payload begins right after the header block
+		P2GZ_PAYLOAD_SIZE = 0x2000, // bytes currently written/read/checksummed (may grow to <= 0x6000)
+	};
+
 	void loadResource(JKRHeap*);
 	void destroyResource();
 	u32 getCardStatus(); // MemoryCardStatus
@@ -141,6 +151,13 @@ struct Mgr : public MemoryCardMgr {
 
 	inline bool isCardInvalid() { return !mIsCard && checkStatus() != MCS_11; }
 
+	// @P2GZ: settings on mem card
+	// save and load wrappers for P2GZ data file
+	bool saveP2GZData();
+	bool loadP2GZData();
+	bool commandSaveP2GZData();
+	bool commandLoadP2GZData();
+
 	// _00-_E8 = MemoryCardMgr
 	u32 mErrorCode;         // _D8
 	void* mBannerImageFile; // _DC
@@ -193,6 +210,8 @@ struct MgrCommandGetPlayerHeader : public MemoryCardMgrCommandBase {
 };
 
 extern char* cFileName;
+// @P2GZ: filename of our dedicated mod-data file, separate from the vanilla save
+extern char* cP2GZFileName;
 
 } // namespace MemoryCard
 } // namespace Game
