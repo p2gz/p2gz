@@ -533,9 +533,9 @@ void Warp::do_post_warp()
 		preset_during_warp->del();
 	}
 
-	if (next_preset_p) {
-		next_preset = nullptr;
-	}
+	// Clear both pointers so a stale next_preset can't dangle or report a phantom pending preset
+	next_preset   = nullptr;
+	next_preset_p = nullptr;
 
 	if (use_set_seed) {
 		set_random_seed();

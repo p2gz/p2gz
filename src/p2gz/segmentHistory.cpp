@@ -20,10 +20,10 @@ void SegmentHistory::draw_2d()
 	}
 	SceneType scene_type = Screen::gGame2DMgr->mScreenMgr->getSceneType();
 
-	bool gz_menu_open = p2gz->menu->is_open();
-	bool is_paused    = Game::gameSystem
-	              && (scene_type == SCENE_PAUSE_MENU_DOUKUTU || scene_type == SCENE_PAUSE_MENU_ITEMS || scene_type == SCENE_PAUSE_MENU_MAP
-	                  || scene_type == SCENE_PAUSE_MENU_CONTROLS);
+	bool gz_menu_open      = p2gz->menu->is_open();
+	bool is_paused         = Game::gameSystem
+	                      && (scene_type == SCENE_PAUSE_MENU_DOUKUTU || scene_type == SCENE_PAUSE_MENU_ITEMS || scene_type == SCENE_PAUSE_MENU_MAP
+	                          || scene_type == SCENE_PAUSE_MENU_CONTROLS);
 	bool is_in_load_screen = scene_type == SCENE_FLOOR && started_creating_map;
 	bool is_paused_in_cave = in_cave_play() && (is_paused || gz_menu_open);
 
@@ -85,7 +85,18 @@ void SegmentHistory::retry_cave()
 		return;
 	}
 
-	// Find segment for the first floor of the cave
+	// Prefer the pinned floor-0 preset for this cave, if it exists
+	if (cave_floor0_preset && cave_floor0_dest.area == current_dest.area && cave_floor0_dest.cave == current_dest.cave) {
+		WarpDestination floor0_dest = current_dest;
+		floor0_dest.sublevel        = 0;
+		p2gz->warp->set_dest(floor0_dest);
+		p2gz->warp->set_preset(cave_floor0_preset, PS_Suggested);
+		p2gz->warp->do_warp();
+		entering_next_segment = false;
+		return;
+	}
+
+	// Otherwise, find the floor-0 segment for the current cave by walking back from the newest segment
 	const Segment* floor0_segment = nullptr;
 	for (size_t i = 0; i < segments.len(); i++) {
 		const Segment* this_segment = segments.peekN(i);
@@ -93,12 +104,13 @@ void SegmentHistory::retry_cave()
 			break;
 		}
 
-		if (this_segment->dest.cave == current_dest.cave) {
-			if (this_segment->dest.area == current_dest.area && this_segment->dest.sublevel == 0) {
-				floor0_segment = this_segment;
-				break;
-			}
-		} else {
+		// Stop once we walk back past the current cave. Need to compare area AND cave or we run into errors, e.g. HoB vs EC
+		if (this_segment->dest.area != current_dest.area || this_segment->dest.cave != current_dest.cave) {
+			break;
+		}
+
+		if (this_segment->dest.sublevel == 0) {
+			floor0_segment = this_segment;
 			break;
 		}
 	}
@@ -110,14 +122,19 @@ void SegmentHistory::retry_cave()
 	WarpDestination floor0_dest = floor0_segment->dest;
 	if (floor0_dest.sublevel != 0) {
 		floor0_dest.sublevel = 0;
-		// If we don't find history for floor 0 in this cave, get the recommended preset for it.
+		// No floor-0 history for this cave; fall back to the recommended preset.
 		// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
 		PresetCategory cat = PoD;
 		if (floor0_segment->preset) {
 			cat = floor0_segment->preset->category;
 		}
+		PresetPreview* suggested = p2gz->preset_mgr->suggested_preset(floor0_dest, cat);
+		if (!suggested) {
+			// No floor-0 preset for this cave - restart the cave anyway and bring the current squad along
+			OSReport("[P2GZ]: restart cave: no floor-0 preset for this cave, restarting with current squad\n");
+		}
 		p2gz->warp->set_dest(floor0_dest);
-		p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(floor0_dest, cat), PS_Suggested);
+		p2gz->warp->set_preset(suggested, PS_Suggested);
 	} else {
 		p2gz->warp->set_dest(floor0_dest);
 		p2gz->warp->set_preset(floor0_segment->preset, PS_Suggested);
@@ -241,4 +258,15 @@ void SegmentHistory::record_squad()
 	segment->preset->squad.clear();
 	segment->preset->onion_pikis.clear();
 	PresetMgr::fill_current_pikis(segment->preset);
+
+	// Pin this cave's floor-0 preset (ref'd) so "restart cave" can still restore the floor-0 squad
+	// even after it's fallen out of the ring buffer
+	if (segment->dest.cave != 0 && segment->dest.sublevel == 0 && cave_floor0_preset != segment->preset) {
+		if (cave_floor0_preset) {
+			cave_floor0_preset->del();
+		}
+		cave_floor0_preset = segment->preset;
+		cave_floor0_preset->ref();
+		cave_floor0_dest = segment->dest;
+	}
 }

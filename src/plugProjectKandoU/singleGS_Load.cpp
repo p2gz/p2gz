@@ -123,9 +123,10 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	}
 
 	if (!preset) {
-		segment->preset      = p2gz->preset_mgr->create();
-		segment->preset->day = Game::gameSystem->mTimeMgr->mDayCount;
-		dest.day             = Game::gameSystem->mTimeMgr->mDayCount;
+		segment->preset       = p2gz->preset_mgr->create();
+		segment->preset->day  = Game::gameSystem->mTimeMgr->mDayCount;
+		segment->preset->time = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
+		dest.day              = Game::gameSystem->mTimeMgr->mDayCount;
 	}
 
 	if (!(mIsCaveLoad || mIsCaveDeeper)) {
