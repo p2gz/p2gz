@@ -23,12 +23,13 @@ Timer::Timer()
     , navi_swap_timer_set(false)
     , FS_map_flag(false)
     , in_freecam_mode(false)
-	, segment_timer_enabled(true)
+	, segment_timer_enabled(true) // controls whether or not the segment timer is turned on 
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
     , pause_timer(0)
     , navi_swap_timer(0)
+	, curr_index(0) // gets updated every time a function writes to split_times
 {
 	color        = JUtility::TColor(255, 255, 255, 130);
 	glyph_width  = 16.0;
@@ -83,9 +84,8 @@ void Timer::draw()
 
 	if (segment_timer_enabled) {
 		f32 starting_seg_offset = z + glyph_height + 10.0f; 
-		u32 start = 0;
 		// Draw segment times
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < curr_index; i++) {
 			if (split_times[i] > 0) {
 				Timer::TimeComponents seg_c;
 				if (i == 0) {
@@ -363,12 +363,10 @@ void Timer::add_split_times()
 	}
 
 	u32 split_time = get_cur_time(); 
-	// stretch goal: optimize this 
-	for (int i = 0; i < 20; i++) {
-		if (split_times[i] == 0) {
-			split_times[i] = split_time; 
-			return; 
-		}
+
+	if (curr_index < 20){ // 20 is a magic number that corresponds to the length of the split_times array
+		split_times[curr_index] = split_time; 
+		curr_index++;
 	}
 }
 
@@ -380,6 +378,7 @@ void Timer::reset_split_times(){
 	for (int i = 0; i < 20; i++){
 		split_times[i] = 0;
 	}
+	curr_index = 0;
 }
 
 // @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv

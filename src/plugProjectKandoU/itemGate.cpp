@@ -1110,6 +1110,12 @@ void GateDownState::onDamage(Game::ItemGate* gate, f32 damage)
  */
 void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& keyEvent)
 {
+	// @P2GZ: this is the function that runs when a gate is broken down. We hook into it for the 
+	// segment timer. This one runs AFTER each segment goes down, hook into GateDownState::init
+	// if you want it to run on the frame each segment starts going down. 
+	p2gz->timer->add_split_times(); 
+	
+	// Vanilla
 	gate->mSegmentsDown++;
 	gate->mCurrentSegmentHealth = gate->mMaxSegmentHealth;
 	if (gate->mSegmentsDown == gate->mMaxSegments) {

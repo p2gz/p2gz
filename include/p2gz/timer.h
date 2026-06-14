@@ -104,6 +104,7 @@ private:
 
 	u32 navi_swap_timer; // for measuring captain swap times
 
+	char curr_index; // for tracking current active index of split_times
 	u32 split_times[20]; // for tracking segment times 
 
 	// menu hook
