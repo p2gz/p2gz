@@ -17,8 +17,8 @@ public:
 	{
 		enabled          = false;
 		need_to_reenable = false;
-		olimar_triangle   = nullptr;
-		louie_triangle    = nullptr;
+		olimar_triangle  = nullptr;
+		louie_triangle   = nullptr;
 		tri_visited      = nullptr;
 		tri_alpha        = nullptr;
 		edge_set         = nullptr;
@@ -42,8 +42,6 @@ public:
 private:
 	static bool get_collision_tables(Sys::TriangleTable**, Sys::VertexTable**);
 
-	// working buffers, sized to the loaded map's triangle count and allocated only while
-	// the viewer is enabled (see alloc_buffers / free_buffers)
 	void alloc_buffers(int tris);
 	void free_buffers();
 
@@ -61,11 +59,11 @@ private:
 	Sys::Triangle* olimar_triangle;
 	Sys::Triangle* louie_triangle;
 
-	u8* tri_visited;     // 1 bit per triangle, gather-pass dedup
-	u8* tri_alpha;       // 1 byte per triangle, current fill alpha (eased for fade)
-	u16* gathered_tris;  // the in-range triangles, gathered once per frame
-	u32* edge_set;       // open-addressed set of drawn edges (deduped)
-	int tri_count;       // triangle-table size the buffers are sized to
+	u8* tri_visited;
+	u8* tri_alpha;
+	u16* gathered_tris;
+	u32* edge_set;
+	int tri_count;
 	int gathered_count;
 	int edge_count;
 };
