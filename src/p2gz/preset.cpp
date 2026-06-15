@@ -67,6 +67,8 @@ Preset::Preset()
 	name    = nullptr;
 	preview = nullptr;
 	bridge_glitch_active = true;
+	category             = PoD;  // default to pod so we don't get errors for null presets
+	time                 = 7.0f; // default to start of day
 	squad.clear();
 	onion_pikis.clear();
 }

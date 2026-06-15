@@ -11,8 +11,8 @@ struct Segment {
 public:
 	Segment()
 	{
-		preset = nullptr;
-		dest   = WarpDestination();
+		preset       = nullptr;
+		dest         = WarpDestination();
 		use_set_seed = false;
 	}
 
@@ -32,6 +32,13 @@ public:
 
 struct SegmentHistory {
 public:
+	SegmentHistory()
+	{
+		started_creating_map  = false;
+		entering_next_segment = false;
+		cave_floor0_preset    = nullptr;
+	}
+
 	void draw_2d();
 	void update();
 
@@ -51,6 +58,8 @@ private:
 	void draw_reset_controls(bool draw_cave_retry);
 
 	RingBuffer<32, Segment*> segments;
+	Preset* cave_floor0_preset;       // The current cave's floor-0 preset, ref'd so it survives ring buffer clearing
+	WarpDestination cave_floor0_dest; // area+cave the pinned preset belongs to
 };
 
 }; // namespace gz
