@@ -4,7 +4,6 @@
 #include <Game/mapMgr.h>
 #include <Game/mapParts.h>
 #include <Color4.h>
-#include <Sys/Edge.h>
 #include <Sys/TriIndexList.h>
 #include <Sys/Triangle.h>
 #include <Sys/TriangleTable.h>
@@ -12,39 +11,21 @@
 
 namespace gz {
 
-// 2- and 4-bit packed array accessors (used for the collision viewer's per-triangle
-// ring marks and persistent alpha levels)
-inline u32 get2(const u8* arr, int i)
-{
-	return (arr[i >> 2] >> ((i & 3) * 2)) & 3;
-}
-
-inline void min2(u8* arr, int i, u32 v)
-{
-	int shift = (i & 3) * 2;
-	if (v < ((arr[i >> 2] >> shift) & 3)) {
-		arr[i >> 2] = (u8)((arr[i >> 2] & ~(3 << shift)) | (v << shift));
-	}
-}
-
-inline u32 get4(const u8* arr, int i)
-{
-	return (arr[i >> 1] >> ((i & 1) * 4)) & 15;
-}
-
-inline void set4(u8* arr, int i, u32 v)
-{
-	int shift   = (i & 1) * 4;
-	arr[i >> 1] = (u8)((arr[i >> 1] & ~(15 << shift)) | (v << shift));
-}
-
 struct CollisionViewer {
 public:
 	CollisionViewer()
 	{
 		enabled          = false;
 		need_to_reenable = false;
-		los_valid        = false;
+		olimar_triangle   = nullptr;
+		louie_triangle    = nullptr;
+		tri_visited      = nullptr;
+		tri_alpha        = nullptr;
+		edge_set         = nullptr;
+		gathered_tris    = nullptr;
+		tri_count        = 0;
+		gathered_count   = 0;
+		edge_count       = 0;
 	}
 	~CollisionViewer() { }
 
@@ -59,17 +40,34 @@ public:
 	bool is_enabled() { return enabled; }
 
 private:
+	static bool get_collision_tables(Sys::TriangleTable**, Sys::VertexTable**);
+
+	// working buffers, sized to the loaded map's triangle count and allocated only while
+	// the viewer is enabled (see alloc_buffers / free_buffers)
+	void alloc_buffers(int tris);
+	void free_buffers();
+
+	void gather_triangles(Sys::Sphere&);
+	void edge_set_insert(int a, int b);
+
 	bool is_navi_on_triangle(Sys::Triangle*, Sys::Triangle*, Sys::VertexTable*);
-	Color4 fill_color(Sys::Triangle* tri, Sys::VertexTable* vertTable, u32 q);
-	void emit_fills(Sys::TriangleTable* triTable, Sys::VertexTable* vertTable, bool opaque);
+	Color4 get_fill_color(Sys::Triangle*, Sys::VertexTable*, u8 alpha);
+	void draw_triangles(Sys::TriangleTable*, Sys::VertexTable*, bool opaque);
+
 	bool enabled;
 	bool need_to_reenable;
-	Sys::Sphere olimarSphere;
-	Sys::Sphere louieSphere;
-	Sys::Triangle* olimarTriangle;
-	Sys::Triangle* louieTriangle;
-	Sys::Edge losEdge; // camera -> active captain sight line
-	bool los_valid;
+	Sys::Sphere olimar_sphere;
+	Sys::Sphere louie_sphere;
+	Sys::Triangle* olimar_triangle;
+	Sys::Triangle* louie_triangle;
+
+	u8* tri_visited;     // 1 bit per triangle, gather-pass dedup
+	u8* tri_alpha;       // 1 byte per triangle, current fill alpha (eased for fade)
+	u16* gathered_tris;  // the in-range triangles, gathered once per frame
+	u32* edge_set;       // open-addressed set of drawn edges (deduped)
+	int tri_count;       // triangle-table size the buffers are sized to
+	int gathered_count;
+	int edge_count;
 };
 } // namespace gz
 #endif
