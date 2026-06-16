@@ -3560,12 +3560,11 @@ void BaseGameSection::reconstruct_generator_cache()
 				// apply structure state: absent record = absent on load
 				GenItem* genItem = static_cast<GenItem*>(node->mObject);
 				u32 structId     = genItem->mItemMgr ? genItem->mItemMgr->generatorGetID() : 0;
-				const f32 gx     = node->mPosition.x;
+				const f32 gx_    = node->mPosition.x;
 				const f32 gz_    = node->mPosition.z;
-				bool dummy_gen   = false;
 
 				if (structId == 'gate' || structId == 'dgat') {
-					const char* name = p2gz->structure_editor->get_gate_name(gx, gz_, dummy_gen);
+					const char* name = p2gz->structure_editor->find_gate_name(Vector2f(gx_, gz_), course);
 					if (name && astate.is_gate_destroyed(name)) {
 						Game::GeneratorCache::CreatureRecordState state;
 						state.gate_destroyed = true;
@@ -3573,7 +3572,7 @@ void BaseGameSection::reconstruct_generator_cache()
 						continue;
 					}
 				} else if (structId == 'brdg') {
-					const char* name = p2gz->structure_editor->get_bridge_name(gx, gz_);
+					const char* name = p2gz->structure_editor->find_bridge_name(Vector2f(gx_, gz_), course);
 					if (name && astate.is_bridge_finished(name)) {
 						Game::GeneratorCache::CreatureRecordState state;
 						state.bridge_finished = true;
@@ -3581,7 +3580,7 @@ void BaseGameSection::reconstruct_generator_cache()
 						continue;
 					}
 				} else if (structId == 'dwfl') {
-					const char* name = p2gz->structure_editor->get_bag_name(gx, gz_);
+					const char* name = p2gz->structure_editor->find_bag_name(Vector2f(gx_, gz_), course);
 					if (name && astate.is_bag_flattened(name)) {
 						Game::GeneratorCache::CreatureRecordState state;
 						state.bag_pressed = true;
@@ -3589,7 +3588,7 @@ void BaseGameSection::reconstruct_generator_cache()
 						continue;
 					}
 				} else if (structId == 'barl') {
-					const char* name = p2gz->structure_editor->find_plug_name(Vector2f(gx, gz_), course);
+					const char* name = p2gz->structure_editor->find_plug_name(Vector2f(gx_, gz_), course);
 					if (name && astate.plug_destroyed) {
 						Game::GeneratorCache::CreatureRecordState state;
 						state.plug_alive = false;
