@@ -8,7 +8,12 @@ namespace gz {
 
 struct TreasureEditor {
 public:
-	TreasureEditor() { }
+	TreasureEditor()
+	    : treasures(nullptr)
+	    , active_treasure(nullptr)
+	    , enabled(false)
+	{
+	}
 	~TreasureEditor() { }
 
 	void init();

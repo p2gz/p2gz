@@ -251,7 +251,12 @@ private:
 /// Base class for different types of menus
 struct MenuLayer {
 public:
-	MenuLayer(IDelegate* on_opened_ = nullptr) { on_opened = on_opened_; }
+	MenuLayer(IDelegate* on_opened_ = nullptr)
+	    : title(nullptr)
+	    , parent(nullptr)
+	    , on_opened(on_opened_)
+	{
+	}
 	virtual ~MenuLayer();
 
 	virtual void update()                            = 0;

@@ -11,6 +11,11 @@ DECL_SECT(".dtors") extern voidfunctionptr _dtors[];
 
 static void __init_cpp();
 
+// @P2GZ: soft-reset crash fix
+// see __init_cpp
+extern void __destroy_global_chain(void);
+extern void __fini_cpp_exceptions(void);
+
 DECL_SECT(".init")
 ASM void __init_hardware() {
 #ifdef __MWERKS__ // clang-format off
@@ -68,6 +73,15 @@ static void __init_cpp()
 	 *	call static initializers
 	 */
 	for (constructor = _ctors; *constructor; constructor++) {
+		// @P2GZ: soft-reset crash fix
+		// if a soft reset reloads with the .ctors/.dtors boundary corrupted, the end of the ctor list
+		// reads back as pointers to program teardown functions lmao. this makes real sure we don't do that again
+		// NB: the real fix for the soft reset crashes was aligning the .dtors section to 32-bytes in splits.txt
+		// this is just being extra careful
+		if (*constructor == (voidfunctionptr)__destroy_global_chain || *constructor == (voidfunctionptr)__fini_cpp_exceptions) {
+			OSReport("[__init_cpp] .ctors corrupted (teardown ptr %08x) - stopping ctor walk\n", (u32)*constructor);
+			break;
+		}
 		(*constructor)();
 	}
 }

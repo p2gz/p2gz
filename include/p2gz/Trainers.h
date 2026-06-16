@@ -10,7 +10,9 @@ public:
 	{
 		enabled            = false;
 		polling            = false;
+		last_flick_count   = 0;
 		first_damage_frame = -1;
+		fade_out_frames    = 0;
 	}
 	~EmpressTrainer() { }
 
