@@ -15,10 +15,10 @@ struct WarpDestination {
 public:
 	WarpDestination()
 	{
-		area         = 0;
-		cave         = 0;
-		sublevel     = 0;
-		day          = 2;
+		area     = 0;
+		cave     = 0;
+		sublevel = 0;
+		day      = 2;
 	}
 
 	u8 area;
@@ -84,6 +84,9 @@ public:
 	bool warping_from_menu;
 	bool warping;
 	bool already_saved_generators;
+	bool applying_generators;
+	bool needs_generator_cache_reconstruction; // set when a preset is applied, consumed when cache is rewritten
+	bool do_egate_parse_only_load;             // skip archive/model loading in ItemDengekiGate::Mgr ctor during cache reconstruction
 	u8 active_captain;
 
 private:

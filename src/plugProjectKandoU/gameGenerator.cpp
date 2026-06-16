@@ -184,7 +184,6 @@ Generator::Generator()
 	mDeathCount           = 0;
 	mDayNum               = 0;
 	mDaysTillResurrection = 0;
-	mIsDisabled           = false; // @P2GZ
 }
 
 /**
@@ -283,6 +282,29 @@ bool Generator::need_saveCreature()
  */
 void Generator::saveCreature(Stream& output)
 {
+	// @P2GZ - simulate writing creature data for treasures even if collected
+	if (mObject->mTypeID == 'pelt' && p2gz->warp->warping) {
+		gz::Preset* preset          = p2gz->warp->get_preset_during_warp();
+		Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(mObject);
+		const int treasure_id       = gen_pellet->mGenParm->mIndex;
+		const int kind              = gen_pellet->mPelType;
+		const bool buried = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(treasure_id)->mParams.mDepth.mData > 0.0f;
+
+		if (preset) {
+			gz::Preset::TreasureGenSpawnOverride oride = preset->get_treasure_gen_override(treasure_id, kind);
+			if (oride.spawn_override == gz::PSO_SpawnAndMove) {
+				oride.position_override.write(output);
+				output.writeByte(static_cast<u8>(0)); // never buried when moved, though this is unrealistic
+				return;
+			}
+		}
+
+		// PSO_Spawn pellets and all other pellets still need to be saved to be respawned
+		mPosition.write(output);                           // save at original position of the generator
+		output.writeByte(static_cast<u8>(buried ? 1 : 0)); // mIsCaptured
+		return;
+	}
+
 	if (mCreature) {
 		u8 conversion = 0;
 		if (isReservedFlag(Reserved_doTrackPosition)) {
@@ -307,26 +329,6 @@ void Generator::saveCreature(Stream& output)
  */
 void Generator::generate()
 {
-	// @P2GZ - apply spawn overrides from preset if warping
-	if (p2gz->warp->warping) {
-		gz::Preset* preset = p2gz->warp->get_preset_during_warp();
-		if (preset) {
-			gz::GenSpawnOverride spawn_override = preset->get_enemy_gen_override(this);
-			if (spawn_override == gz::PSO_DontSpawn) {
-				return;
-			} else if (spawn_override >= gz::PSO_Spawn) {
-				mDayNum     = gameSystem->mTimeMgr->mDayCount;
-				mDeathCount = 0;
-				mCreature   = mObject->generate(this);
-				mIsDisabled = false;
-				if (mCreature) {
-					mCreature->mGenerator = this;
-				}
-				return;
-			}
-		}
-	}
-
 	if (isExpired()) {
 		mUnusedVal = 0;
 		mCreature  = nullptr;
@@ -549,7 +551,6 @@ GeneratorMgr::GeneratorMgr()
 	}
 	mUnusedFlag = 0;
 	mName       = "GeneratorMgr";
-	mDisabled   = false; // @P2GZ
 }
 
 /**
@@ -681,13 +682,11 @@ void GeneratorMgr::read(Stream& input, bool)
 			mGenerator = new Generator();
 			mGenerator->read(input);
 			mGenerator->mMgr = this;
-			mGenerator->mIsDisabled = mDisabled; // @P2GZ
 			generatorCache->addGenerator(mGenerator);
 		} else {
 			Generator* newGenerator = new Generator();
 			newGenerator->mMgr      = this;
 			newGenerator->read(input);
-			newGenerator->mIsDisabled = mDisabled; // @P2GZ
 
 			Generator* gen = mGenerator;
 			for (gen; gen->mNextGenerator; gen = gen->mNextGenerator) {

@@ -36,7 +36,8 @@ AT 	# category
 2 	# num flattened bags
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
-0 	# plugs destroyed
+0	# num plugs destroyed
 0 	# num enemy spawns
 0 	# num treasure spawn overrides
 1	# bridge glitch active
+0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

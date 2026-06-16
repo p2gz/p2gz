@@ -141,6 +141,7 @@ public:
 
 	void add_plug(Game::ItemBarrel::Item* plug);
 	void set_plug_destroyed(bool destroyed);
+	static const char* find_plug_name(Vector2f pos, int area);
 	void clear_plugs();
 	void sync_plugs();
 
@@ -164,17 +165,17 @@ public:
 
 	void reset_all_structures();
 
+	const char* get_gate_name(f32 x, f32 z, bool& generated);
+	const char* get_bridge_name(f32 x, f32 z);
+	const char* get_plug_name(f32 x, f32 z, bool& generated);
+	const char* get_bag_name(f32 x, f32 z);
+
 	ListMenu* gate_menu;
 	ListMenu* bridge_menu;
 	ListMenu* plug_menu;
 	ListMenu* bag_menu;
 
 private:
-	const char* get_gate_name(f32 x, f32 z, bool& generated);
-	const char* get_bridge_name(f32 x, f32 z);
-	const char* get_plug_name(f32 x, f32 z, bool& generated);
-	const char* get_bag_name(f32 x, f32 z);
-
 	Vec<GateWrapper*> gates;
 	Vec<BridgeWrapper*> bridges;
 	Vec<PlugWrapper*> plugs;

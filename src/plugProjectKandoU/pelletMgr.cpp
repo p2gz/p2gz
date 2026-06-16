@@ -1073,7 +1073,11 @@ void Pellet::allocateTexCaster()
 	if ((getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) && mCaster == nullptr) {
 		f32 radius = mConfig->mParams.mPRadius.mData;
 		Sys::Sphere sphere(mPelletPosition, 2.0f * radius);
-		mCaster = TexCaster::Mgr::sInstance->create(sphere, TAU * randFloat());
+		if (p2gz->warp->applying_generators) {
+			mCaster = nullptr;
+		} else {
+			mCaster = TexCaster::Mgr::sInstance->create(sphere, TAU * randFloat());
+		}
 
 		if (mCaster) {
 			if (mCaptureMatrix) {

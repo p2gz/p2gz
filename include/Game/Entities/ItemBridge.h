@@ -17,6 +17,10 @@ struct Item;
 #define BRIDGETYPE_Long   (2)
 #define BRIDGETYPE_COUNT  (3)
 
+// @P2GZ - finished-bridge marker written by generator-cache reconstruction
+// this fixes a crash when the bridge manager isn't available to query mStageCount
+#define BRIDGE_FINISHED_SENTINEL (-1)
+
 enum StateID {
 	BRIDGE_Normal = 0,
 	BRIDGE_StateCount, // 1

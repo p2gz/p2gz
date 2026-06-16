@@ -254,6 +254,8 @@ struct BaseGameSection : public BaseHIOSection {
 		mXfbBoundsY = y;
 	}
 
+	void reconstruct_generator_cache(); // @P2GZ
+
 	static u8 sOptDraw;
 
 	// _00 		= VTBL

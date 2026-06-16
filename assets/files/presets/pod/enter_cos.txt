@@ -1,8 +1,8 @@
 enter_CoS 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
 PoD 	# category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
-   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
-   0  0  45 0  0  28 0  0  0  0  0  20 0  0  40 0  0  0  	# onions
+   0  0  0  0  0  0  0  0  0  0  0  0   0  0  0   0  0  0  	# pikmin
+   0  0  45 0  0  28 0  0  0  0  0  20  0  0  35  0  0  0   	# onions
 0 	# num sprouts
 0 0 	# bitters, bitters unlocked
 0 0 	# spicies, spicies unlocked
@@ -82,7 +82,8 @@ PoD 	# category
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
-0 	# plugs destroyed
+1	# num plugs destroyed
+	0	800.0	1380.0				0	# bridge plug
 0 	# num enemy spawns
 10 	# num treasure spawn overrides
 	42 	1 	# Sunseed Berry
@@ -96,3 +97,4 @@ PoD 	# category
 	157 	1 	# Spiny Alien Treat
 	47 	1 	# Fossilized Ursidae
 0	# bridge glitch active
+0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

@@ -1,3 +1,4 @@
+#include "Game/Entities/Item.h"
 #include "Game/Entities/ItemBigFountain.h"
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletCarcass.h"
@@ -712,14 +713,10 @@ void BaseGameSection::initGenerators()
 			for (int i = 0; i < courseInfo->mLimitGenInfo.mCount; i++) {
 				LimitGen* currentGen = static_cast<LimitGen*>(courseInfo->mLimitGenInfo.mOwner.getChildAt(i));
 
-				// @P2GZ - always load nonloop genfiles, but mark them as disabled if necessary
-				// if (currentGen->mMinimumDay > today || today > currentGen->mMaximumDay)
-				// 	continue;
+				if (currentGen->mMinimumDay > today || today > currentGen->mMaximumDay)
+					continue;
 				if (playData->mLimitGen[courseInfo->mCourseIndex].mNonLoops.isFlag(i))
 					continue;
-				bool disabled = false;
-				if (currentGen->mMinimumDay > today || today > currentGen->mMaximumDay)
-					disabled = true;
 
 				sprintf(filenameCharArr, "%s/nonloop/%s", courseInfo->mAbeFolder, currentGen->mName);
 
@@ -731,7 +728,6 @@ void BaseGameSection::initGenerators()
 
 					GeneratorMgr* currentNonloopMgr = new GeneratorMgr;
 					currentNonloopMgr->mUnusedFlag  = true; // is nonrepeating?
-					currentNonloopMgr->mDisabled    = disabled; // @P2GZ
 
 					currentNonloopMgr->read(noonloopTxt, false);
 					currentNonloopMgr->setDayLimit(currentGen->mDayLimit);
@@ -827,10 +823,7 @@ void BaseGameSection::initGenerators()
 		}
 
 		for (int i = 0; i < fileIdx; i++) {
-			// @P2GZ - only generate genmgrs that aren't disabled
-			if (!generatorManagers[i]->mDisabled) {
-				generatorManagers[i]->generate();
-			}
+			generatorManagers[i]->generate();
 		}
 
 		generatorCache->createNumberGenerators();
@@ -979,18 +972,13 @@ void BaseGameSection::saveToGeneratorCache(CourseInfo* courseinfo)
 	generatorCache->beginSave(courseinfo->mCourseIndex);
 	FOREACH_NODE(Generator, generatorCache->getFirstGenerator(), node)
 	{
-		// @P2GZ - don't save disabled gens
-		// if (node->isReservedFlag(Generator::Reserved_doSaveGen)) {
-		if (node->isReservedFlag(Generator::Reserved_doSaveGen) && !node->mIsDisabled) {
+		if (node->isReservedFlag(Generator::Reserved_doSaveGen)) {
 			generatorCache->saveGenerator(node);
 		}
 	}
 	FOREACH_NODE(Generator, generatorCache->getFirstGenerator(), node)
 	{
-		// @P2GZ - don't save disabled gens
-		// if (node->isReservedFlag(Generator::Reserved_doSaveGen) && node->isReservedFlag(Generator::Reserved_doSaveCreature)) {
-		if (node->isReservedFlag(Generator::Reserved_doSaveGen) && node->isReservedFlag(Generator::Reserved_doSaveCreature)
-		    && !node->mIsDisabled) {
+		if (node->isReservedFlag(Generator::Reserved_doSaveGen) && node->isReservedFlag(Generator::Reserved_doSaveCreature)) {
 			generatorCache->saveCreature(node);
 		}
 	}
@@ -2328,6 +2316,8 @@ void BaseGameSection::setupFloatMemory()
 	particleMgr->setViewport(gfx);
 	particleMgr->start();
 
+	reconstruct_generator_cache(); // @P2GZ - reconstruct other areas' generator caches when applying a preset
+
 	initGenerators();
 
 	itemMgr->initDependency();
@@ -3324,6 +3314,315 @@ void BaseGameSection::captureRadarmap(Graphics&)
 void BaseGameSection::drawRadarmap(Graphics&)
 {
 	// UNUSED FUNCTION
+}
+
+// @P2GZ - rebuild generator cache records for other areas without fully loading them
+void BaseGameSection::reconstruct_generator_cache()
+{
+	// we shouldn't run this on every load, duh - only when we warp from gz menu
+	if (!p2gz->warp->needs_generator_cache_reconstruction) {
+		return;
+	}
+
+	// we have to be warping to have a valid preset
+	if (!p2gz->warp->warping) {
+		return;
+	}
+	gz::Preset* preset                               = p2gz->warp->get_preset_during_warp();
+	p2gz->warp->needs_generator_cache_reconstruction = false;
+	if (!preset) {
+		// can't set jack shit without a preset
+		return;
+	}
+
+	// we're only ever in single game mode when warping, this is fine
+	SingleGameSection* singleGame = static_cast<SingleGameSection*>(this);
+	const bool currentIsCave      = singleGame->mInCave;
+	const int currentCourse       = singleGame->mCurrentCourseInfo ? (int)singleGame->mCurrentCourseInfo->mCourseIndex : -1;
+	const int today               = gameSystem->mTimeMgr->mDayCount;
+
+	// clear existing cache and nonloop/loop flags
+	generatorCache->clearCache();
+	playData->initLimitGens();
+
+	// clear visited areas - we re-mark any that we adjust the cache for
+	const int areaCount = stageList->mCourseCount < 4 ? stageList->mCourseCount : 4;
+	for (int course = 0; course < areaCount; course++) {
+		playData->mBitfieldPerCourse[course] &= ~PlayData::PDCF_Visited;
+	}
+
+	// skip if nothing needs rebuilding
+	bool anyToReconstruct = false;
+	for (int course = 0; course < areaCount; course++) {
+		const bool isDestArea = (!currentIsCave && course == currentCourse);
+		if (isDestArea ? preset->area_states[course].has_any_state() : preset->is_area_visited(course)) {
+			anyToReconstruct = true;
+			break;
+		}
+	}
+	if (!anyToReconstruct) {
+		return;
+	}
+
+	// all temp objects live on this scratch heap + destroyed at the end
+	JKRHeap* backupHeap     = JKRGetCurrentHeap();
+	JKRExpHeap* scratchHeap = JKRExpHeap::create(backupHeap->getFreeSize() / 2, backupHeap, true);
+	if (!scratchHeap) {
+		return;
+	}
+	scratchHeap->becomeCurrentHeap();
+
+	// gen-object factory on scratch heap
+	Generator::initialiseSystem();
+	new GeneratorMgr;
+	GenObjectEnemy::initialise();
+	GenItem::initialise();
+	GenPellet::initialise();
+	GenObjectPiki::initialise();
+	GenObjectNavi::initialise();
+
+	// make sure we have managers for things we need to fake-load
+	// this does it in a way that we don't fuck with the global managers
+	BaseItemMgr* tempItemMgrs[5];
+	int tempItemMgrCount = 0;
+	if (!ItemPlant::mgr) {
+		tempItemMgrs[tempItemMgrCount] = new ItemPlant::Mgr;
+		itemMgr->addMgr(tempItemMgrs[tempItemMgrCount++]);
+	}
+	if (!ItemRock::mgr) {
+		tempItemMgrs[tempItemMgrCount] = new ItemRock::Mgr;
+		itemMgr->addMgr(tempItemMgrs[tempItemMgrCount++]);
+	}
+	if (!ItemCave::mgr) {
+		tempItemMgrs[tempItemMgrCount] = new ItemCave::Mgr;
+		itemMgr->addMgr(tempItemMgrs[tempItemMgrCount++]);
+	}
+	if (!ItemBridge::mgr) {
+		tempItemMgrs[tempItemMgrCount] = new ItemBridge::Mgr;
+		itemMgr->addMgr(tempItemMgrs[tempItemMgrCount++]);
+	}
+	if (!ItemDengekiGate::mgr) {
+		// for some reason, gate managers load archives on constructing, but others don't
+		// easier to just skip this so we don't leak memory accidentally
+		p2gz->warp->do_egate_parse_only_load = true;
+		tempItemMgrs[tempItemMgrCount]       = new ItemDengekiGate::Mgr;
+		p2gz->warp->do_egate_parse_only_load = false;
+		itemMgr->addMgr(tempItemMgrs[tempItemMgrCount++]);
+	}
+
+	// suppress PelletBirthBuffer so we don't queue any pellets from enemies accidentally
+	const bool savedFromTekiEnable = Pellet::sFromTekiEnable;
+	Pellet::sFromTekiEnable        = false;
+
+	char filename[PATH_MAX];
+
+	for (int course = 0; course < areaCount; course++) {
+		const bool isDestArea = (!currentIsCave && course == currentCourse);
+
+		if (isDestArea) {
+			// dest area: only rebuild if there's explicit structure changes; otherwise initGenerators reads files normally
+			if (!preset->area_states[course].has_any_state()) {
+				continue;
+			}
+		} else if (!preset->is_area_visited(course)) {
+			// unvisited areas run initgen fresh on entry, so they can stay cleared
+			continue;
+		}
+
+		CourseInfo* courseInfo = stageList->getCourseInfo(course);
+		if (!courseInfo) {
+			continue;
+		}
+
+		generatorCache->clearGeneratorList();
+
+		// cached things are only initgen/nonloop/loop - defaultgen/plantsgen/day are not cached, so don't bother
+
+		// initgen: first-visit generators (enemies, treasures, structures)
+		sprintf(filename, "%s/initgen.txt", courseInfo->mAbeFolder);
+		void* initgenFile = LoadTextFile(filename);
+		if (initgenFile) {
+			RamStream stream(initgenFile, -1);
+			stream.setMode(STREAM_MODE_TEXT, 1);
+
+			GeneratorMgr* mgr = new GeneratorMgr;
+			mgr->read(stream, false);
+
+			delete[] initgenFile;
+		}
+
+		// nonloop: one-shot generators valid for the current day
+		for (int i = 0; i < courseInfo->mLimitGenInfo.mCount; i++) {
+			LimitGen* limitGen = static_cast<LimitGen*>(courseInfo->mLimitGenInfo.mOwner.getChildAt(i));
+			if (limitGen->mMinimumDay > today || today > limitGen->mMaximumDay) {
+				continue;
+			}
+			if (playData->mLimitGen[course].mNonLoops.isFlag(i)) {
+				continue;
+			}
+
+			sprintf(filename, "%s/nonloop/%s", courseInfo->mAbeFolder, limitGen->mName);
+			void* file = LoadTextFile(filename);
+			if (file) {
+				RamStream stream(file, -1);
+				stream.setMode(STREAM_MODE_TEXT, 1);
+
+				GeneratorMgr* mgr = new GeneratorMgr;
+				mgr->read(stream, false);
+				mgr->setDayLimit(limitGen->mDayLimit);
+
+				delete[] file;
+
+				// only mark consumed if saveGenerator won't drop these (today < mDayLimit)
+				if (limitGen->mDayLimit == -1 || today < limitGen->mDayLimit) {
+					playData->mLimitGen[course].mNonLoops.setFlag(i);
+				}
+			}
+		}
+
+		// loop: interval (every 30 days) generators
+		if (today / 30 >= 1) {
+			int intervalDay = today % 30;
+			int floorDay    = (today / 30) * 30;
+			for (int i = 0; i < courseInfo->mLoopGenInfo.mCount; i++) {
+				LimitGen* loopGen = static_cast<LimitGen*>(courseInfo->mLoopGenInfo.mOwner.getChildAt(i));
+				int intervalMin   = loopGen->mMinimumDay % 30;
+				int intervalMax   = loopGen->mMaximumDay % 30;
+				if (intervalMin > intervalDay || intervalDay > intervalMax) {
+					continue;
+				}
+				if (playData->mLimitGen[course].mLoops.isFlag(i)) {
+					continue;
+				}
+
+				sprintf(filename, "%s/loop/%s", courseInfo->mAbeFolder, loopGen->mName);
+				void* file = LoadTextFile(filename);
+				if (file) {
+					RamStream stream(file, -1);
+					stream.setMode(STREAM_MODE_TEXT, 1);
+
+					int loopDayLimit  = floorDay + loopGen->mMaximumDay - 30;
+					GeneratorMgr* mgr = new GeneratorMgr;
+					mgr->read(stream, false);
+					mgr->setDayLimit(loopDayLimit);
+
+					delete[] file;
+
+					// same: only mark if today < loopDayLimit
+					if (loopDayLimit == -1 || today < loopDayLimit) {
+						playData->mLimitGen[course].mLoops.setFlag(i);
+					}
+				}
+			}
+		}
+
+		// apply enemy spawn overrides: record death state in lieu of live kills/spawns
+		FOREACH_NODE(Generator, generatorCache->getFirstGenerator(), gen)
+		{
+			if (!gen->mObject || gen->mObject->mTypeID != 'teki') {
+				continue;
+			}
+			gz::Preset::EnemyGenSpawnOverride oride = preset->get_enemy_gen_override(gen);
+			if (oride.spawn_override == gz::PSO_DontSpawn) {
+				gen->mDeathCount = static_cast<GenObjectEnemy*>(gen->mObject)->mTekiNum;
+				// killed on the authored day (clamped to a valid past day); -1/out-of-range -> warp day
+				gen->mDayNum = (oride.kill_day >= 0 && oride.kill_day <= today) ? oride.kill_day : today;
+			} else if (oride.spawn_override >= gz::PSO_Spawn) {
+				gen->mDeathCount = 0;
+				gen->mDayNum     = today;
+			}
+		}
+
+		// serialize the generator records, then the creature records (the order that loading will expect)
+		generatorCache->beginSave(course);
+		FOREACH_NODE(Generator, generatorCache->getFirstGenerator(), node)
+		{
+			if (node->isReservedFlag(Generator::Reserved_doSaveGen)) {
+				generatorCache->saveGenerator(node);
+			}
+		}
+		// do creature records for pellets/structures - enemies get none
+		gz::Preset::AreaStructureState& astate = preset->area_states[course];
+		FOREACH_NODE(Generator, generatorCache->getFirstGenerator(), node)
+		{
+			if (!node->mObject || !node->isReservedFlag(Generator::Reserved_doSaveGen)
+			    || !node->isReservedFlag(Generator::Reserved_doSaveCreature)) {
+				continue;
+			}
+			// no record for collected pellets: absent record = absent on visit
+			if (node->mObject->mTypeID == 'pelt') {
+				Game::GenPellet* genPellet                 = static_cast<Game::GenPellet*>(node->mObject);
+				gz::Preset::TreasureGenSpawnOverride oride = preset->get_treasure_gen_override(genPellet->mGenParm->mIndex);
+				if (oride.spawn_override == gz::PSO_DontSpawn) {
+					continue;
+				}
+			} else if (node->mObject->mTypeID == 'item') {
+				// apply structure state: absent record = absent on load
+				GenItem* genItem = static_cast<GenItem*>(node->mObject);
+				u32 structId     = genItem->mItemMgr ? genItem->mItemMgr->generatorGetID() : 0;
+				const f32 gx     = node->mPosition.x;
+				const f32 gz_    = node->mPosition.z;
+				bool dummy_gen   = false;
+
+				if (structId == 'gate' || structId == 'dgat') {
+					const char* name = p2gz->structure_editor->get_gate_name(gx, gz_, dummy_gen);
+					if (name && astate.is_gate_destroyed(name)) {
+						Game::GeneratorCache::CreatureRecordState state;
+						state.gate_destroyed = true;
+						generatorCache->reconstructCreatureRecord(node, state);
+						continue;
+					}
+				} else if (structId == 'brdg') {
+					const char* name = p2gz->structure_editor->get_bridge_name(gx, gz_);
+					if (name && astate.is_bridge_finished(name)) {
+						Game::GeneratorCache::CreatureRecordState state;
+						state.bridge_finished = true;
+						generatorCache->reconstructCreatureRecord(node, state);
+						continue;
+					}
+				} else if (structId == 'dwfl') {
+					const char* name = p2gz->structure_editor->get_bag_name(gx, gz_);
+					if (name && astate.is_bag_flattened(name)) {
+						Game::GeneratorCache::CreatureRecordState state;
+						state.bag_pressed = true;
+						generatorCache->reconstructCreatureRecord(node, state);
+						continue;
+					}
+				} else if (structId == 'barl') {
+					const char* name = p2gz->structure_editor->find_plug_name(Vector2f(gx, gz_), course);
+					if (name && astate.plug_destroyed) {
+						Game::GeneratorCache::CreatureRecordState state;
+						state.plug_alive = false;
+						generatorCache->reconstructCreatureRecord(node, state);
+						continue;
+					}
+				}
+			}
+			generatorCache->reconstructCreatureRecord(node);
+		}
+		generatorCache->endSave();
+
+		// mark visited so the real entry loads from cache and won't re-run initgen
+		playData->visitCourse(course);
+	}
+
+	// remove temp managers before scratch heap is freed
+	for (int i = 0; i < tempItemMgrCount; i++) {
+		itemMgr->delNode(tempItemMgrs[i]);
+	}
+
+	// need to make sure we reset the pelletMgr mgrs for above ground (cave already ran setupResources)
+	if (!currentIsCave) {
+		pelletMgr->resetMgrs();
+	}
+	Pellet::sFromTekiEnable = savedFromTekiEnable;
+
+	// unlink generator list and factory before scratch heap is freed (rebuilt by initGenerators)
+	generatorCache->clearGeneratorList();
+	Generator::initialiseSystem();
+
+	backupHeap->becomeCurrentHeap();
+	scratchHeap->destroy();
 }
 
 } // namespace Game
