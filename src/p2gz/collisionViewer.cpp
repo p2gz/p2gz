@@ -114,6 +114,10 @@ void CollisionViewer::gather_triangles(Sys::Sphere& sphere)
 // https://en.wikipedia.org/wiki/Hash_function#Fibonacci_hashing
 void CollisionViewer::edge_set_insert(int a, int b)
 {
+	if (edge_count >= EDGE_SET_SIZE) {
+		return;
+	}
+
 	// order the pair so (a, b) and (b, a) are the same edge
 	if (a > b) {
 		int tmp = a;
