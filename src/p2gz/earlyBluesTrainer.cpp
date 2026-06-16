@@ -41,7 +41,13 @@ const f32 INSET_MARGIN = 24.0f;
 
 const f32 INSET_COLLISION_RADIUS = 1024.0f;
 
-const f32 BELOW_MAP_Y = -300.0f;
+// How far Olimar must move along the hit wall's (horizontal) normal in a frame to count as
+// crossing it. Tangential seam-scraping barely moves him that way; an eject or a walk-through
+// moves him along it. The bar is HIGH to arm (the big initial clip onto the seam, so approach
+// bumps don't falsely arm) and LOW to fail (a slow walk-through off the seam barely registers).
+// Sign is mesh-dependent, so magnitude is used. Tune from the "push=" telemetry.
+const f32 WALL_ARM_PUSH  = 5.0f;
+const f32 WALL_FAIL_PUSH = 1.0f;
 
 const int RESULT_DISPLAY_FRAMES = 240;
 
@@ -55,15 +61,13 @@ Vector3f EarlyBluesTrainer::respawn_position()
 
 Game::Navi* EarlyBluesTrainer::get_olimar()
 {
-	// mArray can be null/torn for a frame around section transitions (same guard as
-	// EmpressTrainer::draw)
 	if (!Game::naviMgr || !Game::naviMgr->mArray) {
 		return nullptr;
 	}
 	return Game::naviMgr->getAt(NAVIID_Olimar);
 }
 
-// incomprehensible claude magic
+// Incomprehensible magic to make the inset camera render a black background when there are no textures to draw.
 static void fill_inset_backdrop(Rectf& bounds)
 {
 	GXSetNumTevStages(1);
@@ -107,6 +111,7 @@ static void fill_inset_backdrop(Rectf& bounds)
 	GXSetZMode(GX_TRUE, GX_LESS, GX_TRUE);
 }
 
+// Draw white triangles indicating the map collision in the inset camera.
 static void draw_inset_collision(Graphics& gfx, Viewport* vp, Game::Navi* navi)
 {
 	if (!Game::mapMgr || Game::gameSystem->mIsInCave) {
@@ -160,13 +165,15 @@ void EarlyBluesTrainer::start()
 
 	GZASSERTLINE(inset_viewport && inset_camera);
 
-	enabled         = true;
-	hell_warped     = false;
-	was_below_map   = false;
-	would_have_died = false;
-	result_frames   = 0;
-	cam_azimuth     = 0.0f;
-	cam_elevation   = CAM_DEFAULT_ELEVATION;
+	enabled          = true;
+	hell_warped      = false;
+	on_seam          = false;
+	has_prev         = false;
+	wall_hit_pending = false;
+	would_have_died  = false;
+	result_frames    = 0;
+	cam_azimuth      = 0.0f;
+	cam_elevation    = CAM_DEFAULT_ELEVATION;
 
 	Game::SingleGameSection* sgs = gz::get_SGS();
 	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
@@ -212,9 +219,11 @@ void EarlyBluesTrainer::setup_after_load()
 		return;
 	}
 	teleport_to_start(navi);
-	was_below_map   = false;
-	hell_warped     = false;
-	would_have_died = false;
+	on_seam          = false;
+	has_prev         = false;
+	wall_hit_pending = false;
+	hell_warped      = false;
+	would_have_died  = false;
 }
 
 void EarlyBluesTrainer::teleport_to_start(Game::Navi* navi)
@@ -251,29 +260,73 @@ void EarlyBluesTrainer::update()
 		return;
 	}
 
-	f32 y = navi->getPosition().y;
-	if (navi->getStateID() == Game::NSID_Pellet && navi->mPellet) {
-		f32 pellet_y = navi->mPellet->getPosition().y;
-		if (pellet_y < y) {
-			y = pellet_y;
+	Vector3f pos    = navi->getPosition();
+	bool napsacking = navi->getStateID() == Game::NSID_Pellet;
+
+	// before he reaches the seam, log where the warp settled him, to tune START_POSITION
+	if (!on_seam) {
+		OSReport("[early blues] olimar at (%.2f, %.2f, %.2f)\n", pos.x, pos.y, pos.z);
+	}
+
+	if (!napsacking && wall_hit_pending && has_prev && last_wall_tri) {
+		// How far he moved this frame along the hit wall's horizontal normal. Tangential
+		// scraping along the seam barely moves him that way (~0); an eject or a walk-through
+		// across the wall moves him along it. The normal's sign is mesh-dependent, so use
+		// the magnitude.
+		Vector3f n     = last_wall_tri->mTrianglePlane.mNormal;
+		Vector3f moved = pos - prev_pos;
+		f32 nlen2      = n.x * n.x + n.z * n.z;
+		f32 apush      = 0.0f;
+		if (nlen2 > 0.0001f) {
+			f32 nlen = sqrtf(nlen2);
+			f32 push = (moved.x * n.x + moved.z * n.z) / nlen;
+			apush    = push < 0.0f ? -push : push;
+		}
+		if (apush > 0.5f) {
+			OSReport("[early blues] wall hit: push=%.2f on_seam=%d\n", apush, on_seam);
+		}
+
+		if (!on_seam) {
+			// ARM: only the big initial clip onto the seam arms (approach bumps don't).
+			if (apush > WALL_ARM_PUSH) {
+				on_seam = true;
+				OSReport("[early blues] clipped onto the seam - attempt armed\n");
+			}
+		} else if (apush > WALL_FAIL_PUSH) {
+			// FAIL: once on the seam, a much smaller move across a wall means he walked or
+			// clipped off it back toward the playfield.
+			OSReport("[early blues] crossed a wall off the seam - attempt failed\n");
+			resolve_attempt(navi, true);
+			return;
 		}
 	}
 
-	if (y < BELOW_MAP_Y) {
-		was_below_map = true;
-	} else if (was_below_map && navi->getStateID() != Game::NSID_Pellet) {
-		resolve_attempt(navi);
+	if (!napsacking) {
+		// success: he made it across the seam to the blue onion target. The void fall is
+		// caught independently by hell_warped (the death-plane hook).
+		Vector3f to_target  = pos - SUCCESS_POSITION;
+		bool reached_target = on_seam && to_target.length() < SUCCESS_RADIUS;
+		if (hell_warped || reached_target) {
+			resolve_attempt(navi);
+			return;
+		}
 	}
+
+	wall_hit_pending = false;
+	prev_pos         = pos;
+	has_prev         = true;
 }
 
-void EarlyBluesTrainer::resolve_attempt(Game::Navi* navi)
+void EarlyBluesTrainer::resolve_attempt(Game::Navi* navi, bool clipped_back)
 {
 	Vector3f landed = navi->getPosition();
 	Vector3f delta  = landed - SUCCESS_POSITION;
+	OSReport("[early blues] attempt ended at (%.2f, %.2f, %.2f)\n", landed.x, landed.y, landed.z);
 
-	result_success  = !hell_warped && delta.length() < SUCCESS_RADIUS;
-	result_softlock = would_have_died;
-	result_frames   = RESULT_DISPLAY_FRAMES;
+	result_success      = !hell_warped && !clipped_back && delta.length() < SUCCESS_RADIUS;
+	result_clipped_back = clipped_back;
+	result_softlock     = would_have_died;
+	result_frames       = RESULT_DISPLAY_FRAMES;
 
 	if (!navi->isAlive()) {
 		navi->setAlive(true);
@@ -286,9 +339,11 @@ void EarlyBluesTrainer::resolve_attempt(Game::Navi* navi)
 
 	teleport_to_start(navi);
 
-	was_below_map   = false;
-	hell_warped     = false;
-	would_have_died = false;
+	on_seam          = false;
+	has_prev         = false;
+	wall_hit_pending = false;
+	hell_warped      = false;
+	would_have_died  = false;
 }
 
 void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
@@ -323,7 +378,7 @@ void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
 	inset_camera->update();
 }
 
-// slightly less incomprehensible claude magic
+// Slightly less incomprehensible magic to actually draw the inset camera.
 void EarlyBluesTrainer::draw_inset(Game::BaseGameSection* section, Graphics& gfx)
 {
 	if (!enabled || pending_setup || !inset_viewport || !gz::in_above_ground_play()) {
@@ -409,7 +464,10 @@ void EarlyBluesTrainer::draw_status()
 	const JUtility::TColor& warp_color = result_success ? RESULT_GOOD : RESULT_BAD;
 	j2d.mCharColor.set(warp_color);
 	j2d.mGradientColor.set(warp_color);
-	j2d.print(160.0f, 340.0f, result_success ? "early blues: reached warp target!" : "early blues: missed warp target");
+	const char* warp_text = result_success      ? "early blues: reached warp target!"
+	                        : result_clipped_back ? "early blues: clipped back in bounds"
+	                                              : "early blues: missed warp target";
+	j2d.print(160.0f, 340.0f, warp_text);
 
 	const JUtility::TColor& lock_color = result_softlock ? RESULT_BAD : RESULT_GOOD;
 	j2d.mCharColor.set(lock_color);

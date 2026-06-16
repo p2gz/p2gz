@@ -1262,6 +1262,12 @@ void FakePiki::move(f32 rate)
 	// we're gonna run into a wall
 	if (!mDontUseWallCallback && info.mWallTriangle) {
 		wallCallback(info.mWallNormal);
+		// @P2GZ: surface the wall hit to the early blues trainer so it can detect crossing
+		// off the out-of-bounds seam (it checks which side of this wall's plane he's on).
+		if (p2gz->early_blues_trainer->is_enabled() && isNavi() && static_cast<Navi*>(this)->mNaviIndex == NAVIID_Olimar
+		    && !static_cast<Navi*>(this)->mPellet) {
+			p2gz->early_blues_trainer->note_wall_hit(info.mWallTriangle);
+		}
 	}
 
 	// we're on a platform, change position accordingly since it might move us
@@ -1558,6 +1564,21 @@ void FakePiki::doSimulation(f32 rate)
 		if (p2gz->early_blues_trainer->is_enabled() && static_cast<Navi*>(this)->mNaviIndex == NAVIID_Olimar
 		    && !static_cast<Navi*>(this)->mPellet) {
 			p2gz->early_blues_trainer->on_death_plane_warp();
+
+			// log where vanilla checkHell would warp him (ship/pod/onyon, +150 y), which the
+			// trainer overrides with a respawn - read this for SUCCESS_POSITION
+			Onyon* recover = ItemOnyon::mgr->mUfo;
+			if (!recover) {
+				recover = ItemOnyon::mgr->mPod;
+			}
+			if (!recover) {
+				recover = ItemOnyon::mgr->getOnyon(1 - static_cast<Navi*>(this)->mNaviIndex);
+			}
+			if (recover) {
+				Vector3f dest = recover->getPosition();
+				OSReport("[early blues] checkHell warp destination (%.2f, %.2f, %.2f)\n", dest.x, dest.y + 150.0f, dest.z);
+			}
+
 			Vector3f dropPos = p2gz->early_blues_trainer->respawn_position();
 			setPosition(dropPos, false);
 			return;
