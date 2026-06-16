@@ -712,13 +712,11 @@ void GeneratorCache::reconstructCreatureRecord(Generator* gen, CreatureRecordSta
 			output.writeInt(state.gate_destroyed ? 3 : 0); // mMaxSegments = 3 (hardcoded); triggers dead-gate branch in doLoad
 			break;
 		case 'brdg': // bridges write currStageIdx and stage length
-			// finished: write a sentinel - the real mStageCount isn't knowable here (the parse-only temp
-			// ItemBridge::Mgr never ran onLoadResources, so getBridgeInfo()/mBridgeInfos is invalid).
-			// ItemBridge::Item::doLoad resolves the sentinel to the live mStageCount. mParms is safe
-			// (allocated in the Mgr ctor), so the intact path can still read full stage health.
+			// write a sentinel value (-1) so stage can resolve once the manager definitely exists.
+			// (this crashes in weird places otherwise)
 			output.writeInt(state.bridge_finished ? BRIDGE_FINISHED_SENTINEL : 0);
-			output.writeFloat(state.bridge_finished ? 999.0f
-			                                        : static_cast<ItemBridge::Mgr*>(genItem->mItemMgr)->mParms->mBridgeParms.mHealth.mValue);
+			output.writeFloat(
+			    state.bridge_finished ? 999.0f : static_cast<ItemBridge::Mgr*>(genItem->mItemMgr)->mParms->mBridgeParms.mHealth.mValue);
 			break;
 		case 'dwfl': // bags write isPressed
 			if (static_cast<GenDownFloorParm*>(genItem->mParm)->mDownFloorType == DFTYPE_PaperBag) {

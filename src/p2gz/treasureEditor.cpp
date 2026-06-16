@@ -292,9 +292,7 @@ void TreasureEditor::sync()
 		add(treasure);
 	}
 
-	// Collected / not-yet-spawned treasures: walk the current area's generator cache so treasures a
-	// preset marked collected (generator present, no live creature) still appear and can be edited.
-	// Mirrors the generator walk in spawn_treasure(); dedup-by-name merges these with the live entries.
+	// Add treasures that have already been collected by finding them in the generator cache.
 	if (in_above_ground_play()) {
 		FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
 		{
@@ -334,7 +332,10 @@ void TreasureEditor::sync()
 }
 
 // Add a submenu for the given live treasure.
-void TreasureEditor::add(Game::Pellet* treasure) { add(treasure->getConfigName()); }
+void TreasureEditor::add(Game::Pellet* treasure)
+{
+	add(treasure->getConfigName());
+}
 
 // Add a submenu for the treasure with the given config name. Works without a live pellet so that
 // preset-collected treasures (generator present, no live creature) can still be listed and edited.

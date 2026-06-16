@@ -3550,7 +3550,6 @@ void BaseGameSection::reconstruct_generator_cache()
 				continue;
 			}
 			// no record for collected pellets: absent record = absent on visit
-			// @TODO: may need to re-fix this for the treasure editor menu to work
 			if (node->mObject->mTypeID == 'pelt') {
 				Game::GenPellet* genPellet                 = static_cast<Game::GenPellet*>(node->mObject);
 				gz::Preset::TreasureGenSpawnOverride oride = preset->get_treasure_gen_override(genPellet->mGenParm->mIndex);
@@ -3583,7 +3582,7 @@ void BaseGameSection::reconstruct_generator_cache()
 					}
 				} else if (structId == 'dwfl') {
 					const char* name = p2gz->structure_editor->get_bag_name(gx, gz_);
-					if (name && astate.is_bag_flattened_flag(name)) {
+					if (name && astate.is_bag_flattened(name)) {
 						Game::GeneratorCache::CreatureRecordState state;
 						state.bag_pressed = true;
 						generatorCache->reconstructCreatureRecord(node, state);

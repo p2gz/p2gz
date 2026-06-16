@@ -53,7 +53,7 @@ struct Preset {
 		bool has_any_state() const;
 		bool is_gate_destroyed(const char* name) const;
 		bool is_bridge_finished(const char* name) const;
-		bool is_bag_flattened_flag(const char* name) const;
+		bool is_bag_flattened(const char* name) const;
 
 		Vec<const char*> destroyed_gates;
 		Vec<const char*> finished_bridges;

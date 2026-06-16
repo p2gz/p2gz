@@ -117,7 +117,7 @@ bool Preset::AreaStructureState::is_bridge_finished(const char* name) const
 	return false;
 }
 
-bool Preset::AreaStructureState::is_bag_flattened_flag(const char* name) const
+bool Preset::AreaStructureState::is_bag_flattened(const char* name) const
 {
 	for (u32 i = 0; i < bags_flattened.len(); i++) {
 		if (strcmp(bags_flattened[i], name) == 0) {
@@ -381,33 +381,4 @@ void Preset::apply_post_load()
 		Game::SingleGame::GameState* game_state = static_cast<Game::SingleGame::GameState*>(get_SGS()->mCurrentState);
 		game_state->mIsPostExtinct              = true;
 	}
-
-	// Force spawn or despawn treasures
-	// FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
-	// {
-	// 	if (gen->mObject->mTypeID == 'pelt') {
-	// 		Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
-	// 		int treasure_id             = gen_pellet->mGenParm->mIndex;
-	// 		int kind                    = gen_pellet->mPelType;
-	// 		for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
-	// 			TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
-	// 			if (oride.id == treasure_id) {
-	// 				if (oride.spawn_override >= PSO_Spawn) {
-	// 					if (!gen->mCreature) {
-	// 						gen->generate();
-	// 					}
-	// 					GZASSERTLINE(gen->mCreature);
-	// 					if (oride.spawn_override == PSO_SpawnAndMove) {
-	// 						gen->mCreature->setPosition(oride.position_override, false);
-	// 					} else {
-	// 						gen->mCreature->setPosition(gen->mPosition, false);
-	// 					}
-	// 				} else if (oride.spawn_override == PSO_DontSpawn && gen->mCreature) {
-	// 					Game::PelletKillArg arg;
-	// 					gen->mCreature->kill(&arg);
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
