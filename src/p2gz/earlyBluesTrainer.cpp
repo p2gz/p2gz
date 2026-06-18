@@ -49,6 +49,8 @@ const int B_HOLD_FRAMES = 20;
 
 const f32 DEATH_PLANE_Y = -300.0f;
 
+const f32 START_TIME_OF_DAY = 8.5f;
+
 const int RESULT_DISPLAY_FRAMES = 60;
 const int RESULT_FADE_FRAMES    = 30;
 const int RESET_DELAY_FRAMES    = 30;
@@ -191,12 +193,14 @@ void EarlyBluesTrainer::start()
 		setup_after_load();
 	} else {
 		pending_setup = true;
+		WarpDestination saved = p2gz->warp->get_dest();
 		WarpDestination dest;
 		dest.area            = COURSE_AW;
 		dest.cave            = CAVE_AboveGround;
 		dest.enter_area_type = 0;
 		p2gz->warp->set_dest(dest);
 		p2gz->warp->do_warp();
+		p2gz->warp->set_dest(saved);
 	}
 }
 
@@ -229,6 +233,11 @@ void EarlyBluesTrainer::setup_after_load()
 	}
 	teleport_to_start(navi);
 
+	if (Game::gameSystem->mTimeMgr) {
+		Game::gameSystem->mTimeMgr->setTime(START_TIME_OF_DAY);
+		Game::gameSystem->mTimeMgr->setFlag(Game::TIMEFLAG_Stopped);
+	}
+
 	went_to_hell         = false;
 	would_have_died      = false;
 	went_into_void       = false;
@@ -249,8 +258,7 @@ void EarlyBluesTrainer::update()
 
 	if (pending_setup) {
 		Game::SingleGameSection* sgs = gz::get_SGS();
-		if (gz::in_above_ground_gameplay() && !p2gz->warp->warping && sgs && sgs->mCurrentCourseInfo
-		    && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW) {
+		if (gz::in_above_ground_gameplay() && !p2gz->warp->warping && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW) {
 			setup_after_load();
 		}
 		return;
@@ -261,15 +269,10 @@ void EarlyBluesTrainer::update()
 	}
 
 	Game::SingleGameSection* sgs = gz::get_SGS();
-	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo
-	                         && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
+	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
 	if (!in_awakening_wood) {
 		stop();
 		return;
-	}
-
-	if (Game::gameSystem->mTimeMgr) {
-		Game::gameSystem->mTimeMgr->setFlag(Game::TIMEFLAG_Stopped);
 	}
 
 	Game::Navi* navi = get_olimar();
@@ -402,7 +405,7 @@ void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
 			cam_elevation = CAM_MIN_ELEVATION;
 		}
 
-		if (cam_elevation >= prev_elevation) {
+		if (cam_elevation > prev_elevation) {
 			og::ogSound->setZoomIn();
 		} else if (cam_elevation < prev_elevation) {
 			og::ogSound->setZoomOut();

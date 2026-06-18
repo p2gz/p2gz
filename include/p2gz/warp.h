@@ -47,6 +47,7 @@ public:
 	void sync();
 
 	void set_dest(WarpDestination new_dest);
+	WarpDestination get_dest() { return dest; }
 
 	void set_warp_area(size_t area);
 	void set_warp_cave(size_t cave);
