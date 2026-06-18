@@ -740,9 +740,6 @@ void Graphics::fillZBuffer(Rectf& bounds, f32 z)
 	GXSetColorUpdate(GX_FALSE);
 	GXSetZMode(GX_TRUE, GX_ALWAYS, GX_TRUE);
 
-	// @P2GZ: was `Mtx mtx` (3x4, 48 bytes), but C_MTXOrtho writes a full Mtx44 (4x4,
-	// 64 bytes) - a 16-byte stack overflow that smashes saved registers. retail gets
-	// away with it because no caller has live nonvolatiles in the blast zone
 	Mtx44 mtx;
 	C_MTXOrtho(mtx, bounds.p1.y, bounds.p2.y, bounds.p1.x, bounds.p2.x, -1.0f, 1.0f);
 	GXSetProjection(mtx, GX_ORTHOGRAPHIC);

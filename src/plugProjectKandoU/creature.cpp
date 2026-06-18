@@ -548,7 +548,7 @@ int Creature::checkHell(Creature::CheckHellArg& hellArg)
 	// this is exactly where vanilla would have killed the captain (the softlock the
 	// patch above prevents), so let the trainer report it
 	if (pos.y < -500.0f && isNavi() && p2gz->early_blues_trainer->is_enabled()) {
-		p2gz->early_blues_trainer->on_vanilla_death_averted();
+		p2gz->early_blues_trainer->on_softlock();
 	}
 
 	return pos.y < -300.0f;

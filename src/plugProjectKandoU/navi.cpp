@@ -2839,10 +2839,9 @@ void Navi::disableController()
  */
 void Navi::control()
 {
-	// @P2GZ: the early blues trainer owns B (reset) and Y (save). Capture them for the
-	// trainer and clear them here - control() runs before the walk-state B->whistle check,
-	// so this stops the captain whistling when the player taps B.
-	if (p2gz->early_blues_trainer->is_inset_active() && mController1 && mNaviIndex == NAVIID_Olimar) {
+	// @P2GZ: early blues trainer
+	// disable whistling and switching captains
+	if (p2gz->early_blues_trainer->is_enabled() && mController1 && mNaviIndex == NAVIID_Olimar) {
 		p2gz->early_blues_trainer->capture_input(mController1);
 	}
 
@@ -2850,9 +2849,9 @@ void Navi::control()
 		makeVelocity();
 	}
 
-	// @P2GZ: while the early blues trainer owns the c-stick for its inset camera,
-	// hide it from the swarm system entirely (also silences the marching jingle)
-	makeCStick(p2gz->early_blues_trainer->is_inset_active());
+	// @P2GZ: early blues trainer
+	// disable swarming
+	makeCStick(p2gz->early_blues_trainer->is_enabled());
 
 	if (isMovieActor()) {
 		return;

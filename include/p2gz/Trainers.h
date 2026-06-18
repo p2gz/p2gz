@@ -48,7 +48,7 @@ public:
 		enabled               = false;
 		pending_setup         = false;
 		went_to_hell          = false;
-		would_have_died       = false;
+		would_have_softlocked = false;
 		went_into_void        = false;
 		pending_reset_frames  = 0;
 		result_frames         = 0;
@@ -72,9 +72,7 @@ public:
 	void stop();
 	bool is_enabled() { return enabled; }
 	bool is_pending_setup() { return pending_setup; }
-
 	bool is_inset_active() { return enabled && !pending_setup; }
-	bool force_visible_lod() { return is_inset_active(); }
 
 	void update();
 	void draw_status();
@@ -83,7 +81,7 @@ public:
 	Vector3f respawn_position();
 	void on_death_plane_warp() { went_to_hell = true; }
 
-	void on_vanilla_death_averted() { would_have_died = true; }
+	void on_softlock() { would_have_softlocked = true; }
 	void capture_input(Controller* pad);
 
 private:
@@ -97,7 +95,7 @@ private:
 	bool enabled;
 	bool pending_setup;
 	bool went_to_hell;
-	bool would_have_died;
+	bool would_have_softlocked;
 	bool went_into_void;
 	int pending_reset_frames;
 	int result_frames;

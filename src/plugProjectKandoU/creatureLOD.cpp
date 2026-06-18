@@ -42,10 +42,8 @@ AILOD::AILOD()
 void Creature::updateLOD(Game::AILODParm& parm)
 {
 	// @P2GZ: freecam / early blues trainer
-	// force AILOD_IsVisibleBoth while enabled, so creatures outside the player
-	// cameras' frustums still enter the draw buffers (the early blues inset camera
-	// watches out-of-bounds areas no player camera can see)
-	if (p2gz->freecam->is_enabled() || p2gz->early_blues_trainer->force_visible_lod()) {
+	// force AILOD_IsVisibleBoth while enabled
+	if (p2gz->freecam->is_enabled() || p2gz->early_blues_trainer->is_enabled()) {
 		mLod.setFlag(AILOD_IsVisibleBoth);
 		return;
 	}

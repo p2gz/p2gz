@@ -176,7 +176,7 @@ void EarlyBluesTrainer::start()
 
 	enabled              = true;
 	went_to_hell         = false;
-	would_have_died      = false;
+	would_have_softlocked      = false;
 	went_into_void       = false;
 	result_frames        = 0;
 	pending_reset_frames = 0;
@@ -239,7 +239,7 @@ void EarlyBluesTrainer::setup_after_load()
 	}
 
 	went_to_hell         = false;
-	would_have_died      = false;
+	would_have_softlocked      = false;
 	went_into_void       = false;
 	pending_reset_frames = 0;
 }
@@ -361,7 +361,7 @@ void EarlyBluesTrainer::resolve_attempt(Game::Navi* navi, bool wrong_waypoint)
 
 	result_success        = !went_to_hell && !wrong_waypoint && delta.length() < SUCCESS_RADIUS;
 	result_wrong_waypoint = wrong_waypoint;
-	result_softlock       = would_have_died;
+	result_softlock       = would_have_softlocked;
 	result_frames         = RESULT_DISPLAY_FRAMES;
 
 	if (went_to_hell) {
@@ -386,10 +386,10 @@ void EarlyBluesTrainer::reset_to_start(Game::Navi* navi)
 
 	teleport_to_start(navi);
 
-	went_to_hell         = false;
-	would_have_died      = false;
-	went_into_void       = false;
-	pending_reset_frames = 0;
+	went_to_hell          = false;
+	would_have_softlocked = false;
+	went_into_void        = false;
+	pending_reset_frames  = 0;
 }
 
 void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
@@ -537,17 +537,22 @@ void EarlyBluesTrainer::draw_status()
 
 	u8 alpha = result_frames >= RESULT_FADE_FRAMES ? 255 : (u8)(255 * result_frames / RESULT_FADE_FRAMES);
 
+	const f32 result_glyph    = 24.0f;
+	const f32 ctrl_icon_top   = (430.0f - 2.0f * (p2gz->images->height() + 4.0f)) - p2gz->images->height() + (p2gz->menu->line_height / 2.0f);
+	const f32 result_bottom_z = ctrl_icon_top - 8.0f - result_glyph;
+	const f32 warp_text_z     = result_success ? result_bottom_z - result_glyph : result_bottom_z;
+
 	JUtility::TColor warp_color = result_success ? RESULT_GOOD : RESULT_BAD;
 	warp_color.a                = alpha;
 	j2d.mCharColor.set(warp_color);
 	j2d.mGradientColor.set(warp_color);
-	j2d.print(160.0f, 340.0f, result_success ? "reached waypoint" : result_wrong_waypoint ? "wrong waypoint" : "did not nap");
+	j2d.print(160.0f, warp_text_z, result_success ? "reached waypoint" : result_wrong_waypoint ? "wrong waypoint" : "did not nap");
 
 	if (result_success) {
 		JUtility::TColor lock_color = result_softlock ? RESULT_BAD : RESULT_GOOD;
 		lock_color.a                = alpha;
 		j2d.mCharColor.set(lock_color);
 		j2d.mGradientColor.set(lock_color);
-		j2d.print(160.0f, 364.0f, result_softlock ? "would have softlocked" : "no softlock");
+		j2d.print(160.0f, result_bottom_z, result_softlock ? "would have softlocked" : "no softlock");
 	}
 }

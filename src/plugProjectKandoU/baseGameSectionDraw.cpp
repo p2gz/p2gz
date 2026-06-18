@@ -31,10 +31,8 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	Delegate1<BaseGameSection, Viewport*> vpDelegate(this, &BaseGameSection::newdraw_drawAll);
 	gfx.mapViewport(&vpDelegate);
 
-	// @P2GZ: early blues trainer inset camera
-	// while the inset is active, keep the frame's draw buffers populated until after
-	// draw2D so the inset draws over the HUD; BaseGameSection::doDraw resets them
-	// right after the inset render pass instead
+	// @P2GZ: early blues trainer
+	// draw inset camera over the HUD
 	if (!p2gz->early_blues_trainer->is_inset_active()) {
 		// Initialise both draw buffers for the frame
 		mOpaqueDrawBuffer->frameInitAll();
