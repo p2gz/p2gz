@@ -42,6 +42,16 @@ enum MemoryCardMgrFlags {
 };
 
 struct Mgr : public MemoryCardMgr {
+	// @P2GZ: settings on mem card
+	// layout of dedicated settings file (see cP2GZFileName)
+	// the file is pre-sized with spare data capacity so the written payload can grow later
+	// - to increase size, change P2GZ_PAYLOAD_SIZE from 0x2000 up to a max of 0x1E000
+	enum P2GZDataLayout {
+		P2GZ_FILE_SIZE    = 0x20000, // total allocation: 0x2000 header + 0x1E000 data capacity (16 blocks)
+		P2GZ_DATA_OFFSET  = 0x2000,  // payload begins right after the header block
+		P2GZ_PAYLOAD_SIZE = 0x2000,  // bytes currently written/read/checksummed (may grow to <= 0x1E000)
+	};
+
 	Mgr();
 
 	virtual ~Mgr() { }                                     // _08 (weak)
@@ -69,16 +79,6 @@ struct Mgr : public MemoryCardMgr {
 		MCS_12               = 12,
 		MCS_13               = 13,
 		MCS_PlayerDataBroken = 14,
-	};
-
-	// @P2GZ: settings on mem card
-	// layout of dedicated settings file (see cP2GZFileName)
-	// the file is pre-sized with spare data capacity so the written payload can grow later
-	// - to increase size, change P2GZ_PAYLOAD_SIZE from 0x2000 up to a max of 0x6000
-	enum P2GZDataLayout {
-		P2GZ_FILE_SIZE    = 0x8000, // total allocation: 0x2000 header + 0x6000 data capacity (4 blocks)
-		P2GZ_DATA_OFFSET  = 0x2000, // payload begins right after the header block
-		P2GZ_PAYLOAD_SIZE = 0x2000, // bytes currently written/read/checksummed (may grow to <= 0x6000)
 	};
 
 	void loadResource(JKRHeap*);

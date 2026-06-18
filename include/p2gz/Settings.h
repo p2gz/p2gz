@@ -63,11 +63,11 @@ public:
 	 *  - A new on/off toggle: add a SETTING_* before SETTING_BOOL_COUNT, give it a
 	 *    default in setDefault(), route it to its manager in apply_one(), and bind its
 	 *    ToggleMenuOption with CurriedDelegate1<Settings, SettingId, bool>(.., set_bool, ID).
-	 *    The count-prefixed array handles old saves automatically - no version bump needed.
+	 *    The count-prefixed array handles old saves automatically, so no need for a new version.
 	 *  - A new typed field (int/enum/etc.): add the field, a SETTINGS_VERSION_<name> (aim
 	 *    CURRENT at it), default it, write it after the existing fields, and read it behind
 	 *    `if (version >= SETTINGS_VERSION_<name>)`; apply it in apply().
-	 * Only ever append - never reorder or resize existing fields.
+	 * ONLY EVER APPEND, never reorder or resize existing fields or old versions will corrupt/break.
 	 * =========================================================================== */
 
 	// --- saved settings ---

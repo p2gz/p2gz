@@ -59,7 +59,7 @@ void Settings::read(Stream& input)
 		}
 		treasure_region = input.readInt();
 	}
-	// (A legacy version-1 file fails the gate above and stays on defaults - fine this early.)
+	// (legacy versioned files fail the gate above and stay on defaults)
 }
 
 void Settings::apply()
