@@ -8,7 +8,12 @@
 namespace gz {
 struct DismissPositions {
 public:
-	DismissPositions() { }
+	DismissPositions()
+	    : enabled(false)
+	    , draw_circles(false)
+	    , draw_lines(false)
+	{
+	}
 	~DismissPositions() { }
 
 	void toggle(bool enabled_) { enabled = enabled_; }
