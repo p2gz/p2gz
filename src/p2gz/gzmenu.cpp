@@ -203,6 +203,10 @@ void GZMenu::update()
 
 void GZMenu::increase_text_size()
 {
+	// above a certain text size is ridiculous
+	if (glyph_width > 35.0f) {
+		return;
+	}
 	glyph_width += 2.0;
 	glyph_height += 2.0;
 	line_height += 2.0;
@@ -210,6 +214,10 @@ void GZMenu::increase_text_size()
 
 void GZMenu::decrease_text_size()
 {
+	// below a certain text size is ridiculous
+	if (glyph_width < 7.0f) {
+		return;
+	}
 	glyph_width -= 2.0;
 	glyph_height -= 2.0;
 	line_height -= 2.0;
