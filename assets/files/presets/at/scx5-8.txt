@@ -79,42 +79,18 @@ AT 	# category
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
 1	# num plugs destroyed
 	0	800.0	1380.0				0	# bridge plug
-9 	# num enemy spawns
-	1 	-1153.000000 47.000000 2231.000000 	1	-1
-	24 	548.539978 100.000000 546.479980 	2	-1
-	24 	300.910004 100.000000 361.600006 	2	-1
-	26 	340.790009 15.000000 868.559998 	2	-1
-	26 	145.539993 18.870001 618.030029 	2	-1
-	95 	-244.220001 100.000000 326.779999 	2	-1
-	95 	302.179993 100.000000 -177.910004 	2	-1
-	96 	182.160004 210.000000 -1559.790039 	2	-1
-	55 	-271.089996 114.000000 -1387.319946 	2	-1
-26 	# num treasure spawn overrides
-	47 	2 	# Fossilized Ursidae
-	62 	2 	# Pink Menace
-	71 	2 	# Unspeakable Wonder
-	73 	2 	# Temporal Mechanism
-	87 	0 	# Utter Scrap
-	142 	2 	# Courage Reactor
-	157 	2 	# Spiny Alien Treat
-	11 	1 	# Geographic Projection
-	42 	1 	# Sunseed Berry
-	43 	0
-	130 	1 	# Pilgrim Bulb
-	155 	1 	# Chance Totem
-	173 	2 	# Healing Cask
-	185 	0 	# Air Brake
-	53 	2 	# Onion Replica
-	72 	2 	# Aquatic Mine
-	77 	2 	# Impediment Scourge
-	118 	2 	# Massage Girdle
-	140 	2 	# Optical Illustration
-	152 	2 	# Fortified Delicacy
-	172 	2 	# Gherkin Gate
-	27 	2 	# Armored Nut
-	45 	2 	# Anti-hiccup Fungus
-	50 	2 	# Conifer Spire
-	76 	2 	# Doomsday Apparatus
-	183 	2 	# Seed of Greed
+7 	# num enemy spawns
+	0	1	-1153.361206 47.871529 2231.686035	6	# VoR Dwarf Red Bulborb (hubcap)
+	1	15	-672.000000 -20.000000 1392.000000	5	# AW Cloaking Burrow-nit
+	1	16	-544.000000 -38.000000 1804.000000	5	# AW Honeywisp
+	1	1	-179.685318 -70.000000 2909.942139	5	# AW Dwarf Red Bulborb x2
+	1	2	-486.161591 -70.000000 3058.214355	5	# AW Red Bulborb
+	1	9	518.905334 -75.000000 3719.976562	5	# AW Iridescent Flint Beetle
+	1	10	-738.448914 -28.741590 2354.096924	5	# AW Iridescent Glint Beetle (flowerpot)
+4 	# num treasure spawn overrides
+	1	11	0	# AW Geographic Projection
+	1	42	0	# AW Sunseed Berry
+	1	130	0	# AW Pilgrim Bulb
+	1	155	0	# AW Chance Totem
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

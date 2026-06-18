@@ -9,6 +9,7 @@
 #include "nans.h"
 #include "Parameters.h"
 #include <p2gz/p2gz.h>
+#include <p2gz/Utility.h>
 
 u32 GeneratorCurrentVersion = 'v0.3';
 
@@ -290,16 +291,19 @@ void Generator::saveCreature(Stream& output)
 		const int kind              = gen_pellet->mPelType;
 		const bool buried = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(treasure_id)->mParams.mDepth.mData > 0.0f;
 
-		if (preset) {
-			gz::Preset::TreasureGenSpawnOverride oride = preset->get_treasure_gen_override(treasure_id, kind);
-			if (oride.spawn_override == gz::PSO_SpawnAndMove) {
-				oride.position_override.write(output);
-				output.writeByte(static_cast<u8>(0)); // never buried when moved, though this is unrealistic
+		// treasure overrides are per-area
+		Game::SingleGameSection* sgs = gz::get_SGS();
+		if (preset && sgs && sgs->mCurrentCourseInfo) {
+			const int course                     = sgs->mCurrentCourseInfo->mCourseIndex;
+			gz::Preset::CarriedTreasure treasure = preset->get_treasure_override(course, treasure_id, kind);
+			if (treasure.course != 0xFF && treasure.moved) {
+				treasure.position_override.write(output);
+				output.writeByte(static_cast<u8>(0));
 				return;
 			}
 		}
 
-		// PSO_Spawn pellets and all other pellets still need to be saved to be respawned
+		// uncollected treasures still need to be saved at their original position
 		mPosition.write(output);                           // save at original position of the generator
 		output.writeByte(static_cast<u8>(buried ? 1 : 0)); // mIsCaptured
 		return;

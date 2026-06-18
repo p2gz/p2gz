@@ -21,8 +21,6 @@ enum PresetOrigin { PO_File, PO_Memcard, PO_Generated };
 
 enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1 };
 
-enum GenSpawnOverride { PSO_Ignore = 0, PSO_DontSpawn = 1, PSO_Spawn = 2, PSO_SpawnAndMove = 3 };
-
 struct TreasureAreaMap {
 	u8 id;
 	u8 course_idx;
@@ -61,35 +59,39 @@ struct Preset {
 		bool plug_destroyed;
 	};
 
-	struct EnemyGenSpawnOverride {
-		EnemyGenSpawnOverride()
+	// enemy (above ground) to be tracked as killed
+	struct KilledEnemy {
+		KilledEnemy()
 		{
-			spawn_override = PSO_Ignore;
-			kill_day       = -1;
+			course   = 0xFF; // invalid unless set
+			kill_day = -1;   // default = use day from preset
 		}
 
 		void read(Stream& input);
 		void write(Stream& output);
 
+		u8 course;
 		Game::EnemyTypeID::EEnemyTypeID enemy_id;
 		Vector3f gen_pos;
-		GenSpawnOverride spawn_override;
-		int kill_day; // day enemy should've been killed, to set respawn day correctly (-1 = killed on day we're warping to)
+		int kill_day; // day enemy (should've been) killed, to set respawn day correctly (-1 = killed on day we're warping to)
 	};
 
-	struct TreasureGenSpawnOverride {
-		TreasureGenSpawnOverride()
+	// treasure removed from its fresh state, either collected or carried part-way
+	struct CarriedTreasure {
+		CarriedTreasure()
 		{
-			id             = 255;
-			spawn_override = PSO_Ignore;
+			course = 0xFF; // invalid unless set
+			id     = 255;  // invalid unless set
+			moved  = false;
 		}
 
 		void read(Stream& input);
 		void write(Stream& output);
 
+		u8 course;
 		u8 id;
-		GenSpawnOverride spawn_override;
-		Vector3f position_override; // only used if spawn_override is PSO_SpawnAndMove
+		bool moved;                 // true = spawn at position_override (moved part-way)
+		Vector3f position_override; // only used if moved
 	};
 
 	struct Sprout {
@@ -143,8 +145,8 @@ public:
 	void apply();
 	void apply_post_load();
 
-	EnemyGenSpawnOverride get_enemy_gen_override(Game::Generator* gen);
-	TreasureGenSpawnOverride get_treasure_gen_override(int treasure_id, u8 pellet_type = 0);
+	KilledEnemy get_killed_enemy(int course, Game::Generator* gen);
+	CarriedTreasure get_treasure_override(int course, int treasure_id, u8 pellet_type = 0);
 
 	PresetPreview* preview;
 	PresetCategory category;
@@ -170,8 +172,8 @@ public:
 	int pokos;
 	bool apply_pokos;
 	u8 day;
-	Vec<EnemyGenSpawnOverride> enemy_spawn_overrides;
-	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
+	Vec<KilledEnemy> killed_enemies;
+	Vec<CarriedTreasure> carried_treasures;
 	bool bridge_glitch_active;
 	BitFlag<u16> new_area_zoom;        // bit per course: VoR=1 AW=2 PP=4 WW=8; set = allow zoom on next world-map visit
 	AreaStructureState area_states[4]; // per-area structure state, indexed by CourseIndex (0=VoR…3=WW)

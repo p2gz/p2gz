@@ -3516,20 +3516,18 @@ void BaseGameSection::reconstruct_generator_cache()
 			}
 		}
 
-		// apply enemy spawn overrides: record death state in lieu of live kills/spawns
+		// apply killed enemies: record death (unaltered = alive)
 		FOREACH_NODE(Generator, generatorCache->getFirstGenerator(), gen)
 		{
 			if (!gen->mObject || gen->mObject->mTypeID != 'teki') {
 				continue;
 			}
-			gz::Preset::EnemyGenSpawnOverride oride = preset->get_enemy_gen_override(gen);
-			if (oride.spawn_override == gz::PSO_DontSpawn) {
+			gz::Preset::KilledEnemy kill = preset->get_killed_enemy(course, gen); // @P2GZ - per-area lookup
+			if (kill.course != 0xFF) {
 				gen->mDeathCount = static_cast<GenObjectEnemy*>(gen->mObject)->mTekiNum;
-				// killed on the authored day (clamped to a valid past day); -1/out-of-range -> warp day
-				gen->mDayNum = (oride.kill_day >= 0 && oride.kill_day <= today) ? oride.kill_day : today;
-			} else if (oride.spawn_override >= gz::PSO_Spawn) {
-				gen->mDeathCount = 0;
-				gen->mDayNum     = today;
+				// killed on day according to preset, clamped to a valid past day
+				// -1 or out of range = use day of preset we're warping with
+				gen->mDayNum = (kill.kill_day >= 0 && kill.kill_day <= today) ? kill.kill_day : today;
 			}
 		}
 
@@ -3549,11 +3547,12 @@ void BaseGameSection::reconstruct_generator_cache()
 			    || !node->isReservedFlag(Generator::Reserved_doSaveCreature)) {
 				continue;
 			}
-			// no record for collected pellets: absent record = absent on visit
 			if (node->mObject->mTypeID == 'pelt') {
-				Game::GenPellet* genPellet                 = static_cast<Game::GenPellet*>(node->mObject);
-				gz::Preset::TreasureGenSpawnOverride oride = preset->get_treasure_gen_override(genPellet->mGenParm->mIndex);
-				if (oride.spawn_override == gz::PSO_DontSpawn) {
+				// no record for collected pellets, but need one for ones we've moved
+				Game::GenPellet* genPellet = static_cast<Game::GenPellet*>(node->mObject);
+				gz::Preset::CarriedTreasure treasure
+				    = preset->get_treasure_override(course, genPellet->mGenParm->mIndex); // @P2GZ - per-area lookup
+				if (treasure.course != 0xFF && !treasure.moved) {
 					continue;
 				}
 			} else if (node->mObject->mTypeID == 'item') {

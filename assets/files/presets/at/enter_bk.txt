@@ -109,43 +109,47 @@ AT 	# category
 2	# num plugs destroyed
 	0	800.0	1380.0				0	# bridge plug
 	2	1408.7	1625.2				0	# SR plug
-10 	# num enemy spawns
-	1 	-179.690002 -70.000000 2909.939941 	2	-1
-	2 	-486.160004 -70.000000 3058.209961 	2	-1
-	16 	-544.000000 -38.000000 1804.000000 	1	-1
-	15 	-672.000000 -20.000000 1392.000000 	2	-1
-	84 	-899.460022 -20.000000 1109.540039 	2	-1
-	10 	-738.000000 -28.000000 2354.000000 	2	-1
-	10 	-347.220001 -20.000000 4107.390137 	2	-1
-	9 	518.000000 -75.000000 3719.000000 	2	-1
-	15 	-383.959991 30.000000 575.849976 	2	-1
-	15 	-71.489998 -20.000000 1117.589966 	2	-1
-26 	# num treasure spawn overrides
-	47 	1 	# Fossilized Ursidae
-	62 	1 	# Pink Menace
-	71 	1 	# Unspeakable Wonder
-	73 	1 	# Temporal Mechanism
-	87 	1 	# Utter Scrap
-	142 	1 	# Courage Reactor
-	157 	1 	# Spiny Alien Treat
-	11 	1 	# Geographic Projection
-	42 	1 	# Sunseed Berry
-	43 	0
-	130 	1 	# Pilgrim Bulb
-	155 	1 	# Chance Totem
-	173 	2 	# Healing Cask
-	185 	0 	# Air Brake
-	53 	1 	# Onion Replica
-	72 	1 	# Aquatic Mine
-	77 	1 	# Impediment Scourge
-	118 	1 	# Massage Girdle
-	140 	1 	# Optical Illustration
-	152 	1 	# Fortified Delicacy
-	172 	1 	# Gherkin Gate
-	27 	2 	# Armored Nut
-	45 	2 	# Anti-hiccup Fungus
-	50 	2 	# Conifer Spire
-	76 	2 	# Doomsday Apparatus
-	183 	2 	# Seed of Greed
+22 	# num enemy spawns
+	0	1	-1153.361206 47.871529 2231.686035	6	# VoR Dwarf Red Bulborb (hubcap)
+	0	24	548.539978 100.000000 546.479980	6	# VoR Fiery Blowhog (bridge)
+	0	24	300.905426 100.000000 361.603760	7	# VoR Fiery Blowhog
+	0	95	302.179993 100.000000 -177.910004	6	# VoR Decorated Cannon Beetle
+	0	96	182.160004 210.000000 -1559.790039	6	# VoR Armored Cannon Beetle Larva
+	0	55	-271.089996 114.000000 -1387.319946	6	# VoR Withering Blowhog
+	0	33	-616.059265 100.000000 -778.380981	7	# VoR Fiery Bulblax
+	0	26	-679.412659 60.000000 -24.931995	7	# VoR Water Dumple x2
+	0	26	-810.081970 60.000000 -378.640717	7	# VoR Water Dumple (near bulblax)
+	1	16	-544.000000 -38.000000 1804.000000	5	# AW Honeywisp
+	1	9	518.905334 -75.000000 3719.976562	5	# AW Iridescent Flint Beetle
+	1	10	-738.448914 -28.741590 2354.096924	5	# AW Iridescent Glint Beetle (flowerpot)
+	2	17	-950.000000 6.250000 -150.000000	8	# PP Yellow Wollywog (near CoS)
+	2	0	-480.000000 89.010002 -1115.000000	8	# PP Pellet Posy (YO)
+	2	0	-666.000000 89.010002 -800.000000	8	# PP Pellet Posy (YO)
+	2	0	-375.000000 89.010002 -800.000000	8	# PP Pellet Posy (YO)
+	2	23	-650.000000 52.889999 -1800.000000	8	# PP Swooping Snitchbug
+	2	26	-400.000000 -57.000000 -2950.000000	8	# PP Water Dumple x2
+	2	55	0.000000 -57.000000 -3000.000000	8	# PP Withering Blowhog
+	2	14	-25.000000 0.000000 -75.000000	8	# PP Shearwig
+	2	14	275.000000 16.480000 -275.000000	8	# PP Shearwig
+	2	101	950.000000 -57.000000 475.000000	8	# PP Toady Bloyster
+18 	# num treasure spawn overrides
+	0	47	0	# VoR Fossilized Ursidae
+	0	62	0	# VoR Pink Menace
+	0	71	0	# VoR Unspeakable Wonder
+	0	73	0	# VoR Temporal Mechanism
+	0	87	0	# VoR Utter Scrap
+	0	142	0	# VoR Courage Reactor
+	0	157	0	# VoR Spiny Alien Treat
+	1	11	0	# AW Geographic Projection
+	1	42	0	# AW Sunseed Berry
+	1	130	0	# AW Pilgrim Bulb
+	1	155	0	# AW Chance Totem
+	2	53	0	# PP Onion Replica
+	2	72	0	# PP Aquatic Mine
+	2	77	0	# PP Impediment Scourge
+	2	118	0	# PP Massage Girdle
+	2	140	0	# PP Optical Illustration
+	2	152	0	# PP Fortified Delicacy
+	2	172	0	# PP Gherkin Gate
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

@@ -116,53 +116,53 @@ AT 	# category
 2	# num plugs destroyed
 	0	800.0	1380.0				0	# bridge plug
 	2	1408.7	1625.2				0	# SR plug
-20 	# num enemy spawns
-	78 	-1576.150024 20.000000 1320.489990 	2	-1
-	1 	-3232.669922 0.000000 -123.870003 	2	-1
-	1 	-2245.250000 50.000000 676.880005 	2	-1
-	23 	-2781.399902 -30.000000 162.669998 	2	-1
-	95 	-3007.169922 -30.000000 574.859985 	2	-1
-	15 	-1340.170044 30.000000 491.329987 	2	-1
-	24 	-1310.869995 30.000000 346.839996 	2	-1
-	21 	-1218.459961 23.950001 766.489990 	2	-1
-	21 	-1220.699951 22.190001 679.390015 	2	-1
-	17 	-1500.079956 -10.000000 1002.669983 	2	-1
-	55 	-342.399994 0.000000 1391.130005 	2	-1
-	55 	-92.239998 0.000000 1681.890015 	2	-1
-	84 	-145.679993 0.000000 1537.790039 	2	-1
-	84 	-467.910004 0.000000 1477.599976 	2	-1
-	84 	-241.839996 0.000000 1716.819946 	2	-1
-	63 	-3538.899902 -30.000000 1044.170044 	2	-1
-	14 	-2976.199951 0.000000 2237.370117 	2	-1
-	75 	-2172.050049 30.000000 2714.399902 	2	-1
-	24 	-2992.959961 0.000000 1651.540039 	2	-1
-	25 	-3244.419922 0.000000 2052.760010 	2	-1
-26 	# num treasure spawn overrides
-	47 	1 	# Fossilized Ursidae
-	62 	1 	# Pink Menace
-	71 	1 	# Unspeakable Wonder
-	73 	1 	# Temporal Mechanism
-	87 	1 	# Utter Scrap
-	142 	1 	# Courage Reactor
-	157 	1 	# Spiny Alien Treat
-	11 	1 	# Geographic Projection
-	42 	1 	# Sunseed Berry
-	43 	1
-	130 	1 	# Pilgrim Bulb
-	155 	1 	# Chance Totem
-	173 	1 	# Healing Cask
-	185 	1 	# Air Brake
-	53 	1 	# Onion Replica
-	72 	1 	# Aquatic Mine
-	77 	1 	# Impediment Scourge
-	118 	1 	# Massage Girdle
-	140 	1 	# Optical Illustration
-	152 	1 	# Fortified Delicacy
-	172 	1 	# Gherkin Gate
-	27 	2 	# Armored Nut
-	45 	2 	# Anti-hiccup Fungus
-	50 	2 	# Conifer Spire
-	76 	2 	# Doomsday Apparatus
-	183 	2 	# Seed of Greed
+25 	# num enemy spawns
+	0	1	-1153.361206 47.871529 2231.686035	6	# VoR Dwarf Red Bulborb (hubcap)
+	0	24	548.539978 100.000000 546.479980	6	# VoR Fiery Blowhog (bridge)
+	0	24	300.905426 100.000000 361.603760	7	# VoR Fiery Blowhog
+	0	95	302.179993 100.000000 -177.910004	6	# VoR Decorated Cannon Beetle
+	0	96	182.160004 210.000000 -1559.790039	6	# VoR Armored Cannon Beetle Larva
+	0	55	-271.089996 114.000000 -1387.319946	6	# VoR Withering Blowhog
+	0	33	-616.059265 100.000000 -778.380981	7	# VoR Fiery Bulblax
+	0	26	-679.412659 60.000000 -24.931995	7	# VoR Water Dumple x2
+	0	26	-810.081970 60.000000 -378.640717	7	# VoR Water Dumple (near bulblax)
+	1	15	-672.000000 -20.000000 1392.000000	9	# AW Cloaking Burrow-nit
+	1	15	-383.960480 29.999977 575.847656	9	# AW Cloaking Burrow-nit (BO)
+	1	16	-544.000000 -38.000000 1804.000000	5	# AW Honeywisp
+	1	9	518.905334 -75.000000 3719.976562	5	# AW Iridescent Flint Beetle
+	1	10	-738.448914 -28.741590 2354.096924	5	# AW Iridescent Glint Beetle (flowerpot)
+	1	10	-347.220551 -20.000000 4107.389648	9	# AW Iridescent Glint Beetle (SH)
+	2	17	-950.000000 6.250000 -150.000000	8	# PP Yellow Wollywog (near CoS)
+	2	0	-480.000000 89.010002 -1115.000000	8	# PP Pellet Posy (YO)
+	2	0	-666.000000 89.010002 -800.000000	8	# PP Pellet Posy (YO)
+	2	0	-375.000000 89.010002 -800.000000	8	# PP Pellet Posy (YO)
+	2	23	-650.000000 52.889999 -1800.000000	8	# PP Swooping Snitchbug
+	2	26	-400.000000 -57.000000 -2950.000000	8	# PP Water Dumple x2
+	2	55	0.000000 -57.000000 -3000.000000	8	# PP Withering Blowhog
+	2	14	-25.000000 0.000000 -75.000000	8	# PP Shearwig
+	2	14	275.000000 16.480000 -275.000000	8	# PP Shearwig
+	2	101	950.000000 -57.000000 475.000000	8	# PP Toady Bloyster
+21 	# num treasure spawn overrides
+	0	47	0	# VoR Fossilized Ursidae
+	0	62	0	# VoR Pink Menace
+	0	71	0	# VoR Unspeakable Wonder
+	0	73	0	# VoR Temporal Mechanism
+	0	87	0	# VoR Utter Scrap
+	0	142	0	# VoR Courage Reactor
+	0	157	0	# VoR Spiny Alien Treat
+	1	11	0	# AW Geographic Projection
+	1	42	0	# AW Sunseed Berry
+	1	44	0	# AW Decorative Goo
+	1	130	0	# AW Pilgrim Bulb
+	1	155	0	# AW Chance Totem
+	1	173	0	# AW Healing Cask
+	1	185	0	# AW Air Brake
+	2	53	0	# PP Onion Replica
+	2	72	0	# PP Aquatic Mine
+	2	77	0	# PP Impediment Scourge
+	2	118	0	# PP Massage Girdle
+	2	140	0	# PP Optical Illustration
+	2	152	0	# PP Fortified Delicacy
+	2	172	0	# PP Gherkin Gate
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
