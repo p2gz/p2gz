@@ -2839,6 +2839,13 @@ void Navi::disableController()
  */
 void Navi::control()
 {
+	// @P2GZ: the early blues trainer owns B (reset) and Y (save). Capture them for the
+	// trainer and clear them here - control() runs before the walk-state B->whistle check,
+	// so this stops the captain whistling when the player taps B.
+	if (p2gz->early_blues_trainer->is_inset_active() && mController1 && mNaviIndex == NAVIID_Olimar) {
+		p2gz->early_blues_trainer->capture_input(mController1);
+	}
+
 	if (moviePlayer->isFlag(MVP_IsActive) == FALSE) {
 		makeVelocity();
 	}

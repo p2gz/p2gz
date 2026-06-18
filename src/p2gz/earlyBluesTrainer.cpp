@@ -2,6 +2,7 @@
 #include <p2gz/p2gz.h>
 #include <p2gz/Utility.h>
 #include <p2gz/gzMacros.h>
+#include <p2gz/gzmenu.h>
 #include <Game/BaseGameSection.h>
 #include <Game/CameraMgr.h>
 #include <Game/GameLight.h>
@@ -9,6 +10,9 @@
 #include <Game/Navi.h>
 #include <Game/NaviState.h>
 #include <Game/pelletMgr.h>
+#include <Game/GameSystem.h>
+#include <Game/TimeMgr.h>
+#include <Controller.h>
 #include <Sys/Triangle.h>
 #include <Sys/TriangleTable.h>
 #include <Sys/TriIndexList.h>
@@ -25,9 +29,9 @@
 using namespace gz;
 
 const Vector3f START_POSITION(920.0f, -18.0f, 1115.0f);
-const Vector3f SUCCESS_POSITION(-53.95f, -70.88f, 2531.23f);
+const Vector3f SUCCESS_POSITION(61.19f, 10.00f, 229.37f);
 
-const f32 SUCCESS_RADIUS        = 150.0f;
+const f32 SUCCESS_RADIUS        = 10.0f;
 const f32 CAMERA_DISTANCE       = 150.0f;
 const f32 CAMERA_FOV            = 40.0f;
 const f32 CAM_ROTATE_SPEED      = 0.05f;
@@ -41,15 +45,13 @@ const f32 INSET_MARGIN = 24.0f;
 
 const f32 INSET_COLLISION_RADIUS = 1024.0f;
 
-// How far Olimar must move along the hit wall's (horizontal) normal in a frame to count as
-// crossing it. Tangential seam-scraping barely moves him that way; an eject or a walk-through
-// moves him along it. The bar is HIGH to arm (the big initial clip onto the seam, so approach
-// bumps don't falsely arm) and LOW to fail (a slow walk-through off the seam barely registers).
-// Sign is mesh-dependent, so magnitude is used. Tune from the "push=" telemetry.
-const f32 WALL_ARM_PUSH  = 5.0f;
-const f32 WALL_FAIL_PUSH = 1.0f;
+const int B_HOLD_FRAMES = 20;
 
-const int RESULT_DISPLAY_FRAMES = 240;
+const f32 DEATH_PLANE_Y = -300.0f;
+
+const int RESULT_DISPLAY_FRAMES = 60;
+const int RESULT_FADE_FRAMES    = 30;
+const int RESET_DELAY_FRAMES    = 30;
 
 const JUtility::TColor RESULT_GOOD = JUtility::TColor(0, 255, 0, 255);
 const JUtility::TColor RESULT_BAD  = JUtility::TColor(255, 0, 0, 255);
@@ -152,9 +154,14 @@ static void draw_inset_collision(Graphics& gfx, Viewport* vp, Game::Navi* navi)
 
 void EarlyBluesTrainer::stop()
 {
-	enabled       = false;
-	pending_setup = false;
-	result_frames = 0;
+	if (enabled && Game::gameSystem && Game::gameSystem->mTimeMgr) {
+		Game::gameSystem->mTimeMgr->resetFlag(Game::TIMEFLAG_Stopped);
+	}
+
+	enabled              = false;
+	pending_setup        = false;
+	result_frames        = 0;
+	pending_reset_frames = 0;
 }
 
 void EarlyBluesTrainer::start()
@@ -165,15 +172,17 @@ void EarlyBluesTrainer::start()
 
 	GZASSERTLINE(inset_viewport && inset_camera);
 
-	enabled          = true;
-	hell_warped      = false;
-	on_seam          = false;
-	has_prev         = false;
-	wall_hit_pending = false;
-	would_have_died  = false;
-	result_frames    = 0;
-	cam_azimuth      = 0.0f;
-	cam_elevation    = CAM_DEFAULT_ELEVATION;
+	enabled              = true;
+	went_to_hell         = false;
+	would_have_died      = false;
+	went_into_void       = false;
+	result_frames        = 0;
+	pending_reset_frames = 0;
+	saved_position       = START_POSITION;
+	b_hold_frames        = 0;
+	b_handled            = false;
+	cam_azimuth          = 0.0f;
+	cam_elevation        = CAM_DEFAULT_ELEVATION;
 
 	Game::SingleGameSection* sgs = gz::get_SGS();
 	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
@@ -219,16 +228,16 @@ void EarlyBluesTrainer::setup_after_load()
 		return;
 	}
 	teleport_to_start(navi);
-	on_seam          = false;
-	has_prev         = false;
-	wall_hit_pending = false;
-	hell_warped      = false;
-	would_have_died  = false;
+
+	went_to_hell         = false;
+	would_have_died      = false;
+	went_into_void       = false;
+	pending_reset_frames = 0;
 }
 
 void EarlyBluesTrainer::teleport_to_start(Game::Navi* navi)
 {
-	Vector3f pos = START_POSITION;
+	Vector3f pos = saved_position;
 	navi->setPosition(pos, false);
 }
 
@@ -251,8 +260,16 @@ void EarlyBluesTrainer::update()
 		result_frames--;
 	}
 
-	if (!gz::in_above_ground_play()) {
+	Game::SingleGameSection* sgs = gz::get_SGS();
+	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo
+	                         && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
+	if (!in_awakening_wood) {
+		stop();
 		return;
+	}
+
+	if (Game::gameSystem->mTimeMgr) {
+		Game::gameSystem->mTimeMgr->setFlag(Game::TIMEFLAG_Stopped);
 	}
 
 	Game::Navi* navi = get_olimar();
@@ -260,90 +277,116 @@ void EarlyBluesTrainer::update()
 		return;
 	}
 
-	Vector3f pos    = navi->getPosition();
-	bool napsacking = navi->getStateID() == Game::NSID_Pellet;
-
-	// before he reaches the seam, log where the warp settled him, to tune START_POSITION
-	if (!on_seam) {
-		OSReport("[early blues] olimar at (%.2f, %.2f, %.2f)\n", pos.x, pos.y, pos.z);
+	if (pending_reset_frames > 0) {
+		if (--pending_reset_frames == 0) {
+			reset_to_start(navi);
+		}
+		return;
 	}
 
-	if (!napsacking && wall_hit_pending && has_prev && last_wall_tri) {
-		// How far he moved this frame along the hit wall's horizontal normal. Tangential
-		// scraping along the seam barely moves him that way (~0); an eject or a walk-through
-		// across the wall moves him along it. The normal's sign is mesh-dependent, so use
-		// the magnitude.
-		Vector3f n     = last_wall_tri->mTrianglePlane.mNormal;
-		Vector3f moved = pos - prev_pos;
-		f32 nlen2      = n.x * n.x + n.z * n.z;
-		f32 apush      = 0.0f;
-		if (nlen2 > 0.0001f) {
-			f32 nlen = sqrtf(nlen2);
-			f32 push = (moved.x * n.x + moved.z * n.z) / nlen;
-			apush    = push < 0.0f ? -push : push;
-		}
-		if (apush > 0.5f) {
-			OSReport("[early blues] wall hit: push=%.2f on_seam=%d\n", apush, on_seam);
+	Vector3f pos = navi->getPosition();
+
+	if (!p2gz->menu->is_open()) {
+		if (captured_button_down & Controller::PRESS_Y) {
+			saved_position = pos;
 		}
 
-		if (!on_seam) {
-			// ARM: only the big initial clip onto the seam arms (approach bumps don't).
-			if (apush > WALL_ARM_PUSH) {
-				on_seam = true;
-				OSReport("[early blues] clipped onto the seam - attempt armed\n");
+		if (captured_button & Controller::PRESS_B) {
+			b_hold_frames++;
+			if (b_hold_frames >= B_HOLD_FRAMES && !b_handled) {
+				b_handled      = true;
+				saved_position = START_POSITION;
+				reset_to_start(navi);
+				return;
 			}
-		} else if (apush > WALL_FAIL_PUSH) {
-			// FAIL: once on the seam, a much smaller move across a wall means he walked or
-			// clipped off it back toward the playfield.
-			OSReport("[early blues] crossed a wall off the seam - attempt failed\n");
-			resolve_attempt(navi, true);
-			return;
+		} else {
+			bool tapped   = b_hold_frames > 0 && b_hold_frames < B_HOLD_FRAMES && !b_handled;
+			b_hold_frames = 0;
+			b_handled     = false;
+			if (tapped) {
+				reset_to_start(navi);
+				return;
+			}
 		}
 	}
 
-	if (!napsacking) {
-		// success: he made it across the seam to the blue onion target. The void fall is
-		// caught independently by hell_warped (the death-plane hook).
-		Vector3f to_target  = pos - SUCCESS_POSITION;
-		bool reached_target = on_seam && to_target.length() < SUCCESS_RADIUS;
-		if (hell_warped || reached_target) {
-			resolve_attempt(navi);
-			return;
-		}
+	Vector3f to_target  = pos - SUCCESS_POSITION;
+	bool reached_target = to_target.length() < SUCCESS_RADIUS;
+	bool napsacking     = navi->getStateID() == Game::NSID_Pellet;
+
+	if (reached_target) {
+		resolve_attempt(navi);
+		return;
 	}
 
-	wall_hit_pending = false;
-	prev_pos         = pos;
-	has_prev         = true;
+	if (went_to_hell && !napsacking) {
+		resolve_attempt(navi);
+		return;
+	}
+
+	if (napsacking && navi->mPellet) {
+		Vector3f pellet_pos = navi->mPellet->getPosition();
+		if (pellet_pos.y < DEATH_PLANE_Y) {
+			went_into_void = true;
+		} else if (went_into_void) {
+			f32 dx = pellet_pos.x - SUCCESS_POSITION.x;
+			f32 dz = pellet_pos.z - SUCCESS_POSITION.z;
+			if (dx * dx + dz * dz >= SUCCESS_RADIUS * SUCCESS_RADIUS) {
+				resolve_attempt(navi, true);
+				return;
+			}
+		}
+	}
 }
 
-void EarlyBluesTrainer::resolve_attempt(Game::Navi* navi, bool clipped_back)
+// Disable whistling and switching captains.
+void EarlyBluesTrainer::capture_input(Controller* pad)
+{
+	captured_button      = pad->getButton();
+	captured_button_down = pad->getButtonDown();
+
+	u32 mask = Controller::PRESS_B | Controller::PRESS_Y;
+	pad->mButton.mButton &= ~mask;
+	pad->mButton.mButtonDown &= ~mask;
+	pad->mButton.mButtonUp &= ~mask;
+}
+
+void EarlyBluesTrainer::resolve_attempt(Game::Navi* navi, bool wrong_waypoint)
 {
 	Vector3f landed = navi->getPosition();
 	Vector3f delta  = landed - SUCCESS_POSITION;
-	OSReport("[early blues] attempt ended at (%.2f, %.2f, %.2f)\n", landed.x, landed.y, landed.z);
 
-	result_success      = !hell_warped && !clipped_back && delta.length() < SUCCESS_RADIUS;
-	result_clipped_back = clipped_back;
-	result_softlock     = would_have_died;
-	result_frames       = RESULT_DISPLAY_FRAMES;
+	result_success        = !went_to_hell && !wrong_waypoint && delta.length() < SUCCESS_RADIUS;
+	result_wrong_waypoint = wrong_waypoint;
+	result_softlock       = would_have_died;
+	result_frames         = RESULT_DISPLAY_FRAMES;
 
+	if (went_to_hell) {
+		reset_to_start(navi);
+	} else {
+		pending_reset_frames = RESET_DELAY_FRAMES;
+	}
+}
+
+void EarlyBluesTrainer::reset_to_start(Game::Navi* navi)
+{
 	if (!navi->isAlive()) {
 		navi->setAlive(true);
 		Game::naviMgr->clearDeadCount();
-		if (navi->getStateID() == Game::NSID_Dead) {
-			navi->transit(Game::NSID_Walk, nullptr);
-		}
 	}
 	navi->setLifeMax();
 
+	int state = navi->getStateID();
+	if (state == Game::NSID_Dead || state == Game::NSID_Pellet) {
+		navi->transit(Game::NSID_Walk, nullptr);
+	}
+
 	teleport_to_start(navi);
 
-	on_seam          = false;
-	has_prev         = false;
-	wall_hit_pending = false;
-	hell_warped      = false;
-	would_have_died  = false;
+	went_to_hell         = false;
+	would_have_died      = false;
+	went_into_void       = false;
+	pending_reset_frames = 0;
 }
 
 void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
@@ -359,7 +402,6 @@ void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
 			cam_elevation = CAM_MIN_ELEVATION;
 		}
 
-		// same audio feedback as the freecam zoom while the camera actually moves
 		if (cam_elevation >= prev_elevation) {
 			og::ogSound->setZoomIn();
 		} else if (cam_elevation < prev_elevation) {
@@ -450,9 +492,38 @@ void EarlyBluesTrainer::draw_inset(Game::BaseGameSection* section, Graphics& gfx
 	j3dSys.reinitGX();
 }
 
+static void draw_control_line(J2DPrint& j2d, const char* icon, const char* label, f32 z)
+{
+	j2d.mCharColor.set(p2gz->menu->color_std);
+	j2d.mGradientColor.set(p2gz->menu->color_std);
+
+	f32 x = 16.0f;
+	x += p2gz->images->draw(icon, x, z - p2gz->images->height() + (p2gz->menu->line_height / 2.0f));
+	x += p2gz->images->spacing() / 2.0f;
+	j2d.initiate();
+	j2d.print(x, z, "%s", label);
+}
+
 void EarlyBluesTrainer::draw_status()
 {
-	if (!enabled || result_frames <= 0) {
+	if (!enabled) {
+		return;
+	}
+
+	if (!pending_setup && !p2gz->menu->is_open() && gz::in_above_ground_play()) {
+		J2DPrint tips(gP2JMEMgr->mFont, 0.0f);
+		tips.initiate();
+		tips.mGlyphWidth  = p2gz->menu->glyph_width;
+		tips.mGlyphHeight = p2gz->menu->glyph_height;
+
+		const f32 line_h   = p2gz->images->height() + 4.0f;
+		const f32 bottom_z = 430.0f;
+		draw_control_line(tips, "b_btn", "reset (hold for default)", bottom_z - 2.0f * line_h);
+		draw_control_line(tips, "y_btn", "move reset position", bottom_z - line_h);
+		draw_control_line(tips, "c_stick", "pan inset camera", bottom_z);
+	}
+
+	if (result_frames <= 0) {
 		return;
 	}
 
@@ -461,16 +532,19 @@ void EarlyBluesTrainer::draw_status()
 	j2d.mGlyphWidth  = 24.0f;
 	j2d.mGlyphHeight = 24.0f;
 
-	const JUtility::TColor& warp_color = result_success ? RESULT_GOOD : RESULT_BAD;
+	u8 alpha = result_frames >= RESULT_FADE_FRAMES ? 255 : (u8)(255 * result_frames / RESULT_FADE_FRAMES);
+
+	JUtility::TColor warp_color = result_success ? RESULT_GOOD : RESULT_BAD;
+	warp_color.a                = alpha;
 	j2d.mCharColor.set(warp_color);
 	j2d.mGradientColor.set(warp_color);
-	const char* warp_text = result_success      ? "early blues: reached warp target!"
-	                        : result_clipped_back ? "early blues: clipped back in bounds"
-	                                              : "early blues: missed warp target";
-	j2d.print(160.0f, 340.0f, warp_text);
+	j2d.print(160.0f, 340.0f, result_success ? "reached waypoint" : result_wrong_waypoint ? "wrong waypoint" : "did not nap");
 
-	const JUtility::TColor& lock_color = result_softlock ? RESULT_BAD : RESULT_GOOD;
-	j2d.mCharColor.set(lock_color);
-	j2d.mGradientColor.set(lock_color);
-	j2d.print(160.0f, 364.0f, result_softlock ? "would have softlocked in vanilla" : "no softlock");
+	if (result_success) {
+		JUtility::TColor lock_color = result_softlock ? RESULT_BAD : RESULT_GOOD;
+		lock_color.a                = alpha;
+		j2d.mCharColor.set(lock_color);
+		j2d.mGradientColor.set(lock_color);
+		j2d.print(160.0f, 364.0f, result_softlock ? "would have softlocked" : "no softlock");
+	}
 }
