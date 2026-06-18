@@ -274,6 +274,10 @@ void TreasureEditor::snap_to_nearest_waypoint()
 
 void TreasureEditor::sync()
 {
+	// Rebuild from scratch so the list reflects the current area (no stale cross-area entries).
+	clear_treasures();
+
+	// Live treasures (uncollected / currently spawned), plus exploration-kit upgrades.
 	Iterator<Game::PelletOtakara::Object> treasureIterator(Game::PelletOtakara::mgr);
 	CI_LOOP(treasureIterator)
 	{
@@ -287,18 +291,61 @@ void TreasureEditor::sync()
 		Game::PelletItem::Object* treasure = *upgradeIterator;
 		add(treasure);
 	}
+
+	// Add treasures that have already been collected by finding them in the generator cache.
+	if (in_above_ground_play()) {
+		FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+		{
+			if (!gen->mObject) {
+				continue;
+			}
+
+			if (gen->mObject->mTypeID == 'pelt') {
+				Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+				// only real treasures and exploration-kit upgrades, not number/other pellets
+				if (gen_pellet->mPelType != Game::PelletList::PLK_Otakara && gen_pellet->mPelType != Game::PelletList::PLK_Item) {
+					continue;
+				}
+				if (!gen_pellet->mGenParm) {
+					continue;
+				}
+				Game::PelletConfig* cfg
+				    = Game::PelletList::Mgr::mInstance->getConfig(gen_pellet->mPelType)->getPelletConfig(gen_pellet->mGenParm->mIndex);
+				if (cfg) {
+					add(cfg->mParams.mName.mData);
+				}
+			} else if (gen->mObject->mTypeID == 'teki') {
+				// enemies that carry a treasure (e.g. an enemy the preset didn't spawn)
+				Game::GenObjectEnemy* gen_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
+				if (gen_enemy->mOtakaraItemCode.isNull()) {
+					continue;
+				}
+				int kind                = gen_enemy->mOtakaraItemCode.getPelletKind();
+				int index               = gen_enemy->mOtakaraItemCode.getPelletIndex();
+				Game::PelletConfig* cfg = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(index);
+				if (cfg) {
+					add(cfg->mParams.mName.mData);
+				}
+			}
+		}
+	}
 }
 
-// Add a submenu for the given treasure.
+// Add a submenu for the given live treasure.
 void TreasureEditor::add(Game::Pellet* treasure)
 {
+	add(treasure->getConfigName());
+}
+
+// Add a submenu for the treasure with the given config name. Works without a live pellet so that
+// preset-collected treasures (generator present, no live creature) can still be listed and edited.
+void TreasureEditor::add(const char* treasure_name)
+{
 	for (int i = 0; i < treasures->options.len(); i++) {
-		if (strcmp(treasures->options[i]->title, treasure->getConfigName()) == 0) {
+		if (strcmp(treasures->options[i]->title, treasure_name) == 0) {
 			return;
 		}
 	}
-
-	const char* treasure_name = treasure->getConfigName();
 
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
@@ -306,7 +353,7 @@ void TreasureEditor::add(Game::Pellet* treasure)
 	ToggleMenuOption* collected_opt = new ToggleMenuOption(
 		"collected", false, new CurriedDelegate1<TreasureEditor, const char*, bool>(this, &set_collected, treasure_name));
 
-	OpenSubMenuOption* treasure_opt = new OpenSubMenuOption(treasure->getConfigName(), (new ListMenu(
+	OpenSubMenuOption* treasure_opt = new OpenSubMenuOption(treasure_name, (new ListMenu(
 	    new BoundDelegate2<TreasureEditor, const char*, ToggleMenuOption*>(this, &sync_treasure_option, treasure_name, collected_opt)))
 		->push(new PerformActionMenuOption("move", new BoundDelegate1<TreasureEditor, const char*>(this, &start_move, treasure_name)))
 		->push(collected_opt));

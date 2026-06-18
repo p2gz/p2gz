@@ -1,25 +1,20 @@
-Day_3 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
-PoD 	# category
+Day_2 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+AT 	# category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
    0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# pikmin
-   0  0  0  5  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# onions
-1 	# num sprouts
-	4 	0 	1
+   0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  	# onions
+0 	# num sprouts
 0 0 	# bitters, bitters unlocked
 0 0 	# spicies, spicies unlocked
 7.000000 	# time of day
-3 	# day number
+2 	# day number
 -1 	# pokos (-1 if not applied)
 1 	# enter kind (FromCave = 0, FromMap = 1)
 0 	# num upgrades
-7 	# num demo flags
-	0 	# DEMO_Pluck_First_Pikmin
+3 	# num demo flags
 	9 	# DEMO_Find_Spiderwort_Mold
 	31 	# DEMO_Day_One_Start
 	35 	# DEMO_Meet_Red_Pikmin
-	37 	# DEMO_Unlock_Captain_Switch
-	38 	# DEMO_First_Use_Louie
-	49 	# DEMO_First_Number_Pellet
 0 	# num EK cutscenes
 0 	# num cave cutscene flags
 0 	# num destroyed gates
@@ -28,11 +23,11 @@ PoD 	# category
 0	# num plugs destroyed
 10 	# num enemy spawns
 	1 	-1153.00	47.00	2231.00 2	-1	# dwarf bulborb on manhole cover
-	1	-585.96		0.00	2782.99	1	-1	# dwarf bulborb in landing site
+	1	-585.96		0.00	2782.99	2	-1	# dwarf bulborb in landing site
 	0	52.87		9.17	3055.3 	1	-1	# 5 pellet behind ship
 	0	-21.92		0.00	2870.73	2	-1	# 1 pellets behind red onion
 	37	424.30		125.00	2897.12	1	-1	# eggs behind ship
-	0	-400.92		0.00	2646.80	2	-1	# 1 pellet next to red onion
+	0	-400.92		0.00	2646.80	1	-1	# 1 pellet next to red onion
 	0	-259.88		50.00	2476.48	1	-1	# 10 pellet on ledge
 	0	-584.42		0.00	3160.87	1	-1	# 1 pellet near blue onion spot
 	0	-1342.39	4.20	2825.76	1	-1	# left 5 pellet in bag area

@@ -295,7 +295,10 @@ void Item::onSetPosition()
 	// Register created plug with structure editor.
 	// Done in onSetPosition because StructureEditor uses
 	// coords to determine the name for the plug.
-	p2gz->structure_editor->add_plug(this);
+	// (skip if we're in the middle of generator nonsense)
+	if (!p2gz->warp->applying_generators) {
+		p2gz->structure_editor->add_plug(this);
+	}
 
 	// @P2GZ: plug editor
 	// make sure plug can always find its waterbox so we can toggle the height

@@ -150,7 +150,9 @@ void ItemGate::onSetPosition()
 	// Register created gate with structure editor.
 	// Done in onSetPosition because StructureEditor uses
 	// coords to determine the name for the gate.
-	p2gz->structure_editor->add_gate(this);
+	if (!p2gz->warp->applying_generators) {
+		p2gz->structure_editor->add_gate(this);
+	}
 }
 
 /**
@@ -1144,6 +1146,11 @@ void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& k
 ItemDengekiGate::Mgr::Mgr()
 {
 	mItemName = "電撃ゲート"; // electric shock gate
+	// @P2GZ - parse-only construction for generator cache reconstruction: skip archive/model loading
+	if (p2gz->warp->do_egate_parse_only_load) {
+		return;
+	}
+
 	sys->heapStatusStart("ItemDengekiGate", nullptr);
 	mObjectPathComponent = "user/Kando/objects/gates";
 	setModelSize(1);

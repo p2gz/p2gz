@@ -225,6 +225,17 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	// onion above ground
 	if (gameSystem->isStoryMode()) {
 		isGot = playData->firstCarryPellet(pelt);
+		// @P2GZ: fix issue where the first corpse cutscene only plays once 
+		EnemyBase* enemy = static_cast<EnemyBase*>(pelt->mPelletView->mCreature);
+		if (enemy != nullptr && (enemy->getEnemyTypeID() == EnemyTypeID::EnemyID_YellowKochappy || enemy->getEnemyTypeID() == EnemyTypeID::EnemyID_UjiB) && !playData->isDemoFlag(DEMO_First_Corpse_In_Cave)) {
+			// if the enemy is a snowy bulborb/grub AND the first corpse cutscene has not played, set isGot to true so the cutscene will play. 
+			// loading into the sublevel with the presets sets the demo flag to false, so the 3rd condition will evaluate to true.
+			isGot = true;
+		} else if (enemy != nullptr && enemy->getEnemyTypeID() == EnemyTypeID::EnemyID_UjiA && !playData->isDemoFlag(DEMO_First_Corpse_In_Cave)) {
+			// if the enemy is a ujiA AND the first corpse cutscene has not played, then this is AT preset for WFG1, a female sheagrub has 
+			// already been collected, so the cutscene should not play. 
+			isGot = false;
+		}
 	}
 	if (pelt->getKind() == PelletType::Berry) {
 		isGot = true;

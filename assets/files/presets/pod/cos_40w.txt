@@ -84,7 +84,8 @@ PoD 	# category
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
-0 	# plugs destroyed
+1	# num plugs destroyed
+	0	800.0	1380.0				0	# bridge plug
 0 	# num enemy spawns
 10 	# num treasure spawn overrides
 	42 	1 	# Sunseed Berry
@@ -98,3 +99,4 @@ PoD 	# category
 	157 	1 	# Spiny Alien Treat
 	47 	1 	# Fossilized Ursidae
 1	# bridge glitch active
+0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

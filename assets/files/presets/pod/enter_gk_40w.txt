@@ -1,24 +1,24 @@
-CoS3-5 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
-AT 	# category
+enter_GK_(40w) 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+PoD 	# category
 #  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
-   0  0  0  0  0  5  0  0  24 0  0  31 0  0  40 0  0  0  	# pikmin
-   27 0  45 0  0  2  0  0  0  0  0  28 0  0  0  0  0  0  	# onions
+   0  0  35 0  0  0  0  0  0  0  0  20 0  0  40 0  0  0  	# pikmin
+   5  0  5  0  0  23 0  0  0  0  0  0  0  0  0  0  0  0   	# onions
 0 	# num sprouts
-9 1 	# bitters, bitters unlocked
-8 1 	# spicies, spicies unlocked
-8.500000 	# time of day
+0 0 	# bitters, bitters unlocked
+0 0 	# spicies, spicies unlocked
+7.000000 	# time of day
 8 	# day number
 -1 	# pokos (-1 if not applied)
-0 	# enter kind (FromCave = 0, FromMap = 1)
+1 	# enter kind (FromCave = 0, FromMap = 1)
 7 	# num upgrades
 	0 	# ODII_BruteKnuckles
-	4 	# ODII_StellarOrb
-	7 	# ODII_RepugnantAppendage
+	5 	# ODII_JusticeAlloy
+	6 	# ODII_ForgedCourage
 	8 	# ODII_PrototypeDetector
 	9 	# ODII_FiveManNapsack
 	10 	# ODII_SphericalAtlas
 	11 	# ODII_GeographicProjection
-45 	# num demo flags
+34 	# num demo flags
 	0 	# DEMO_Pluck_First_Pikmin
 	1 	# DEMO_Discover_Treasure
 	3 	# DEMO_Find_Cave_Deeper_Hole
@@ -27,32 +27,23 @@ AT 	# category
 	6 	# DEMO_First_Cave_Return
 	7 	# DEMO_Max_Pikmin_On_Field
 	8 	# DEMO_First_Gate_Down
-	10 	# DEMO_First_Spicy_Use
-	11 	# DEMO_First_Bitter_Use
+	9 	# DEMO_Find_Spiderwort_Mold
 	12 	# DEMO_Eat_White_Pikmin
 	13 	# DEMO_Purples_In_Ship
 	14 	# DEMO_Whites_In_Ship
 	15 	# DEMO_Reds_In_Onion
-	16 	# DEMO_Find_Spicy_Drop
-	17 	# DEMO_Find_Bitter_Drop
 	18 	# DEMO_First_Globe_Day_End
 	20 	# DEMO_First_Nectar_Use
 	25 	# DEMO_White_Candypop
 	26 	# DEMO_Purple_Candypop
-	27 	# DEMO_First_Spicy_Berry
-	28 	# DEMO_First_Bitter_Berry
-	29 	# DEMO_First_Spicy_Spray_Made
-	30 	# DEMO_First_Bitter_Spray_Made
 	31 	# DEMO_Day_One_Start
 	32 	# DEMO_Enter_Awakening_Wood
-	33 	# DEMO_Enter_Perplexing_Pool
 	35 	# DEMO_Meet_Red_Pikmin
 	36 	# DEMO_Louie_Finds_Red_Onion
 	37 	# DEMO_Unlock_Captain_Switch
 	38 	# DEMO_First_Use_Louie
 	39 	# DEMO_Reunite_Captains
 	40 	# DEMO_First_Corpse_In_Cave
-	42 	# DEMO_Find_Yellow_Onion
 	43 	# DEMO_Find_Blue_Onion
 	44 	# DEMO_Discover_Bulbmin
 	45 	# DEMO_Whites_Digging
@@ -62,26 +53,28 @@ AT 	# category
 	49 	# DEMO_First_Number_Pellet
 	51 	# DEMO_Pikmin_In_Danger_Water
 	52 	# DEMO_Pikmin_In_Danger_Poison
-	55 	# DEMO_SPICY_ENABLED
-	56 	# DEMO_BITTER_ENABLED
 7 	# num EK cutscenes
 	0 	# ODII_BruteKnuckles
-	4 	# ODII_StellarOrb
-	7 	# ODII_RepugnantAppendage
+	5 	# ODII_JusticeAlloy
+	6 	# ODII_ForgedCourage
 	8 	# ODII_PrototypeDetector
 	9 	# ODII_FiveManNapsack
 	10 	# ODII_SphericalAtlas
 	11 	# ODII_GeographicProjection
-6 	# num cave cutscene flags
+	12 	# ODII_TheKey
+7 	# num cave cutscene flags
 	1 	# EC
 	2 	# SCx
 	3 	# FC
 	4 	# HoB
 	5 	# WFG
+	6 	# BK
+	7 	# SH
 	8 	# CoS
-3 	# num destroyed gates
+4 	# num destroyed gates
 	0 	-591.000000 1427.000000 	0 	# EC gate
 	1 	-503.000000 1639.000000 	0 	# black gate
+	1 	-820.000000 4280.000000 	0 	# SH gate
 	0 	369.000000 1565.000000 	0 	# water gate
 3 	# num finished bridges
 	1 	-1250.000000 2260.000000 	0 	# globe bridge
@@ -93,38 +86,17 @@ AT 	# category
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
 1	# num plugs destroyed
 	0	800.0	1380.0				0	# bridge plug
-5 	# num enemy spawns
-	17 	-950.000000 6.250000 -150.000000 	1	-1
-	0 	-480.000000 89.010002 -1115.000000 	1	-1
-	0 	-666.000000 89.010002 -800.000000 	1	-1
-	0 	-375.000000 89.010002 -800.000000 	1	-1
-	23 	-650.000000 52.889999 -1800.000000 	2	-1
-26 	# num treasure spawn overrides
-	47 	1 	# Fossilized Ursidae
-	62 	1 	# Pink Menace
-	71 	1 	# Unspeakable Wonder
-	73 	1 	# Temporal Mechanism
-	87 	1 	# Utter Scrap
-	142 	1 	# Courage Reactor
-	157 	1 	# Spiny Alien Treat
-	11 	1 	# Geographic Projection
+0 	# num enemy spawns
+10 	# num treasure spawn overrides
 	42 	1 	# Sunseed Berry
-	43 	0
 	130 	1 	# Pilgrim Bulb
+	11 	1 	# Geographic Projection
 	155 	1 	# Chance Totem
-	173 	2 	# Healing Cask
-	185 	0 	# Air Brake
-	53 	2 	# Onion Replica
-	72 	2 	# Aquatic Mine
-	77 	2 	# Impediment Scourge
-	118 	2 	# Massage Girdle
-	140 	2 	# Optical Illustration
-	152 	2 	# Fortified Delicacy
-	172 	2 	# Gherkin Gate
-	27 	2 	# Armored Nut
-	45 	2 	# Anti-hiccup Fungus
-	50 	2 	# Conifer Spire
-	76 	2 	# Doomsday Apparatus
-	183 	2 	# Seed of Greed
+	173 	1 	# Healing Cask
+	142 	1 	# Courage Reactor
+	62 	1 	# Pink Menace
+	87 	1 	# Utter Scrap
+	157 	1 	# Spiny Alien Treat
+	47 	1 	# Fossilized Ursidae
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

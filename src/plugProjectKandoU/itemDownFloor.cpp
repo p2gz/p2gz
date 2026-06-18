@@ -152,7 +152,8 @@ void Item::onSetPosition()
 
 	// @P2GZ: bag editor
 	// add bags to menu as they spawn
-	if (mDownFloorType == DFTYPE_PaperBag) {
+	// (skip if we're in the middle of doing generator nonsense)
+	if (!p2gz->warp->applying_generators && mDownFloorType == DFTYPE_PaperBag) {
 		p2gz->structure_editor->add_bag(this);
 	}
 }

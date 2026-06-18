@@ -21,6 +21,8 @@ struct RingBuffer {
 		mLen     = 0;
 	}
 
+	~RingBuffer() { delete[] mBuf; }
+
 	size_t len() { return mLen; }
 
 	void push(T val)
@@ -49,16 +51,19 @@ struct RingBuffer {
 
 	bool atCapacity() { return mLen == N; }
 
-	/// Gets the oldest thing in the ring buffer. Only save to call if `atCapacity()` returns true.
+	/// Gets the oldest entry (the slot the next push() overwrites). Only valid when atCapacity().
 	T getLast()
 	{
 		GZASSERTLINE(mLen == N);
-		// the oldest thing is the thing at the current head that will be overwritten
-		// on the next call to push.
-		return peekN(0);
+		// push() overwrites (mBufHead + 1) % N, which holds the oldest entry == peekN(mLen - 1).
+		return peekN(mLen - 1);
 	}
 
 private:
+	// Non-copyable since we own the mBuf allocation - a shallow copy would double-free on destruction
+	RingBuffer(const RingBuffer&);
+	RingBuffer& operator=(const RingBuffer&);
+
 	size_t mLen;
 	size_t mBufHead;
 	T* mBuf;
@@ -85,9 +90,9 @@ struct Vec {
 			delete[] mBuf;
 	}
 
-	inline size_t len() { return mLen; }
+	inline size_t len() const { return mLen; }
 
-	inline size_t capacity() { return mCapacity; }
+	inline size_t capacity() const { return mCapacity; }
 
 	void push(T val)
 	{
@@ -131,6 +136,13 @@ struct Vec {
 	}
 
 	T& operator[](size_t idx)
+	{
+		GZASSERTLINE(mBuf);
+		GZASSERTLINE(idx < mLen);
+		return mBuf[idx];
+	}
+
+	const T& operator[](size_t idx) const
 	{
 		GZASSERTLINE(mBuf);
 		GZASSERTLINE(idx < mLen);

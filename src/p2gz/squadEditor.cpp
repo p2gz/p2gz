@@ -213,6 +213,12 @@ Game::PikiContainer SquadEditor::get_squad()
 {
 	Game::PikiContainer squad;
 
+	// managers don't exist until a level loads so when the menu is opened
+	// from the file-select screen, there's no squad to count yet. return the default.
+	if (!Game::pikiMgr) {
+		return squad;
+	}
+
 	Iterator<Game::Piki> iterator(Game::pikiMgr);
 	CI_LOOP(iterator)
 	{
@@ -220,12 +226,14 @@ Game::PikiContainer SquadEditor::get_squad()
 		squad.getCount(piki->mPikiKind, piki->mHappaKind)++;
 	}
 
-	Iterator<Game::ItemPikihead::Item> iPikihead = Game::ItemPikihead::mgr;
-	CI_LOOP(iPikihead)
-	{
-		Game::ItemPikihead::Item* item = *iPikihead;
-		if (item->isAlive()) {
-			squad.getCount(item->mColor, item->mHeadType)++;
+	if (Game::ItemPikihead::mgr) {
+		Iterator<Game::ItemPikihead::Item> iPikihead = Game::ItemPikihead::mgr;
+		CI_LOOP(iPikihead)
+		{
+			Game::ItemPikihead::Item* item = *iPikihead;
+			if (item->isAlive()) {
+				squad.getCount(item->mColor, item->mHeadType)++;
+			}
 		}
 	}
 

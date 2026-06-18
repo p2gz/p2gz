@@ -32,6 +32,24 @@ struct CourseCache : public CNode {
 
 /// @size{0x140}
 struct GeneratorCache {
+
+	// @P2GZ - no-load generator cache editing
+	// extra info for reconstructCreatureRecord when we need to change a structure (gate, bridge etc)
+	struct CreatureRecordState {
+		CreatureRecordState()
+		    : bag_pressed(false)
+		    , plug_alive(true)
+		    , gate_destroyed(false)
+		    , bridge_finished(false)
+		{
+		}
+
+		bool bag_pressed;     // paper bags ('dwfl'): write pressed=1 instead of 0
+		bool plug_alive;      // plugs ('barl'): write isAlive=0 when false
+		bool gate_destroyed;  // gates ('gate'/'dgat'): write segments to 0 so gate is down
+		bool bridge_finished; // bridges ('brdg'): write stageCount so bridge loads fully extended
+	};
+
 	GeneratorCache();
 	~GeneratorCache();
 
@@ -53,6 +71,7 @@ struct GeneratorCache {
 	void loadGenerators(int);
 	void loadPikiheads();
 	void read(Stream&);
+
 	void saveGenerator(Generator*);
 	void saveCreature(Generator*);
 	void savePikiheads();
@@ -61,6 +80,9 @@ struct GeneratorCache {
 	void write(Stream&);
 
 	inline int getHeapUsedSize() const { return mHeapSize - mFreeSize; }
+
+	void reconstructCreatureRecord(Generator* gen, CreatureRecordState state
+	                                               = CreatureRecordState()); // @P2GZ - write structure to cache without loading it
 
 	CourseCache mRootCache;     // _00
 	CourseCache mFreeCache;     // _3C

@@ -79,13 +79,14 @@ PoD 	# category
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
-1 	# plugs destroyed
+1	# num plugs destroyed
+	0	800.0	1380.0				0	# bridge plug
 5 	# num enemy spawns
-	1 	-1153.000000 47.000000 2231.000000 	1
-	24 	548.54 100.0 546.48 	2  # fiery blowhog
-    24  300.91 100.0 361.60     2  # fiery blowhog
-    95  302.18 100.0 -177.91    2  # cannon beetle larvae
-    55  -271.09 114.0 -1387.32  1  # withering blowhog
+	1 	-1153.000000 47.000000 2231.000000 	1	-1
+	24 	548.54 100.0 546.48 	2	-1	# fiery blowhog
+    24  300.91 100.0 361.60     2	-1	# fiery blowhog
+    95  302.18 100.0 -177.91    2	-1	# cannon beetle larvae
+    55  -271.09 114.0 -1387.32  1	-1	# withering blowhog
 10 	# num treasure spawn overrides
 	42 	1 	# Sunseed Berry
 	130 	1 	# Pilgrim Bulb
@@ -98,3 +99,4 @@ PoD 	# category
 	157 	1 	# Spiny Alien Treat
 	47 	1 	# Fossilized Ursidae
 1	# bridge glitch active
+0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
