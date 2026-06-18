@@ -850,6 +850,7 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 			// @P2GZ - timer
 			// add offset for save prompt
 			p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
+			p2gz->timer->set_split_start_offset(CAVE_ENTER_SAVE_OFFSET_TIME);
 		}
 		mInSaveScreen = true;
 

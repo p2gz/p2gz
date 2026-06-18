@@ -30,6 +30,7 @@
 
 // @P2GZ
 #include <Game/Entities/Bomb.h>
+#include <p2gz/p2gz.h>
 
 namespace Game {
 
@@ -880,6 +881,11 @@ inline void PikiPanicState::checkDemo(Piki* piki)
 			playArg.mAngle             = piki->getFaceDir();
 			moviePlayer->mTargetObject = piki;
 			moviePlayer->play(playArg);
+		}
+
+		// @P2GZ: segment timer splits on poison CS. For EB. 
+		if (p2gz->timer->split_on_poison_demo && (flag == DEMO_Pikmin_In_Danger_Poison)){
+			p2gz->timer->add_split_times();
 		}
 	}
 }

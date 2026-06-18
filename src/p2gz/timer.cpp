@@ -24,12 +24,19 @@ Timer::Timer()
     , FS_map_flag(false)
     , in_freecam_mode(false)
 	, segment_timer_enabled(true) // controls whether or not the segment timer is turned on 
+	, draw_best_times_enabled(false)
+	, split_on_captain_swap(true)
+	, split_on_gate_seg(true)
+	, split_on_bag_crush(true)
+	, split_on_poison_demo(true)
+	, mark_run_for_discard(false)
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
     , pause_timer(0)
     , navi_swap_timer(0)
 	, curr_index(0) // gets updated every time a function writes to split_times
+	, split_start_offset(0) 
 {
 	color        = JUtility::TColor(255, 255, 255, 130);
 	glyph_width  = 16.0;
@@ -38,6 +45,9 @@ Timer::Timer()
 	z            = 12.0;
 	for (int i = 0; i < 20; i++) {
 		split_times[i] = 0;
+		split_times_pause_lengths[i] = 0; 
+		segment_times[i] = 0; 
+		best_segments[i] = 0; 
 	}
 }
 
@@ -88,13 +98,33 @@ void Timer::draw()
 		for (int i = 0; i < curr_index; i++) {
 			if (split_times[i] > 0) {
 				Timer::TimeComponents seg_c;
+				// calc_time(x,y) returns y-x as a TimeComponents object. If x is unspecified, it takes the value main_timer. 
+				// main_timer changes everytime the gz menu is paused, so we avoid dealing with it entirely 
 				if (i == 0) {
-					seg_c = calc_time(main_timer, split_times[0]);
+					seg_c = calc_time(0, segment_times[0]);
 				}
 				else {
-					seg_c = calc_time(split_times[i - 1], split_times[i]);
+					seg_c = calc_time(0, segment_times[i]);
 				}
-				j2d.print(x, starting_seg_offset + (i * 20), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+
+				if (seg_c.minutes > 0){
+					j2d.print(x, starting_seg_offset + (i * 20), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+				}
+				else{
+					j2d.print(x, starting_seg_offset + (i * 20), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+				}
+ 				OSReport("Best segment time: %d \n", best_segments[i]); 
+				if (draw_best_times_enabled && (best_segments[i] > 0)){
+					// fixed offset so it produces aligned columns 
+					f32 sub_offset = 90.0f;
+					seg_c = calc_time(0, best_segments[i]); 
+					if (seg_c.minutes > 0){
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 20), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					}
+					else{
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 20), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+					}
+				}
 			}
 		}
 	}
@@ -138,6 +168,8 @@ void Timer::on_reset()
 	if (pause_timer_set) {
 		pause_timer = get_cur_time();
 	}
+
+	// Segment timer
 	reset_split_times(); 
 }
 
@@ -145,6 +177,8 @@ void Timer::reset_main_timer()
 {
 	main_timer = get_cur_time();
 	reset_sub_timer();
+	
+	// Segment timer
 	reset_split_times(); 
 }
 
@@ -278,7 +312,7 @@ void Timer::pause()
 	if (pause_timer_set) {
 		return;
 	}
-	pause_timer     = get_cur_time();
+	pause_timer     = get_cur_time();  // this is not a delta 
 	pause_timer_set = true;
 }
 
@@ -293,6 +327,9 @@ void Timer::unpause()
 		skip_timer += (get_cur_time() - pause_timer);
 	}
 	pause_timer_set = false;
+
+	// Segment timer: log pause length to adjust segment times 
+	split_times_pause_lengths[curr_index] += (get_cur_time() - pause_timer); 
 }
 
 void Timer::enable()
@@ -356,6 +393,7 @@ void Timer::cancel_navi_swap_timer()
 	navi_swap_timer_set = false;
 }
 
+// main function which populates the split_times and segment_times arrays
 void Timer::add_split_times()
 {
 	if (!segment_timer_enabled){
@@ -366,19 +404,43 @@ void Timer::add_split_times()
 
 	if (curr_index < 20){ // 20 is a magic number that corresponds to the length of the split_times array
 		split_times[curr_index] = split_time; 
+		if (curr_index == 0){
+			segment_times[0] = split_times[0] - main_timer; 
+		}
+		else {
+			segment_times[curr_index] = split_times[curr_index] - split_times_pause_lengths[curr_index] - split_times[curr_index - 1]; 
+		}
 		curr_index++;
 	}
 }
 
+
+void Timer::reset_best_segments(){
+	if (!draw_best_times_enabled) {
+		return;
+	}
+	
+	for (int i = 0; i < 20; i++){
+		best_segments[i] = 0; 
+	}
+}
+
+// resets all the split/segment time related stuff
 void Timer::reset_split_times(){
 	if (!segment_timer_enabled){
 		return;
 	}
 
 	for (int i = 0; i < 20; i++){
+		if ((!mark_run_for_discard) && ((segment_times[i] != 0) && ((best_segments[i] == 0) || (segment_times[i] < best_segments[i])))){
+			best_segments[i] = segment_times[i]; 
+		}
 		split_times[i] = 0;
+		split_times_pause_lengths[i] = 0; 
+		segment_times[i] = 0; 
 	}
 	curr_index = 0;
+	mark_run_for_discard = false; 
 }
 
 // @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv

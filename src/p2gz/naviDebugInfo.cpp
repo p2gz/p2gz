@@ -39,7 +39,11 @@ NaviDebugInfo::NaviDebugInfo()
 /// Call when captain swap starts, so we can start a timer
 void NaviDebugInfo::swap_start(int startNaviID)
 {
-	p2gz->timer->add_split_times(); // add the split time before the if condition so it isn't dependent on enabled
+	// Segment timer code 
+	if (p2gz->timer->split_on_captain_swap){
+		p2gz->timer->add_split_times(); // add the split time before the if condition so it isn't dependent on captain debug info enabled
+	}
+
 	if (!enabled || !draw_swap_time) {
 		return;
 	}

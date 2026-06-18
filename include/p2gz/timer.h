@@ -62,6 +62,7 @@ public:
 
 	void pause();
 	void unpause();
+	u32 get_elapsed_time() { return ((get_cur_time() - sub_timer) / 1000); } // this returns time since last loaded section in seconds
 
 	void reset_navi_swap_timer();
 	f32 stop_navi_swap_timer();
@@ -73,8 +74,23 @@ public:
 	void set_freecam_mode(bool set) { in_freecam_mode = set; }
 	bool is_freecam_mode() { return in_freecam_mode; }
 
+	// Segment timer functions and variables
 	void add_split_times(); 
 	void reset_split_times(); 
+	void set_segment_timer_enabled(bool enabled_) { segment_timer_enabled = enabled_; }
+	void set_split_on_captain_swap_enabled(bool enabled_) { split_on_captain_swap = enabled_; }
+	void set_split_on_gate_seg_enabled(bool enabled_) { split_on_gate_seg = enabled_; }
+	void set_split_on_bag_crush_enabled(bool enabled_) { split_on_bag_crush = enabled_; }
+	void set_split_on_poison_demo_enabled(bool enabled_) { split_on_poison_demo = enabled_; }
+	void set_draw_best_times_enabled(bool enabled_) { draw_best_times_enabled = enabled_; }
+	void reset_best_segments(); 
+	void enable_mark_run_to_discard() { OSReport("Calling enable_mark_run_for_discard \n");  mark_run_for_discard = true; } 
+	void set_split_start_offset(u32 offset) { split_start_offset = offset; }
+
+	bool split_on_captain_swap; 
+	bool split_on_gate_seg; 
+	bool split_on_bag_crush; 
+	bool split_on_poison_demo;
 
 private:
 	struct TimeComponents {
@@ -95,7 +111,10 @@ private:
 
 	bool FS_map_flag;     // are we loading into the world map/select area from file select?
 	bool in_freecam_mode; // handle pausing timer differently when we close the menu for freecam
+
 	bool segment_timer_enabled; // are we using the segment timer? 
+	bool draw_best_times_enabled; 
+	bool mark_run_for_discard; 
 
 	u32 main_timer;  // overall/default timer starting point
 	u32 sub_timer;   // sublevel timer starting point
@@ -104,8 +123,12 @@ private:
 
 	u32 navi_swap_timer; // for measuring captain swap times
 
-	char curr_index; // for tracking current active index of split_times
-	u32 split_times[20]; // for tracking segment times 
+	char curr_index; // tracks current active index of split_times
+	u32 split_times[20]; // tracks timestamps of trigger events 
+	u32 segment_times[20]; // tracks the segment times to display on screen 
+	u32 split_times_pause_lengths[20]; // position i tracks the pause length between split time i-1 and split time i 
+	u32 split_start_offset; // tracks e.g. comedowns
+	u32 best_segments[20]; 
 
 	// menu hook
 	ListMenu* timer_menu;

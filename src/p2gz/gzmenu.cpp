@@ -147,6 +147,17 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
 			->push(new ToggleMenuOption("show sub-timer", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
+			->push(new OpenSubMenuOption("segment timer", (new ListMenu())
+				->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_segment_timer_enabled)))
+				->push(new ToggleMenuOption("display best times", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_draw_best_times_enabled)))
+				->push(new PerformActionMenuOption("reset best times", new Delegate<Timer>(p2gz->timer, &Timer::reset_best_segments)))
+				// this toggle below is not cancellable if it is accidentally pressed
+				->push(new PerformActionMenuOption("discard current run", new Delegate<Timer>(p2gz->timer, &Timer::enable_mark_run_to_discard)))
+				->push(new ToggleMenuOption("split on captain swap", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_captain_swap_enabled)))
+				->push(new ToggleMenuOption("split on gate segment", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_gate_seg_enabled)))
+				->push(new ToggleMenuOption("split on bag crush", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_bag_crush_enabled)))
+				->push(new ToggleMenuOption("split on poisoned CS", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_poison_demo_enabled)))
+			))
 		))
 
 		// General game behaviors and options for how the gz menu looks and behaves

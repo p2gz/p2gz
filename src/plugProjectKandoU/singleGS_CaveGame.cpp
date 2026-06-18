@@ -608,6 +608,7 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 			// @P2GZ - timer
 			// add offset for save prompt (to both timers!)
 			p2gz->timer->offset_main_timer(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
+			p2gz->timer->set_split_start_offset(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
 		}
 		mDrawSave = true;
 
