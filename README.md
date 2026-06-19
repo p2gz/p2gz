@@ -5,19 +5,23 @@
 > [!IMPORTANT]
 > You will need to supply your own legally obtained copy of a Pikmin 2 USA .iso (GPVE01).
 
-> [!TIP] 
-> To open or close the GZ menu, double-press Dpad Left from the file select screen, or while in game. To go to a cave or area to practice, use the warp menu and select your desired area and preset.
+**QUICK START: To open or close the GZ menu, double-press Dpad Left from the file select screen, or while in game. To go to a cave or area to practice, use the warp menu and select your desired area and preset.**
 
 <center>
-<img src="docs/readme_assets/warp-menu.png" width="30%">
-<img src="docs/readme_assets/collision-viewer.png" width="30%">
-<img src="docs/readme_assets/early-blues.png" width="30%">
+<table>
+<tr>
+<td><img src="docs/readme_assets/warp-menu.png"></td>
+<td><img src="docs/readme_assets/collision-viewer.png"></td>
+<td><img src="docs/readme_assets/early-blues.png"></td>
+</tr>
+</table>
 </center>
+
+If you wish to contribute to the development of P2GZ, please see the contibutor guide [here](CONTRIBUTING.md).
 
 > [!NOTE] 
 > If you notice any bugs, unintended features, or crashes while using P2GZ, please submit a bug report using the GitHub Issues tab above to let us know, so we can fix them in a future release. Please include information about what you were doing/what the game state was like when you encountered the problem, how to reproduce it (if known) and screenshots or photos of the very top, and TRACE, sections of the crash log, which will come up automatically on crash.
 
-If you wish to contribute to the development of P2GZ, please see the contibutor guide [here](CONTRIBUTING.md).
 
 ## Getting Started with P2GZ
 This provides an overview of how to get P2GZ working, and how to navigate its main features.
@@ -56,7 +60,14 @@ When warping with a preset, the game state will be auto-set as if you'd played u
   - To replay the current sublevel with the SAME seed, hit Y.
   - To replay the current cave from Sublevel 1, hit L.
 
-<center><img src="docs/readme_assets/cave-pause.png" width="45%"><img src="docs/readme_assets/cave-holein.png" width="45%"></center>
+<center>
+<table>
+<tr>
+<td><img src="docs/readme_assets/cave-pause.png"></td>
+<td><img src="docs/readme_assets/cave-holein.png"></td>
+</tr>
+</table>
+</center>
 
 - Warped-to above-ground areas also allow for quick replay from the P2GZ menu (double-press dpad-left).
   - To replay the current warped-to segment, press X.
