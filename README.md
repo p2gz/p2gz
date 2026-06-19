@@ -35,7 +35,9 @@ Download a .zip file of the [latest release](https://github.com/p2gz/p2gz/releas
 
 P2GZ is both Dolphin and console compatible:
 - To play on Dolphin, simply open the ISO produced by the build process and enjoy!
+
 <img src="docs/readme_assets/p2gz-dolphin.png" width="50%">
+
 - To play on console, please follow a guide on homebrewing (such as WiiBrew) and boot the ISO from USB or SD card using a loading program such as Nintendont. 
 
 **NB: As always, modifying your console is at your own risk - please take care when following homebrew guides.**
