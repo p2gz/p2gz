@@ -168,40 +168,30 @@ void EarlyBluesTrainer::stop()
 
 void EarlyBluesTrainer::start()
 {
-	if (!gz::in_play()) {
-		return;
-	}
-
 	GZASSERTLINE(inset_viewport && inset_camera);
 
-	enabled              = true;
-	went_to_hell         = false;
-	would_have_softlocked      = false;
-	went_into_void       = false;
-	result_frames        = 0;
-	pending_reset_frames = 0;
-	saved_position       = START_POSITION;
-	b_hold_frames        = 0;
-	b_handled            = false;
-	cam_azimuth          = 0.0f;
-	cam_elevation        = CAM_DEFAULT_ELEVATION;
+	enabled               = true;
+	went_to_hell          = false;
+	would_have_softlocked = false;
+	went_into_void        = false;
+	result_frames         = 0;
+	pending_reset_frames  = 0;
+	saved_position        = START_POSITION;
+	b_hold_frames         = 0;
+	b_handled             = false;
+	cam_azimuth           = 0.0f;
+	cam_elevation         = CAM_DEFAULT_ELEVATION;
 
-	Game::SingleGameSection* sgs = gz::get_SGS();
-	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
-	if (in_awakening_wood) {
-		p2gz->menu->close();
-		setup_after_load();
-	} else {
-		pending_setup = true;
-		WarpDestination saved = p2gz->warp->get_dest();
-		WarpDestination dest;
-		dest.area            = COURSE_AW;
-		dest.cave            = CAVE_AboveGround;
-		dest.enter_area_type = 0;
-		p2gz->warp->set_dest(dest);
-		p2gz->warp->do_warp();
-		p2gz->warp->set_dest(saved);
-	}
+	pending_setup         = true;
+	WarpDestination saved = p2gz->warp->get_dest();
+	WarpDestination dest;
+	dest.area            = COURSE_AW;
+	dest.cave            = CAVE_AboveGround;
+	dest.enter_area_type = 0;
+	p2gz->warp->set_dest(dest);
+	p2gz->warp->set_preset(p2gz->preset_mgr->find("enter SH", PoD), PS_Chosen);
+	p2gz->warp->do_warp();
+	p2gz->warp->set_dest(saved);
 }
 
 void EarlyBluesTrainer::init()
