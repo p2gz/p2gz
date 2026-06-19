@@ -12,6 +12,7 @@
 #include <Game/pelletMgr.h>
 #include <Game/GameSystem.h>
 #include <Game/TimeMgr.h>
+#include <Game/gamePlayData.h>
 #include <Controller.h>
 #include <Sys/Triangle.h>
 #include <Sys/TriangleTable.h>
@@ -228,10 +229,12 @@ void EarlyBluesTrainer::setup_after_load()
 		Game::gameSystem->mTimeMgr->setFlag(Game::TIMEFLAG_Stopped);
 	}
 
-	went_to_hell         = false;
-	would_have_softlocked      = false;
-	went_into_void       = false;
-	pending_reset_frames = 0;
+	Game::playData->mDemoFlags.resetFlag(Game::DEMO_Find_Blue_Onion);
+
+	went_to_hell          = false;
+	would_have_softlocked = false;
+	went_into_void        = false;
+	pending_reset_frames  = 0;
 }
 
 void EarlyBluesTrainer::teleport_to_start(Game::Navi* navi)
@@ -375,6 +378,8 @@ void EarlyBluesTrainer::reset_to_start(Game::Navi* navi)
 	}
 
 	teleport_to_start(navi);
+
+	Game::playData->mDemoFlags.resetFlag(Game::DEMO_Find_Blue_Onion);
 
 	went_to_hell          = false;
 	would_have_softlocked = false;
