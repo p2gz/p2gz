@@ -87,6 +87,21 @@ Trainers will warp you to the appropriate area (HoB5 for Fast Empress, AW for EB
 
 <center><img src="docs/readme_assets/early-blues.png" width="75%"></center>
 
+### Freely adjust your squad
+
+Pikmin counts can be adjusted while practising using the **pikmin** submenu, including current squad and onion counts. Onions can also be unlocked or re-locked using the same menu. 
+
+To practice a segment with a customised squad:
+1. Warp to the segment with a close-enough preset (to set all the other flags).
+2. Adjust your squad using the **pikmin** submenu.
+3. Warp back to the segment using the warp menu, but select "no preset (use current squad)" from the **preset** submenu. 
+
+If done on Sublevel 1 in a cave, your customised squad will be maintained when using the quick cave replay option.
+
+### Freely move around the map
+
+There is also **freecam mode**, which allows you to teleport your captain (and current squad) with you around the map to any (standable) location. This can be used in caves to quickly see a layout without having to walk around manually, or to quickly get to a hole/geyser. To travel faster while in freecam mode, hold the **L** trigger.
+
 ### Learn about how Pikmin 2 works
 The display of various debug text is supported during gameplay, available through the P2GZ menu (double-press dpad-left) under the **debug info** submenu, including:
 - Circles that will predict the dismiss positions of your current Pikmin squad
@@ -108,11 +123,9 @@ The display of various debug text is supported during gameplay, available throug
 - Structure info, including gate, bridge and plug health.
 
 Various aspects of the game are also fully controllable, including:
-- Pikmin squad and onion counts through the **pikmin** submenu.
 - Treasure locations and regions through the **level** submenu.
 - Structure states (gate, bridge, bag and plug statuses/healths) and time of day also through the **level** submenu.
 - Cutscene flags for every triggerable cutscene in the game, through the **cutscenes** submenu.
 - Spray counts, currently obtained upgrades, current pokos, captain health, and moonjump (boing mode) through the **captain** submenu.
 
-There is also **freecam mode**, which allows you to teleport your captain (and current squad) with you around the map to any (standable) location.
 
