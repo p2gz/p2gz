@@ -174,6 +174,7 @@ public:
 	Vec<TreasureGenSpawnOverride> treasure_spawn_overrides;
 	bool bridge_glitch_active;
 	BitFlag<u16> new_area_zoom;        // bit per course: VoR=1 AW=2 PP=4 WW=8; set = allow zoom on next world-map visit
+	bool play_repay_demo; // tracks whether or not to play a % cutscene
 	AreaStructureState area_states[4]; // per-area structure state, indexed by CourseIndex (0=VoR…3=WW)
 
 	bool is_area_visited(int course) const;
