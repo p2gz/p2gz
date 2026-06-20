@@ -3,6 +3,7 @@
 #include <P2JME/P2JME.h>
 #include <Game/generalEnemyMgr.h>
 #include <Game/Entities/Queen.h>
+#include <Screen/Game2DMgr.h>
 #include <p2gz/SegmentHistory.h>
 #include <p2gz/p2gz.h>
 
@@ -120,7 +121,13 @@ void EmpressTrainer::update()
 		Game::gameSystem->startFadeout(1.0f);
 	}
 
-	if (fade_out_frames == 60) {
+	if (fade_out_frames >= 60) {
+		// make doubly sure no screen is loading before we reload
+		// (otherwise we can hit a lockout skip crash)
+		if (Screen::gGame2DMgr && Screen::gGame2DMgr->mScreenMgr && Screen::gGame2DMgr->mScreenMgr->isCurrentSceneLoading()) {
+			return;
+		}
+
 		fade_out_frames    = 0;
 		first_damage_frame = -1;
 		polling            = true;
