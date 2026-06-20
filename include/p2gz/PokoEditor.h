@@ -7,7 +7,10 @@
 namespace gz {
 struct PokoEditor {
 public:
-	PokoEditor() { }
+	PokoEditor()
+	    : repay_demo_enabled(false)
+	{
+	}
 	~PokoEditor() { }
 
 	void init();
@@ -16,9 +19,9 @@ public:
 	void set_pokos(u32 pokos);
 	void apply_cave_pokos();
 
-	// variable which tracks whether a % CS will play next warp. 
+	// variable which tracks whether a % CS will play next warp.
 	// set on warp by play_repay_demo, which is read from the presets
-	bool repay_demo_enabled = false;
+	bool repay_demo_enabled;
 
 private:
 	gz::DecimalInputOption* poko_menu;
