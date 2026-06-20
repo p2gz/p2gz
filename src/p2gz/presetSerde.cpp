@@ -288,7 +288,7 @@ void Preset::read(Stream& input)
 	new_area_zoom.clear();
 	new_area_zoom.typeView = static_cast<u16>(input.readInt());
 	OSReport("Right before reading play_repay_demo \n");
-	play_repay_demo = input.readInt() > 0; // read % cutscene on the next line from pokos
+	play_repay_demo = input.readInt() > 0; 
 }
 
 void Preset::write(Stream& output)
