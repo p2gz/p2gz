@@ -41,9 +41,9 @@ AILOD::AILOD()
  */
 void Creature::updateLOD(Game::AILODParm& parm)
 {
-	// @P2GZ: freecam
+	// @P2GZ: freecam / early blues trainer
 	// force AILOD_IsVisibleBoth while enabled
-	if (p2gz->freecam->is_enabled()) {
+	if (p2gz->freecam->is_enabled() || p2gz->early_blues_trainer->is_enabled()) {
 		mLod.setFlag(AILOD_IsVisibleBoth);
 		return;
 	}

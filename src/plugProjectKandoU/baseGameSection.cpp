@@ -393,6 +393,15 @@ void BaseGameSection::doDraw(Graphics& gfx)
 	pre2dDraw(gfx);
 	gfx.setToken("2d");
 	draw2D(gfx);
+
+	// @P2GZ: early blues trainer
+	// draw inset camera over the HUD
+	if (p2gz->early_blues_trainer->is_inset_active()) {
+		p2gz->early_blues_trainer->draw_inset(this, gfx);
+		mOpaqueDrawBuffer->frameInitAll();
+		mTransparentDrawBuffer->frameInitAll();
+	}
+
 	if (mDraw2DCreature) {
 		drawOtakaraWindow(gfx);
 	}

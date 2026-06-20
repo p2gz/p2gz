@@ -15,10 +15,11 @@ struct WarpDestination {
 public:
 	WarpDestination()
 	{
-		area     = 0;
-		cave     = 0;
-		sublevel = 0;
-		day      = 2;
+		area            = 0;
+		cave            = 0;
+		sublevel        = 0;
+		day             = 2;
+		enter_area_type = 0;
 	}
 
 	u8 area;
@@ -46,6 +47,7 @@ public:
 	void sync();
 
 	void set_dest(WarpDestination new_dest);
+	WarpDestination get_dest() { return dest; }
 
 	void set_warp_area(size_t area);
 	void set_warp_cave(size_t cave);

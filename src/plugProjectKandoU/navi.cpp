@@ -2839,11 +2839,19 @@ void Navi::disableController()
  */
 void Navi::control()
 {
+	// @P2GZ: early blues trainer
+	// disable whistling and switching captains
+	if (p2gz->early_blues_trainer->is_enabled() && mController1 && mNaviIndex == NAVIID_Olimar) {
+		p2gz->early_blues_trainer->capture_input(mController1);
+	}
+
 	if (moviePlayer->isFlag(MVP_IsActive) == FALSE) {
 		makeVelocity();
 	}
 
-	makeCStick(false);
+	// @P2GZ: early blues trainer
+	// disable swarming
+	makeCStick(p2gz->early_blues_trainer->is_enabled());
 
 	if (isMovieActor()) {
 		return;

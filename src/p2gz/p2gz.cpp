@@ -63,6 +63,7 @@ P2GZ::P2GZ()
 	onion_editor         = new OnionEditor();
 	localization_op      = new Localization();
 	empress_trainer      = new EmpressTrainer();
+	early_blues_trainer  = new EarlyBluesTrainer();
 	drop_editor          = new DropEditor();
 	navi_debug_info      = new NaviDebugInfo();
 
@@ -98,6 +99,7 @@ void P2GZ::init()
 	treasure_editor->init();
 	localization_op->init_menu();
 	preset_mgr->init();
+	early_blues_trainer->init();
 
 #ifdef GZ_TEST
 	test_runner->init();
@@ -126,6 +128,7 @@ void P2GZ::update()
 	dismiss_positions->update();
 	navi_tools->update();
 	empress_trainer->update();
+	early_blues_trainer->update();
 	navi_debug_info->update();
 
 	warp->update_lockout_frames();
@@ -151,6 +154,7 @@ void P2GZ::draw_2d()
 	timer->draw();
 	segment_history->draw_2d();
 	empress_trainer->draw();
+	early_blues_trainer->draw_status();
 	navi_debug_info->draw();
 }
 

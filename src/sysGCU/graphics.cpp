@@ -740,7 +740,7 @@ void Graphics::fillZBuffer(Rectf& bounds, f32 z)
 	GXSetColorUpdate(GX_FALSE);
 	GXSetZMode(GX_TRUE, GX_ALWAYS, GX_TRUE);
 
-	Mtx mtx;
+	Mtx44 mtx;
 	C_MTXOrtho(mtx, bounds.p1.y, bounds.p2.y, bounds.p1.x, bounds.p2.x, -1.0f, 1.0f);
 	GXSetProjection(mtx, GX_ORTHOGRAPHIC);
 

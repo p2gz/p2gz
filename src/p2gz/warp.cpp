@@ -318,6 +318,10 @@ void Warp::do_warp()
 	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
 		p2gz->empress_trainer->stop();
 	}
+	
+	if (!p2gz->early_blues_trainer->is_pending_setup()) {
+		p2gz->early_blues_trainer->stop();
+	}
 
 	if (p2gz->collision_viewer->is_enabled()) {
 		p2gz->collision_viewer->handle_warp();

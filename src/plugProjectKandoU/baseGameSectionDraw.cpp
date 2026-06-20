@@ -31,9 +31,13 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	Delegate1<BaseGameSection, Viewport*> vpDelegate(this, &BaseGameSection::newdraw_drawAll);
 	gfx.mapViewport(&vpDelegate);
 
-	// Initialise both draw buffers for the frame
-	mOpaqueDrawBuffer->frameInitAll();
-	mTransparentDrawBuffer->frameInitAll();
+	// @P2GZ: early blues trainer
+	// draw inset camera over the HUD
+	if (!p2gz->early_blues_trainer->is_inset_active()) {
+		// Initialise both draw buffers for the frame
+		mOpaqueDrawBuffer->frameInitAll();
+		mTransparentDrawBuffer->frameInitAll();
+	}
 
 	if (!gameSystem->isMultiplayerMode()) {
 		particleMgr->setXfb(mXfbImage->mTexInfo);

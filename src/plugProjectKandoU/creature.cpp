@@ -17,6 +17,9 @@
 #include "Game/CollEvent.h"
 #include "nans.h"
 
+// @P2GZ
+#include <p2gz/p2gz.h>
+
 namespace Game {
 
 Creature* Creature::currOp;
@@ -539,6 +542,13 @@ int Creature::checkHell(Creature::CheckHellArg& hellArg)
 		}
 
 		return CREATURE_HELL_DEATH;
+	}
+
+	// @P2GZ: early blues trainer
+	// this is exactly where vanilla would have killed the captain (the softlock the
+	// patch above prevents), so let the trainer report it
+	if (pos.y < -500.0f && isNavi() && p2gz->early_blues_trainer->is_enabled()) {
+		p2gz->early_blues_trainer->on_softlock();
 	}
 
 	return pos.y < -300.0f;

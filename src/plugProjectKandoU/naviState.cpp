@@ -2305,7 +2305,9 @@ void NaviNukuAdjustState::exec(Navi* navi)
 	}
 
 	if (!mIsFollowing) {
-		navi->makeCStick(false);
+		// @P2GZ: early blues trainer
+		// disable C-stick while inset camera is active
+		navi->makeCStick(p2gz->early_blues_trainer->is_enabled());
 	}
 
 	if (navi->mController1 && navi->mController1->getButton() & Controller::PRESS_B) {
