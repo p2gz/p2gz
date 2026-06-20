@@ -149,7 +149,8 @@ void GZMenu::init_menu()
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
 			->push(new OpenSubMenuOption("segment timer", (new ListMenu())
 				->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_segment_timer_enabled)))
-				->push(new ToggleMenuOption("display best times", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_draw_best_times_enabled)))
+				->push(new ToggleMenuOption("draw best times", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_draw_best_times_enabled)))
+				->push(new ToggleMenuOption("draw comparisons", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_draw_comparisons_enabled)))
 				->push(new PerformActionMenuOption("reset best times", new Delegate<Timer>(p2gz->timer, &Timer::reset_best_segments)))
 				// this toggle below is not cancellable if it is accidentally pressed
 				->push(new PerformActionMenuOption("discard current run", new Delegate<Timer>(p2gz->timer, &Timer::enable_mark_run_to_discard)))
@@ -168,6 +169,7 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("eggs always drop mitites", false, new Delegate1<DropEditor, bool>(p2gz->drop_editor, &DropEditor::set_egg_always_mitites)))
 			->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
+			->push(new PerformActionMenuOption("play percent cutscenes", new Delegate<GZMenu>(p2gz->menu, &GZMenu::enable_percent_custcenes)))
         ));
 	// clang-format on
 

@@ -874,18 +874,18 @@ inline void PikiPanicState::checkDemo(Piki* piki)
 	if (flag != 0 && !playData->isDemoFlag(flag) && gameSystem->isStoryMode() && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
 		mDemoWaitTime -= sys->mDeltaTime;
 		if (mDemoWaitTime <= 0.0f) {
-			playData->setDemoFlag(flag);
+			// @P2GZ: segment timer splits on poison CS. For EB. && !playdata... so it only splits once
+			// potentially desirable: only split after the CS is over?
+			if (p2gz->timer->split_on_poison_demo && (flag == DEMO_Pikmin_In_Danger_Poison) && !playData->isDemoFlag(flag)){
+				p2gz->timer->add_split_times();
+			}
 
+			playData->setDemoFlag(flag);
 			MoviePlayArg playArg("x16_hiba", nullptr, nullptr, 0);
 			playArg.mOrigin            = piki->getPosition();
 			playArg.mAngle             = piki->getFaceDir();
 			moviePlayer->mTargetObject = piki;
 			moviePlayer->play(playArg);
-		}
-
-		// @P2GZ: segment timer splits on poison CS. For EB. 
-		if (p2gz->timer->split_on_poison_demo && (flag == DEMO_Pikmin_In_Danger_Poison)){
-			p2gz->timer->add_split_times();
 		}
 	}
 }

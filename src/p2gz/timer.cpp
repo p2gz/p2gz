@@ -15,6 +15,10 @@
 
 using namespace gz;
 
+#define COLOR(color)           \
+	j2d.mCharColor.set(color); \
+	j2d.mGradientColor.set(color)
+
 Timer::Timer()
     : enabled(false)
     , sub_timer_enabled(true)
@@ -92,9 +96,12 @@ void Timer::draw()
 		j2d.print(x + sub_offset, z, "(%ld:%.2ld.%.1ld)", sub_c.minutes, sub_c.seconds, sub_c.tenths);
 	}
 
-	if (segment_timer_enabled) {
+	if (segment_timer_enabled && !p2gz->menu->is_open()) {
 		f32 starting_seg_offset = z + glyph_height + 10.0f; 
 		// Draw segment times
+		// smaller font sizes for the segment times 
+		j2d.mGlyphWidth = 14.0f; 
+		j2d.mGlyphHeight = 14.0f; 
 		for (int i = 0; i < curr_index; i++) {
 			if (split_times[i] > 0) {
 				Timer::TimeComponents seg_c;
@@ -108,26 +115,54 @@ void Timer::draw()
 				}
 
 				if (seg_c.minutes > 0){
-					j2d.print(x, starting_seg_offset + (i * 20), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					j2d.print(x, starting_seg_offset + (i * 16), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 				}
 				else{
-					j2d.print(x, starting_seg_offset + (i * 20), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+					j2d.print(x, starting_seg_offset + (i * 16), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
 				}
- 				OSReport("Best segment time: %d \n", best_segments[i]); 
+
 				if (draw_best_times_enabled && (best_segments[i] > 0)){
 					// fixed offset so it produces aligned columns 
-					f32 sub_offset = 90.0f;
+					f32 sub_offset = 60.0f;
 					seg_c = calc_time(0, best_segments[i]); 
 					if (seg_c.minutes > 0){
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 20), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 					}
 					else{
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 20), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
 					}
+				}
+
+				if (draw_best_times_enabled && draw_comparisons_enabled && (best_segments[i] > 0)){
+					// fixed offset so it produces aligned columns 
+					f32 sub_offset = 120.0f;
+					bool isGreen = segment_times[i] < best_segments[i]; 
+					if (!isGreen){
+						// alternative: calc_time(best_segments[i], segment_times[i])
+						// I don't like this since these are not the start and endpoint of a period of elapsed time
+						seg_c = calc_time(0, segment_times[i] - best_segments[i]);
+						JUtility::TColor red_color(205, 30, 30, 204); 
+						COLOR(red_color); 
+					}
+					else {
+						seg_c = calc_time(0, best_segments[i] - segment_times[i]);
+						JUtility::TColor green_color(30, 205, 30, 204); 
+						COLOR(green_color);
+					}
+					if (seg_c.minutes > 0){
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld:%.2ld.%.1ld" : "+%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					}
+					else{
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%.2ld.%.1ld" : "+%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+					}
+					COLOR(color); 
 				}
 			}
 		}
 	}
+	// reset the font size 
+	j2d.mGlyphWidth = glyph_width; 
+	j2d.mGlyphHeight = glyph_height; 
 }
 
 void Timer::sync()

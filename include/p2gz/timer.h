@@ -83,6 +83,7 @@ public:
 	void set_split_on_bag_crush_enabled(bool enabled_) { split_on_bag_crush = enabled_; }
 	void set_split_on_poison_demo_enabled(bool enabled_) { split_on_poison_demo = enabled_; }
 	void set_draw_best_times_enabled(bool enabled_) { draw_best_times_enabled = enabled_; }
+	void set_draw_comparisons_enabled(bool enabled_) { draw_comparisons_enabled = enabled_; }
 	void reset_best_segments(); 
 	void enable_mark_run_to_discard() { OSReport("Calling enable_mark_run_for_discard \n");  mark_run_for_discard = true; } 
 	void set_split_start_offset(u32 offset) { split_start_offset = offset; }
@@ -115,6 +116,7 @@ private:
 	bool segment_timer_enabled; // are we using the segment timer? 
 	bool draw_best_times_enabled; 
 	bool mark_run_for_discard; 
+	bool draw_comparisons_enabled; 
 
 	u32 main_timer;  // overall/default timer starting point
 	u32 sub_timer;   // sublevel timer starting point
