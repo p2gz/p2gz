@@ -489,6 +489,7 @@ void GameState::exec(SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 		game->advanceDayCount();
 		gameSystem->setPause(false, "repay-done", 3);
+		p2gz->race_mode->on_ending(false); // @P2GZ race mode: debt ending (stops a PoD run)
 		EndingArg arg(0);
 		transit(game, SGS_Ending, &arg);
 		return;
@@ -498,6 +499,7 @@ void GameState::exec(SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 		game->advanceDayCount();
 		gameSystem->setPause(false, "repay-done", 3);
+		p2gz->race_mode->on_ending(true); // @P2GZ race mode: all-treasures ending (stops an AT run)
 		EndingArg arg(EndingState::Ending_IsComplete);
 		transit(game, SGS_Ending, &arg);
 		return;

@@ -67,6 +67,9 @@ public:
 	void unpause();
 	u32 get_elapsed_time() { return ((get_cur_time() - sub_timer) / 1000); } // this returns time since last loaded section in seconds
 
+	// @P2GZ race mode: elapsed RTA in ms (respects pause, so reads frozen while paused)
+	u32 get_main_elapsed_ms();
+
 	void reset_navi_swap_timer();
 	f32 stop_navi_swap_timer();
 	void cancel_navi_swap_timer();

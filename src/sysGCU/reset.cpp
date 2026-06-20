@@ -10,6 +10,7 @@
 #include "JSystem/JUtility/JUTVideo.h"
 #include "MemoryCardMgr.h"
 #include "Game/MemoryCard/Mgr.h"
+#include "p2gz/p2gz.h"
 
 /**
  * @note Address: 0x80429DB0
@@ -111,12 +112,21 @@ void ResetManager::update()
 			}
 
 			if (check2 && check) {
-				if (PSSystem::spSysIF) {
-					PSSystem::spSysIF->stopSoundSystem();
+				// @P2GZ race mode: B+X+Start retries the current floor instead of soft-resetting the run.
+				// Suppress the hardware reset and defer the retry to RaceMode::update (safe transit context).
+				if (p2gz && p2gz->race_mode && p2gz->race_mode->is_active()) {
+					p2gz->race_mode->request_reset();
+					resetFlag(RESETFLAG_ResetInputEntered);
+					resetFlag(RESETFLAG_DoResetToMenu);
+					JUTGamePad::C3ButtonReset::sResetOccurred = false;
+				} else {
+					if (PSSystem::spSysIF) {
+						PSSystem::spSysIF->stopSoundSystem();
+					}
+					THPPlayerSetVolume(0, 120);
+					setFlag(RESETFLAG_ResetInputEntered);
+					mState = ResetState_Fadeout;
 				}
-				THPPlayerSetVolume(0, 120);
-				setFlag(RESETFLAG_ResetInputEntered);
-				mState = ResetState_Fadeout;
 			} else {
 				resetFlag(RESETFLAG_ResetInputEntered);
 				resetFlag(RESETFLAG_DoResetToMenu);

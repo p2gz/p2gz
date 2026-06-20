@@ -123,8 +123,12 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	}
 
 	if (!preset) {
-		segment->preset       = p2gz->preset_mgr->create();
-		segment->preset->day  = Game::gameSystem->mTimeMgr->mDayCount;
+		segment->preset = p2gz->preset_mgr->create();
+		// @P2GZ Preset::day is 1-indexed like file presets - apply() does set_warp_day(day) which
+		// subtracts 1, and checks `day > 1` for the red-onion container. mDayCount is 0-indexed, so
+		// store +1. (Was a latent off-by-one: a day-1 retry stored day 0, so set_warp_day(0) made
+		// dest.day underflow to 255 -> "day 256"; other days silently shifted back by one.)
+		segment->preset->day  = Game::gameSystem->mTimeMgr->mDayCount + 1;
 		segment->preset->time = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
 		dest.day              = Game::gameSystem->mTimeMgr->mDayCount;
 	}

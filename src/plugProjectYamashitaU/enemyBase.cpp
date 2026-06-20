@@ -2500,6 +2500,8 @@ void EnemyBase::finishScaleDamageAnim()
  */
 void EnemyBase::deathProcedure()
 {
+	p2gz->race_mode->notify_enemy_defeated(); // @P2GZ race mode stat
+
 	disableEvent(0, EB_DamageAnimEnabled);
 	setAlive(false);
 

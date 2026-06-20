@@ -63,9 +63,21 @@ void Timer::init()
 	timer_menu = static_cast<ListMenu*>(p2gz->menu->get_option("timer")->get_sub_menu());
 }
 
+u32 Timer::get_main_elapsed_ms()
+{
+	// while paused, the timer is frozen at pause_timer
+	const u32 end = pause_timer_set ? pause_timer : get_cur_time();
+	return end - main_timer;
+}
+
 void Timer::draw()
 {
 	if (!enabled) {
+		return;
+	}
+
+	// @P2GZ race mode draws its own dual RTA/IGT readout instead
+	if (p2gz->race_mode && p2gz->race_mode->is_active()) {
 		return;
 	}
 

@@ -67,6 +67,7 @@ P2GZ::P2GZ()
 	drop_editor          = new DropEditor();
 	navi_debug_info      = new NaviDebugInfo();
 	card_data            = new P2GZCardData();
+	race_mode            = new RaceMode();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();
@@ -101,6 +102,7 @@ void P2GZ::init()
 	localization_op->init_menu();
 	preset_mgr->init();
 	early_blues_trainer->init();
+	race_mode->init();
 
 #ifdef GZ_TEST
 	test_runner->init();
@@ -133,6 +135,7 @@ void P2GZ::update()
 	navi_debug_info->update();
 
 	warp->update_lockout_frames();
+	race_mode->update();
 
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
@@ -157,6 +160,7 @@ void P2GZ::draw_2d()
 	empress_trainer->draw();
 	early_blues_trainer->draw_status();
 	navi_debug_info->draw();
+	race_mode->draw_2d();
 }
 
 // Anything that needs to be drawn in 3D space should be drawn here.
