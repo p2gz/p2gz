@@ -3,9 +3,9 @@
 P2GZ is an advanced practice ROM for Pikmin 2. All code is based on the Pikmin 2 Decompilation Project
 and is open source at https://github.com/p2gz/p2gz.
 
-You will need a legally obtained GameCube USA Pikmin 2 game ISO to build P2GZ.
+You will need a legally obtained GameCube USA Pikmin 2 game ISO to build P2GZ. CISO and GCT files should also work.
 The P2GZ authors cannot provide this - you must source it yourself. Other game versions (Wii/Switch)
-are not supported. Other game regions (NTSC-J/PAL) may work but are not tested.
+are not supported. ISOs from other game regions (NTSC-J/PAL) will not work.
 
 Install process:
 1. Copy your Pikmin 2 ISO into the same folder as this README.
