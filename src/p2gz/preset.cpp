@@ -301,7 +301,6 @@ void Preset::apply()
 	p2gz->warp->set_enter_area_type(enter_kind);
 
 	// set whether %cutscene should be forced to play or not
-	OSReport("right before setting enable percent cutscenes \n"); 
 	if (play_repay_demo){
 		p2gz->poko_editor->repay_demo_enabled = true; 
 	}
