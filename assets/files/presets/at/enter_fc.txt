@@ -121,3 +121,4 @@ AT 	# category
 	183 	2 	# Seed of Greed
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
+1   # percent cutscene (> 0 if one should play)
