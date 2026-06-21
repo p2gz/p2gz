@@ -156,8 +156,11 @@ void GZMenu::init_menu()
 				->push(new PerformActionMenuOption("discard current run", new Delegate<Timer>(p2gz->timer, &Timer::enable_mark_run_to_discard)))
 				->push(new ToggleMenuOption("split on captain swap", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_captain_swap_enabled)))
 				->push(new ToggleMenuOption("split on gate segment", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_gate_seg_enabled)))
+				->push(new ToggleMenuOption("split on gate destroyed", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_gate_down_enabled)))
 				->push(new ToggleMenuOption("split on bag crush", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_bag_crush_enabled)))
 				->push(new ToggleMenuOption("split on poisoned CS", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_poison_demo_enabled)))
+				->push(new ToggleMenuOption("split on treasure carry", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_carry_enabled)))
+				->push(new ToggleMenuOption("split on enemy death", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_split_on_enemy_death_enabled)))
 			))
 		))
 
@@ -169,7 +172,6 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("eggs always drop mitites", false, new Delegate1<DropEditor, bool>(p2gz->drop_editor, &DropEditor::set_egg_always_mitites)))
 			->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
             ->push(new PerformActionMenuOption("decrease text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::decrease_text_size)))
-			->push(new PerformActionMenuOption("play percent cutscenes", new Delegate<GZMenu>(p2gz->menu, &GZMenu::enable_percent_custcenes)))
         ));
 	// clang-format on
 
