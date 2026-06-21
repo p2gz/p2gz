@@ -4,17 +4,22 @@
 
 using namespace gz;
 
-#define READ_LIST(stream)          \
-	list_count = stream.readInt(); \
+// clearer guard against corrupt preset list counts
+static const u32 PRESET_LIST_MAX = 256;
+
+#define READ_LIST(stream)                                                                          \
+	list_count = stream.readInt();                                                                 \
+	GZEXPECT((u32)list_count <= PRESET_LIST_MAX, "preset list count %d out of range", list_count); \
 	for (u32 i = 0; i < list_count; i++)
 
-#define READ_LIST_T(stream, Type, dest)    \
-	list_count = stream.readInt();         \
-	dest.expandCapacityTo(list_count);     \
-	for (u32 i = 0; i < list_count; i++) { \
-		Type container;                    \
-		container.read(stream);            \
-		dest.push(container);              \
+#define READ_LIST_T(stream, Type, dest)                                                            \
+	list_count = stream.readInt();                                                                 \
+	GZEXPECT((u32)list_count <= PRESET_LIST_MAX, "preset list count %d out of range", list_count); \
+	dest.expandCapacityTo(list_count);                                                             \
+	for (u32 i = 0; i < list_count; i++) {                                                         \
+		Type container;                                                                            \
+		container.read(stream);                                                                    \
+		dest.push(container);                                                                      \
 	}
 
 #define READ_BITFLAG(stream, bitfield)        \
@@ -282,6 +287,7 @@ void Preset::read(Stream& input)
 
 	new_area_zoom.clear();
 	new_area_zoom.typeView = static_cast<u16>(input.readInt());
+	play_repay_demo = input.readInt() > 0; 
 }
 
 void Preset::write(Stream& output)

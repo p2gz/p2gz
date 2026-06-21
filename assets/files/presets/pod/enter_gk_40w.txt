@@ -9,7 +9,7 @@ PoD 	# category
 7.000000 	# time of day
 8 	# day number
 -1 	# pokos (-1 if not applied)
-1 	# enter kind (FromCave = 0, FromMap = 1)
+0 	# enter kind (FromCave = 0, FromMap = 1)
 7 	# num upgrades
 	0 	# ODII_BruteKnuckles
 	5 	# ODII_JusticeAlloy
@@ -18,7 +18,7 @@ PoD 	# category
 	9 	# ODII_FiveManNapsack
 	10 	# ODII_SphericalAtlas
 	11 	# ODII_GeographicProjection
-34 	# num demo flags
+35 	# num demo flags
 	0 	# DEMO_Pluck_First_Pikmin
 	1 	# DEMO_Discover_Treasure
 	3 	# DEMO_Find_Cave_Deeper_Hole
@@ -38,6 +38,7 @@ PoD 	# category
 	26 	# DEMO_Purple_Candypop
 	31 	# DEMO_Day_One_Start
 	32 	# DEMO_Enter_Awakening_Wood
+	33 	# DEMO_Enter_Perplexing_Pool
 	35 	# DEMO_Meet_Red_Pikmin
 	36 	# DEMO_Louie_Finds_Red_Onion
 	37 	# DEMO_Unlock_Captain_Switch
@@ -53,7 +54,7 @@ PoD 	# category
 	49 	# DEMO_First_Number_Pellet
 	51 	# DEMO_Pikmin_In_Danger_Water
 	52 	# DEMO_Pikmin_In_Danger_Poison
-7 	# num EK cutscenes
+8 	# num EK cutscenes
 	0 	# ODII_BruteKnuckles
 	5 	# ODII_JusticeAlloy
 	6 	# ODII_ForgedCourage
@@ -62,7 +63,7 @@ PoD 	# category
 	10 	# ODII_SphericalAtlas
 	11 	# ODII_GeographicProjection
 	12 	# ODII_TheKey
-7 	# num cave cutscene flags
+8 	# num cave cutscene flags
 	1 	# EC
 	2 	# SCx
 	3 	# FC
@@ -100,3 +101,4 @@ PoD 	# category
 	47 	1 	# Fossilized Ursidae
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
+0   # percent cutscene (> 0 if one should play)

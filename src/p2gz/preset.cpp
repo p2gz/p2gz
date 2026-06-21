@@ -69,6 +69,7 @@ Preset::Preset()
 	bridge_glitch_active = true;
 	category             = PoD;  // default to pod so we don't get errors for null presets
 	time                 = 7.0f; // default to start of day
+	play_repay_demo      = false; // default to no percent cutscene
 	squad.clear();
 	onion_pikis.clear();
 }
@@ -298,6 +299,11 @@ void Preset::apply()
 	}
 
 	p2gz->warp->set_enter_area_type(enter_kind);
+
+	// set whether %cutscene should be forced to play or not
+	if (play_repay_demo){
+		p2gz->poko_editor->repay_demo_enabled = true; 
+	}
 
 	if (apply_pokos) {
 		p2gz->poko_editor->set_pokos(pokos);

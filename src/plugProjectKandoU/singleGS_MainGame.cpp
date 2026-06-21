@@ -472,6 +472,12 @@ void GameState::exec(SingleGameSection* game)
 	if (moviePlayer->mDemoState == DEMOSTATE_Inactive && needRepayDemo()) {
 		startRepayDemo();
 	}
+	else if (moviePlayer->mDemoState == DEMOSTATE_Inactive && p2gz->poko_editor->repay_demo_enabled){ 
+		// @ P2GZ: alternate way to force % cutscenes to play. I'm not disturbing usual game logic if we want
+		// the hack to be playable more normally. 
+		startRepayDemo();
+		p2gz->poko_editor->repay_demo_enabled = false; 
+	}
 
 	// Check if anything needs to be done following a % of debt cutscene
 	int repaystate = updateRepayDemo();

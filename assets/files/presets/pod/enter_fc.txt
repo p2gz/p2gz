@@ -98,3 +98,4 @@ PoD 	# category
 	47 	    3   -973.11 80.24 1721.64 	# Fossilized Ursidae
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
+1   # percent cutscene (> 0 if one should play)
