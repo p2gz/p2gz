@@ -258,6 +258,7 @@ void SegmentHistory::record_squad()
 	segment->preset->squad.clear();
 	segment->preset->onion_pikis.clear();
 	PresetMgr::fill_current_pikis(segment->preset);
+	PresetMgr::fill_current_treasure_state(segment->preset, segment->dest);
 
 	// Pin this cave's floor-0 preset (ref'd) so "restart cave" can still restore the floor-0 squad
 	// even after it's fallen out of the ring buffer

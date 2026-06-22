@@ -4,6 +4,7 @@
 #include <p2gz/BoundDelegate.h>
 #include <Game/Piki.h>
 #include <Game/PikiMgr.h>
+#include <Game/gamePlayData.h>
 #include <Game/Entities/ItemPikihead.h>
 #include <JSystem/J2D/J2DPrint.h>
 #include <System.h>
@@ -67,8 +68,8 @@ Preset::Preset()
 	name                 = nullptr;
 	preview              = nullptr;
 	bridge_glitch_active = true;
-	category             = PoD;  // default to pod so we don't get errors for null presets
-	time                 = 7.0f; // default to start of day
+	category             = PoD;   // default to pod so we don't get errors for null presets
+	time                 = 7.0f;  // default to start of day
 	play_repay_demo      = false; // default to no percent cutscene
 	squad.clear();
 	onion_pikis.clear();
@@ -317,12 +318,8 @@ void Preset::apply()
 	p2gz->warp->set_enter_area_type(enter_kind);
 
 	// set whether %cutscene should be forced to play or not
-	if (play_repay_demo){
-		p2gz->poko_editor->repay_demo_enabled = true; 
-	}
-
-	if (apply_pokos) {
-		p2gz->poko_editor->set_pokos(pokos);
+	if (play_repay_demo) {
+		p2gz->poko_editor->repay_demo_enabled = true;
 	}
 
 	Game::generatorCache->clearCache();
@@ -360,6 +357,89 @@ void Preset::apply()
 	if (day > 1) {
 		Game::playData->setBootContainer(Game::Red);
 		Game::playData->setContainer(Game::Red);
+	}
+
+	// Restore the collected treasure state
+	treasure_state.restore(p2gz->warp->get_dest().sublevel);
+}
+
+void Preset::TreasureState::restore(u8 dest_sublevel)
+{
+	if (mode != TM_Off) {
+		// deal with when we're in the middle of a cave
+		Game::PelletCropMemory* cave = Game::playData->mCaveCropMemory;
+		int cpoko                    = cave_poko_count;
+		if (cave) {
+			cave->mOtakara.clear();
+			cave->mItem.clear();
+			// base state (start of preset range)
+			for (u32 i = 0; i < cave_held.len(); i++) {
+				const HeldPellet& h = cave_held[i];
+				if (h.kind == 0) {
+					cave->mOtakara(h.id) = 1;
+				} else {
+					cave->mItem(h.id) = 1;
+				}
+			}
+			// per-floor deltas for floors beyond the target (if preset is multi-floor)
+			for (u32 i = 0; i < sublevel_deltas.len(); i++) {
+				const SublevelDelta& d = sublevel_deltas[i];
+				if (d.sublevel > dest_sublevel) {
+					continue;
+				}
+				cpoko += d.poko_delta;
+				for (u32 j = 0; j < d.caught.len(); j++) {
+					const HeldPellet& h = d.caught[j];
+					if (h.kind == 0) {
+						cave->mOtakara(h.id) += 1;
+					} else {
+						cave->mItem(h.id) += 1;
+					}
+				}
+			}
+		}
+		Game::playData->mCavePokoCount = cpoko;
+
+		// also restore treasures from before we entered the cave/current segment
+		if (mode == TM_Checkpoint) {
+			// NB: we only deal with treasure entries, not enemy entries
+			Game::PelletFirstMemory* zukan = Game::playData->mZukanStat;
+			if (zukan) {
+				zukan->mOtakara.clear();
+				for (u32 i = 0; i < zukan_otakara.len(); i++) {
+					zukan->mOtakara(zukan_otakara[i]) = Game::KindCounter::KCF_Earned;
+				}
+				zukan->mItem.clear();
+				for (u32 i = 0; i < zukan_item.len(); i++) {
+					zukan->mItem(zukan_item[i]) = Game::KindCounter::KCF_Earned;
+				}
+			}
+
+			Game::PelletCropMemory* main = Game::playData->mMainCropMemory;
+			if (main) {
+				main->mOtakara.clear();
+				main->mItem.clear();
+				// no treasures are held above-ground, so leave the main crop memory cleared
+			}
+
+			Game::playData->mTreasureCount = treasure_count;
+			Game::playData->mPokoCount     = poko_count;
+
+			// mark the debt-repayment levels these pokos reach as already-seen
+			// (we'll toggle the correct one on manually)
+			Game::playData->experienceRepayLevelFirstClear();
+		}
+	}
+
+	if (debt != -1) {
+		// force debt flags
+		if (debt) {
+			Game::playData->mStoryFlags |= Game::STORY_DebtPaid;
+		} else {
+			Game::playData->mStoryFlags &= ~Game::STORY_DebtPaid;
+		}
+		// always leave the all-treasures flag clear so the ending can (re)fire after collecting the rest
+		Game::playData->mStoryFlags &= ~Game::STORY_AllTreasuresCollected;
 	}
 }
 

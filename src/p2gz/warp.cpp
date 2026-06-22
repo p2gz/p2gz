@@ -292,8 +292,14 @@ void Warp::do_warp()
 		particle2dMgr->killAll();
 	}
 
-	reset_cave_treasure_collections(game);
-	p2gz->poko_editor->apply_cave_pokos();
+	// if warp has a treasure state attached, it'll get handled by the preset
+	// if it doesn't (TM_Off), handle it the old fashioned way
+	const bool preset_owns_treasures = has_next_preset() && preset_during_warp && preset_during_warp->treasure_state.mode != TM_Off;
+	if (!preset_owns_treasures) {
+		reset_cave_treasure_collections(game);
+		p2gz->poko_editor->apply_cave_pokos();
+	}
+
 	game->disableTimer(Game::DEMOTIMER_None);
 
 	if (dest.cave == 0) {
@@ -318,7 +324,7 @@ void Warp::do_warp()
 	if (dest.area != 1 || dest.cave != 1 || dest.sublevel != 4) {
 		p2gz->empress_trainer->stop();
 	}
-	
+
 	if (!p2gz->early_blues_trainer->is_pending_setup()) {
 		p2gz->early_blues_trainer->stop();
 	}

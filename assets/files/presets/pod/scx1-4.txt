@@ -8,7 +8,6 @@ PoD 	# category
 0 0 	# spicies, spicies unlocked
 9.500000 	# time of day
 7 	# day number
--1 	# pokos (-1 if not applied)
 0 	# enter kind (FromCave = 0, FromMap = 1)
 6 	# num upgrades
 	5 	# ODII_JusticeAlloy
@@ -99,3 +98,59 @@ PoD 	# category
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)
+2	# treasure mode (0=off, 1=cave floor, 2=checkpoint)
+0	# debt (-1=untouched, 0=unpaid, 1=paid)
+34	# num collected treasures (zukan, by config index)
+	2	# apple_blue
+	23	# diamond_red
+	30	# donutswhite
+	39	# gum_tape
+	41	# haniwa
+	42	# ichigo
+	46	# kouseki_suisyou
+	57	# saru_head
+	62	# toy_ring_a_red
+	87	# kan_b_silver
+	94	# dia_a_red
+	98	# dia_b_blue
+	101	# dia_c_green
+	110	# ichigo_l
+	117	# fire_helmet
+	119	# be_dama_red_l
+	120	# be_dama_yellow_l
+	121	# be_dama_blue_l
+	122	# diamond_red_l
+	123	# diamond_blue_l
+	124	# diamond_green_l
+	130	# bane_yellow
+	131	# juji_key_fc
+	133	# tape_yellow
+	142	# denchi_1_red
+	155	# donutschoco_s
+	156	# donutsichigo_s
+	157	# donutswhite_s
+	161	# chocoichigo_l
+	167	# g_futa_kajiwara
+	173	# g_futa_hiruzen
+	182	# wadou_kaichin
+	184	# uji_jisyaku
+	187	# whistle
+6	# num collected items (zukan, by config index)
+	5	# suit_powerup
+	6	# suit_fire
+	8	# radar_a
+	9	# radar_b
+	10	# map01
+	11	# map02
+0	# num cave-held pellets (kind id): kind 0=otakara 1=item
+40 5539 0	# treasure count, poko count, cave poko count
+3	# num per-sublevel deltas (grouped cave presets): per row = floor poko_delta numCaught
+	1 109 1	# floor 1 caught
+		0 61	# tel_dial
+	2 170 2	# floor 2 caught
+		0 106	# sinkukan_c
+		0 158	# gear_silver
+	3 190 3	# floor 3 caught
+		0 11	# bolt
+		0 37	# gear
+		0 3	# bane

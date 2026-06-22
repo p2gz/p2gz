@@ -132,6 +132,17 @@ static const TreasureNameMap AG_TREASURE_NAMES[] = {
 	{ 183, "Seed of Greed" },
 };
 
+// get English name for an above-ground treasure id, for comments
+static const char* ag_treasure_name(int id)
+{
+	for (u32 j = 0; j < ARRAY_SIZE(AG_TREASURE_NAMES); j++) {
+		if (AG_TREASURE_NAMES[j].treasure_id == id) {
+			return AG_TREASURE_NAMES[j].name;
+		}
+	}
+	return nullptr;
+}
+
 void read_piki_container(Stream& stream, Game::PikiContainer& container)
 {
 	for (u32 color = 0; color < 6; color++) {
@@ -254,13 +265,6 @@ void Preset::read(Stream& input)
 	spicies_unlocked = input.readInt() > 0;
 	time             = input.readFloat();
 	day              = input.readInt();
-	pokos            = input.readInt();
-	if (pokos == -1) {
-		pokos       = 0;
-		apply_pokos = false;
-	} else {
-		apply_pokos = true;
-	}
 
 	enter_kind = static_cast<EnterAreaKind>(input.readInt());
 
@@ -289,7 +293,10 @@ void Preset::read(Stream& input)
 
 	new_area_zoom.clear();
 	new_area_zoom.typeView = static_cast<u16>(input.readInt());
-	play_repay_demo = input.readInt() > 0; 
+
+	play_repay_demo = input.readInt() > 0;
+
+	treasure_state.read(input);
 }
 
 void Preset::write(Stream& output)
@@ -347,13 +354,6 @@ void Preset::write(Stream& output)
 	output.textWriteText("\t# time of day\n");
 	output.writeInt(day);
 	output.textWriteText("\t# day number\n");
-
-	if (apply_pokos) {
-		output.writeInt(pokos);
-	} else {
-		output.writeInt(-1);
-	}
-	output.textWriteText("\t# pokos (-1 if not applied)\n");
 
 	output.writeInt(static_cast<int>(enter_kind));
 	output.textWriteText("\t# enter kind (FromCave = 0, FromMap = 1, FirstEnter = 2)\n");
@@ -469,6 +469,11 @@ void Preset::write(Stream& output)
 
 	output.writeInt(static_cast<int>(new_area_zoom.typeView));
 	output.textWriteText("\t# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)\n");
+
+	output.writeInt(play_repay_demo ? 1 : 0);
+	output.textWriteText("\t# percent cutscene (> 0 if one should play)\n");
+
+	treasure_state.write(output);
 }
 
 void PresetPreview::read(const char* filename_)
@@ -505,14 +510,6 @@ void PresetPreview::read(const char* filename_)
 
 	read_piki_container(preset_stream, squad);
 	read_piki_container(preset_stream, onion_pikis);
-
-	if (strcmp(category_str, "PoD") == 0) {
-		category = PoD;
-	} else if (strcmp(category_str, "AT") == 0) {
-		category = AT;
-	} else {
-		category = General;
-	}
 
 	delete[] preset_file;
 }
@@ -592,6 +589,156 @@ void Preset::CarriedTreasure::write(Stream& output)
 		output.writeFloat(position_override.y);
 		output.writeFloat(position_override.z);
 	}
+}
+
+void Preset::SublevelDelta::read(Stream& input)
+{
+	sublevel   = static_cast<u8>(input.readInt());
+	poko_delta = input.readInt();
+	caught.clear();
+	const int n = input.readInt();
+	for (int i = 0; i < n; i++) {
+		HeldPellet h;
+		h.read(input);
+		caught.push(h);
+	}
+}
+
+void Preset::SublevelDelta::write(Stream& output)
+{
+	output.writeInt(sublevel);
+	output.textWriteTab(1);
+	output.writeInt(poko_delta);
+	output.textWriteTab(1);
+	output.writeInt(caught.len());
+	output.textWriteText("\t# floor %d caught (kind id)\n", sublevel);
+	FOREACH_VEC(caught)
+	{
+		output.textWriteTab(2);
+		caught[i].write(output);
+		if (caught[i].kind == 0) {
+			const char* name = ag_treasure_name(caught[i].id);
+			if (name) {
+				output.textWriteText("\t# %s", name);
+			}
+		}
+		output.textWriteText("\n");
+	}
+}
+
+void Preset::HeldPellet::read(Stream& input)
+{
+	kind = static_cast<u8>(input.readInt());
+	id   = static_cast<u16>(input.readInt());
+}
+
+void Preset::HeldPellet::write(Stream& output)
+{
+	output.writeInt(kind);
+	output.textWriteTab(1);
+	output.writeInt(id);
+}
+
+void Preset::TreasureState::read(Stream& input)
+{
+	mode = static_cast<TreasureMode>(input.readInt());
+	debt = static_cast<s8>(input.readInt());
+
+	int n;
+	zukan_otakara.clear();
+	n = input.readInt();
+	for (int i = 0; i < n; i++) {
+		zukan_otakara.push(static_cast<u16>(input.readInt()));
+	}
+	zukan_item.clear();
+	n = input.readInt();
+	for (int i = 0; i < n; i++) {
+		zukan_item.push(static_cast<u16>(input.readInt()));
+	}
+
+	cave_held.clear();
+	n = input.readInt();
+	for (int i = 0; i < n; i++) {
+		HeldPellet h;
+		h.read(input);
+		cave_held.push(h);
+	}
+
+	treasure_count  = input.readInt();
+	poko_count      = input.readInt();
+	cave_poko_count = input.readInt();
+
+	sublevel_deltas.clear();
+	n = input.readInt();
+	for (int i = 0; i < n; i++) {
+		SublevelDelta d;
+		d.read(input);
+		sublevel_deltas.push(d);
+	}
+}
+
+void Preset::TreasureState::write(Stream& output)
+{
+	output.writeInt(static_cast<int>(mode));
+	output.textWriteText("\t# treasure mode (0=off, 1=cave floor, 2=checkpoint)\n");
+	output.writeInt(static_cast<int>(debt));
+	output.textWriteText("\t# debt (-1=untouched, 0=unpaid, 1=paid)\n");
+
+	output.writeInt(zukan_otakara.len());
+	output.textWriteText("\t# num collected treasures (zukan, by config index)\n");
+	FOREACH_VEC(zukan_otakara)
+	{
+		output.textWriteTab(1);
+		output.writeInt(zukan_otakara[i]);
+		const char* name = ag_treasure_name(zukan_otakara[i]);
+		if (name) {
+			output.textWriteText("\t# %s", name);
+		}
+		output.textWriteText("\n");
+	}
+
+	output.writeInt(zukan_item.len());
+	output.textWriteText("\t# num collected items (zukan, by config index)\n");
+	FOREACH_VEC(zukan_item)
+	{
+		output.textWriteTab(1);
+		output.writeInt(zukan_item[i]);
+		output.textWriteText("\n");
+	}
+
+	output.writeInt(cave_held.len());
+	output.textWriteText("\t# num cave-held pellets (kind id): kind 0=otakara 1=item\n");
+	FOREACH_VEC(cave_held)
+	{
+		output.textWriteTab(1);
+		cave_held[i].write(output);
+		output.textWriteText("\n");
+	}
+
+	output.writeInt(treasure_count);
+	output.textWriteTab(1);
+	output.writeInt(poko_count);
+	output.textWriteTab(1);
+	output.writeInt(cave_poko_count);
+	output.textWriteText("\t# treasure count, poko count, cave poko count\n");
+
+	output.writeInt(sublevel_deltas.len());
+	output.textWriteText("\t# num per-sublevel deltas (grouped cave presets): per row = floor poko_delta numCaught\n");
+	FOREACH_VEC(sublevel_deltas)
+	{
+		output.textWriteTab(1);
+		sublevel_deltas[i].write(output);
+	}
+}
+
+void Preset::EnemyGenSpawnOverride::read(Stream& input)
+{
+	course    = input.readInt();
+	enemy_id  = static_cast<Game::EnemyTypeID::EEnemyTypeID>(input.readInt());
+	gen_pos.x = input.readFloat();
+	gen_pos.y = input.readFloat();
+	gen_pos.z = input.readFloat();
+	kill_day  = input.readInt();
 }
 
 void Preset::KilledEnemy::read(Stream& input)

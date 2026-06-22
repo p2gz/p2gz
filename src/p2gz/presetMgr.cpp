@@ -1,7 +1,12 @@
 #include <p2gz/p2gz.h>
 #include <p2gz/Preset.h>
 #include <p2gz/warp.h>
+#include <p2gz/Utility.h>
 #include <Game/Piki.h>
+#include <Game/pelletMgr.h>
+#include <Game/gameGenerator.h>
+#include <Game/gameGeneratorCache.h>
+#include <Game/gamePlayData.h>
 #include <System.h>
 #include <Game/PikiMgr.h>
 #include <types.h>
@@ -58,9 +63,9 @@ Preset* PresetMgr::create()
 {
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
-	Preset* preset           = new Preset();
-	preset->name             = "generated preset";
-	preset->origin           = PO_Generated;
+	Preset* preset = new Preset();
+	preset->name   = "generated preset";
+	preset->origin = PO_Generated;
 
 	preset->spicies_unlocked = p2gz->spray_editor->get_spicies_unlocked();
 	preset->bitters_unlocked = p2gz->spray_editor->get_bitters_unlocked();
@@ -70,8 +75,6 @@ Preset* PresetMgr::create()
 	preset->squad.clear();
 	preset->onion_pikis.clear();
 
-	preset->pokos          = p2gz->poko_editor->get_pokos();
-	preset->apply_pokos    = true;
 	preset->upgrades       = p2gz->ek_editor->get_upgrades_bitfield();
 	preset->cutscenes      = p2gz->cutscene_mgr->get_cur_cutscenes();
 	preset->ek_cutscenes   = p2gz->cutscene_mgr->get_cur_ek_cutscenes();
@@ -94,6 +97,117 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 		}
 	}
 	preset->onion_pikis = Game::playData->mPikiContainer;
+}
+
+// capture which above-ground treasures are already collected, so a segment reset restores correctly
+void PresetMgr::fill_current_treasures(Preset* preset)
+{
+	GZASSERTLINE(preset);
+	preset->treasure_spawn_overrides.clear();
+
+	if (!in_above_ground_play() || !Game::generatorCache) {
+		return;
+	}
+
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
+	FOREACH_NODE(Game::Generator, Game::generatorCache->getFirstGenerator(), gen)
+	{
+		if (!gen->mObject || gen->mObject->mTypeID != 'pelt') {
+			continue;
+		}
+		Game::GenPellet* gen_pellet = static_cast<Game::GenPellet*>(gen->mObject);
+		// number pellets/enemy carcasses don't matter, only treasures and upgrades
+		if (gen_pellet->mPelType != Game::PelletList::PLK_Otakara && gen_pellet->mPelType != Game::PelletList::PLK_Item) {
+			continue;
+		}
+		if (!gen_pellet->mGenParm) {
+			continue;
+		}
+		// still on the map => not collected
+		if (gen->mCreature && gen->mCreature->isAlive()) {
+			continue;
+		}
+
+		Preset::TreasureGenSpawnOverride oride;
+		oride.id             = gen_pellet->mGenParm->mIndex;
+		oride.spawn_override = PSO_DontSpawn;
+		preset->treasure_spawn_overrides.push(oride);
+	}
+
+	prev_heap->becomeCurrentHeap();
+}
+
+// snapshot a crop memory state (otakara + item, by config index) into a HeldPellet list
+static void capture_crop(Game::PelletCropMemory* mem, gz::Vec<Preset::HeldPellet>& out)
+{
+	out.clear();
+	if (!mem) {
+		return;
+	}
+	for (int i = 0; i < mem->mOtakara.getNumKinds(); i++) {
+		if (mem->mOtakara(i) > 0) {
+			out.push(Preset::HeldPellet(0, i));
+		}
+	}
+	for (int i = 0; i < mem->mItem.getNumKinds(); i++) {
+		if (mem->mItem(i) > 0) {
+			out.push(Preset::HeldPellet(1, i));
+		}
+	}
+}
+
+// snapshot the treasure piklopedia state as lists of config indices
+static void capture_zukan(Game::PelletFirstMemory* zukan, gz::Vec<u16>& ota_out, gz::Vec<u16>& item_out)
+{
+	ota_out.clear();
+	item_out.clear();
+	if (!zukan) {
+		return;
+	}
+	for (int i = 0; i < zukan->mOtakara.getNumKinds(); i++) {
+		if (zukan->mOtakara(i) != 0) {
+			ota_out.push(static_cast<u16>(i));
+		}
+	}
+	for (int i = 0; i < zukan->mItem.getNumKinds(); i++) {
+		if (zukan->mItem(i) != 0) {
+			item_out.push(static_cast<u16>(i));
+		}
+	}
+}
+
+// capture the full collected-treasure state at segment entry, so a reset can roll back correctly
+void PresetMgr::fill_current_treasure_state(Preset* preset, WarpDestination dest)
+{
+	GZASSERTLINE(preset);
+
+	// which above-ground field treasures are already gone (for generator-cache respawn)
+	fill_current_treasures(preset);
+
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+
+	Preset::TreasureState& ts = preset->treasure_state;
+	ts.debt                   = Game::playData->isStoryFlag(Game::STORY_DebtPaid) ? 1 : 0;
+
+	// checkpoint = above-ground (cave 0) or first sublevel - within a cave the zukan/main-crop are frozen
+	ts.mode = ((dest.cave == 0) || (dest.sublevel == 0)) ? TM_Checkpoint : TM_CaveFloor;
+
+	// cave-crop (per-floor delta) is always captured
+	capture_crop(Game::playData->mCaveCropMemory, ts.cave_held);
+	ts.cave_poko_count = Game::playData->mCavePokoCount;
+
+	if (ts.mode == TM_Checkpoint) {
+		capture_zukan(Game::playData->mZukanStat, ts.zukan_otakara, ts.zukan_item);
+		ts.treasure_count = Game::playData->mTreasureCount;
+		ts.poko_count     = Game::playData->mPokoCount;
+		// per-course ground counts are reconstructed from the captured AG field overrides (above)
+	} else {
+		ts.zukan_otakara.clear();
+		ts.zukan_item.clear();
+	}
+
+	prev_heap->becomeCurrentHeap();
 }
 
 Preset* PresetMgr::load_preset(PresetPreview* preview)

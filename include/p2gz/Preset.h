@@ -21,6 +21,10 @@ enum PresetOrigin { PO_File, PO_Memcard, PO_Generated };
 
 enum EnterAreaKind { PEK_FromCave = 0, PEK_FromMap = 1 };
 
+// how thorough should the treasure-tracking apply with the preset?
+// 0=not at all, 1=only things in this cave, 2=all prior to this
+enum TreasureMode { TM_Off = 0, TM_CaveFloor = 1, TM_Checkpoint = 2 };
+
 struct TreasureAreaMap {
 	u8 id;
 	u8 course_idx;
@@ -92,6 +96,132 @@ struct Preset {
 		u8 id;
 		bool moved;                 // true = spawn at position_override (moved part-way)
 		Vector3f position_override; // only used if moved
+	};
+
+	struct HeldPellet {
+		HeldPellet()
+		    : kind(0)
+		    , id(0)
+		{
+		}
+		HeldPellet(u8 kind_, u16 id_)
+		    : kind(kind_)
+		    , id(id_)
+		{
+		}
+
+		void read(Stream& input);
+		void write(Stream& output);
+
+		u8 kind; // 0=otakara (treasure); 1=item (upgrade)
+		u16 id;  // config index
+	};
+
+	// store info on what changes treasure-wise between sublevels in a multi-sublevel preset
+	struct SublevelDelta {
+		SublevelDelta()
+		    : sublevel(0)
+		    , poko_delta(0)
+		{
+		}
+
+		void read(Stream& input);
+		void write(Stream& output);
+
+		u8 sublevel;            // sublevel these are collected on
+		int poko_delta;         // pokos collected on this floor
+		Vec<HeldPellet> caught; // treasures collected on this floor
+	};
+
+	// snapshot of the collected-treasure state
+	struct TreasureState {
+		TreasureState()
+		    : mode(TM_Off)
+		    , debt(-1)
+		    , treasure_count(0)
+		    , poko_count(0)
+		    , cave_poko_count(0)
+		{
+		}
+
+		void read(Stream& input);
+		void write(Stream& output);
+
+		// restore this snapshot onto playData, using 0-indexed floor (to resolve deltas)
+		void restore(u8 dest_sublevel);
+
+		TreasureMode mode;         // how much to restore (see TreasureMode)
+		s8 debt;                   // -1=dont touch flag; 0=force unpaid; 1=force paid
+		Vec<u16> zukan_otakara;    // collected treasure config indices
+		Vec<u16> zukan_item;       // collected exploration kit config indices
+		Vec<HeldPellet> cave_held; // cave crop memory at the group's "first" floor - deltas added on top
+		int treasure_count;
+		int poko_count;
+		int cave_poko_count;                // cave poko count at the group's "first" floor - deltas added on top
+		Vec<SublevelDelta> sublevel_deltas; // per-floor deltas for grouped cave presets (empty otherwise)
+	};
+
+	struct HeldPellet {
+		HeldPellet()
+		    : kind(0)
+		    , id(0)
+		{
+		}
+		HeldPellet(u8 kind_, u16 id_)
+		    : kind(kind_)
+		    , id(id_)
+		{
+		}
+
+		void read(Stream& input);
+		void write(Stream& output);
+
+		u8 kind; // 0=otakara (treasure); 1=item (upgrade)
+		u16 id;  // config index
+	};
+
+	// store info on what changes treasure-wise between sublevels in a multi-sublevel preset
+	struct SublevelDelta {
+		SublevelDelta()
+		    : sublevel(0)
+		    , poko_delta(0)
+		{
+		}
+
+		void read(Stream& input);
+		void write(Stream& output);
+
+		u8 sublevel;            // sublevel these are collected on
+		int poko_delta;         // pokos collected on this floor
+		Vec<HeldPellet> caught; // treasures collected on this floor
+	};
+
+	// snapshot of the collected-treasure state
+	struct TreasureState {
+		TreasureState()
+		    : mode(TM_Off)
+		    , debt(-1)
+		    , treasure_count(0)
+		    , poko_count(0)
+		    , cave_poko_count(0)
+		{
+		}
+
+		void read(Stream& input);
+		void write(Stream& output);
+
+		// restore this snapshot onto playData, using 0-indexed floor (to resolve deltas)
+		void restore(u8 dest_sublevel);
+
+		TreasureMode mode;         // how much to restore (see TreasureMode)
+		s8 debt;                   // -1=dont touch flag; 0=force unpaid; 1=force paid
+		Vec<u16> zukan_otakara;    // collected treasure config indices
+		Vec<u16> zukan_item;       // collected exploration kit config indices
+		Vec<HeldPellet> cave_held; // cave crop memory at the group's "first" floor - deltas added on top
+		int treasure_count;
+		int poko_count;
+		int cave_poko_count;                // cave poko count at the group's "first" floor - deltas added on top
+		Vec<SublevelDelta> sublevel_deltas; // per-floor deltas for grouped cave presets (empty otherwise)
 	};
 
 	struct Sprout {
@@ -169,14 +299,13 @@ public:
 	Vec<StructureOverride> bags_flattened;
 	Vec<StructureOverride> plugs_destroyed;
 	EnterAreaKind enter_kind;
-	int pokos;
-	bool apply_pokos;
 	u8 day;
 	Vec<KilledEnemy> killed_enemies;
 	Vec<CarriedTreasure> carried_treasures;
+	TreasureState treasure_state; // collected-treasure snapshot (zukan/crops/counts/pokos)
 	bool bridge_glitch_active;
 	BitFlag<u16> new_area_zoom;        // bit per course: VoR=1 AW=2 PP=4 WW=8; set = allow zoom on next world-map visit
-	bool play_repay_demo; // tracks whether or not to play a % cutscene
+	bool play_repay_demo;              // tracks whether or not to play a % cutscene
 	AreaStructureState area_states[4]; // per-area structure state, indexed by CourseIndex (0=VoR…3=WW)
 
 	bool is_area_visited(int course) const;
@@ -193,6 +322,8 @@ public:
 
 	Preset* create();
 	static void fill_current_pikis(Preset* preset);
+	static void fill_current_treasures(Preset* preset);
+	static void fill_current_treasure_state(Preset* preset, WarpDestination dest);
 
 	PresetPreview* suggested_preset(WarpDestination dest, PresetCategory category);
 	PresetPreview* find(const char* name, PresetCategory category);

@@ -8,7 +8,6 @@ AT 	# category
 8 1 	# spicies, spicies unlocked
 8.500000 	# time of day
 8 	# day number
--1 	# pokos (-1 if not applied)
 0 	# enter kind (FromCave = 0, FromMap = 1)
 7 	# num upgrades
 	0 	# ODII_BruteKnuckles
@@ -128,3 +127,79 @@ AT 	# category
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)
+2	# treasure mode (0=off, 1=cave floor, 2=checkpoint)
+0	# debt (-1=untouched, 0=unpaid, 1=paid)
+51	# num collected treasures (zukan, by config index)
+	3	# bane
+	5	# be_dama_red
+	11	# bolt
+	12	# channel
+	13	# chess_king_black
+	14	# chess_king_white
+	15	# chess_queen_black
+	23	# diamond_red
+	30	# donutswhite
+	37	# gear
+	39	# gum_tape
+	42	# ichigo
+	47	# kumakibori
+	55	# nut
+	59	# sinkukan
+	61	# tel_dial
+	62	# toy_ring_a_red
+	64	# toy_ring_a_green
+	68	# toy_ring_c_red
+	69	# toy_ring_c_green
+	70	# toy_ring_c_blue
+	71	# toy_teala
+	73	# watch
+	74	# Xmas_item
+	75	# yoyo_red
+	83	# mojiban
+	87	# kan_b_silver
+	90	# teala_dia_a
+	94	# dia_a_red
+	98	# dia_b_blue
+	101	# dia_c_green
+	103	# kinoko_doku
+	105	# sinkukan_b
+	106	# sinkukan_c
+	107	# bolt_l
+	108	# gum_tape_s
+	117	# fire_helmet
+	125	# bell_red
+	127	# bell_yellow
+	130	# bane_yellow
+	131	# juji_key_fc
+	132	# tape_red
+	133	# tape_yellow
+	142	# denchi_1_red
+	143	# denchi_1_black
+	155	# donutschoco_s
+	156	# donutsichigo_s
+	157	# donutswhite_s
+	158	# gear_silver
+	161	# chocoichigo_l
+	167	# g_futa_kajiwara
+7	# num collected items (zukan, by config index)
+	0	# fue_a
+	4	# light_a
+	7	# dashboots
+	8	# radar_a
+	9	# radar_b
+	10	# map01
+	11	# map02
+4	# num cave-held pellets (kind id): kind 0=otakara 1=item
+	0 135	# leaf_normal
+	0 164	# g_futa_titiyas
+	0 88	# ahiru_head
+	0 86	# kan_b_gold
+58 6550 270	# treasure count, poko count, cave poko count
+2	# num per-sublevel deltas (grouped cave presets): per row = floor poko_delta numCaught
+	3 230 2	# floor 3 caught
+		0 154	# sinjyu
+		0 177	# kan_nichiro
+	4 95 3	# floor 4 caught
+		0 17	# chocolate
+		0 48	# locket
+		0 134	# tape_blue
