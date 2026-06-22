@@ -87,18 +87,25 @@ PoD 	# category
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
 1	# num plugs destroyed
 	0	800.0	1380.0				0	# bridge plug
-0 	# num enemy spawns
+7 	# num enemy spawns
+	0	1	-1153.361206 47.871529 2231.686035	6	# VoR Dwarf Red Bulborb (hubcap)
+	0	55	-271.092255 114.000000 -1387.317261	7	# VoR Withering Blowhog
+	1	15	-672.000000 -20.000000 1392.000000	5	# AW Cloaking Burrow-nit
+	1	16	-544.000000 -38.000000 1804.000000	5	# AW Honeywisp
+	1	1	-179.685318 -70.000000 2909.942139	5	# AW Dwarf Red Bulborb x2
+	1	2	-486.161591 -70.000000 3058.214355	5	# AW Red Bulborb
+	1	10	-738.448914 -28.741590 2354.096924	5	# AW Iridescent Glint Beetle (flowerpot)
 10 	# num treasure spawn overrides
-	42 	1 	# Sunseed Berry
-	130 	1 	# Pilgrim Bulb
-	11 	1 	# Geographic Projection
-	155 	1 	# Chance Totem
-	173 	1 	# Healing Cask
-	142 	1 	# Courage Reactor
-	62 	1 	# Pink Menace
-	87 	1 	# Utter Scrap
-	157 	1 	# Spiny Alien Treat
-	47 	1 	# Fossilized Ursidae
+	1	42	0	# AW Sunseed Berry
+	1	130	0	# AW Pilgrim Bulb
+	1	11	0	# AW Geographic Projection
+	1	155	0	# AW Chance Totem
+	1	173	0	# AW Healing Cask
+	0	142	0	# VoR Courage Reactor
+	0	62	0	# VoR Pink Menace
+	0	87	0	# VoR Utter Scrap
+	0	157	0	# VoR Spiny Alien Treat
+	0	47	0	# VoR Fossilized Ursidae
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)

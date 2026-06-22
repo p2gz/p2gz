@@ -43,46 +43,9 @@ AT 	# category
 	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 0	# num plugs destroyed
-12 	# num enemy spawns
-	1 	-179.690002 -70.000000 2909.939941 	2	-1
-	2 	-486.160004 -70.000000 3058.209961 	2	-1
-	16 	-544.000000 -38.000000 1804.000000 	2	-1
-	15 	-672.000000 -20.000000 1392.000000 	2	-1
-	84 	-899.460022 -20.000000 1109.540039 	2	-1
-	10 	-738.000000 -28.000000 2354.000000 	2	-1
-	9 	518.000000 -75.000000 3719.000000 	2	-1
-	0 	13.000000 15.000000 211.000000 	2	-1
-	0 	209.000000 10.000000 -206.000000 	2	-1
-	0 	14.000000 15.000000 -263.000000 	2	-1
-	0 	-258.000000 15.000000 -133.000000 	2	-1
-	27 	-36.439999 15.000000 -104.839996 	2	-1
-26 	# num treasure spawn overrides
-	47 	2 	# Fossilized Ursidae
-	62 	2 	# Pink Menace
-	71 	2 	# Unspeakable Wonder
-	73 	2 	# Temporal Mechanism
-	87 	2 	# Utter Scrap
-	142 	2 	# Courage Reactor
-	157 	2 	# Spiny Alien Treat
-	11 	2 	# Geographic Projection
-	42 	2 	# Sunseed Berry
-	43 	2
-	130 	2 	# Pilgrim Bulb
-	155 	2 	# Chance Totem
-	173 	2 	# Healing Cask
-	185 	2 	# Air Brake
-	53 	2 	# Onion Replica
-	72 	2 	# Aquatic Mine
-	77 	2 	# Impediment Scourge
-	118 	2 	# Massage Girdle
-	140 	2 	# Optical Illustration
-	152 	2 	# Fortified Delicacy
-	172 	2 	# Gherkin Gate
-	27 	2 	# Armored Nut
-	45 	2 	# Anti-hiccup Fungus
-	50 	2 	# Conifer Spire
-	76 	2 	# Doomsday Apparatus
-	183 	2 	# Seed of Greed
+1 	# num enemy spawns
+	0	1	-1153.361206 47.871529 2231.686035	4	# VoR Dwarf Red Bulborb (hubcap)
+0 	# num treasure spawn overrides
 0	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)

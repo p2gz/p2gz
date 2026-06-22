@@ -393,8 +393,9 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	Game::playData->mCaveSaveData.mCourseIdx     = dst_course_info->mCourseIndex;
 	Game::playData->mCaveSaveData.mCurrentCaveID = caveID;
 
-	// Save changes to world state if we're above-ground currently
-	if (in_above_ground_play() && !already_saved_generators) {
+	// save changes to world state if we're above-ground AND are not warping to a preset
+	// (preset will set the above-ground state itself)
+	if (in_above_ground_play() && !already_saved_generators && !has_next_preset()) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -450,8 +451,9 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 		}
 	}
 
-	// Save changes to world state if we're above-ground currently
-	if (in_above_ground_play() && !already_saved_generators) {
+	// save changes to world state if we're above-ground AND are not warping to a preset
+	// (preset will set the above-ground state itself)
+	if (in_above_ground_play() && !already_saved_generators && !has_next_preset()) {
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 	}
 
@@ -541,9 +543,9 @@ void Warp::do_post_warp()
 		preset_during_warp->del();
 	}
 
-	// Clear both pointers so a stale next_preset can't dangle or report a phantom pending preset
-	next_preset   = nullptr;
-	next_preset_p = nullptr;
+	// null-out next_preset to avoid dangling
+	// NB: we DON'T want to null-out next_preset_p though, otherwise warp menu will fall out of sync
+	next_preset = nullptr;
 
 	if (use_set_seed) {
 		set_random_seed();

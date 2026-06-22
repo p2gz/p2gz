@@ -27,8 +27,7 @@ AT 	# category
 0 	# num finished bridges
 0 	# num flattened bags
 0	# num plugs destroyed
-1 	# num enemy spawns
-	1 	-1153.000000 47.000000 2231.000000 	2	-1
+0 	# num enemy spawns
 0 	# num treasure spawn overrides
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)

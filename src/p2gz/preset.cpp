@@ -130,39 +130,55 @@ bool Preset::AreaStructureState::is_bag_flattened(const char* name) const
 	return false;
 }
 
-Preset::EnemyGenSpawnOverride Preset::get_enemy_gen_override(Game::Generator* gen)
+Preset::KilledEnemy Preset::get_killed_enemy(int course, Game::Generator* gen)
 {
 	if (gen->mObject->mTypeID == 'teki') {
 		Game::GenObjectEnemy* gen_obj_enemy = static_cast<Game::GenObjectEnemy*>(gen->mObject);
-		for (u32 i = 0; i < enemy_spawn_overrides.len(); i++) {
-			EnemyGenSpawnOverride& oride = enemy_spawn_overrides[i];
-			if (oride.enemy_id == gen_obj_enemy->mEnemyID && absF(oride.gen_pos.sqrDistance(gen->mPosition)) < 25.0f) {
-				return oride;
+		for (u32 i = 0; i < killed_enemies.len(); i++) {
+			KilledEnemy& kill = killed_enemies[i];
+			if (kill.course != course) {
+				continue; // belongs to a different area
+			}
+			if (kill.enemy_id == gen_obj_enemy->mEnemyID && kill.gen_pos.sqrDistance(gen->mPosition) < 25.0f) {
+				return kill;
 			}
 		}
 	}
-	return EnemyGenSpawnOverride();
+	return KilledEnemy(); // course == 0xFF => not killed
 }
 
-Preset::TreasureGenSpawnOverride Preset::get_treasure_gen_override(int treasure_id, u8 pellet_type)
+Preset::CarriedTreasure Preset::get_treasure_override(int course, int treasure_id, u8 pellet_type)
 {
-	for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
-		TreasureGenSpawnOverride& oride = treasure_spawn_overrides[i];
-		if (treasure_id == oride.id) {
-			return oride;
+	for (u32 i = 0; i < carried_treasures.len(); i++) {
+		CarriedTreasure& treasure = carried_treasures[i];
+		if (treasure.course != course) {
+			continue; // belongs to a different area
+		}
+		if (treasure_id == treasure.id) {
+			return treasure;
 		}
 	}
-	return TreasureGenSpawnOverride();
+	return CarriedTreasure(); // course == 0xFF => spawns as normal
 }
 
 bool Preset::is_area_visited(int course) const
 {
+	// only rebuild this area if it actually has gen edits tagged for it
+	// (structures, enemies, treasures)
 	if (area_states[course].has_any_state()) {
 		return true;
 	}
-	// conservative: rebuild all areas when any gen overrides exist,
-	// since overrides don't carry per-area indexing
-	return enemy_spawn_overrides.len() > 0 || treasure_spawn_overrides.len() > 0;
+	for (u32 i = 0; i < killed_enemies.len(); i++) {
+		if (killed_enemies[i].course == course) {
+			return true;
+		}
+	}
+	for (u32 i = 0; i < carried_treasures.len(); i++) {
+		if (carried_treasures[i].course == course) {
+			return true;
+		}
+	}
+	return false;
 }
 
 Game::ItemPikihead::Item* birth_sprout(u8 kind, u8 stage)
@@ -277,13 +293,13 @@ void Preset::apply()
 	u8 treasure_counts[4];
 	treasure_counts[COURSE_VoR] = treasure_counts[COURSE_AW] = treasure_counts[COURSE_PP] = treasure_counts[COURSE_WW] = 0;
 
-	for (u32 i = 0; i < treasure_spawn_overrides.len(); i++) {
-		// only interested in treasures we've "collected"
-		if (treasure_spawn_overrides[i].spawn_override != PSO_DontSpawn) {
+	for (u32 i = 0; i < carried_treasures.len(); i++) {
+		// moved treasures = not collected
+		if (carried_treasures[i].moved) {
 			continue;
 		}
 
-		u32 id = treasure_spawn_overrides[i].id;
+		u32 id = carried_treasures[i].id;
 		for (u8 i = 0; i < AG_treasure_count; i++) {
 			if (AG_treasure_IDs[i].id == id) {
 				treasure_counts[AG_treasure_IDs[i].course_idx]++;

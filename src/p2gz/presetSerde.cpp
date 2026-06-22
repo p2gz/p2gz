@@ -111,6 +111,8 @@ static const char* CAVE_NAMES[] = {
 	"Above ground", "EC", "SCx", "FC", "HoB", "WFG", "BK", "SH", "CoS", "GK", "SR", "SmC", "CoC", "HoH", "DD",
 };
 
+static const char* COURSE_NAMES[] = { "VoR", "AW", "PP", "WW" }; // indexed by CourseIndex
+
 struct TreasureNameMap {
 	const int treasure_id;
 	const char* name;
@@ -280,8 +282,8 @@ void Preset::read(Stream& input)
 	READ_LIST_T(input, StructureOverride, bags_flattened);
 	READ_LIST_T(input, StructureOverride, plugs_destroyed);
 
-	READ_LIST_T(input, EnemyGenSpawnOverride, enemy_spawn_overrides);
-	READ_LIST_T(input, TreasureGenSpawnOverride, treasure_spawn_overrides);
+	READ_LIST_T(input, KilledEnemy, killed_enemies);
+	READ_LIST_T(input, CarriedTreasure, carried_treasures);
 
 	bridge_glitch_active = input.readInt() > 0;
 
@@ -437,25 +439,26 @@ void Preset::write(Stream& output)
 		}
 	}
 
-	write_vec(enemy_spawn_overrides, output, "num enemy spawns");
+	write_vec(killed_enemies, output, "num enemy spawns");
 
-	output.writeInt(treasure_spawn_overrides.len());
+	output.writeInt(carried_treasures.len());
 	output.textWriteText("\t# num treasure spawn overrides\n");
-	FOREACH_VEC(treasure_spawn_overrides)
+	FOREACH_VEC(carried_treasures)
 	{
 		output.textWriteTab(1);
-		treasure_spawn_overrides[i].write(output);
+		carried_treasures[i].write(output);
 
 		if (output.mMode == STREAM_MODE_TEXT) {
 			const char* treasure_name = nullptr;
 			for (u32 j = 0; j < ARRAY_SIZE(AG_TREASURE_NAMES); j++) {
-				if (AG_TREASURE_NAMES[j].treasure_id == treasure_spawn_overrides[i].id) {
+				if (AG_TREASURE_NAMES[j].treasure_id == carried_treasures[i].id) {
 					treasure_name = AG_TREASURE_NAMES[j].name;
 					break;
 				}
 			}
+			const u8 course = carried_treasures[i].course;
 			if (treasure_name) {
-				output.textWriteText("\t# %s", treasure_name);
+				output.textWriteText("\t# %s %s", course < 4 ? COURSE_NAMES[course] : "?", treasure_name);
 			}
 			output.textWriteText("\n");
 		}
@@ -564,23 +567,26 @@ void Preset::Sprout::write(Stream& output)
 	}
 }
 
-void Preset::TreasureGenSpawnOverride::read(Stream& input)
+void Preset::CarriedTreasure::read(Stream& input)
 {
-	id             = input.readInt();
-	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
-	if (spawn_override == PSO_SpawnAndMove) {
+	course = input.readInt();
+	id     = input.readInt();
+	moved  = input.readInt() > 0;
+	if (moved) {
 		position_override.x = input.readFloat();
 		position_override.y = input.readFloat();
 		position_override.z = input.readFloat();
 	}
 }
 
-void Preset::TreasureGenSpawnOverride::write(Stream& output)
+void Preset::CarriedTreasure::write(Stream& output)
 {
+	output.writeInt(course);
+	output.textWriteTab(1);
 	output.writeInt(id);
 	output.textWriteTab(1);
-	output.writeInt(spawn_override);
-	if (spawn_override == PSO_SpawnAndMove) {
+	output.writeInt(moved ? 1 : 0);
+	if (moved) {
 		output.textWriteTab(1);
 		output.writeFloat(position_override.x);
 		output.writeFloat(position_override.y);
@@ -588,25 +594,25 @@ void Preset::TreasureGenSpawnOverride::write(Stream& output)
 	}
 }
 
-void Preset::EnemyGenSpawnOverride::read(Stream& input)
+void Preset::KilledEnemy::read(Stream& input)
 {
-	enemy_id       = static_cast<Game::EnemyTypeID::EEnemyTypeID>(input.readInt());
-	gen_pos.x      = input.readFloat();
-	gen_pos.y      = input.readFloat();
-	gen_pos.z      = input.readFloat();
-	spawn_override = static_cast<GenSpawnOverride>(input.readInt());
-	kill_day       = input.readInt();
+	course    = input.readInt();
+	enemy_id  = static_cast<Game::EnemyTypeID::EEnemyTypeID>(input.readInt());
+	gen_pos.x = input.readFloat();
+	gen_pos.y = input.readFloat();
+	gen_pos.z = input.readFloat();
+	kill_day  = input.readInt();
 }
 
-void Preset::EnemyGenSpawnOverride::write(Stream& output)
+void Preset::KilledEnemy::write(Stream& output)
 {
+	output.writeInt(course);
+	output.textWriteTab(1);
 	output.writeInt(enemy_id);
 	output.textWriteTab(1);
 	output.writeFloat(gen_pos.x);
 	output.writeFloat(gen_pos.y);
 	output.writeFloat(gen_pos.z);
-	output.textWriteTab(1);
-	output.writeInt(spawn_override);
 	output.textWriteTab(1);
 	output.writeInt(kill_day);
 }

@@ -125,54 +125,8 @@ General 	# category
 	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
 	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
 0	# num plugs destroyed
-20 	# num enemy spawns
-	78 	-1576.150024 20.000000 1320.489990 	2	-1
-	1 	-3232.669922 0.000000 -123.870003 	2	-1
-	1 	-2245.250000 50.000000 676.880005 	2	-1
-	23 	-2781.399902 -30.000000 162.669998 	2	-1
-	95 	-3007.169922 -30.000000 574.859985 	2	-1
-	15 	-1340.170044 30.000000 491.329987 	2	-1
-	24 	-1310.869995 30.000000 346.839996 	2	-1
-	21 	-1218.459961 23.950001 766.489990 	2	-1
-	21 	-1220.699951 22.190001 679.390015 	2	-1
-	17 	-1500.079956 -10.000000 1002.669983 	2	-1
-	55 	-342.399994 0.000000 1391.130005 	2	-1
-	55 	-92.239998 0.000000 1681.890015 	2	-1
-	84 	-145.679993 0.000000 1537.790039 	2	-1
-	84 	-467.910004 0.000000 1477.599976 	2	-1
-	84 	-241.839996 0.000000 1716.819946 	2	-1
-	63 	-3538.899902 -30.000000 1044.170044 	2	-1
-	14 	-2976.199951 0.000000 2237.370117 	2	-1
-	75 	-2172.050049 30.000000 2714.399902 	2	-1
-	24 	-2992.959961 0.000000 1651.540039 	2	-1
-	25 	-3244.419922 0.000000 2052.760010 	2	-1
-26 	# num treasure spawn overrides
-	47 	    2 	# Fossilized Ursidae
-	62 	    2 	# Pink Menace
-	71 	    2 	# Unspeakable Wonder
-	73 	    2 	# Temporal Mechanism
-	87 	    2 	# Utter Scrap
-	142 	2 	# Courage Reactor
-	157 	2 	# Spiny Alien Treat
-	11 	    2 	# Geographic Projection
-	42 	    2 	# Sunseed Berry
-	43 	    2
-	130 	2 	# Pilgrim Bulb
-	155 	2 	# Chance Totem
-	173 	2 	# Healing Cask
-	185 	2 	# Air Brake
-	53 	    2 	# Onion Replica
-	72 	    2 	# Aquatic Mine
-	77 	    2 	# Impediment Scourge
-	118 	2 	# Massage Girdle
-	140 	2 	# Optical Illustration
-	152 	2 	# Fortified Delicacy
-	172 	2 	# Gherkin Gate
-	27 	    2 	# Armored Nut
-	45 	    2 	# Anti-hiccup Fungus
-	50 	    2 	# Conifer Spire
-	76 	    2 	# Doomsday Apparatus
-	183 	2 	# Seed of Greed
+0 	# num enemy spawns
+0 	# num treasure spawn overrides
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)
