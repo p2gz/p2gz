@@ -29,6 +29,8 @@ public:
 
 	void stop() { enabled = false; }
 
+	bool is_fading() { return enabled && fade_out_frames >= 30; }
+
 	void draw();
 	void start();
 	void update();
