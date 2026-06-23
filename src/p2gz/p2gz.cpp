@@ -65,7 +65,7 @@ P2GZ::P2GZ()
 	empress_trainer      = new EmpressTrainer();
 	drop_editor          = new DropEditor();
 	navi_debug_info      = new NaviDebugInfo();
-	settings             = new Settings();
+	card_data            = new P2GZCardData();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();

@@ -1,4 +1,4 @@
-#include <p2gz/Settings.h>
+#include <p2gz/P2GZCardData.h>
 #include <p2gz/p2gz.h>
 #include <Game/MemoryCard/Mgr.h>
 #include "System.h"
@@ -8,9 +8,9 @@ using namespace gz;
 
 // Identifies our memory card payload. If the leading word doesn't match, the buffer isn't
 // ours (uninitialised/foreign/corrupt) and we fall back to defaults rather than read garbage
-#define SETTINGS_MAGIC 'p2gz'
+#define CARD_DATA_MAGIC 'P2GZ'
 
-void Settings::setDefault()
+void P2GZCardData::setDefault()
 {
 	// bool defaults mirror each manager's own default / the menu's initial toggle state
 	bool_settings[SETTING_cutscenes_skippable] = true;
@@ -21,13 +21,13 @@ void Settings::setDefault()
 	treasure_region = Treasure_US;
 }
 
-void Settings::write(Stream& output)
+void P2GZCardData::write(Stream& output)
 {
 	output.setMode(STREAM_MODE_BINARY, 1);
-	output.writeInt(SETTINGS_MAGIC);
-	output.writeInt(SETTINGS_VERSION_CURRENT);
+	output.writeInt(CARD_DATA_MAGIC);
+	output.writeInt(CARD_DATA_VERSION_CURRENT);
 
-	// --- SETTINGS_VERSION_V1 ---
+	// --- CARD_DATA_VERSION_V1 ---
 	// Count-prefixed so adding a bool later stays readable by older builds (and vice-versa)
 	output.writeByte(SETTING_BOOL_COUNT);
 	for (int i = 0; i < SETTING_BOOL_COUNT; i++) {
@@ -36,19 +36,19 @@ void Settings::write(Stream& output)
 	output.writeInt(treasure_region);
 }
 
-void Settings::read(Stream& input)
+void P2GZCardData::read(Stream& input)
 {
 	// Start from defaults so any field absent in an older save retains a sane value.
 	setDefault();
 
 	input.setMode(STREAM_MODE_BINARY, 1);
-	if (input.readInt() != SETTINGS_MAGIC) {
+	if (input.readInt() != CARD_DATA_MAGIC) {
 		return; // not our data - keep defaults
 	}
 
 	const u32 version = input.readInt();
 
-	if (version >= SETTINGS_VERSION_V1) {
+	if (version >= CARD_DATA_VERSION_V1) {
 		// Only assign bools we still know about; ignore any extras a newer build wrote.
 		const u8 count = input.readByte();
 		for (u8 i = 0; i < count; i++) {
@@ -62,7 +62,7 @@ void Settings::read(Stream& input)
 	// (legacy versioned files fail the gate above and stay on defaults)
 }
 
-void Settings::apply()
+void P2GZCardData::apply()
 {
 	for (int i = 0; i < SETTING_BOOL_COUNT; i++) {
 		apply_one((SettingId)i);
@@ -72,7 +72,7 @@ void Settings::apply()
 	p2gz->localization_op->set_treasure_region(treasure_region);
 }
 
-void Settings::apply_one(SettingId id)
+void P2GZCardData::apply_one(SettingId id)
 {
 	const bool v = bool_settings[id];
 	switch (id) {
@@ -91,19 +91,19 @@ void Settings::apply_one(SettingId id)
 	}
 }
 
-void Settings::save()
+void P2GZCardData::save()
 {
 	sys->mCardMgr->saveP2GZData();
 }
 
-void Settings::set_bool(SettingId id, bool value)
+void P2GZCardData::set_bool(SettingId id, bool value)
 {
 	bool_settings[id] = value;
 	apply_one(id); // take effect immediately
 	save();        // and remember it for next boot
 }
 
-void Settings::set_treasure_region(size_t region)
+void P2GZCardData::set_treasure_region(size_t region)
 {
 	treasure_region = region;
 	p2gz->localization_op->set_treasure_region(region);

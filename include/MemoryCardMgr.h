@@ -6,6 +6,12 @@
 #include "Dolphin/card.h"
 #include "types.h"
 
+// @P2GZ: custom mem card data
+// add some defines for magic numbers
+#define MEM_CARD_CMD_QUEUE_SIZE (5)
+#define MEM_CARD_CMD_P2GZ_SAVE  (17)
+#define MEM_CARD_CMD_P2GZ_LOAD  (18)
+
 struct MemoryCardMgrCommandBase {
 	inline MemoryCardMgrCommandBase(int flags)
 	    : mFlag(flags)

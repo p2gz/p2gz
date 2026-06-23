@@ -922,8 +922,8 @@ void BootSection::updateLoadResourceFirst()
 			sys->mPlayData->mIsRumble = false;
 		} else if (!Game::gGameConfig.mParms.mE3version.mData) {
 			sys->mCardMgr->loadGameOption();
-			// @P2GZ: settings on mem card
-			// queue our settings load behind the option load
+			// @P2GZ: custom mem card data
+			// queue our card data load behind the option load
 			sys->mCardMgr->loadP2GZData();
 		}
 		// THIS IS ALL FOR DEMO 1
@@ -956,9 +956,9 @@ void BootSection::updateLoadMemoryCard()
 		sys->mCardMgr->checkStatus();
 		sys->mPlayData->setup();
 
-		// @P2GZ: settings on mem card
-		// apply custom settings from card
-		p2gz->settings->apply();
+		// @P2GZ: custom mem card data
+		// apply custom card data from card
+		p2gz->card_data->apply();
 
 		sys->loadResourceSecond();
 		setModeEpilepsy();
