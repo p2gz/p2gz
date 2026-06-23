@@ -55,7 +55,7 @@ public:
 
 private:
 	void draw_cur_seed();
-	void draw_reset_controls(bool draw_cave_retry);
+	void draw_reset_controls();
 
 	RingBuffer<32, Segment*> segments;
 	Preset* cave_floor0_preset;       // The current cave's floor-0 preset, ref'd so it survives ring buffer clearing
