@@ -788,6 +788,12 @@ void DownState::onKeyEvent(Item* item, SysShape::KeyEvent const&)
 			item->mCarryInfoList = nullptr;
 		}
 
+		// @P@GZ: this is the function that runs when a bag is crushed. We hook into it for the
+		// segment timer. Maybe extend to seesaws for enter gk?
+		if (p2gz->timer->split_on_bag_crush && (p2gz->timer->get_elapsed_time() > 20)) {
+			p2gz->timer->add_split_times();
+		}
+
 		// @P2GZ: bag editor
 		// don't delete the collision in case we want to bring it back later
 		// platMgr->delInstance(item->mPlatInstance);

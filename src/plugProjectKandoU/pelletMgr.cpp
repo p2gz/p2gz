@@ -1871,6 +1871,12 @@ void Pellet::start_pmotions()
  */
 void Pellet::start_carrymotion()
 {
+	// @P2GZ - Segment timer
+	// splits when a treasure starts to carry
+	if (p2gz->timer->split_on_carry && ((getKind() == PelletType::Treasure) || (getKind() == PelletType::Upgrade))) {
+		p2gz->timer->add_split_times();
+	}
+
 	if (mCarryAnim.mAnimMgr) {
 		if (!mCarryAnim.isFlag(SysShape::Animator::AnimFinishMotion)) {
 			mCarryAnim.startAnim(0, this);

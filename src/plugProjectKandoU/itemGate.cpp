@@ -1112,10 +1112,26 @@ void GateDownState::onDamage(Game::ItemGate* gate, f32 damage)
  */
 void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& keyEvent)
 {
+	// @P2GZ: this is the function that runs when a gate is broken down. We hook into it for the
+	// segment timer. This one runs AFTER each segment goes down, hook into GateDownState::init
+	// if you want it to run on the frame each segment starts going down.
+	// EXCEPTION: the > 20 condition is here so the segment timer does not split at the beginning of above grounds,
+	// when the gates/bags specified in the preset are automatically destroyed/crushed
+	if (p2gz->timer->split_on_gate_seg && (gameSystem->mIsInCave || (p2gz->timer->get_elapsed_time() > 20))) {
+		p2gz->timer->add_split_times();
+	}
+
+	// Vanilla
 	gate->mSegmentsDown++;
 	gate->mCurrentSegmentHealth = gate->mMaxSegmentHealth;
 	if (gate->mSegmentsDown == gate->mMaxSegments) {
 		gate->mCentrePlatInstance->setCollision(false);
+
+		// @P2GZ - Segment timer
+		// For splitting when the gate is fully destroyed
+		if (p2gz->timer->split_on_gate_down && (gameSystem->mIsInCave || (p2gz->timer->get_elapsed_time() > 20))) {
+			p2gz->timer->add_split_times();
+		}
 
 		// @P2GZ - Structure editor
 		// Don't delete top platform when gate goes down so gate can be put
