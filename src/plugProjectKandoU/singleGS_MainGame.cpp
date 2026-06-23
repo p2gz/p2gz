@@ -471,12 +471,11 @@ void GameState::exec(SingleGameSection* game)
 
 	if (moviePlayer->mDemoState == DEMOSTATE_Inactive && needRepayDemo()) {
 		startRepayDemo();
-	}
-	else if (moviePlayer->mDemoState == DEMOSTATE_Inactive && p2gz->poko_editor->repay_demo_enabled){ 
+	} else if (moviePlayer->mDemoState == DEMOSTATE_Inactive && p2gz->poko_editor->repay_demo_enabled) {
 		// @ P2GZ: alternate way to force % cutscenes to play. I'm not disturbing usual game logic if we want
-		// the hack to be playable more normally. 
+		// the hack to be playable more normally.
 		startRepayDemo();
-		p2gz->poko_editor->repay_demo_enabled = false; 
+		p2gz->poko_editor->repay_demo_enabled = false;
 	}
 
 	// Check if anything needs to be done following a % of debt cutscene
@@ -489,7 +488,10 @@ void GameState::exec(SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 		game->advanceDayCount();
 		gameSystem->setPause(false, "repay-done", 3);
-		p2gz->race_mode->on_ending(false); // @P2GZ race mode: debt ending (stops a PoD run)
+
+		// @P2GZ race mode: track PoD ending
+		p2gz->race_mode->on_ending(false);
+
 		EndingArg arg(0);
 		transit(game, SGS_Ending, &arg);
 		return;
@@ -499,7 +501,10 @@ void GameState::exec(SingleGameSection* game)
 		game->saveToGeneratorCache(game->mCurrentCourseInfo);
 		game->advanceDayCount();
 		gameSystem->setPause(false, "repay-done", 3);
-		p2gz->race_mode->on_ending(true); // @P2GZ race mode: all-treasures ending (stops an AT run)
+
+		// @P2GZ race mode: track AT ending
+		p2gz->race_mode->on_ending(true);
+
 		EndingArg arg(EndingState::Ending_IsComplete);
 		transit(game, SGS_Ending, &arg);
 		return;

@@ -27,6 +27,7 @@ struct ResetManager {
 	void update();
 	bool isWritingMemoryCard();
 	bool isSoundSystemStopped();
+	void trigger_soft_reset(); // @P2GZ: begin a warm reboot programmatically (same as the B+X+Start path)
 
 	inline void setFlag(u32 flag) { mFlags.typeView |= flag; }
 	inline void resetFlag(u32 flag) { mFlags.typeView &= ~flag; }

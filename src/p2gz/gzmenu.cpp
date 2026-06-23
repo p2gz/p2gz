@@ -66,11 +66,9 @@ void GZMenu::init_menu()
 		))
 		->push(new OpenSubMenuOption("race", (new ListMenu())
 			->push(new RadioMenuOption("category", new Delegate1<RaceMode, size_t>(p2gz->race_mode, &RaceMode::set_category)))
+			->push(new RadioMenuOption("start point", new Delegate1<RaceMode, size_t>(p2gz->race_mode, &RaceMode::set_start_point)))
 			->push(new HexInputOption("seed", "random", new Delegate1<RaceMode, u32>(p2gz->race_mode, &RaceMode::set_seed), new Delegate<RaceMode>(p2gz->race_mode, &RaceMode::set_random_seed)))
 			->push(new RadioMenuOption("treasure region", new Delegate1<Localization, size_t>(p2gz->localization_op, &Localization::set_treasure_region)))
-			// display-only control reminders (no-op selects)
-			->push(new PerformActionMenuOption("- reset floor: B+X+Start", nullptr))
-			->push(new PerformActionMenuOption("- abort run: hold L+R+Z+Start", nullptr))
 			->push(new PerformActionMenuOption("Start run!", new Delegate<RaceMode>(p2gz->race_mode, &RaceMode::start_run)))
 		))
 		->push(new PerformActionMenuOption("freecam", new Delegate<FreeCam>(p2gz->freecam, &FreeCam::enable)))
@@ -198,7 +196,7 @@ void GZMenu::update()
 		return;
 	}
 
-	// @P2GZ race mode: the menu is fully locked out during a run (anti-cheat)
+	// The menu is fully locked out during race mode
 	if (p2gz->race_mode && p2gz->race_mode->is_active()) {
 		return;
 	}
@@ -312,7 +310,7 @@ void GZMenu::open()
 	if (enabled)
 		return;
 
-	// @P2GZ race mode: the menu is fully locked out during a run (anti-cheat)
+	// The menu is fully locked out during race mode
 	if (p2gz->race_mode && p2gz->race_mode->is_active())
 		return;
 

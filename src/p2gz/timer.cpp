@@ -76,7 +76,7 @@ void Timer::draw()
 		return;
 	}
 
-	// @P2GZ race mode draws its own dual RTA/IGT readout instead
+	// race mode draws its own RTA/IGT instead, don't draw it twice
 	if (p2gz->race_mode && p2gz->race_mode->is_active()) {
 		return;
 	}

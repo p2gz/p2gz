@@ -27,11 +27,13 @@ void RoomMapMgr::nishimuraCreateRandomMap(MapUnitInterface* muiArray, int p2, Ca
 	p2gz->segment_history->started_creating_map = true;
 	gz::Segment* segment                        = p2gz->segment_history->cur_segment();
 	GZASSERTLINE(segment);
-	// @P2GZ race mode: force the chosen seed for every floor of the run
+
+	// @P2GZ race mode: force set seed for every floor of the run
 	if (p2gz->race_mode->is_active() && p2gz->race_mode->using_set_seed()) {
 		segment->use_set_seed = true;
 		segment->seed         = p2gz->race_mode->get_seed();
 	}
+
 	if (segment->use_set_seed) {
 		// seed was set via warp menu - apply it here
 		srand(segment->seed);

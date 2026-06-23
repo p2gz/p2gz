@@ -10,7 +10,7 @@
 #include "JSystem/JUtility/JUTVideo.h"
 #include "MemoryCardMgr.h"
 #include "Game/MemoryCard/Mgr.h"
-#include "p2gz/p2gz.h"
+#include <p2gz/p2gz.h> // @P2GZ
 
 /**
  * @note Address: 0x80429DB0
@@ -112,8 +112,14 @@ void ResetManager::update()
 			}
 
 			if (check2 && check) {
-				// @P2GZ race mode: B+X+Start retries the current floor instead of soft-resetting the run.
-				// Suppress the hardware reset and defer the retry to RaceMode::update (safe transit context).
+				// @P2GZ race mode: override B+X+Start to retry the current floor/segment instead of soft-resetting the console
+				// if (PSSystem::spSysIF) {
+				// 	PSSystem::spSysIF->stopSoundSystem();
+				// }
+				// THPPlayerSetVolume(0, 120);
+				// setFlag(RESETFLAG_ResetInputEntered);
+				// mState = ResetState_Fadeout;
+
 				if (p2gz && p2gz->race_mode && p2gz->race_mode->is_active()) {
 					p2gz->race_mode->request_reset();
 					resetFlag(RESETFLAG_ResetInputEntered);
@@ -134,6 +140,19 @@ void ResetManager::update()
 			}
 		}
 	}
+}
+
+// @P2GZ: kick off a console soft reset on demand
+// (used for aborting from race mode, since the soft reset combo is overridden)
+void ResetManager::trigger_soft_reset()
+{
+	if (PSSystem::spSysIF) {
+		PSSystem::spSysIF->stopSoundSystem();
+	}
+	THPPlayerSetVolume(0, 120);
+	setFlag(RESETFLAG_ResetInputEntered);
+	resetFlag(RESETFLAG_DoResetToMenu);
+	mState = ResetState_Fadeout;
 }
 
 /**

@@ -415,6 +415,7 @@ void BaseGameSection::doDraw(Graphics& gfx)
 		if (!moviePlayer->isPlaying("s22_cv_suck_treasure") && !moviePlayer->isPlaying("s22_cv_suck_equipment")
 		    && !moviePlayer->isPlaying("s10_suck_treasure") && !moviePlayer->isPlaying("s17_suck_equipment")) {
 			p2gz->timer->draw();
+			p2gz->race_mode->draw_on_top(); // race mode draws its own RTA/IGT (timer->draw bails during a race)
 		}
 	}
 
