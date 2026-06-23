@@ -27,22 +27,22 @@ Timer::Timer()
     , navi_swap_timer_set(false)
     , FS_map_flag(false)
     , in_freecam_mode(false)
-	, segment_timer_enabled(true) // controls whether or not the segment timer is turned on 
-	, draw_best_times_enabled(false)
-	, split_on_captain_swap(true)
-	, split_on_gate_seg(false)
-	, split_on_gate_down(true)
-	, split_on_bag_crush(false)
-	, split_on_poison_demo(false)
-	, split_on_carry(false)
-	, split_on_enemy_death(false)
-	, mark_run_for_discard(false)
+    , segment_timer_enabled(true) // controls whether or not the segment timer is turned on
+    , draw_best_times_enabled(false)
+    , split_on_captain_swap(true)
+    , split_on_gate_seg(false)
+    , split_on_gate_down(true)
+    , split_on_bag_crush(false)
+    , split_on_poison_demo(false)
+    , split_on_carry(false)
+    , split_on_enemy_death(false)
+    , mark_run_for_discard(false)
     , main_timer(0)
     , sub_timer(0)
     , skip_timer(0)
     , pause_timer(0)
     , navi_swap_timer(0)
-	, curr_index(0) // gets updated every time a function writes to split_times
+    , curr_index(0) // gets updated every time a function writes to split_times
 {
 	color        = JUtility::TColor(255, 255, 255, 130);
 	glyph_width  = 16.0;
@@ -50,9 +50,9 @@ Timer::Timer()
 	x            = 12.0;
 	z            = 12.0;
 	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++) {
-		split_times[i] = 0;
-		segment_times[i] = 0; 
-		best_segments[i] = 0; 
+		split_times[i]   = 0;
+		segment_times[i] = 0;
+		best_segments[i] = 0;
 	}
 }
 
@@ -98,72 +98,70 @@ void Timer::draw()
 	}
 
 	if (segment_timer_enabled && !p2gz->menu->is_open()) {
-		f32 starting_seg_offset = z + glyph_height + 10.0f; 
+		f32 starting_seg_offset = z + glyph_height + 10.0f;
 		// Draw segment times
-		// smaller font sizes for the segment times 
-		j2d.mGlyphWidth = 14.0f; 
-		j2d.mGlyphHeight = 14.0f; 
+		// smaller font sizes for the segment times
+		j2d.mGlyphWidth  = 14.0f;
+		j2d.mGlyphHeight = 14.0f;
 		for (int i = 0; i < curr_index; i++) {
 			if (split_times[i] > 0) {
 				Timer::TimeComponents seg_c;
-				// calc_time(x,y) returns y-x as a TimeComponents object. If x is unspecified, it takes the value main_timer. 
-				// main_timer changes everytime the gz menu is paused, so we avoid dealing with it entirely 
+				// calc_time(x,y) returns y-x as a TimeComponents object. If x is unspecified, it takes the value main_timer.
+				// main_timer changes everytime the gz menu is paused, so we avoid dealing with it entirely
 				if (i == 0) {
 					seg_c = calc_time(0, segment_times[0]);
-				}
-				else {
+				} else {
 					seg_c = calc_time(0, segment_times[i]);
 				}
 
-				if (seg_c.minutes > 0){
+				if (seg_c.minutes > 0) {
 					j2d.print(x, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
-				}
-				else{
+				} else {
 					j2d.print(x, starting_seg_offset + (i * 16), "%ld.%ld", seg_c.seconds, seg_c.tenths);
 				}
 
-				if (draw_best_times_enabled && (best_segments[i] > 0)){
-					// fixed offset so it produces aligned columns 
+				if (draw_best_times_enabled && (best_segments[i] > 0)) {
+					// fixed offset so it produces aligned columns
 					f32 sub_offset = 60.0f;
-					seg_c = calc_time(0, best_segments[i]); 
-					if (seg_c.minutes > 0){
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
-					}
-					else{
+					seg_c          = calc_time(0, best_segments[i]);
+					if (seg_c.minutes > 0) {
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds,
+						          seg_c.tenths);
+					} else {
 						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld.%ld", seg_c.seconds, seg_c.tenths);
 					}
 				}
 
-				if (draw_best_times_enabled && draw_comparisons_enabled && (best_segments[i] > 0)){
-					// fixed offset so it produces aligned columns 
+				if (draw_best_times_enabled && draw_comparisons_enabled && (best_segments[i] > 0)) {
+					// fixed offset so it produces aligned columns
 					f32 sub_offset = 120.0f;
-					bool isGreen = segment_times[i] < best_segments[i]; 
-					if (!isGreen){
+					bool isGreen   = segment_times[i] < best_segments[i];
+					if (!isGreen) {
 						// alternative: calc_time(best_segments[i], segment_times[i])
 						// I don't like this since these are not the start and endpoint of a period of elapsed time
 						seg_c = calc_time(0, segment_times[i] - best_segments[i]);
-						JUtility::TColor red_color(205, 30, 30, 204); 
-						COLOR(red_color); 
-					}
-					else {
+						JUtility::TColor red_color(205, 30, 30, 204);
+						COLOR(red_color);
+					} else {
 						seg_c = calc_time(0, best_segments[i] - segment_times[i]);
-						JUtility::TColor green_color(30, 205, 30, 204); 
+						JUtility::TColor green_color(30, 205, 30, 204);
 						COLOR(green_color);
 					}
-					if (seg_c.minutes > 0){
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld:%ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					if (seg_c.minutes > 0) {
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld:%ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes,
+						          seg_c.seconds, seg_c.tenths);
+					} else {
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds,
+						          seg_c.tenths);
 					}
-					else{
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds, seg_c.tenths);
-					}
-					COLOR(color); 
+					COLOR(color);
 				}
 			}
 		}
 	}
-	// reset the font size 
-	j2d.mGlyphWidth = glyph_width; 
-	j2d.mGlyphHeight = glyph_height; 
+	// reset the font size
+	j2d.mGlyphWidth  = glyph_width;
+	j2d.mGlyphHeight = glyph_height;
 }
 
 void Timer::sync()
@@ -206,16 +204,16 @@ void Timer::on_reset()
 	}
 
 	// Segment timer
-	reset_split_times(); 
+	reset_split_times();
 }
 
 void Timer::reset_main_timer()
 {
 	main_timer = get_cur_time();
 	reset_sub_timer();
-	
+
 	// Segment timer
-	reset_split_times(); 
+	reset_split_times();
 }
 
 void Timer::reset_main_timer(f32 offset_seconds)
@@ -348,7 +346,7 @@ void Timer::pause()
 	if (pause_timer_set) {
 		return;
 	}
-	pause_timer     = get_cur_time();  // this is not a delta 
+	pause_timer     = get_cur_time(); // this is not a delta
 	pause_timer_set = true;
 }
 
@@ -429,42 +427,42 @@ void Timer::cancel_navi_swap_timer()
 // main function which populates the split_times and segment_times arrays
 void Timer::add_split_times()
 {
-	if (!segment_timer_enabled){
+	if (!segment_timer_enabled) {
 		return;
 	}
 
-	u32 split_time = get_cur_time() - main_timer; 
+	u32 split_time = get_cur_time() - main_timer;
 
-	if (curr_index < MAX_NUMBER_SEGMENTS){ // 20 by default 
-		split_times[curr_index] = split_time; 
-		if (curr_index == 0){
-			segment_times[0] = split_times[0]; 
-		}
-		else {
-			segment_times[curr_index] = split_times[curr_index] - split_times[curr_index - 1]; 
+	if (curr_index < MAX_NUMBER_SEGMENTS) { // 20 by default
+		split_times[curr_index] = split_time;
+		if (curr_index == 0) {
+			segment_times[0] = split_times[0];
+		} else {
+			segment_times[curr_index] = split_times[curr_index] - split_times[curr_index - 1];
 		}
 		curr_index++;
 	}
 }
 
-
-void Timer::reset_best_segments(){
-	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++){
-		best_segments[i] = 0; 
+void Timer::reset_best_segments()
+{
+	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++) {
+		best_segments[i] = 0;
 	}
 }
 
 // resets all the split/segment time related stuff
-void Timer::reset_split_times(){
-	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++){
-		if ((!mark_run_for_discard) && ((segment_times[i] != 0) && ((best_segments[i] == 0) || (segment_times[i] < best_segments[i])))){
-			best_segments[i] = segment_times[i]; 
+void Timer::reset_split_times()
+{
+	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++) {
+		if ((!mark_run_for_discard) && ((segment_times[i] != 0) && ((best_segments[i] == 0) || (segment_times[i] < best_segments[i])))) {
+			best_segments[i] = segment_times[i];
 		}
-		split_times[i] = 0;
-		segment_times[i] = 0; 
+		split_times[i]   = 0;
+		segment_times[i] = 0;
 	}
-	curr_index = 0;
-	mark_run_for_discard = false; 
+	curr_index           = 0;
+	mark_run_for_discard = false;
 }
 
 // @Extracted: hurryUp2D.s scaleUp2__Q28Morimura10THurryUp2DFv

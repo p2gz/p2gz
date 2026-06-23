@@ -876,7 +876,7 @@ inline void PikiPanicState::checkDemo(Piki* piki)
 		if (mDemoWaitTime <= 0.0f) {
 			// @P2GZ: segment timer splits on poison CS. For EB. && !playdata... so it only splits once
 			// potentially desirable: only split after the CS is over?
-			if (p2gz->timer->split_on_poison_demo && (flag == DEMO_Pikmin_In_Danger_Poison) && !playData->isDemoFlag(flag)){
+			if (p2gz->timer->split_on_poison_demo && (flag == DEMO_Pikmin_In_Danger_Poison) && !playData->isDemoFlag(flag)) {
 				p2gz->timer->add_split_times();
 			}
 

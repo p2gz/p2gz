@@ -78,8 +78,8 @@ public:
 	bool is_freecam_mode() { return in_freecam_mode; }
 
 	// Segment timer functions and variables
-	void add_split_times(); 
-	void reset_split_times(); 
+	void add_split_times();
+	void reset_split_times();
 	void set_segment_timer_enabled(bool enabled_) { segment_timer_enabled = enabled_; }
 	void set_split_on_captain_swap_enabled(bool enabled_) { split_on_captain_swap = enabled_; }
 	void set_split_on_gate_seg_enabled(bool enabled_) { split_on_gate_seg = enabled_; }
@@ -90,16 +90,16 @@ public:
 	void set_split_on_enemy_death_enabled(bool enabled_) { split_on_enemy_death = enabled_; }
 	void set_draw_best_times_enabled(bool enabled_) { draw_best_times_enabled = enabled_; }
 	void set_draw_comparisons_enabled(bool enabled_) { draw_comparisons_enabled = enabled_; }
-	void reset_best_segments(); 
-	void enable_mark_run_to_discard() { mark_run_for_discard = true; } 
+	void reset_best_segments();
+	void enable_mark_run_to_discard() { mark_run_for_discard = true; }
 
-	bool split_on_captain_swap; 
-	bool split_on_gate_seg; 
-	bool split_on_gate_down; 
-	bool split_on_bag_crush; 
+	bool split_on_captain_swap;
+	bool split_on_gate_seg;
+	bool split_on_gate_down;
+	bool split_on_bag_crush;
 	bool split_on_poison_demo;
-	bool split_on_carry; 
-	bool split_on_enemy_death; 
+	bool split_on_carry;
+	bool split_on_enemy_death;
 
 private:
 	struct TimeComponents {
@@ -121,10 +121,10 @@ private:
 	bool FS_map_flag;     // are we loading into the world map/select area from file select?
 	bool in_freecam_mode; // handle pausing timer differently when we close the menu for freecam
 
-	bool segment_timer_enabled; // are we using the segment timer? 
-	bool draw_best_times_enabled; 
-	bool mark_run_for_discard; 
-	bool draw_comparisons_enabled; 
+	bool segment_timer_enabled; // are we using the segment timer?
+	bool draw_best_times_enabled;
+	bool mark_run_for_discard;
+	bool draw_comparisons_enabled;
 
 	u32 main_timer;  // overall/default timer starting point
 	u32 sub_timer;   // sublevel timer starting point
@@ -133,10 +133,10 @@ private:
 
 	u32 navi_swap_timer; // for measuring captain swap times
 
-	char curr_index; // tracks current active index of split_times
-	u32 split_times[MAX_NUMBER_SEGMENTS]; // tracks timestamps of trigger events 
-	u32 segment_times[MAX_NUMBER_SEGMENTS]; // tracks the segment times to display on screen 
-	u32 best_segments[MAX_NUMBER_SEGMENTS]; 
+	char curr_index;                        // tracks current active index of split_times
+	u32 split_times[MAX_NUMBER_SEGMENTS];   // tracks timestamps of trigger events
+	u32 segment_times[MAX_NUMBER_SEGMENTS]; // tracks the segment times to display on screen
+	u32 best_segments[MAX_NUMBER_SEGMENTS];
 
 	// menu hook
 	ListMenu* timer_menu;
