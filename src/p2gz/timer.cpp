@@ -32,8 +32,8 @@ Timer::Timer()
 	, split_on_captain_swap(true)
 	, split_on_gate_seg(false)
 	, split_on_gate_down(true)
-	, split_on_bag_crush(true)
-	, split_on_poison_demo(true)
+	, split_on_bag_crush(false)
+	, split_on_poison_demo(false)
 	, split_on_carry(false)
 	, split_on_enemy_death(false)
 	, mark_run_for_discard(false)
@@ -43,16 +43,14 @@ Timer::Timer()
     , pause_timer(0)
     , navi_swap_timer(0)
 	, curr_index(0) // gets updated every time a function writes to split_times
-	, split_start_offset(0) 
 {
 	color        = JUtility::TColor(255, 255, 255, 130);
 	glyph_width  = 16.0;
 	glyph_height = 16.0;
 	x            = 12.0;
 	z            = 12.0;
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++) {
 		split_times[i] = 0;
-		split_times_pause_lengths[i] = 0; 
 		segment_times[i] = 0; 
 		best_segments[i] = 0; 
 	}
@@ -118,10 +116,10 @@ void Timer::draw()
 				}
 
 				if (seg_c.minutes > 0){
-					j2d.print(x, starting_seg_offset + (i * 16), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					j2d.print(x, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 				}
 				else{
-					j2d.print(x, starting_seg_offset + (i * 16), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+					j2d.print(x, starting_seg_offset + (i * 16), "%ld.%ld", seg_c.seconds, seg_c.tenths);
 				}
 
 				if (draw_best_times_enabled && (best_segments[i] > 0)){
@@ -129,10 +127,10 @@ void Timer::draw()
 					f32 sub_offset = 60.0f;
 					seg_c = calc_time(0, best_segments[i]); 
 					if (seg_c.minutes > 0){
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 					}
 					else{
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld.%ld", seg_c.seconds, seg_c.tenths);
 					}
 				}
 
@@ -153,10 +151,10 @@ void Timer::draw()
 						COLOR(green_color);
 					}
 					if (seg_c.minutes > 0){
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld:%.2ld.%.1ld" : "+%ld:%.2ld.%.1ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld:%ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 					}
 					else{
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%.2ld.%.1ld" : "+%.2ld.%.1ld", seg_c.seconds, seg_c.tenths);
+						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds, seg_c.tenths);
 					}
 					COLOR(color); 
 				}
@@ -365,9 +363,6 @@ void Timer::unpause()
 		skip_timer += (get_cur_time() - pause_timer);
 	}
 	pause_timer_set = false;
-
-	// Segment timer: log pause length to adjust segment times 
-	split_times_pause_lengths[curr_index] += (get_cur_time() - pause_timer); 
 }
 
 void Timer::enable()
@@ -438,15 +433,15 @@ void Timer::add_split_times()
 		return;
 	}
 
-	u32 split_time = get_cur_time(); 
+	u32 split_time = get_cur_time() - main_timer; 
 
-	if (curr_index < 20){ // 20 is a magic number that corresponds to the length of the split_times array
+	if (curr_index < MAX_NUMBER_SEGMENTS){ // 20 by default 
 		split_times[curr_index] = split_time; 
 		if (curr_index == 0){
-			segment_times[0] = split_times[0] - main_timer; 
+			segment_times[0] = split_times[0]; 
 		}
 		else {
-			segment_times[curr_index] = split_times[curr_index] - split_times_pause_lengths[curr_index] - split_times[curr_index - 1]; 
+			segment_times[curr_index] = split_times[curr_index] - split_times[curr_index - 1]; 
 		}
 		curr_index++;
 	}
@@ -454,27 +449,18 @@ void Timer::add_split_times()
 
 
 void Timer::reset_best_segments(){
-	if (!draw_best_times_enabled) {
-		return;
-	}
-	
-	for (int i = 0; i < 20; i++){
+	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++){
 		best_segments[i] = 0; 
 	}
 }
 
 // resets all the split/segment time related stuff
 void Timer::reset_split_times(){
-	if (!segment_timer_enabled){
-		return;
-	}
-
-	for (int i = 0; i < 20; i++){
+	for (int i = 0; i < MAX_NUMBER_SEGMENTS; i++){
 		if ((!mark_run_for_discard) && ((segment_times[i] != 0) && ((best_segments[i] == 0) || (segment_times[i] < best_segments[i])))){
 			best_segments[i] = segment_times[i]; 
 		}
 		split_times[i] = 0;
-		split_times_pause_lengths[i] = 0; 
 		segment_times[i] = 0; 
 	}
 	curr_index = 0;

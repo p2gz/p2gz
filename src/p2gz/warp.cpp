@@ -408,10 +408,8 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	p2gz->timer->reset_main_timer();
 	if (game->mCurrentFloor == 0) {
 		p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
-		p2gz->timer->set_split_start_offset(CAVE_ENTER_SAVE_OFFSET_TIME);
 	} else {
 		p2gz->timer->offset_main_timer(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
-		p2gz->timer->set_split_start_offset(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
 	}
 
 	Game::SingleGame::LoadArg arg(Game::SingleGame::MapEnter_CaveEnter, true, warping_from_menu, false);

@@ -33,6 +33,9 @@ struct ListMenu;
 /// for all other "first time enter" cutscenes
 #define MAX_FIRST_ENTER_CUTSCENE_TIME (13.0f)
 
+/// for defining the maximum number of split times and segments to keep track of in the segment timer
+#define MAX_NUMBER_SEGMENTS (20)
+
 struct Timer {
 public:
 	Timer();
@@ -88,8 +91,7 @@ public:
 	void set_draw_best_times_enabled(bool enabled_) { draw_best_times_enabled = enabled_; }
 	void set_draw_comparisons_enabled(bool enabled_) { draw_comparisons_enabled = enabled_; }
 	void reset_best_segments(); 
-	void enable_mark_run_to_discard() { OSReport("Calling enable_mark_run_for_discard \n");  mark_run_for_discard = true; } 
-	void set_split_start_offset(u32 offset) { split_start_offset = offset; }
+	void enable_mark_run_to_discard() { mark_run_for_discard = true; } 
 
 	bool split_on_captain_swap; 
 	bool split_on_gate_seg; 
@@ -132,11 +134,9 @@ private:
 	u32 navi_swap_timer; // for measuring captain swap times
 
 	char curr_index; // tracks current active index of split_times
-	u32 split_times[20]; // tracks timestamps of trigger events 
-	u32 segment_times[20]; // tracks the segment times to display on screen 
-	u32 split_times_pause_lengths[20]; // position i tracks the pause length between split time i-1 and split time i 
-	u32 split_start_offset; // tracks e.g. comedowns
-	u32 best_segments[20]; 
+	u32 split_times[MAX_NUMBER_SEGMENTS]; // tracks timestamps of trigger events 
+	u32 segment_times[MAX_NUMBER_SEGMENTS]; // tracks the segment times to display on screen 
+	u32 best_segments[MAX_NUMBER_SEGMENTS]; 
 
 	// menu hook
 	ListMenu* timer_menu;
