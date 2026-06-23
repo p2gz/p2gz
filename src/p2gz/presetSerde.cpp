@@ -731,16 +731,6 @@ void Preset::TreasureState::write(Stream& output)
 	}
 }
 
-void Preset::EnemyGenSpawnOverride::read(Stream& input)
-{
-	course    = input.readInt();
-	enemy_id  = static_cast<Game::EnemyTypeID::EEnemyTypeID>(input.readInt());
-	gen_pos.x = input.readFloat();
-	gen_pos.y = input.readFloat();
-	gen_pos.z = input.readFloat();
-	kill_day  = input.readInt();
-}
-
 void Preset::KilledEnemy::read(Stream& input)
 {
 	course    = input.readInt();

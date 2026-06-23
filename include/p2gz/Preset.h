@@ -161,69 +161,6 @@ struct Preset {
 		Vec<SublevelDelta> sublevel_deltas; // per-floor deltas for grouped cave presets (empty otherwise)
 	};
 
-	struct HeldPellet {
-		HeldPellet()
-		    : kind(0)
-		    , id(0)
-		{
-		}
-		HeldPellet(u8 kind_, u16 id_)
-		    : kind(kind_)
-		    , id(id_)
-		{
-		}
-
-		void read(Stream& input);
-		void write(Stream& output);
-
-		u8 kind; // 0=otakara (treasure); 1=item (upgrade)
-		u16 id;  // config index
-	};
-
-	// store info on what changes treasure-wise between sublevels in a multi-sublevel preset
-	struct SublevelDelta {
-		SublevelDelta()
-		    : sublevel(0)
-		    , poko_delta(0)
-		{
-		}
-
-		void read(Stream& input);
-		void write(Stream& output);
-
-		u8 sublevel;            // sublevel these are collected on
-		int poko_delta;         // pokos collected on this floor
-		Vec<HeldPellet> caught; // treasures collected on this floor
-	};
-
-	// snapshot of the collected-treasure state
-	struct TreasureState {
-		TreasureState()
-		    : mode(TM_Off)
-		    , debt(-1)
-		    , treasure_count(0)
-		    , poko_count(0)
-		    , cave_poko_count(0)
-		{
-		}
-
-		void read(Stream& input);
-		void write(Stream& output);
-
-		// restore this snapshot onto playData, using 0-indexed floor (to resolve deltas)
-		void restore(u8 dest_sublevel);
-
-		TreasureMode mode;         // how much to restore (see TreasureMode)
-		s8 debt;                   // -1=dont touch flag; 0=force unpaid; 1=force paid
-		Vec<u16> zukan_otakara;    // collected treasure config indices
-		Vec<u16> zukan_item;       // collected exploration kit config indices
-		Vec<HeldPellet> cave_held; // cave crop memory at the group's "first" floor - deltas added on top
-		int treasure_count;
-		int poko_count;
-		int cave_poko_count;                // cave poko count at the group's "first" floor - deltas added on top
-		Vec<SublevelDelta> sublevel_deltas; // per-floor deltas for grouped cave presets (empty otherwise)
-	};
-
 	struct Sprout {
 	public:
 		Sprout()

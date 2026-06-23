@@ -62,6 +62,7 @@ Warp::Warp()
 	applying_generators                  = false;
 	needs_generator_cache_reconstruction = false;
 	do_egate_parse_only_load             = false;
+	reset_in_place                       = false;
 	warping                              = false;
 	already_saved_generators             = false;
 	preset_status                        = PS_Stale;

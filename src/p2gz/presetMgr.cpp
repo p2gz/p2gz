@@ -103,11 +103,17 @@ void PresetMgr::fill_current_pikis(Preset* preset)
 void PresetMgr::fill_current_treasures(Preset* preset)
 {
 	GZASSERTLINE(preset);
-	preset->treasure_spawn_overrides.clear();
+	preset->carried_treasures.clear();
 
 	if (!in_above_ground_play() || !Game::generatorCache) {
 		return;
 	}
+
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs || !sgs->mCurrentCourseInfo) {
+		return;
+	}
+	const u8 course = sgs->mCurrentCourseInfo->mCourseIndex;
 
 	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
@@ -129,10 +135,11 @@ void PresetMgr::fill_current_treasures(Preset* preset)
 			continue;
 		}
 
-		Preset::TreasureGenSpawnOverride oride;
-		oride.id             = gen_pellet->mGenParm->mIndex;
-		oride.spawn_override = PSO_DontSpawn;
-		preset->treasure_spawn_overrides.push(oride);
+		Preset::CarriedTreasure oride;
+		oride.course = course;
+		oride.id     = gen_pellet->mGenParm->mIndex;
+		oride.moved  = false;
+		preset->carried_treasures.push(oride);
 	}
 
 	prev_heap->becomeCurrentHeap();

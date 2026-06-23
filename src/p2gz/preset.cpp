@@ -236,9 +236,14 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_bitters(bitters_unlocked);
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
-	// Clear open area flags before applying upgrades, so we don't have persistent open areas
-	for (int i = 1; i < 4; i++) {
-		Game::playData->mBitfieldPerCourse[i] = Game::PlayData::PDCF_Unset;
+	// Clear open area flags before applying upgrades, so we don't have persistent open areas.
+	// Skip for in-place replay: we're keeping the other areas' generator caches, so their PDCF_Visited
+	// flags must stay set to match. Otherwise the area loads BOTH initgen (because it looks unvisited)
+	// and the cache, doubling the generators and overrunning the pellet pool (genPellet "GENERATOR ERR").
+	if (!p2gz->warp->reset_in_place) {
+		for (int i = 1; i < 4; i++) {
+			Game::playData->mBitfieldPerCourse[i] = Game::PlayData::PDCF_Unset;
+		}
 	}
 
 	// Apply upgrades
@@ -322,9 +327,12 @@ void Preset::apply()
 		p2gz->poko_editor->repay_demo_enabled = true;
 	}
 
-	Game::generatorCache->clearCache();
-	Game::playData->clearVisitAllCourses();
-	Game::playData->mLimitGen->mNonLoops.all_zero();
+	// only wipe all areas if we warp, not if we replay/retry a segment
+	if (!p2gz->warp->reset_in_place) {
+		Game::generatorCache->clearCache();
+		Game::playData->clearVisitAllCourses();
+		Game::playData->mLimitGen->mNonLoops.all_zero();
+	}
 
 	// Convert position-based StructureOverride data into per-area name-based state
 	// for use by reconstruct_generator_cache() during the upcoming load
