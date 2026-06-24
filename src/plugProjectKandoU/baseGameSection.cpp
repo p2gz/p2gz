@@ -3338,9 +3338,9 @@ void BaseGameSection::reconstruct_generator_cache()
 		return;
 	}
 	gz::Preset* preset                               = p2gz->warp->get_preset_during_warp();
-	const bool resetInPlace                          = p2gz->warp->reset_in_place; // retry/replay segment
+	const bool resetInPlace                          = p2gz->warp->only_rebuild_current_area; // retry/replay segment
 	p2gz->warp->needs_generator_cache_reconstruction = false;
-	p2gz->warp->reset_in_place                       = false;
+	p2gz->warp->only_rebuild_current_area            = false;
 	if (!preset) {
 		// can't set jack shit without a preset
 		return;

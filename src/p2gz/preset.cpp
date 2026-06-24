@@ -240,7 +240,7 @@ void Preset::apply()
 	// Skip for in-place replay: we're keeping the other areas' generator caches, so their PDCF_Visited
 	// flags must stay set to match. Otherwise the area loads BOTH initgen (because it looks unvisited)
 	// and the cache, doubling the generators and overrunning the pellet pool (genPellet "GENERATOR ERR").
-	if (!p2gz->warp->reset_in_place) {
+	if (!p2gz->warp->only_rebuild_current_area) {
 		for (int i = 1; i < 4; i++) {
 			Game::playData->mBitfieldPerCourse[i] = Game::PlayData::PDCF_Unset;
 		}
@@ -328,7 +328,7 @@ void Preset::apply()
 	}
 
 	// only wipe all areas if we warp, not if we replay/retry a segment
-	if (!p2gz->warp->reset_in_place) {
+	if (!p2gz->warp->only_rebuild_current_area) {
 		Game::generatorCache->clearCache();
 		Game::playData->clearVisitAllCourses();
 		Game::playData->mLimitGen->mNonLoops.all_zero();

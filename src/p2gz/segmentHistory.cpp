@@ -53,7 +53,7 @@ void SegmentHistory::retry_segment()
 
 	p2gz->warp->set_dest(current_segment->dest);
 	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
-	p2gz->warp->reset_in_place = true;
+	p2gz->warp->only_rebuild_current_area = true;
 	p2gz->warp->do_warp();
 
 	entering_next_segment = false;
@@ -69,7 +69,7 @@ void SegmentHistory::retry_same_seed()
 	p2gz->warp->set_dest(current_segment->dest);
 	p2gz->warp->set_seed(current_segment->seed);
 	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
-	p2gz->warp->reset_in_place = true;
+	p2gz->warp->only_rebuild_current_area = true;
 	p2gz->warp->do_warp();
 
 	entering_next_segment = false;
@@ -93,7 +93,7 @@ void SegmentHistory::retry_cave()
 		floor0_dest.sublevel        = 0;
 		p2gz->warp->set_dest(floor0_dest);
 		p2gz->warp->set_preset(cave_floor0_preset, PS_Suggested);
-		p2gz->warp->reset_in_place = true;
+		p2gz->warp->only_rebuild_current_area = true;
 		p2gz->warp->do_warp();
 		entering_next_segment = false;
 		return;
@@ -143,7 +143,7 @@ void SegmentHistory::retry_cave()
 		p2gz->warp->set_preset(floor0_segment->preset, PS_Suggested);
 	}
 
-	p2gz->warp->reset_in_place = true;
+	p2gz->warp->only_rebuild_current_area = true;
 	p2gz->warp->do_warp();
 	entering_next_segment = false;
 }
