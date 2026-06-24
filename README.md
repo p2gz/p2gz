@@ -74,6 +74,26 @@ When warping with a preset, the game state will be auto-set as if you'd played u
 - Warped-to above-ground areas also allow for quick replay from the P2GZ menu (double-press D-pad-left).
   - To replay the current warped-to segment, press X.
 
+### Race friends (or by yourself)
+P2GZ has a built-in race mode, accessible from the **race** submenu. In race mode, the P2GZ menu will be disabled, and two timers will be displayed for the course of the run: an RTA (real-time attack) timer tracking actual/real-life time taken, and an IGT (in-game time) tracking load-removed time. Both will start when the run begins, will automatically stop at the end of the run, and will display as a final-results overlay.
+
+Players can select which category they'd like to play (PoD or AT), and whether they'd like to start from a fresh file (crash landing cutscene) or from a category-dependent race file (Snagret Hole 1 for PoD, or Wistful Wild for AT). Players can also choose whether cave layout seeds should be randomised (a vanilla run), or enter a set seed for all layouts. Treasure region can also be selected (US, PAL or JP) to control which treasures spawn. 
+
+<center>
+<table>
+<tr>
+<td><img src="docs/readme_assets/race-mode-menu.png"></td>
+<td><img src="docs/readme_assets/race-mode-in-game.png"></td>
+</tr>
+</table>
+</center>
+
+Some quality of life features are still enabled during race mode, unless disabled beforehand, namely skippable cutscenes, save prompt skipping, and crash-related patches such as Early Blues patch. Race mode also supports "quick resets", with the soft reset combo (X+B+Start) doing a quick retry of the current floor or segment, without having to transit through the title screen and file select. If skippable cutscenes and save prompt skipping are turned on, both the RTA and IGT timers will account for any skipped time, so timing comparisons will stay accurate regardless of chosen settings.
+
+To exit race mode, hold **L+R+Z+Start** for about 2 seconds to force a (proper) soft-reset of the game and re-enable the P2GZ menu.
+
+We hope you'll find this feature a more convenient way of participating in friendly races with friends, without having to worry about sharing .gct files and checking layouts to make sure they applied.
+
 ### Trainers
 P2GZ supports two quick-reload trainers for key speedrunning tricks: **Fast Empress** and **Early Blues**, which you can access from the **trainers** submenu. We hope these will make learning and de-rusting the speedrun easier.
 
