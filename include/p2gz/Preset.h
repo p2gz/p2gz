@@ -176,7 +176,7 @@ public:
 	Vec<CarriedTreasure> carried_treasures;
 	bool bridge_glitch_active;
 	BitFlag<u16> new_area_zoom;        // bit per course: VoR=1 AW=2 PP=4 WW=8; set = allow zoom on next world-map visit
-	bool play_repay_demo; // tracks whether or not to play a % cutscene
+	bool play_repay_demo;              // tracks whether or not to play a % cutscene
 	AreaStructureState area_states[4]; // per-area structure state, indexed by CourseIndex (0=VoR…3=WW)
 
 	bool is_area_visited(int course) const;
@@ -195,6 +195,7 @@ public:
 	static void fill_current_pikis(Preset* preset);
 
 	PresetPreview* suggested_preset(WarpDestination dest, PresetCategory category);
+	void relevant_presets(PresetCategory category, WarpDestination dest, Vec<PresetPreview*>& out);
 	PresetPreview* find(const char* name, PresetCategory category);
 	Preset* load_preset(PresetPreview*);
 
@@ -213,6 +214,7 @@ public:
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual bool select();
+	virtual void update(); // D-pad left/right cycles through the warp's relevant-preset list
 
 	void init();
 	void do_on_preset_selected(PresetPreview*);

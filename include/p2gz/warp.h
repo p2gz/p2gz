@@ -52,6 +52,10 @@ public:
 	void set_warp_area(size_t area);
 	void set_warp_cave(size_t cave);
 	void set_warp_sublevel(s32 sublevel);
+	void set_warp_category(size_t category_idx); // 0 = no preset, 1 = PoD, 2 = AT
+	void cycle_preset(s32 delta);
+	size_t preset_cycle_count() { return cycle_list.len(); }
+	size_t preset_cycle_index() { return cycle_idx; }
 	void set_warp_day(s32 day) { dest.day = day - 1; }
 	void set_allow_zero_piki_in_caves(bool allow) { allow_zero_pikmin_in_caves = allow; }
 	void set_enter_area_type(size_t type) { dest.enter_area_type = type; }
@@ -95,6 +99,7 @@ private:
 	void update_cave_opt();
 	void update_sublevel_opt();
 	void update_preset_opt();
+	void clear_preset();
 	void update_day_opt();
 	void update_enter_type_opt();
 	void update_captain_opt();
@@ -114,9 +119,15 @@ private:
 	PresetStatus preset_status;
 	WarpDestination dest;
 
+	// preset cycling state in warp menu
+	Vec<PresetPreview*> cycle_list; // presets relevant to the current category+dest, in order
+	size_t cycle_idx;               // current position within cycle_list
+	size_t warp_category_idx;       // 0 = no preset, 1 = PoD, 2 = AT
+
 	RadioMenuOption* area_opt;
 	RangeMenuOption* sublevel_opt;
 	RadioMenuOption* cave_opt;
+	RadioMenuOption* category_opt;
 	RangeMenuOption* day_opt;
 	RadioMenuOption* captain_opt;
 	RadioMenuOption* enter_area_type_opt;

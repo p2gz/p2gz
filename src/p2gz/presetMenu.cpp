@@ -9,6 +9,7 @@ PresetMenuOption::PresetMenuOption(IDelegate2<PresetPreview*, int>* on_select_)
     : MenuOption("preset")
 {
 	on_select        = on_select_;
+	current_preview  = nullptr; // assigned in Warp::init() instead
 	pod_presets_menu = new ListMenu();
 	pod_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, pod_presets_menu, PoD);
@@ -19,11 +20,11 @@ PresetMenuOption::PresetMenuOption(IDelegate2<PresetPreview*, int>* on_select_)
 	general_presets_menu->on_opened
 	    = new BoundDelegate2<PresetMenuOption, ListMenu*, PresetCategory>(this, &select_current_preset, general_presets_menu, General);
 
-	preset_category_list = (new ListMenu())
-	                           ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
-	                           ->push(new OpenSubMenuOption("PoD", pod_presets_menu))
-	                           ->push(new OpenSubMenuOption("AT", at_presets_menu))
-	                           ->push(new OpenSubMenuOption("general", general_presets_menu));
+	preset_category_list        = (new ListMenu())
+	                                  ->push(new PresetPreviewMenuOption(nullptr, this)) // "no preset" option
+	                                  ->push(new OpenSubMenuOption("PoD", pod_presets_menu))
+	                                  ->push(new OpenSubMenuOption("AT", at_presets_menu))
+	                                  ->push(new OpenSubMenuOption("general", general_presets_menu));
 	preset_category_list->title = "preset categories";
 }
 
@@ -48,13 +49,6 @@ void PresetMenuOption::init()
 			general_presets_menu->push(opt);
 			break;
 		}
-	}
-
-	// Set the current preset to a PoD one so PresetMgr can suggest an appropriate preset
-	// when changing the warp menu selections
-	current_preview = p2gz->preset_mgr->find("EC1", PoD);
-	if (on_select) {
-		on_select->invoke(current_preview, PS_Stale);
 	}
 }
 
@@ -154,9 +148,19 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
 	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": ");
+
+	const size_t cycle_count = p2gz->warp->preset_cycle_count();
+	const bool can_cycle     = cycle_count > 1;
+
 	if (current_preview) {
+		if (can_cycle) {
+			x += j2d.print(x, z, "< ");
+		}
 		if (current_preview->name) {
 			x += j2d.print(x, z, "%s ", current_preview->name);
+		}
+		if (can_cycle) {
+			x += j2d.print(x, z, "> (%d/%d) ", static_cast<int>(p2gz->warp->preset_cycle_index() + 1), static_cast<int>(cycle_count));
 		}
 		draw_preset_preview(j2d, x, z, current_preview->squad, current_preview->onion_pikis);
 	} else {
@@ -166,7 +170,10 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 	}
 
 	if (selected) {
-		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "open presets menu");
+		if (can_cycle) {
+			p2gz->menu->draw_control(j2d, Controller::PRESS_DPAD_LEFT, "cycle preset");
+		}
+		p2gz->menu->draw_control(j2d, Controller::PRESS_A, "all presets");
 	}
 }
 
@@ -174,6 +181,21 @@ bool PresetMenuOption::select()
 {
 	p2gz->menu->push_layer(preset_category_list);
 	return false;
+}
+
+void PresetMenuOption::update()
+{
+	// D-pad left/right cycles through the presets relevant to the current warp destination
+	// (block_open_close_action stops the double-tap-left menu toggle from firing while cycling)
+	p2gz->menu->block_open_close_action();
+
+	u32 btn = p2gz->controller->getButtonDown();
+	if (btn & Controller::PRESS_DPAD_LEFT) {
+		p2gz->warp->cycle_preset(-1);
+	}
+	if (btn & Controller::PRESS_DPAD_RIGHT) {
+		p2gz->warp->cycle_preset(1);
+	}
 }
 
 void PresetMenuOption::do_on_preset_selected(PresetPreview* preset_preview)
@@ -190,7 +212,7 @@ PresetPreviewMenuOption::PresetPreviewMenuOption(PresetPreview* preset_preview_,
 	GZASSERTLINE(parent_);
 
 	preset_preview = preset_preview_;
-	parent = parent_;
+	parent         = parent_;
 }
 
 bool PresetPreviewMenuOption::select()
