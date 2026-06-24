@@ -55,9 +55,7 @@ Treasure region (US/JP/PAL) can be changed in the P2GZ menu (double-press D-pad-
 
 <center><img src="docs/readme_assets/warp-menu.png" width="75%"></center>
 
-When warping with a preset, the game state will be auto-set as if you'd played up to that point yourself, including squad and onion counts, cutscene flags, upgrades, above-ground structure completions such as gates and bridges, and enemies and treasures flagged as killed or collected in all above ground areas. You should be able to continue from your selected preset/area and finish a run with no issues*.
-
-**for AT, treasure counts are not currently set, so the All Treasures ending will not fire - this will be added in a future update.*
+When warping with a preset, the game state will be auto-set as if you'd played up to that point yourself, including squad and onion counts, pokos, collected treasures, cutscene flags, upgrades, above-ground structure completions such as gates and bridges, and enemies flagged as killed in all above ground areas. You should be able to continue from your selected preset/area and finish a run (PoD or AT) with no issues.
 
 - Caves provide quick-replay features, either from the hole and geyser screens, or from the P2GZ menu (double-press D-pad-left).
   - To replay the current sublevel with a new seed, hit X.
