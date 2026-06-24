@@ -8,7 +8,6 @@ AT 	# category
 0 0 	# spicies, spicies unlocked
 10.750000 	# time of day
 4 	# day number
--1 	# pokos (-1 if not applied)
 0 	# enter kind (FromCave = 0, FromMap = 1)
 0 	# num upgrades
 18 	# num demo flags
@@ -47,3 +46,13 @@ AT 	# category
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)
+2	# treasure mode (0=off, 1=cave floor, 2=checkpoint)
+0	# debt (-1=untouched, 0=unpaid, 1=paid)
+0	# num collected treasures (zukan, by config index)
+0	# num collected items (zukan, by config index)
+0	# num cave-held pellets (kind id): kind 0=otakara 1=item
+0 0 0	# treasure count, poko count, cave poko count
+1	# num per-sublevel deltas (grouped cave presets): per row = floor poko_delta numCaught
+	1 280 2	# floor 1 caught
+		0 133	# tape_yellow
+		0 94	# dia_a_red

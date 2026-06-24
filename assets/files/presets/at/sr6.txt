@@ -8,7 +8,6 @@ AT 	# category
 4 1 	# spicies, spicies unlocked
 16.000000 	# time of day
 8 	# day number
--1 	# pokos (-1 if not applied)
 0 	# enter kind (FromCave = 0, FromMap = 1)
 9 	# num upgrades
 	0 	# ODII_BruteKnuckles
@@ -155,3 +154,123 @@ AT 	# category
 1	# bridge glitch active
 0	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
 0   # percent cutscene (> 0 if one should play)
+2	# treasure mode (0=off, 1=cave floor, 2=checkpoint)
+0	# debt (-1=untouched, 0=unpaid, 1=paid)
+93	# num collected treasures (zukan, by config index)
+	3	# bane
+	4	# baum_kuchen
+	5	# be_dama_red
+	11	# bolt
+	12	# channel
+	13	# chess_king_black
+	14	# chess_king_white
+	15	# chess_queen_black
+	17	# chocolate
+	18	# chocoichigo
+	19	# chocowhite
+	20	# compact
+	21	# cookie
+	23	# diamond_red
+	24	# diamond_blue
+	28	# donutschoco
+	29	# donutsichigo
+	30	# donutswhite
+	37	# gear
+	39	# gum_tape
+	42	# ichigo
+	47	# kumakibori
+	48	# locket
+	53	# momiji_kare
+	55	# nut
+	56	# tatebue
+	58	# sensya
+	59	# sinkukan
+	61	# tel_dial
+	62	# toy_ring_a_red
+	64	# toy_ring_a_green
+	68	# toy_ring_c_red
+	69	# toy_ring_c_green
+	70	# toy_ring_c_blue
+	71	# toy_teala
+	72	# turi_uki
+	73	# watch
+	74	# Xmas_item
+	75	# yoyo_red
+	77	# yoyo_blue
+	83	# mojiban
+	86	# kan_b_gold
+	87	# kan_b_silver
+	88	# ahiru_head
+	90	# teala_dia_a
+	94	# dia_a_red
+	98	# dia_b_blue
+	99	# dia_b_green
+	101	# dia_c_green
+	103	# kinoko_doku
+	105	# sinkukan_b
+	106	# sinkukan_c
+	107	# bolt_l
+	108	# gum_tape_s
+	109	# baum_kuchen_s
+	111	# cookie_m_l
+	112	# cookie_u
+	114	# cookie_s
+	115	# cookie_s_l
+	117	# fire_helmet
+	118	# nut_l
+	125	# bell_red
+	126	# bell_blue
+	127	# bell_yellow
+	128	# bane_red
+	130	# bane_yellow
+	131	# juji_key_fc
+	132	# tape_red
+	133	# tape_yellow
+	134	# tape_blue
+	135	# leaf_normal
+	138	# denchi_3_red
+	140	# denchi_2_red
+	142	# denchi_1_red
+	143	# denchi_1_black
+	144	# castanets
+	152	# akagai
+	154	# sinjyu
+	155	# donutschoco_s
+	156	# donutsichigo_s
+	157	# donutswhite_s
+	158	# gear_silver
+	161	# chocoichigo_l
+	162	# chocowhite_l
+	164	# g_futa_titiyas
+	165	# g_futa_kyusyu
+	166	# g_futa_sikoku
+	167	# g_futa_kajiwara
+	172	# g_futa_daisen
+	175	# g_futa_nihonraku
+	177	# kan_nichiro
+	181	# kan_imuraya
+	186	# medama_yaki
+10	# num collected items (zukan, by config index)
+	0	# fue_a
+	1	# fue_b
+	3	# fue_pullout
+	4	# light_a
+	7	# dashboots
+	8	# radar_a
+	9	# radar_b
+	10	# map01
+	11	# map02
+	12	# key
+10	# num cave-held pellets (kind id): kind 0=otakara 1=item
+	0 145	# otama
+	0 35	# toy_dog
+	0 141	# denchi_2_black
+	0 159	# compact_make
+	0 84	# futa_a_gold
+	0 153	# hotate
+	0 52	# momiji_normal
+	0 34	# toy_lady
+	0 178	# kan_iwate
+	0 174	# g_futa_kitaama
+103 9785 900	# treasure count, poko count, cave poko count
+0	# num per-sublevel deltas (grouped cave presets): per row = floor poko_delta numCaught
