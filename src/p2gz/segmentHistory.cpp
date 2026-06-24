@@ -32,7 +32,7 @@ void SegmentHistory::draw_2d()
 	}
 
 	if (entering_next_segment || (cur_segment() && p2gz->menu->is_root_open())) {
-		draw_reset_controls(entering_next_segment);
+		draw_reset_controls();
 	}
 }
 
@@ -159,11 +159,9 @@ void SegmentHistory::update()
 			retry_same_seed();
 			return;
 		}
-	}
 
-	if (entering_next_segment && in_cave_play()) {
 		// Restart cave from the beginning
-		if (btn & Controller::PRESS_L) {
+		if (btn & Controller::PRESS_L && in_cave_play()) {
 			retry_cave();
 			return;
 		}
@@ -212,7 +210,7 @@ void draw_ctrl(J2DPrint& j2d, const f32 glyph_size, f32& z, const char* img_name
 	z += p2gz->images->height() + 4.0f;
 }
 
-void SegmentHistory::draw_reset_controls(bool draw_cave_retry)
+void SegmentHistory::draw_reset_controls()
 {
 	const f32 glyph_size = 18.0f;
 	J2DPrint j2d         = init_j2d(glyph_size);
@@ -222,9 +220,7 @@ void SegmentHistory::draw_reset_controls(bool draw_cave_retry)
 	if (in_cave_play()) {
 		draw_ctrl(j2d, glyph_size, z, "x_btn", "replay sublevel");
 		draw_ctrl(j2d, glyph_size, z, "y_btn", "replay seed");
-		if (draw_cave_retry) {
-			draw_ctrl(j2d, glyph_size, z, "l_btn", "restart cave");
-		}
+		draw_ctrl(j2d, glyph_size, z, "l_btn", "restart cave");
 	} else {
 		draw_ctrl(j2d, glyph_size, z, "x_btn", "replay segment");
 	}
