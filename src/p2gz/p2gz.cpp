@@ -66,6 +66,7 @@ P2GZ::P2GZ()
 	early_blues_trainer  = new EarlyBluesTrainer();
 	drop_editor          = new DropEditor();
 	navi_debug_info      = new NaviDebugInfo();
+	card_data            = new P2GZCardData();
 
 #ifdef GZ_TEST
 	test_runner = new test::TestRunner();

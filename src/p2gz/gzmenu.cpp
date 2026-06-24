@@ -90,7 +90,7 @@ void GZMenu::init_menu()
 		// Options that edit the current level state
 		->push(new OpenSubMenuOption("level", (new ListMenu())
 			->push(new OpenSubMenuOption("treasures", (new ListMenu(new Delegate<TreasureEditor>(p2gz->treasure_editor, &TreasureEditor::sync)))))
-			->push(new RadioMenuOption("treasure region", new Delegate1<Localization, size_t>(p2gz->localization_op, &Localization::set_treasure_region)))
+			->push(new RadioMenuOption("treasure region", new Delegate1<P2GZCardData, size_t>(p2gz->card_data, &P2GZCardData::set_treasure_region)))
 			->push(new OpenSubMenuOption("gates", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_gates))))) // Will be populated dynamically by StructureEditor
 			->push(new OpenSubMenuOption("bridges", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_bridges))))) // Will be populated dynamically by StructureEditor
 			->push(new OpenSubMenuOption("plugs", (new ListMenu(new Delegate<StructureEditor>(p2gz->structure_editor, &StructureEditor::sync_plugs))))) // Will be populated dynamically by StructureEditor
@@ -145,8 +145,8 @@ void GZMenu::init_menu()
 			->push(new ToggleMenuOption("heap memory usage", false, new Delegate1<HeapBarToggle, bool>(p2gz->heap_bar_toggle, &HeapBarToggle::toggle_heapbar)))
 		))
 		->push(new OpenSubMenuOption("timer", (new ListMenu(new Delegate<Timer>(p2gz->timer, &Timer::sync)))
-			->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_enabled)))
-			->push(new ToggleMenuOption("show sub-timer", false, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_sub_timer_enabled)))
+			->push(new ToggleMenuOption("enabled", p2gz->card_data->bool_settings[SETTING_timer_enabled], new CurriedDelegate1<P2GZCardData, SettingId, bool>(p2gz->card_data, &P2GZCardData::set_bool, SETTING_timer_enabled)))
+			->push(new ToggleMenuOption("show sub-timer", p2gz->card_data->bool_settings[SETTING_timer_subtimer], new CurriedDelegate1<P2GZCardData, SettingId, bool>(p2gz->card_data, &P2GZCardData::set_bool, SETTING_timer_subtimer)))
 			->push(new PerformActionMenuOption("reset", new Delegate<Timer>(p2gz->timer, &Timer::on_reset)))
 			->push(new OpenSubMenuOption("segment timer", (new ListMenu())
 				->push(new ToggleMenuOption("enabled", true, new Delegate1<Timer, bool>(p2gz->timer, &Timer::set_segment_timer_enabled)))
@@ -167,8 +167,8 @@ void GZMenu::init_menu()
 
 		// General game behaviors and options for how the gz menu looks and behaves
 		->push(new OpenSubMenuOption("settings", (new ListMenu())
-            ->push(new ToggleMenuOption("skippable cutscenes", true, new Delegate1<SkippableCutscenes, bool>(p2gz->skippable_cutscenes, &SkippableCutscenes::toggle_skippable)))
-            ->push(new ToggleMenuOption("skip save prompts", true, new Delegate1<SkipSave, bool>(p2gz->skip_save, &SkipSave::toggle_save_skip)))
+            ->push(new ToggleMenuOption("skippable cutscenes", p2gz->card_data->bool_settings[SETTING_cutscenes_skippable], new CurriedDelegate1<P2GZCardData, SettingId, bool>(p2gz->card_data, &P2GZCardData::set_bool, SETTING_cutscenes_skippable)))
+            ->push(new ToggleMenuOption("skip save prompts", p2gz->card_data->bool_settings[SETTING_skip_save_prompts], new CurriedDelegate1<P2GZCardData, SettingId, bool>(p2gz->card_data, &P2GZCardData::set_bool, SETTING_skip_save_prompts)))
 			->push(new ToggleMenuOption("allow 0 pikmin in caves", true, new Delegate1<Warp, bool>(p2gz->warp, &Warp::set_allow_zero_piki_in_caves)))
 			->push(new ToggleMenuOption("eggs always drop mitites", false, new Delegate1<DropEditor, bool>(p2gz->drop_editor, &DropEditor::set_egg_always_mitites)))
 			->push(new PerformActionMenuOption("increase text size", new Delegate<GZMenu>(p2gz->menu, &GZMenu::increase_text_size)))
@@ -219,6 +219,10 @@ void GZMenu::update()
 
 void GZMenu::increase_text_size()
 {
+	// above a certain text size is ridiculous
+	if (glyph_width > 35.0f) {
+		return;
+	}
 	glyph_width += 2.0;
 	glyph_height += 2.0;
 	line_height += 2.0;
@@ -226,6 +230,10 @@ void GZMenu::increase_text_size()
 
 void GZMenu::decrease_text_size()
 {
+	// below a certain text size is ridiculous
+	if (glyph_width < 7.0f) {
+		return;
+	}
 	glyph_width -= 2.0;
 	glyph_height -= 2.0;
 	line_height -= 2.0;

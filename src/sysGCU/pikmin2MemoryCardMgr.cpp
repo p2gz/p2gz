@@ -16,6 +16,11 @@ namespace MemoryCard {
 
 char* cFileName = "Pikmin2_SaveData";
 
+// @P2GZ: custom mem card data
+// make a dedicated file for gz-specific data (preferences etc)
+// keep this separate from vanilla data for safety + size + easier version control
+char* cP2GZFileName = "Pikmin2_P2GZData";
+
 /**
  * @note Address: 0x804428AC
  * @note Size: 0x3C
@@ -253,6 +258,106 @@ bool Mgr::loadGameOption()
 	return result;
 }
 
+// @P2GZ: custom mem card data
+// queue up a save of our card data file using a custom command
+// saves are coalesced so repeated toggling can't flood the queue
+bool Mgr::saveP2GZData()
+{
+	OSLockMutex(&mOsMutex);
+	bool alreadyQueued = false;
+	for (int i = 0; i < MEM_CARD_CMD_QUEUE_SIZE; i++) {
+		if (mCommands[i].mFlag == MEM_CARD_CMD_P2GZ_SAVE) {
+			alreadyQueued = true;
+			break;
+		}
+	}
+	if (!alreadyQueued) {
+		// use a new custom command id (17 for save, 18 for load)
+		setCommand(MEM_CARD_CMD_P2GZ_SAVE);
+	}
+	OSUnlockMutex(&mOsMutex);
+	return true;
+}
+
+// @P2GZ: custom mem card data
+// queue up reading our card data file (used once at boot)
+bool Mgr::loadP2GZData()
+{
+	// use a new custom command id (18 for load, 17 for save)
+	setCommand(MEM_CARD_CMD_P2GZ_LOAD);
+	return true;
+}
+
+// @P2GZ: custom mem card data
+// Write p2gz's card data to our dedicated file, creating it on first use
+bool Mgr::commandSaveP2GZData()
+{
+	EInsideStatusFlag savedStatus = mStatusFlag;
+	bool result                   = false;
+	bool fileReady                = false;
+	CARDFileInfo fileInfo;
+
+	if (fileOpen(&fileInfo, CARDSLOT_Unk0, cP2GZFileName)) {
+		CARDClose(&fileInfo);
+		fileReady = true;
+	} else if (MemoryCardMgr::checkSpace(CARDSLOT_Unk0, P2GZ_FILE_SIZE) == 0) {
+		// make new save data
+		if (CARDCreate(CARDSLOT_Unk0, cP2GZFileName, P2GZ_FILE_SIZE, &fileInfo) == 0) {
+			CARDClose(&fileInfo);
+			writeHeader(CARDSLOT_Unk0, cP2GZFileName); // reuse the P2GZ banner/icon
+			writeCardStatus(CARDSLOT_Unk0, cP2GZFileName);
+			fileReady = true;
+		}
+	}
+
+	if (fileReady) {
+		u32* buffer = new (mHeap, -32) u32[P2GZ_PAYLOAD_SIZE / sizeof(u32)];
+		if (buffer) {
+			memset(buffer, 0, P2GZ_PAYLOAD_SIZE);
+
+			// payload then a trailing checksum word over everything before it
+			RamStream stream(buffer, P2GZ_PAYLOAD_SIZE - sizeof(u32));
+			p2gz->card_data->write(stream);
+			buffer[P2GZ_PAYLOAD_SIZE / sizeof(u32) - 1] = calcCheckSum(buffer, P2GZ_PAYLOAD_SIZE - sizeof(u32));
+
+			result = write(CARDSLOT_Unk0, cP2GZFileName, (u8*)buffer, P2GZ_PAYLOAD_SIZE, P2GZ_DATA_OFFSET);
+			delete (buffer);
+		}
+	}
+
+	mStatusFlag = savedStatus;
+	return result;
+}
+
+// @P2GZ: custom mem card data
+// read card data from dedicated file - a missing or corrupt file leaves the default values instead
+bool Mgr::commandLoadP2GZData()
+{
+	EInsideStatusFlag savedStatus = mStatusFlag;
+	bool result                   = false;
+	CARDFileInfo fileInfo;
+
+	if (fileOpen(&fileInfo, CARDSLOT_Unk0, cP2GZFileName)) {
+		CARDClose(&fileInfo);
+
+		u32* buffer = new (mHeap, -32) u32[P2GZ_PAYLOAD_SIZE / sizeof(u32)];
+		if (buffer) {
+			if (read(CARDSLOT_Unk0, cP2GZFileName, (u8*)buffer, P2GZ_PAYLOAD_SIZE, P2GZ_DATA_OFFSET)) {
+				u32 stored = buffer[P2GZ_PAYLOAD_SIZE / sizeof(u32) - 1];
+				if (calcCheckSum(buffer, P2GZ_PAYLOAD_SIZE - sizeof(u32)) == stored) {
+					RamStream stream(buffer, P2GZ_PAYLOAD_SIZE - sizeof(u32));
+					p2gz->card_data->read(stream);
+					result = true;
+				}
+			}
+			delete (buffer);
+		}
+	}
+
+	mStatusFlag = savedStatus;
+	return result;
+}
+
 /**
  * @note Address: 0x80443054
  * @note Size: 0x124
@@ -449,6 +554,18 @@ bool Mgr::doCardProc(void*, MemoryCardMgrCommand* command)
 
 	case 16:
 		result = commandCheckError();
+		break;
+
+	// @P2GZ: custom mem card data
+	// save and load commands for our card data file
+	case 17:
+		setFlag(MCMFLAG_IsWriting);
+		result = commandSaveP2GZData();
+		resetFlag(MCMFLAG_IsWriting);
+		break;
+
+	case 18:
+		result = commandLoadP2GZData();
 		break;
 
 	default:
