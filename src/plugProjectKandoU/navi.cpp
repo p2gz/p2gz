@@ -5906,6 +5906,8 @@ inline f32 pikmin2_normalise(Vector3f& vec)
  */
 void Navi::throwPiki(Piki* piki, Vector3f& cursorPos)
 {
+	p2gz->race_mode->notify_pikmin_thrown(); // @P2GZ race mode stat
+
 	// Play throw sound.
 	mSoundObj->startSound(PSSE_PL_THROW, 0);
 

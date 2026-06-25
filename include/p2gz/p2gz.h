@@ -34,6 +34,7 @@
 #include <p2gz/DropEditor.h>
 #include <p2gz/NaviDebugInfo.h>
 #include <p2gz/P2GZCardData.h>
+#include <p2gz/RaceMode.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
 #define P2GZ_VERSION "beta1-pre"
@@ -87,6 +88,7 @@ public:
 	gz::DropEditor* drop_editor;
 	gz::NaviDebugInfo* navi_debug_info;
 	gz::P2GZCardData* card_data;
+	gz::RaceMode* race_mode;
 
 	gz::test::TestRunner* test_runner;
 

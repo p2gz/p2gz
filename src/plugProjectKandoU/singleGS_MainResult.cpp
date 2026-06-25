@@ -303,6 +303,7 @@ void MainResultState::draw(SingleGameSection* game, Graphics& gfx)
 	// for some reason, the timer isn't draw on top in the end of day results screen
 	// so, manually draw it on top.
 	p2gz->timer->draw();
+	p2gz->race_mode->draw_on_top(); // race mode draws its own RTA/IGT (timer->draw bails during a race)
 }
 
 /**

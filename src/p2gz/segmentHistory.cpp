@@ -31,7 +31,10 @@ void SegmentHistory::draw_2d()
 		draw_cur_seed();
 	}
 
-	if (entering_next_segment || (cur_segment() && p2gz->menu->is_root_open())) {
+	// don't show the controls when in race mode
+	bool race_active = p2gz->race_mode && p2gz->race_mode->is_active();
+
+	if (!race_active && (entering_next_segment || (cur_segment() && p2gz->menu->is_root_open()))) {
 		draw_reset_controls();
 	}
 }
@@ -150,6 +153,11 @@ void SegmentHistory::retry_cave()
 
 void SegmentHistory::update()
 {
+	// don't allow retrying from hole-in for race mode
+	if (p2gz->race_mode && p2gz->race_mode->is_active()) {
+		return;
+	}
+
 	const u32 btn = p2gz->controller->getButtonDown();
 	if (entering_next_segment || p2gz->menu->is_root_open()) {
 		// Retry same sublevel, random seed

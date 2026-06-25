@@ -123,8 +123,9 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 	}
 
 	if (!preset) {
-		segment->preset       = p2gz->preset_mgr->create();
-		segment->preset->day  = Game::gameSystem->mTimeMgr->mDayCount;
+		segment->preset = p2gz->preset_mgr->create();
+		// race mode gets weird if you reset day 1, this fixes that
+		segment->preset->day  = Game::gameSystem->mTimeMgr->mDayCount + 1;
 		segment->preset->time = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
 		dest.day              = Game::gameSystem->mTimeMgr->mDayCount;
 	}
