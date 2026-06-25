@@ -263,6 +263,7 @@ public:
 	static void fill_current_treasure_state(Preset* preset, WarpDestination dest);
 
 	PresetPreview* suggested_preset(WarpDestination dest, PresetCategory category);
+	void relevant_presets(PresetCategory category, WarpDestination dest, Vec<PresetPreview*>& out);
 	PresetPreview* find(const char* name, PresetCategory category);
 	Preset* load_preset(PresetPreview*);
 
@@ -281,6 +282,7 @@ public:
 	virtual MenuLayer* get_sub_menu() { return preset_category_list; }
 	virtual void draw(J2DPrint& j2d, f32& x, f32& z, bool selected);
 	virtual bool select();
+	virtual void update(); // D-pad left/right cycles through the warp's relevant-preset list
 
 	void init();
 	void do_on_preset_selected(PresetPreview*);

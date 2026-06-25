@@ -70,6 +70,8 @@ Warp::Warp()
 	active_captain                       = NAVIID_Olimar;
 	use_set_seed                         = false;
 	preset_during_warp                   = nullptr;
+	cycle_idx                            = 0;
+	warp_category_idx                    = 1; // default to PoD
 }
 
 void Warp::init()
@@ -77,6 +79,7 @@ void Warp::init()
 	area_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/area"));
 	sublevel_opt        = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/sublevel"));
 	cave_opt            = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/cave"));
+	category_opt        = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/category"));
 	day_opt             = static_cast<RangeMenuOption*>(p2gz->menu->get_option("warp/day"));
 	enter_area_type_opt = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/enter method"));
 	captain_opt         = static_cast<RadioMenuOption*>(p2gz->menu->get_option("warp/captain"));
@@ -92,6 +95,12 @@ void Warp::init()
 	captain_opt->options.push("olimar");
 	captain_opt->options.push("louie");
 
+	// order must match the indices in set_warp_category (0 = no preset, 1 = PoD, 2 = AT)
+	category_opt->options.push("no preset");
+	category_opt->options.push("PoD");
+	category_opt->options.push("AT");
+	category_opt->set_selection(warp_category_idx);
+
 	enter_area_type_opt->visible = false;
 
 	day_opt->set_selection(dest.day + 1);
@@ -99,6 +108,9 @@ void Warp::init()
 	update_cave_opt();
 	update_sublevel_opt();
 	update_captain_opt();
+
+	// seed the first suggested preset for the default destination
+	update_preset_opt();
 }
 
 void Warp::sync()
@@ -112,6 +124,15 @@ void Warp::set_preset(PresetPreview* preset, int preset_status_)
 	next_preset_p = preset;
 	next_preset   = nullptr;
 	preset_status = static_cast<PresetStatus>(preset_status_);
+
+	// keep the cycle index aligned with the active preset where possible (e.g. after picking
+	// from the full presets menu). No-op if the preset isn't part of the current cycle list.
+	if (preset) {
+		int idx = cycle_list.find(preset);
+		if (idx >= 0) {
+			cycle_idx = idx;
+		}
+	}
 
 	update_day_opt();
 	update_enter_type_opt();
@@ -222,20 +243,81 @@ void Warp::update_sublevel_opt()
 
 void Warp::update_preset_opt()
 {
-	if (preset_status > PS_Suggested) {
+	// "no preset" category: warp with the current squad, no preset applied.
+	if (warp_category_idx == 0) {
+		clear_preset();
 		return;
 	}
 
-	PresetCategory category = PoD;
-	if (has_next_preset()) {
-		category = static_cast<PresetCategory>(next_preset_category());
+	PresetCategory category = (warp_category_idx == 1) ? PoD : AT;
+
+	// rebuild the cycle list for the current destination so D-pad cycling is always valid here
+	p2gz->preset_mgr->relevant_presets(category, dest, cycle_list);
+
+	// if the player explicitly chose a preset from the full list, keep it as long as it's still
+	// relevant here - assume choosing with A should override suggestions
+	if (preset_status > PS_Suggested && preset_opt && preset_opt->current_preview) {
+		int idx = cycle_list.find(preset_opt->current_preview);
+		if (idx >= 0) {
+			cycle_idx = idx;
+			return;
+		}
+		// chosen preset no longer applies to this destination; fall through and re-suggest
 	}
 
-	PresetPreview* suggested_preset = p2gz->preset_mgr->suggested_preset(dest, category);
-	if (suggested_preset) {
-		set_preset(suggested_preset, PS_Suggested);
-		preset_opt->current_preview = suggested_preset;
+	// auto-suggest the first entry of the relevant list
+	cycle_idx = 0;
+	if (cycle_list.len() > 0) {
+		set_preset(cycle_list[0], PS_Suggested);
+		preset_opt->current_preview = cycle_list[0];
+	} else {
+		// no presets for this (category, destination): fall back to the current squad
+		clear_preset();
 	}
+}
+
+// Steps the relevant-preset cycle by (wrapped) `delta`.
+void Warp::cycle_preset(s32 delta)
+{
+	if (cycle_list.len() == 0) {
+		return;
+	}
+
+	const s32 count = static_cast<s32>(cycle_list.len());
+	s32 idx         = static_cast<s32>(cycle_idx) + delta;
+	if (idx < 0) {
+		idx = count - 1;
+	} else if (idx >= count) {
+		idx = 0;
+	}
+	cycle_idx = idx;
+
+	PresetPreview* preview = cycle_list[cycle_idx];
+	set_preset(preview, PS_Suggested);
+	preset_opt->current_preview = preview;
+}
+
+void Warp::set_warp_category(size_t category_idx)
+{
+	warp_category_idx = category_idx;
+	preset_status     = PS_Suggested; // a category change re-suggests, escaping any prior chosen preset
+	update_preset_opt();
+}
+
+// Drop any active preset and warp with the current squad ("no preset" category)
+void Warp::clear_preset()
+{
+	next_preset_p = nullptr;
+	next_preset   = nullptr;
+	preset_status = PS_Stale;
+	cycle_idx     = 0;
+	cycle_list.clear();
+	if (preset_opt) {
+		preset_opt->current_preview = nullptr;
+	}
+
+	update_day_opt();
+	update_enter_type_opt();
 }
 
 // only show day option when warping with no preset
