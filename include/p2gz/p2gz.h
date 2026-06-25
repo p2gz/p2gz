@@ -37,7 +37,7 @@
 #include <p2gz/RaceMode.h>
 
 /*!!! VERSION NUMBER - TO BE UPDATED EACH RELEASE !!!*/
-#define P2GZ_VERSION "beta1-pre"
+#define P2GZ_VERSION "beta1-pre2"
 
 struct P2GZ {
 public:
