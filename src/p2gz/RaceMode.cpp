@@ -196,13 +196,9 @@ void RaceMode::begin_from_preset()
 	}
 
 	PresetPreview* preset = p2gz->preset_mgr->suggested_preset(dest, category);
-	if (!preset) {
-		// shouldn't happen (the route always has these presets), but don't warp with no preset
-		OSReport("[P2GZ] race mode: no preset for start point, falling back to fresh file\n");
-		at_fresh_start = true;
-		begin_fresh_file();
-		return;
-	}
+
+	// we should always have a preset here, if not, panic
+	GZASSERTLINE(preset);
 
 	p2gz->warp->set_dest(dest);
 	p2gz->warp->set_preset(preset, PS_Suggested);
@@ -267,8 +263,7 @@ void RaceMode::on_ending(bool is_all_treasures)
 	}
 
 	// make sure our ending matches the category we set when we started
-	const bool match = (category == AT) ? is_all_treasures : !is_all_treasures;
-	if (!match) {
+	if ((category == AT) != is_all_treasures) {
 		return;
 	}
 
@@ -375,7 +370,11 @@ void RaceMode::draw_2d()
 	}
 
 	draw_timers();
-	draw_controls_hint();
+
+	// only show the hints while we're in a load transition, so it's not there ALL the time
+	if (in_load()) {
+		draw_controls_hint();
+	}
 }
 
 void RaceMode::draw_on_top()
