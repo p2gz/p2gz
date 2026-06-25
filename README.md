@@ -43,13 +43,13 @@ P2GZ is both Dolphin and console compatible:
 **NB: As always, modifying your console is at your own risk - please take care when following homebrew guides.**
 
 ### Practice caves and above ground areas
-Once you've booted up P2GZ, you can access the P2GZ menu from file select onward, by **double-pressing D-pad-left** on your controller. Some options are only available when opened during gameplay (such as those that depend on a level or assets being loaded), but warping, trainers, and global settings are available from file select.
+Once you've booted up P2GZ, you can access the P2GZ menu from file select onward, by **double-pressing D-pad-left** on your controller. Some options are only available when opened during gameplay (such as those that depend on a level or assets being loaded), but warping, race mode, trainers, and global settings are available from file select.
 
 A couple QoL features are on by default: skippable cutscenes (treasure collection and first-time-entering-area), and skipping save prompts between sublevels. These can be disabled in the P2GZ menu (double-press D-pad-left) under **settings**. These settings will persist when you boot up the game in the future if you are using a memory card (virtual or otherwise). The timer (in the top-left of the screen) will auto-update to account for any skipped cutscenes and for the lack of save prompt.
 
-P2GZ fully supports both Pay Off Debt (PoD) and All Treasures (AT) routes for speedrunning. To practice a segment, open the P2GZ menu (double-press D-pad-left) and select **warp**. Select the area, then the cave (or above ground) you wish to practice using the D-pad. 
+P2GZ fully supports both Pay Off Debt (PoD) and All Treasures (AT) routes for speedrunning. To practice a segment, open the P2GZ menu (double-press D-pad-left) and select **warp**. Select the area, then the cave (or above ground) you wish to practice, then the category (PoD, AT or no preset) using the D-pad. 
 
-A default PoD preset will auto-select - to change, hit A on the preset and choose your category. Presets are then displayed in route order, with a name and preview of your squad/onion setup. Choose your preset, then select **go** to warp. If warping to a cave, you can also enter a set seed to use when generating the layout, if desired. If you want to warp with your current squad, choose "no preset (warp with current squad) instead.
+The first preset for that area in that category will auto-select - to change, hit D-pad-left or D-pad-right on the preset to cycle through other presets for that area. Press A on the preset to choose from the full list of presets in the game, regardless of area. A preview of your squad/onion setup is also displayed. Once you've picked your preset, select **go** to warp. If warping to a cave, you can also enter a set seed to use when generating the layout, if desired, and also pick which captain you'd like to enter as. If you want to warp with your current squad, choose "no preset" from the category selector instead.
 
 Treasure region (US/JP/PAL) can be changed in the P2GZ menu (double-press D-pad-left) under the **level** submenu, and will take effect when you next warp or load an area. Your selection will be saved to the memory card and will be the default on next boot-up.
 
