@@ -140,6 +140,15 @@ void Warp::set_preset(Preset* preset, int preset_status_)
 void Warp::set_dest(WarpDestination new_dest)
 {
 	dest = new_dest;
+
+	// giving up and escaping messes up the cave-area setup, so force update menu when re-warping
+	if (area_opt) {
+		area_opt->set_selection(dest.area);
+		update_cave_opt();
+		update_sublevel_opt();
+		update_captain_opt();
+		update_preset_opt();
+	}
 }
 
 void Warp::set_warp_area(size_t area)
