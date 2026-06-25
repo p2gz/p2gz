@@ -144,8 +144,25 @@ f32 draw_preset_preview(J2DPrint& j2d, f32 x, f32 z, Game::PikiContainer& squad,
 	return x;
 }
 
+// Draws the squad/onion icons on their own line below the name, so they don't run off the right of the screen (as bad)
+static void draw_icon_row(J2DPrint& j2d, f32 indent, f32& z, Game::PikiContainer& squad, Game::PikiContainer& onion_pikis)
+{
+	// don't add a gap unless we have pikmin/onions to draw
+	if (squad.getTotalSum() == 0 && onion_pikis.getTotalSum() == 0) {
+		return;
+	}
+
+	const f32 vmargin = 6.0f; // extra breathing room above/below the icon row, they're a bit bulky
+	z += p2gz->menu->line_height + vmargin;
+	f32 x = indent;
+	draw_preset_preview(j2d, x, z, squad, onion_pikis);
+	z += vmargin;
+}
+
 void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 {
+	const f32 icon_indent = x + 20.0f;
+
 	MenuOption::draw(j2d, x, z, selected);
 	x += j2d.print(x, z, ": ");
 
@@ -162,11 +179,11 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 		if (can_cycle) {
 			x += j2d.print(x, z, "> (%d/%d) ", static_cast<int>(p2gz->warp->preset_cycle_index() + 1), static_cast<int>(cycle_count));
 		}
-		draw_preset_preview(j2d, x, z, current_preview->squad, current_preview->onion_pikis);
+		draw_icon_row(j2d, icon_indent, z, current_preview->squad, current_preview->onion_pikis);
 	} else {
 		x += j2d.print(x, z, "current squad ");
 		Game::PikiContainer current_squad = p2gz->squad_editor->get_squad();
-		draw_preset_preview(j2d, x, z, current_squad, Game::playData->mPikiContainer);
+		draw_icon_row(j2d, icon_indent, z, current_squad, Game::playData->mPikiContainer);
 	}
 
 	if (selected) {
