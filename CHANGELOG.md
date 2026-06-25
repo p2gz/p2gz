@@ -1,3 +1,31 @@
+# beta1-pre2
+
+This is the final staging release for the first public release of P2GZ. This adds some new features, fixes the workings of treasure and enemy saving, and some other bug fixes.
+
+Features:
+- Added an Early Blues trainer, including an inset camera controllable with the C-stick
+- Added a race mode, with a loads-removed timer, all-caves set-seed functionality, fresh-file or race file start points, and auto-splitting on completion of a run
+- Added the ability to save cutscene preferences and treasure region settings to memory card
+- Added a segment timer, which auto-splits on certain (toggleable) in-game events, and tracks previous bests in the same session
+- Added a setting to display sticker counts on enemies and treasure move speeds
+- Made different presets for the same area cyclable with dpad-left and dpad-right in the warp menu
+- Improved the visuals of the collision viewer, and made obscuring triangles transparent to not impede gameplay
+- Added the quick-restart-cave button (L) to be available from the gz menu
+- Added improved documentation for hack features
+
+Bug fixes:
+- Fixed how enemy and treasure collection statuses were saved and loaded above ground, so all areas are appropriately set when loading a preset
+- All presets now have appropriate pokos and treasure counts
+- Percent cutscenes now fire correctly in their appropriate segments
+- Fixed a bug where the first-corpse-in-cave cutscene would only play once despite resetting an area
+- Fixed a bug where the warp menu display would sometimes fall out of sync with where it would actually warp you
+- Fixed a bug where giving up and escaping from a cave sometimes left a stale warp menu display, causing warps to not match selection
+- Fixed a crash that occurred sometimes when soft-resetting and loading back into the game
+- Fixed a crash that occurred if you frame-perfectly paused the game while fading out of the Fast Empress trainer
+- Fixed some miscellaneous preset-related crashes and bugs
+
+---
+
 # beta1-pre
 
 This is a staging release for the first public release of P2GZ. Changes are minimal but we expect the hack to be somewhat stable already.
