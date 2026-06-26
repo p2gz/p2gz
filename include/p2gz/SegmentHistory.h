@@ -57,7 +57,7 @@ private:
 	void draw_cur_seed();
 	void draw_reset_controls();
 
-	RingBuffer<32, Segment*> segments;
+	RingBuffer<16, Segment*> segments;
 	Preset* cave_floor0_preset;       // The current cave's floor-0 preset, ref'd so it survives ring buffer clearing
 	WarpDestination cave_floor0_dest; // area+cave the pinned preset belongs to
 };

@@ -182,7 +182,8 @@ void PresetMenuOption::draw(J2DPrint& j2d, f32& x, f32& z, bool selected)
 		draw_icon_row(j2d, icon_indent, z, current_preview->squad, current_preview->onion_pikis);
 	} else {
 		x += j2d.print(x, z, "current squad ");
-		Game::PikiContainer current_squad = p2gz->squad_editor->get_squad();
+		// only show pikmin that will actually warp (i.e. not wild pikmin, bulbmin, non-blues to SmC)
+		Game::PikiContainer current_squad = p2gz->warp->preview_warp_squad();
 		draw_icon_row(j2d, icon_indent, z, current_squad, Game::playData->mPikiContainer);
 	}
 

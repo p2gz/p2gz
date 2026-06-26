@@ -224,7 +224,8 @@ Preset* PresetMgr::load_preset(PresetPreview* preview)
 	}
 
 	for (u32 i = 0; i < presets.len(); i++) {
-		if (presets[i]->name == preview->name) {
+		if (presets[i]->category == preview->category && strcmp(presets[i]->name, preview->name) == 0) {
+			presets[i]->ref();
 			return presets[i];
 		}
 	}
@@ -236,6 +237,7 @@ Preset* PresetMgr::load_preset(PresetPreview* preview)
 	preset->read_file(preview->filename);
 	preset->preview = preview;
 	presets.push(preset);
+	preset->ref();
 
 	prev_heap->becomeCurrentHeap();
 	return preset;
