@@ -45,10 +45,12 @@ public:
 	void start_run();
 
 	// hooks called from game code
-	void on_ending(bool is_all_treasures); // run-end detection
-	void request_reset();                  // X+B+Start = floor retry override
-	void notify_enemy_defeated();          // fun stats counter
-	void notify_pikmin_thrown();           // fun stats counter
+	void on_ending(bool is_all_treasures);        // run-end detection
+	void request_reset();                         // X+B+Start = floor retry override
+	void notify_cutscene_skipped(u32 skipped_ms); // advance the run clock by skipped vanilla cutscene time
+	void notify_save_skipped(f32 offset_seconds); // advance the run clock by a skipped save-prompt's vanilla time
+	void notify_enemy_defeated();                 // fun stats counter
+	void notify_pikmin_thrown();                  // fun stats counter
 
 private:
 	void begin_fresh_file();
@@ -57,6 +59,9 @@ private:
 	void do_reset();
 	void abort_run();
 	void capture_stats();
+
+	u32 rta_ms();
+	void add_skipped_time(u32 ms); // advance the run clock by p2gz-skipped vanilla time (cutscenes, save prompts)
 
 	void draw_timers();
 	void draw_timer_line(J2DPrint& j2d, f32 decimal_x, f32 z, const char* label, u32 ms); // one decimal-aligned RTA/IGT row
@@ -87,6 +92,9 @@ private:
 	bool was_loading;      // edge-detect in_load() for load_ms accounting
 	u32 load_enter_ms;     // wall-clock ms when the current load began
 	u32 abort_hold_frames; // frames the abort combo has been held
+
+	u32 run_start_ms; // wall-clock ms when the run started
+	bool timer_started;
 
 	bool pending_reset; // set by request_reset(), consumed in update()
 

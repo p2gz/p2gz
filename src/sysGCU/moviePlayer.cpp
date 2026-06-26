@@ -921,7 +921,12 @@ void MoviePlayer::skip()
 	// update the timer if we skip the cutscene
 	// (+ handle weird intro cutscene skip sound stuff)
 	if (p2gz->skippable_cutscenes->is_skippable()) {
-		p2gz->timer->stop_skip_timer(mCurrentConfig);
+		u32 skipped_ms = p2gz->timer->stop_skip_timer(mCurrentConfig);
+
+		// the race timer runs on its own clock, so feed it the same skip compensation
+		if (p2gz->race_mode && p2gz->race_mode->is_active()) {
+			p2gz->race_mode->notify_cutscene_skipped(skipped_ms);
+		}
 
 		// re-enable pikmin sounds for intro skip
 		// this normally happens on the first textbox of the cutscene, but we skipped it

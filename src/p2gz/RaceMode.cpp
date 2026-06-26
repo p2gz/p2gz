@@ -40,6 +40,8 @@ RaceMode::RaceMode()
 	was_loading            = false;
 	load_enter_ms          = 0;
 	abort_hold_frames      = 0;
+	run_start_ms           = 0;
+	timer_started          = false;
 	pending_reset          = false;
 	final_rta_ms           = 0;
 	final_igt_ms           = 0;
@@ -55,6 +57,13 @@ RaceMode::RaceMode()
 u32 RaceMode::cur_ms()
 {
 	return (u32)OSTicksToMilliseconds(OSGetTime());
+}
+
+// race mode has its own timer, so it doesn't get wiped by cave exits etc (woops)
+u32 RaceMode::rta_ms()
+{
+	// time since run start (or 0 if we haven't started yet)
+	return timer_started ? cur_ms() - run_start_ms : 0;
 }
 
 void RaceMode::ms_to_clock(u32 ms, u32& hours, u32& minutes, u32& seconds, u32& tenths)
@@ -135,12 +144,16 @@ void RaceMode::start_run()
 	enemies_defeated  = 0;
 	pikmin_thrown     = 0;
 
+	// start the timer
+	timer_started = true;
+	run_start_ms  = cur_ms();
+
 	// treasure region is bound straight into the region change stuff, so it'll auto-apply
 
 	// close menu first, otherwise we mess up the timer lol
 	p2gz->menu->close();
 
-	// start RTA (main) and IGT (load-removed) timers
+	// the normal per-segment timer is hidden during a race, but keep it in a sane state for when the race ends
 	p2gz->timer->set_enabled(true);
 	p2gz->timer->set_sub_timer_enabled(false);
 	p2gz->timer->reset_main_timer();
@@ -173,6 +186,9 @@ void RaceMode::begin_fresh_file()
 	Game::playData->reset();
 	Game::playData->mLoadType             = Game::STORYSAVE_NewFile;
 	Game::gameSystem->mTimeMgr->mDayCount = 0;
+
+	// no save slot was ever chosen, so flag this like a menu warp does
+	p2gz->in_save_file = false;
 
 	Game::SingleGame::MovieArg arg(Game::THPPlayer::OPENING_GameStart);
 	game->mFsm->transit(game, Game::SingleGame::SGS_Movie, &arg);
@@ -225,7 +241,8 @@ void RaceMode::do_reset()
 
 	const f32 penalty = use_set_seed ? RESET_PENALTY_SET_SEED : RESET_PENALTY_RANDOM;
 	if (penalty > 0.0f) {
-		p2gz->timer->offset_main_timer(penalty); // also penalises IGT, since IGT = RTA - loads
+		// move the run-clock origin earlier so the penalty is "added" to both RTA and IGT
+		run_start_ms -= (u32)(penalty * 1000.0f);
 	}
 
 	// day 1 has to be difficult every single time. account for it if someone resets the day
@@ -269,18 +286,41 @@ void RaceMode::on_ending(bool is_all_treasures)
 
 	capture_stats();
 	final_is_all_treasures = is_all_treasures;
-	p2gz->timer->pause(); // stop the timer!
+
 	finished = true;
 }
 
 void RaceMode::capture_stats()
 {
-	const u32 rta      = p2gz->timer->get_main_elapsed_ms();
+	const u32 rta      = rta_ms();
 	const u32 eff_load = load_ms + (was_loading ? cur_ms() - load_enter_ms : 0);
 
 	final_rta_ms      = rta;
 	final_igt_ms      = (rta > eff_load) ? rta - eff_load : 0;
 	final_pikmin_lost = Game::DeathMgr::get_total(Game::DeathCounter::COD_All) + Game::DeathMgr::get_today(Game::DeathCounter::COD_All);
+}
+
+void RaceMode::add_skipped_time(u32 ms)
+{
+	// correct the race timer for skipped cutscenes/save prompts/etc
+	if (!timer_started || finished || ms == 0) {
+		return;
+	}
+	run_start_ms -= ms;
+}
+
+void RaceMode::notify_cutscene_skipped(u32 skipped_ms)
+{
+	add_skipped_time(skipped_ms);
+}
+
+void RaceMode::notify_save_skipped(f32 offset_seconds)
+{
+	// no underflows for me, thanks - i'm driving
+	if (offset_seconds <= 0.0f) {
+		return;
+	}
+	add_skipped_time((u32)(offset_seconds * 1000.0f));
 }
 
 void RaceMode::notify_enemy_defeated()
@@ -400,7 +440,7 @@ void RaceMode::draw_timers()
 	j2d.mCharColor.set(color);
 	j2d.mGradientColor.set(color);
 
-	const u32 rta      = finished ? final_rta_ms : p2gz->timer->get_main_elapsed_ms();
+	const u32 rta      = finished ? final_rta_ms : rta_ms();
 	const u32 eff_load = load_ms + (was_loading ? cur_ms() - load_enter_ms : 0);
 	const u32 igt      = finished ? final_igt_ms : ((rta > eff_load) ? rta - eff_load : 0);
 

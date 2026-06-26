@@ -60,15 +60,12 @@ public:
 	void offset_sub_timer(f32 offset_seconds);
 
 	void reset_skip_timer();
-	void stop_skip_timer(Game::MovieConfig* config);
+	u32 stop_skip_timer(Game::MovieConfig* config); // returns the unwatched cutscene time it compensated for (ms)
 	void cancel_skip_timer();
 
 	void pause();
 	void unpause();
 	u32 get_elapsed_time() { return ((get_cur_time() - sub_timer) / 1000); } // this returns time since last loaded section in seconds
-
-	// elapsed RTA in ms (for race mode)
-	u32 get_main_elapsed_ms();
 
 	void reset_navi_swap_timer();
 	f32 stop_navi_swap_timer();
