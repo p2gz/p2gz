@@ -1,0 +1,135 @@
+BK_(CR_early) 	# preset name (USE UNDERSCORES INSTEAD OF SPACES)
+PoD 	# category
+#  bl bb bf rl rb rf yl yb yf pl pb pf wl wb wf cl cb cf
+   3  0  34 0  0  25 0  0  0  0  0  18 0  0  20 0  0  0  	# pikmin
+   23 0  0  0  0  3  0  0  0  0  0  2  0  0  0  0  0  0  	# onions
+0 	# num sprouts
+0 0 	# bitters, bitters unlocked
+0 0 	# spicies, spicies unlocked
+13.000000 	# time of day
+6 	# day number
+0 	# enter kind (FromCave = 0, FromMap = 1)
+5 	# num upgrades
+	5 	# ODII_JusticeAlloy
+	8 	# ODII_PrototypeDetector
+	9 	# ODII_FiveManNapsack
+	10 	# ODII_SphericalAtlas
+	11 	# ODII_GeographicProjection
+31 	# num demo flags
+	0 	# DEMO_Pluck_First_Pikmin
+	1 	# DEMO_Discover_Treasure
+	3 	# DEMO_Find_Cave_Deeper_Hole
+	4 	# DEMO_Find_Cave_Geyser
+	5 	# DEMO_First_Cave_Enter
+	6 	# DEMO_First_Cave_Return
+	8 	# DEMO_First_Gate_Down
+	9 	# DEMO_Find_Spiderwort_Mold
+	12 	# DEMO_Eat_White_Pikmin
+	13 	# DEMO_Purples_In_Ship
+	15 	# DEMO_Reds_In_Onion
+	18 	# DEMO_First_Globe_Day_End
+	20 	# DEMO_First_Nectar_Use
+	25 	# DEMO_White_Candypop
+	26 	# DEMO_Purple_Candypop
+	31 	# DEMO_Day_One_Start
+	32 	# DEMO_Enter_Awakening_Wood
+	35 	# DEMO_Meet_Red_Pikmin
+	36 	# DEMO_Louie_Finds_Red_Onion
+	37 	# DEMO_Unlock_Captain_Switch
+	38 	# DEMO_First_Use_Louie
+	39 	# DEMO_Reunite_Captains
+	40 	# DEMO_First_Corpse_In_Cave
+	43 	# DEMO_Find_Blue_Onion
+	45 	# DEMO_Whites_Digging
+	46 	# DEMO_Reds_Purples_Tutorial
+	47 	# DEMO_Pikmin_In_Danger_Fire
+	48 	# DEMO_You_Appear_Lost
+	49 	# DEMO_First_Number_Pellet
+	51 	# DEMO_Pikmin_In_Danger_Water
+	52 	# DEMO_Pikmin_In_Danger_Poison
+5 	# num EK cutscenes
+	5 	# ODII_JusticeAlloy
+	8 	# ODII_PrototypeDetector
+	9 	# ODII_FiveManNapsack
+	10 	# ODII_SphericalAtlas
+	11 	# ODII_GeographicProjection
+5 	# num cave cutscene flags
+	1 	# EC
+	4 	# HoB
+	5 	# WFG
+	6 	# BK
+	7 	# SH
+3 	# num destroyed gates
+	0 	-591.000000 1427.000000 	0 	# EC gate
+	1 	-503.000000 1639.000000 	0 	# black gate
+	1 	-820.000000 4280.000000 	0 	# SH gate
+1 	# num finished bridges
+	1 	-1250.000000 2260.000000 	0 	# globe bridge
+3 	# num flattened bags
+	0 	-910.700012 2769.199951 	0 	# landing area bag (15)
+	0 	-1150.000000 2455.000000 	0 	# hubcap bag (35)
+	1 	-395.000000 1115.000000 	0 	# WFG bag (200)
+0	# num plugs destroyed
+6 	# num enemy spawns
+	0	1	-1153.361206 47.871529 2231.686035	4	# VoR Dwarf Red Bulborb (hubcap)
+	1	15	-672.000000 -20.000000 1392.000000	5	# AW Cloaking Burrow-nit
+	1	16	-544.000000 -38.000000 1804.000000	5	# AW Honeywisp
+	1	1	-179.685318 -70.000000 2909.942139	5	# AW Dwarf Red Bulborb x2
+	1	2	-486.161591 -70.000000 3058.214355	5	# AW Red Bulborb
+	1	10	-738.448914 -28.741590 2354.096924	5	# AW Iridescent Glint Beetle (flowerpot)
+6 	# num treasure spawn overrides
+	0	142	0	# VoR Courage Reactor
+	1	42	0	# AW Sunseed Berry
+	1	130	0	# AW Pilgrim Bulb
+	1	11	0	# AW Geographic Projection
+	1	155	0	# AW Chance Totem
+	1	173	0	# AW Healing Cask
+1	# bridge glitch active
+4	# new area zoom (bit per course: VoR=1 AW=2 PP=4 WW=8)
+0   # percent cutscene (> 0 if one should play)
+2	# treasure mode (0=off, 1=cave floor, 2=checkpoint)
+0	# debt (-1=untouched, 0=unpaid, 1=paid)
+24	# num collected treasures (zukan, by config index)
+	2	# apple_blue
+	23	# diamond_red
+	30	# donutswhite
+	39	# gum_tape
+	42	# ichigo
+	94	# dia_a_red
+	98	# dia_b_blue
+	101	# dia_c_green
+	110	# ichigo_l
+	117	# fire_helmet
+	119	# be_dama_red_l
+	120	# be_dama_yellow_l
+	121	# be_dama_blue_l
+	130	# bane_yellow
+	131	# juji_key_fc
+	133	# tape_yellow
+	142	# denchi_1_red
+	155	# donutschoco_s
+	156	# donutsichigo_s
+	161	# chocoichigo_l
+	167	# g_futa_kajiwara
+	173	# g_futa_hiruzen
+	184	# uji_jisyaku
+	187	# whistle
+5	# num collected items (zukan, by config index)
+	5	# suit_powerup
+	8	# radar_a
+	9	# radar_b
+	10	# map01
+	11	# map02
+0	# num cave-held pellets (kind id): kind 0=otakara 1=item
+29 4031 0	# treasure count, poko count, cave poko count
+4	# num per-sublevel deltas (grouped cave presets): per row = floor poko_delta numCaught
+	1 157 1	# floor 1 caught
+		0 124	# diamond_green_l
+	2 150 1	# floor 2 caught
+		0 123	# diamond_blue_l
+	4 217 2	# floor 4 caught
+		0 46	# kouseki_suisyou
+		0 182	# wadou_kaichin
+	6 299 2	# floor 6 caught
+		0 122	# diamond_red_l
+		0 57	# saru_head
