@@ -338,6 +338,9 @@ void GZMenu::open()
 	get_option("captain")->visible = in_gameplay;
 	get_option("level")->visible   = in_gameplay;
 
+	// spawn points only exist in caves, so don't offer the viewer above ground
+	get_option("debug info/spawn point viewer")->visible = in_cave_gameplay();
+
 	layer = root_layer;
 	layer->reset_selection();
 	breadcrumbs.clear();
