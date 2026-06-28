@@ -863,6 +863,11 @@ void GameState::onMovieDone(SingleGameSection* game, MovieConfig* config, u32, u
 			// @P2GZ - timer
 			// add offset for save prompt
 			p2gz->timer->offset_main_timer(CAVE_ENTER_SAVE_OFFSET_TIME);
+
+			// the race timer runs on its own clock, so feed it the same skip compensation
+			if (p2gz->race_mode && p2gz->race_mode->is_active()) {
+				p2gz->race_mode->notify_save_skipped(CAVE_ENTER_SAVE_OFFSET_TIME);
+			}
 		}
 		mInSaveScreen = true;
 

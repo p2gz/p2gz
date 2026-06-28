@@ -611,6 +611,11 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 			// @P2GZ - timer
 			// add offset for save prompt (to both timers!)
 			p2gz->timer->offset_main_timer(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
+
+			// the race timer runs on its own clock, so feed it the same skip compensation
+			if (p2gz->race_mode && p2gz->race_mode->is_active()) {
+				p2gz->race_mode->notify_save_skipped(NEXT_SUBLEVEL_SAVE_OFFSET_TIME);
+			}
 		}
 		mDrawSave = true;
 

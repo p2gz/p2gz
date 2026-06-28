@@ -63,13 +63,6 @@ void Timer::init()
 	timer_menu = static_cast<ListMenu*>(p2gz->menu->get_option("timer")->get_sub_menu());
 }
 
-u32 Timer::get_main_elapsed_ms()
-{
-	// while paused, the timer is frozen at pause_timer
-	const u32 end = pause_timer_set ? pause_timer : get_cur_time();
-	return end - main_timer;
-}
-
 void Timer::draw()
 {
 	if (!enabled) {
@@ -307,10 +300,10 @@ void Timer::reset_skip_timer()
 	skip_timer_set = true;
 }
 
-void Timer::stop_skip_timer(Game::MovieConfig* config)
+u32 Timer::stop_skip_timer(Game::MovieConfig* config)
 {
 	if (!skip_timer_set || !config) {
-		return;
+		return 0;
 	}
 
 	f32 max_cutscene_time = 0.0f;
@@ -331,7 +324,7 @@ void Timer::stop_skip_timer(Game::MovieConfig* config)
 		// we have a skip timer going during the wrong cutscene, something is Wrong
 		OSReport("[P2GZ WARN] stop_skip_timer: unhandled config name\n");
 		OSReport("[P2GZ WARN] >> config: %s\n", config->mMovieNameBuffer2);
-		return;
+		return 0;
 	}
 
 	int remaining = skip_timer + (max_cutscene_time * 1000.0f) - get_cur_time();
@@ -342,6 +335,10 @@ void Timer::stop_skip_timer(Game::MovieConfig* config)
 	main_timer -= remaining;
 	sub_timer -= remaining;
 	skip_timer_set = false;
+
+	// hand back the unwatched vanilla cutscene time we just compensated for, so timers that run on
+	// their own clock (e.g. race mode) can apply the same offset
+	return (u32)remaining;
 }
 
 void Timer::cancel_skip_timer()
