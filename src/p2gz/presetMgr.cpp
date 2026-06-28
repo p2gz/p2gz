@@ -270,17 +270,27 @@ struct PresetGroup {
 #define PRESET_GROUP(arr) { arr, sizeof(arr) / sizeof((arr)[0]) }
 
 // ---- PoD caves ----
-static const PresetGroupEntry EC_POD[] = { { "EC1", 0, 0 }, { "EC2", 1, SUBLEVEL_ANY } };
-static const PresetGroupEntry SCx_POD[]
-    = { { "SCx1-4", 0, 3 }, { "SCx1-4 (25w)", 0, 3 }, { "SCx5-8", 4, SUBLEVEL_ANY }, { "SCx5-8 (40w)", 4, SUBLEVEL_ANY } };
-static const PresetGroupEntry FC_POD[]
-    = { { "FC1-5", 0, 4 }, { "FC1-5 (40w)", 0, 4 }, { "FC6-7", 5, SUBLEVEL_ANY }, { "FC6-7 (40w)", 5, SUBLEVEL_ANY } };
+static const PresetGroupEntry EC_POD[]  = { { "EC1", 0, 0 }, { "EC2", 1, SUBLEVEL_ANY } };
+static const PresetGroupEntry SCx_POD[] = { { "SCx1-4", 0, 3 },
+	                                        { "SCx1-4 (25w)", 0, 3 },
+	                                        { "SCx1-4 (CR early)", 0, 3 },
+	                                        { "SCx5-8", 4, SUBLEVEL_ANY },
+	                                        { "SCx5-8 (40w)", 4, SUBLEVEL_ANY },
+	                                        { "SCx5-8 (CR early)", 4, SUBLEVEL_ANY } };
+static const PresetGroupEntry FC_POD[]  = { { "FC1-5", 0, 4 },
+	                                        { "FC1-5 (40w)", 0, 4 },
+	                                        { "FC1-5 (CR early)", 0, 4 },
+	                                        { "FC6-7", 5, SUBLEVEL_ANY },
+	                                        { "FC6-7 (40w)", 5, SUBLEVEL_ANY },
+	                                        { "FC6-7 (CR early)", 5, SUBLEVEL_ANY } };
 static const PresetGroupEntry HoB_POD[] = { { "HoB1-2", 0, 1 }, { "HoB3-4", 2, 3 }, { "HoB5", 4, SUBLEVEL_ANY } };
 static const PresetGroupEntry WFG_POD[] = { { "WFG1-3", 0, 2 }, { "WFG4-5", 3, SUBLEVEL_ANY } };
-static const PresetGroupEntry BK_POD[]  = { { "BK", 0, SUBLEVEL_ANY }, { "BK (25w)", 0, SUBLEVEL_ANY } };
-static const PresetGroupEntry SH_POD[]  = { { "SH1-2", 0, 1 }, { "SH3-7", 2, SUBLEVEL_ANY } };
-static const PresetGroupEntry CoS_POD[] = { { "CoS", 0, SUBLEVEL_ANY }, { "CoS (40w)", 0, SUBLEVEL_ANY } };
-static const PresetGroupEntry GK_POD[]  = { { "GK", 0, SUBLEVEL_ANY }, { "GK (40w)", 0, SUBLEVEL_ANY } };
+static const PresetGroupEntry BK_POD[]
+    = { { "BK", 0, SUBLEVEL_ANY }, { "BK (25w)", 0, SUBLEVEL_ANY }, { "BK (CR early)", 0, SUBLEVEL_ANY } };
+static const PresetGroupEntry SH_POD[] = { { "SH1-2", 0, 1 }, { "SH3-7", 2, SUBLEVEL_ANY } };
+static const PresetGroupEntry CoS_POD[]
+    = { { "CoS", 0, SUBLEVEL_ANY }, { "CoS (40w)", 0, SUBLEVEL_ANY }, { "CoS (CR early)", 0, SUBLEVEL_ANY } };
+static const PresetGroupEntry GK_POD[] = { { "GK", 0, SUBLEVEL_ANY }, { "GK (40w)", 0, SUBLEVEL_ANY } };
 
 // Indexed by gz::CaveIndex (index 0 = above-ground, handled separately below)
 static const PresetGroup POD_GROUPS[CAVE_COUNT] = {
@@ -303,20 +313,18 @@ static const PresetGroup POD_GROUPS[CAVE_COUNT] = {
 
 // ---- PoD above-ground (indexed by area / gz::CourseIndex) ----
 static const PresetGroupEntry POD_AG_VoR[] = {
-	{ "Day 1", 0, SUBLEVEL_ANY },          { "Day 2", 0, SUBLEVEL_ANY },           { "Day 3", 0, SUBLEVEL_ANY },
-	{ "Day 4", 0, SUBLEVEL_ANY },          { "day 6 CR", 0, SUBLEVEL_ANY },        { "day 6 CR (25w)", 0, SUBLEVEL_ANY },
-	{ "enter SCx", 0, SUBLEVEL_ANY },      { "enter SCx (25w)", 0, SUBLEVEL_ANY }, { "enter FC", 0, SUBLEVEL_ANY },
-	{ "enter FC (40w)", 0, SUBLEVEL_ANY },
+	{ "Day 1", 0, SUBLEVEL_ANY },     { "Day 2", 0, SUBLEVEL_ANY },           { "Day 3", 0, SUBLEVEL_ANY },
+	{ "Day 4", 0, SUBLEVEL_ANY },     { "day 6 CR", 0, SUBLEVEL_ANY },        { "day 6 CR (25w)", 0, SUBLEVEL_ANY },
+	{ "enter SCx", 0, SUBLEVEL_ANY }, { "enter SCx (25w)", 0, SUBLEVEL_ANY }, { "enter SCx (CR early)", 0, SUBLEVEL_ANY },
+	{ "enter FC", 0, SUBLEVEL_ANY },  { "enter FC (40w)", 0, SUBLEVEL_ANY },  { "enter FC (CR early)", 0, SUBLEVEL_ANY },
 };
 static const PresetGroupEntry POD_AG_AW[] = {
 	{ "enter HoB", 0, SUBLEVEL_ANY },        { "enter WFG", 0, SUBLEVEL_ANY },      { "enter SH", 0, SUBLEVEL_ANY },
 	{ "enter BK (15/5w)", 0, SUBLEVEL_ANY }, { "enter BK (20w)", 0, SUBLEVEL_ANY }, { "enter BK (25w)", 0, SUBLEVEL_ANY },
 };
 static const PresetGroupEntry POD_AG_PP[] = {
-	{ "enter CoS", 0, SUBLEVEL_ANY },
-	{ "enter CoS (40w)", 0, SUBLEVEL_ANY },
-	{ "enter GK", 0, SUBLEVEL_ANY },
-	{ "enter GK (40w)", 0, SUBLEVEL_ANY },
+	{ "enter CoS", 0, SUBLEVEL_ANY }, { "enter CoS (40w)", 0, SUBLEVEL_ANY }, { "enter CoS (CR early)", 0, SUBLEVEL_ANY },
+	{ "enter GK", 0, SUBLEVEL_ANY },  { "enter GK (40w)", 0, SUBLEVEL_ANY },
 };
 static const PresetGroup POD_AG_GROUPS[4] = {
 	PRESET_GROUP(POD_AG_VoR), // COURSE_VoR
