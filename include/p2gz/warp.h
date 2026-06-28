@@ -66,6 +66,8 @@ public:
 	bool using_set_seed() { return use_set_seed; }
 	u32 get_seed() { return seed; }
 
+	Game::PikiContainer preview_warp_squad();
+
 	void set_preset(PresetPreview* preset, int preset_status);
 	void set_preset(Preset* preset, int preset_status);
 	Preset* get_preset_during_warp()
@@ -107,6 +109,7 @@ private:
 	void warp_to_cave(Game::SingleGameSection* game);
 	void warp_to_area(Game::SingleGameSection* game);
 	void save_pikmin();
+	bool piki_warps_to_dest(Game::Piki* piki);
 	void reset_cave_treasure_collections(Game::SingleGameSection* game);
 
 	bool has_next_preset() { return next_preset_p != nullptr || next_preset != nullptr; }

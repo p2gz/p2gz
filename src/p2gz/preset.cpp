@@ -335,7 +335,14 @@ void Preset::apply()
 	}
 
 	// Convert position-based StructureOverride data into per-area name-based state
-	// for use by reconstruct_generator_cache() during the upcoming load
+	// for use by reconstruct_generator_cache() during the upcoming load.
+	// clear area_states so it doesn't accumulate incorrectly across loads
+	for (int i = 0; i < 4; i++) {
+		area_states[i].destroyed_gates.clear();
+		area_states[i].finished_bridges.clear();
+		area_states[i].bags_flattened.clear();
+		area_states[i].plug_destroyed = false;
+	}
 	for (u32 i = 0; i < destroyed_gates.len(); i++) {
 		const StructureOverride& o = destroyed_gates[i];
 		const char* name           = p2gz->structure_editor->find_gate_name(o.position, o.area);

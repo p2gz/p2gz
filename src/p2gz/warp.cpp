@@ -447,6 +447,20 @@ void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)
 	}
 }
 
+// would this piki actually warp to the current destination?
+bool Warp::piki_warps_to_dest(Game::Piki* piki)
+{
+	// no dead pikmin, wild pikmin, wild bulbmin, tamed bulbmin
+	if (!piki->isAlive() || piki->isZikatu() || !piki->isPikmin() || piki->getKind() == Game::Bulbmin) {
+		return false;
+	}
+	// only blues allowed in SmC
+	if (dest.area == 2 && dest.cave == 4 && piki->getKind() != Game::Blue) {
+		return false;
+	}
+	return true;
+}
+
 void Warp::save_pikmin()
 {
 	// clear cave piki container so we don't double up
@@ -462,16 +476,33 @@ void Warp::save_pikmin()
 			Game::PikiKillArg killArg(Game::CKILL_DontCountAsDeath);
 			piki->kill(&killArg);
 		}
-		//                      vvvvvvvvvvvvvvvv <- make sure we don't bring wild pikmin
-		if (piki->isAlive() && !piki->isZikatu() && piki->isPikmin()) {
-			// Don't bring non-blues into SmC
-			if (!(dest.area == 2 && dest.cave == 4) || piki->getKind() == Game::Blue) {
-				Game::playData->mCaveSaveData.mCavePikis(piki)++;
-				Game::PikiKillArg arg(Game::CKILL_DontCountAsDeath);
-				piki->kill(&arg);
-			}
+		if (piki_warps_to_dest(piki)) {
+			Game::playData->mCaveSaveData.mCavePikis(piki)++;
+			Game::PikiKillArg arg(Game::CKILL_DontCountAsDeath);
+			piki->kill(&arg);
 		}
 	}
+}
+
+// get the pikmin that would warp to the current destination, for the menu's squad preview
+Game::PikiContainer Warp::preview_warp_squad()
+{
+	Game::PikiContainer squad;
+
+	// managers don't exist until a level loads (e.g. menu opened from file-select)
+	if (!Game::pikiMgr) {
+		return squad;
+	}
+
+	Iterator<Game::Piki> iterator(Game::pikiMgr);
+	CI_LOOP(iterator)
+	{
+		Game::Piki* piki = *iterator;
+		if (piki_warps_to_dest(piki)) {
+			squad.getCount(piki->mPikiKind, piki->mHappaKind)++;
+		}
+	}
+	return squad;
 }
 
 void Warp::warp_to_cave(Game::SingleGameSection* game)

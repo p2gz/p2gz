@@ -71,7 +71,8 @@ private:
 
 template <typename T>
 struct Vec {
-	Vec(size_t capacity = 8)
+	// doesn't allocate space until we need it
+	Vec(size_t capacity = 0)
 	{
 		mCapacity = capacity;
 		mLen      = 0;
@@ -97,7 +98,7 @@ struct Vec {
 	void push(T val)
 	{
 		if (mLen >= mCapacity) {
-			_grow(mCapacity * 2);
+			_grow(mCapacity == 0 ? 8 : mCapacity * 2);
 		}
 		GZASSERTLINE(mBuf);
 		mBuf[mLen] = val;
@@ -106,12 +107,12 @@ struct Vec {
 
 	int find(T val)
 	{
-		GZASSERTLINE(mBuf);
 		for (size_t i = 0; i < mLen; i++) {
 			if (mBuf[i] == val) {
 				return i;
 			}
 		}
+		// mBuf may be null for a never-pushed Vec
 		return -1;
 	}
 
@@ -159,7 +160,6 @@ struct Vec {
 	void extend(Vec<T>& other)
 	{
 		expandCapacityTo(len() + other.len());
-		GZASSERTLINE(mBuf);
 		for (size_t i = 0; i < other.len(); i++) {
 			push(other[i]);
 		}

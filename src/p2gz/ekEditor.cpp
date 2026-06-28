@@ -74,7 +74,7 @@ void EKEditor::check_upgrades()
 BitFlag<u16> EKEditor::get_upgrades_bitfield()
 {
 	BitFlag<u16> bitfield;
-	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i < Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
+	for (size_t i = Game::OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; i <= Game::OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; i++) {
 		const u16 mask = 1 << i;
 		if (playData->mOlimarData->hasItem(i)) {
 			bitfield.set(mask);
@@ -95,8 +95,8 @@ void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 	} else {
 		bool validItem = item >= OlimarData::ODII_BruteKnuckles && item <= OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM;
 		GZASSERTLINE(validItem);
-		int data_idx = item < 8 ? 0 : 1;
-		playData->mOlimarData->mFlags[data_idx] &= ~(1 << (item - (data_idx * 8)));
+		int data_idx = item >> 3;
+		playData->mOlimarData->mFlags[1 - data_idx] &= ~(1 << (item - (data_idx << 3)));
 
 		if (item == OlimarData::ODII_PrototypeDetector) {
 			Game::playData->mDemoFlags.resetFlag(Game::DEMO_RADAR_ENABLED);
@@ -106,7 +106,7 @@ void EKEditor::set_upgrade(OlimarData::ItemIndex item, bool enabled)
 
 void EKEditor::reset_all()
 {
-	for (int item = OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; item < OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; item++) {
+	for (int item = OlimarData::ODII_FIRST_EXPLORATION_KIT_ITEM; item <= OlimarData::ODII_LAST_EXPLORATION_KIT_ITEM; item++) {
 		set_upgrade(static_cast<OlimarData::ItemIndex>(item), false);
 	}
 }
