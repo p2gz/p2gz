@@ -9,6 +9,7 @@
 #include "kh/khFinalResult.h"
 #include "TParticle2dMgr.h"
 #include "nans.h"
+#include <p2gz/p2gz.h> // @P2GZ
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Ending";
@@ -171,7 +172,7 @@ void EndingState::exec(SingleGameSection* game)
 				mTHPPlayer->stop();
 				mStatus   = EndingStatus_PlayMovieCredits;
 				mThpState = 1;
-				mTHPPlayer->load(THPPlayer::STAFF_ROLL);				
+				mTHPPlayer->load(THPPlayer::STAFF_ROLL);
 			}
 			break;
 		case EndingStatus_PlayMovieCredits:
@@ -316,6 +317,10 @@ void EndingState::draw(SingleGameSection* game, Graphics& gfx)
 		game->draw_Ogawa2D(gfx);
 		gfx.mPerspGraph.setPort();
 		particle2dMgr->draw(0, 0);
+
+		// @P2GZ - race mode
+		// make sure custom run end screen draws on top
+		p2gz->race_mode->draw_on_top();
 	}
 }
 

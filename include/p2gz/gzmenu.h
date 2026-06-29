@@ -112,6 +112,18 @@ public:
 	bool get_selection() { return on; }
 	void set_selection(bool selected) { on = selected; }
 
+	// like set_selection, but also fires the bound delegate so the live state follows the display
+	void set_value(bool value)
+	{
+		if (on == value) {
+			return;
+		}
+		on = value;
+		if (on_selected) {
+			on_selected->invoke(on);
+		}
+	}
+
 private:
 	bool on;
 	IDelegate1<bool>* on_selected;

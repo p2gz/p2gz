@@ -466,6 +466,47 @@ inline bool in_enter_area_load()
 	return true;
 }
 
+// checks for non-LoadState loads
+
+inline bool in_world_map_load()
+{
+	// EOD results -> world map load (long)
+	if (!in_world_map()) {
+		return false;
+	}
+	Game::SingleGame::SelectState* state = static_cast<Game::SingleGame::SelectState*>(get_SGS()->getCurrState());
+	return state && state->mState == Game::SingleGame::SelectState::SELECTSTATE_Load;
+}
+
+inline bool in_day_end_result_load()
+{
+	// gameplay -> EOD results load (short)
+	if (!in_end_of_day_result()) {
+		return false;
+	}
+	Game::SingleGame::MainResultState* state = static_cast<Game::SingleGame::MainResultState*>(get_SGS()->getCurrState());
+	return state && state->mStatus == Game::SingleGame::MainResultState::Result_LoadData;
+}
+
+inline bool in_cave_result_load()
+{
+	// gameplay -> cave results (short)
+	if (!in_cave_results()) {
+		return false;
+	}
+	Game::SingleGame::CaveResultState* state = static_cast<Game::SingleGame::CaveResultState*>(get_SGS()->getCurrState());
+	return state && state->mStatus == 1;
+}
+
+inline bool in_ending_state()
+{
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs || !sgs->getCurrState()) {
+		return false;
+	}
+	return sgs->getCurrState()->getCurrStateID() == Game::SingleGame::SGS_Ending;
+}
+
 inline void skip_movie()
 {
 	if (Game::moviePlayer && Game::moviePlayer->mDemoState == Game::DEMOSTATE_Playing) {
