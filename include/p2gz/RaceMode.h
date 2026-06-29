@@ -14,6 +14,7 @@ namespace gz {
 struct ListMenu;
 struct RadioMenuOption;
 struct HexInputOption;
+struct ToggleMenuOption;
 
 // race/speedrun mode - start a fresh file for a PoD or AT speedrun with some extra functionality
 struct RaceMode {
@@ -44,6 +45,11 @@ public:
 	void set_random_seed();
 	void start_run();
 
+	// race-local setting overrides
+	void set_race_skippable_cs(bool on); // race submenu toggle: skippable cutscenes for this run
+	void set_race_skip_save(bool on);    // race submenu toggle: skip save prompts for this run
+	void sync_menu();                    // refresh the two toggles from saved prefs on open
+
 	// hooks called from game code
 	void on_ending(bool is_all_treasures);        // run-end detection
 	void request_reset();                         // X+B+Start = floor retry override
@@ -59,6 +65,10 @@ private:
 	void do_reset();
 	void abort_run();
 	void capture_stats();
+
+	// force every non-vanilla toggle off at start of run + restore after
+	void apply_race_settings();
+	void restore_settings();
 
 	u32 rta_ms();
 	void add_skipped_time(u32 ms); // advance the run clock by p2gz-skipped vanilla time (cutscenes, save prompts)
@@ -106,10 +116,18 @@ private:
 	u32 enemies_defeated;
 	u32 pikmin_thrown;
 
+	// race-local setting state
+	bool race_skippable_cs;
+	bool race_skip_save;
+	bool race_settings_touched;    // user changed a race toggle this session, so stop re-pulling the saved pref
+	bool snapshot_allow_zero_piki; // pre-race value of "allow 0 pikmin in caves", restored on finish
+
 	// menu hooks
 	RadioMenuOption* category_opt;
 	RadioMenuOption* start_point_opt;
 	RadioMenuOption* region_opt;
+	ToggleMenuOption* skippable_cs_opt;
+	ToggleMenuOption* skip_save_opt;
 };
 
 }; // namespace gz

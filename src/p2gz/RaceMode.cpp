@@ -6,6 +6,7 @@
 #include <JSystem/J2D/J2DPrint.h>
 #include <P2JME/P2JME.h>
 #include <System.h>
+#include <Graphics.h>
 #include <ResetManager.h>
 #include <Dolphin/os.h>
 #include <Game/GameSystem.h>
@@ -28,30 +29,36 @@ const u32 RaceMode::ABORT_COMBO_MASK = Controller::PRESS_L | Controller::PRESS_R
 
 RaceMode::RaceMode()
 {
-	active                 = false;
-	finished               = false;
-	at_fresh_start         = false;
-	category               = PoD;
-	start_point            = SP_FreshFile;
-	use_set_seed           = false;
-	seed                   = 0;
-	reset_count            = 0;
-	load_ms                = 0;
-	was_loading            = false;
-	load_enter_ms          = 0;
-	abort_hold_frames      = 0;
-	run_start_ms           = 0;
-	timer_started          = false;
-	pending_reset          = false;
-	final_rta_ms           = 0;
-	final_igt_ms           = 0;
-	final_pikmin_lost      = 0;
-	final_is_all_treasures = false;
-	enemies_defeated       = 0;
-	pikmin_thrown          = 0;
-	category_opt           = nullptr;
-	start_point_opt        = nullptr;
-	region_opt             = nullptr;
+	active                   = false;
+	finished                 = false;
+	at_fresh_start           = false;
+	category                 = PoD;
+	start_point              = SP_FreshFile;
+	use_set_seed             = false;
+	seed                     = 0;
+	reset_count              = 0;
+	load_ms                  = 0;
+	was_loading              = false;
+	load_enter_ms            = 0;
+	abort_hold_frames        = 0;
+	run_start_ms             = 0;
+	timer_started            = false;
+	pending_reset            = false;
+	final_rta_ms             = 0;
+	final_igt_ms             = 0;
+	final_pikmin_lost        = 0;
+	final_is_all_treasures   = false;
+	enemies_defeated         = 0;
+	pikmin_thrown            = 0;
+	race_skippable_cs        = true;
+	race_skip_save           = true;
+	race_settings_touched    = false;
+	snapshot_allow_zero_piki = true;
+	category_opt             = nullptr;
+	start_point_opt          = nullptr;
+	region_opt               = nullptr;
+	skippable_cs_opt         = nullptr;
+	skip_save_opt            = nullptr;
 }
 
 u32 RaceMode::cur_ms()
@@ -92,6 +99,96 @@ void RaceMode::init()
 		region_opt->options.push("JP");
 		region_opt->options.push("PAL");
 	}
+	// the two race-local setting toggles - seed them from saved prefs
+	skippable_cs_opt = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("race/skippable cutscenes"));
+	skip_save_opt    = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("race/skip save prompts"));
+	sync_menu();
+}
+
+void RaceMode::sync_menu()
+{
+	// default the two race toggles to the saved (global) prefs until player override
+	// (also navigating in/out of sub-layers (e.g. the seed keypad) doesn't wipe a change)
+	if (!race_settings_touched) {
+		race_skippable_cs = p2gz->card_data->bool_settings[SETTING_cutscenes_skippable];
+		race_skip_save    = p2gz->card_data->bool_settings[SETTING_skip_save_prompts];
+	}
+	if (skippable_cs_opt) {
+		skippable_cs_opt->set_selection(race_skippable_cs);
+	}
+	if (skip_save_opt) {
+		skip_save_opt->set_selection(race_skip_save);
+	}
+}
+
+void RaceMode::set_race_skippable_cs(bool on)
+{
+	// applied in apply_race_settings() at run start
+	race_skippable_cs     = on;
+	race_settings_touched = true;
+}
+
+void RaceMode::set_race_skip_save(bool on)
+{
+	race_skip_save        = on;
+	race_settings_touched = true;
+}
+
+// list of non-vanilla toggles that get forced off for a race
+// (handle skipping cutscenes, save prompts, and zero-pikmin-in-caves separately)
+static const char* const RACE_FORCE_OFF_PATHS[] = {
+	"captain/boing mode",
+	"settings/eggs always drop mitites",
+	"debug info/dismiss positions",
+	"debug info/enemy debug info/enable",
+	"debug info/captain debug info/enable",
+	"debug info/treasure debug info/enable",
+	"debug info/generator debug info",
+	"debug info/collision viewer",
+	"debug info/waypoint viewer",
+	"debug info/spawn point viewer",
+	"debug info/gate debug info",
+	"debug info/bridge debug info",
+	"debug info/plug debug info",
+	"debug info/heap memory usage",
+};
+
+void RaceMode::apply_race_settings()
+{
+	// apply race-local overrides of skip-related settings
+	p2gz->skippable_cutscenes->toggle_skippable(race_skippable_cs);
+	p2gz->skip_save->toggle_save_skip(race_skip_save);
+
+	// vanilla setting is actually not the default, so handle it separately
+	ToggleMenuOption* zero_piki = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("settings/allow 0 pikmin in caves"));
+	if (zero_piki) {
+		snapshot_allow_zero_piki = zero_piki->get_selection();
+		zero_piki->set_value(false);
+	}
+
+	// everything else non-vanilla gets forced off and stays off
+	for (u32 i = 0; i < ARRAY_SIZE(RACE_FORCE_OFF_PATHS); i++) {
+		MenuOption* opt = p2gz->menu->get_option(RACE_FORCE_OFF_PATHS[i]);
+		if (opt) {
+			static_cast<ToggleMenuOption*>(opt)->set_value(false);
+		}
+	}
+}
+
+void RaceMode::restore_settings()
+{
+	// put skip settings back to the saved (global) prefs
+	p2gz->card_data->apply_one(SETTING_cutscenes_skippable);
+	p2gz->card_data->apply_one(SETTING_skip_save_prompts);
+
+	// restore the 0-pikmin in caves toggle
+	ToggleMenuOption* zero_piki = static_cast<ToggleMenuOption*>(p2gz->menu->get_option("settings/allow 0 pikmin in caves"));
+	if (zero_piki) {
+		zero_piki->set_value(snapshot_allow_zero_piki);
+	}
+
+	// next race should default its toggles back to the saved prefs again
+	race_settings_touched = false;
 }
 
 void RaceMode::set_category(size_t idx)
@@ -157,6 +254,9 @@ void RaceMode::start_run()
 	p2gz->timer->set_enabled(true);
 	p2gz->timer->set_sub_timer_enabled(false);
 	p2gz->timer->reset_main_timer();
+
+	// apply this run's cutscene/save choices and force every other non-vanilla setting to vanilla
+	apply_race_settings();
 
 	// START THE RUN
 	if (start_point == SP_PresetStart) {
@@ -350,7 +450,7 @@ void RaceMode::update()
 	}
 
 	// accumulate loading time so IGT can subtract it
-	const bool loading = in_load();
+	const bool loading = in_load() || in_world_map_load() || in_day_end_result_load() || in_cave_result_load();
 	if (loading && !was_loading) {
 		was_loading   = true;
 		load_enter_ms = cur_ms();
@@ -364,8 +464,10 @@ void RaceMode::update()
 		at_fresh_start = false;
 	}
 
-	// once the run is over and we've left the ending, unlock the mode
-	if (finished && (in_world_map() || in_title_screen() || in_file_select())) {
+	// once the run is over and we've actually LEFT the ending, unlock the mode
+	if (finished && !in_ending_state() && (in_world_map() || in_title_screen() || in_file_select())) {
+		// give the player their non-race settings back
+		restore_settings();
 		active   = false;
 		finished = false;
 		return;
@@ -381,15 +483,6 @@ void RaceMode::update()
 	} else {
 		abort_hold_frames = 0;
 	}
-}
-
-static inline bool in_ending_state()
-{
-	Game::SingleGameSection* sgs = get_SGS();
-	if (!sgs || !sgs->getCurrState()) {
-		return false;
-	}
-	return sgs->getCurrState()->getCurrStateID() == Game::SingleGame::SGS_Ending;
 }
 
 void RaceMode::draw_2d()
@@ -537,6 +630,13 @@ void RaceMode::draw_menu_controls()
 
 void RaceMode::draw_summary()
 {
+	// dim the end results screen so we can read our custom stats
+	Graphics* gfx = sys->mGfx;
+	gfx->mOrthoGraph.setPort();
+	gfx->mOrthoGraph.setColor(JUtility::TColor(0, 0, 0, 200));
+	JGeometry::TBox2f backdrop(0.0f, 0.0f, (f32)System::getRenderModeObj()->fbWidth, (f32)System::getRenderModeObj()->efbHeight);
+	gfx->mOrthoGraph.fillBox(backdrop);
+
 	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
 	j2d.initiate();
 	j2d.mGlyphWidth  = 22.0f;
@@ -552,26 +652,35 @@ void RaceMode::draw_summary()
 	j2d.print(x, z, final_is_all_treasures ? "ALL TREASURES - RUN COMPLETE" : "PAY OFF DEBT - RUN COMPLETE");
 	z += dz * 1.5f;
 
+	// left-align labels, right-align values
+	const f32 value_right = x + j2d.getWidth("enemies defeated") + 24.0f + j2d.getWidth("0:00:00.0");
+
 	u32 h, m, s, t;
 	ms_to_clock(final_rta_ms, h, m, s, t);
+	j2d.print(x, z, "RTA");
 	if (h > 0) {
-		j2d.print(x, z, "RTA   %ld:%.2ld:%.2ld.%.1ld", h, m, s, t);
+		j2d.print(value_right - j2d.getWidth("%ld:%.2ld:%.2ld.%.1ld", h, m, s, t), z, "%ld:%.2ld:%.2ld.%.1ld", h, m, s, t);
 	} else {
-		j2d.print(x, z, "RTA   %ld:%.2ld.%.1ld", m, s, t);
+		j2d.print(value_right - j2d.getWidth("%ld:%.2ld.%.1ld", m, s, t), z, "%ld:%.2ld.%.1ld", m, s, t);
 	}
 	z += dz;
 	ms_to_clock(final_igt_ms, h, m, s, t);
+	j2d.print(x, z, "IGT");
 	if (h > 0) {
-		j2d.print(x, z, "IGT   %ld:%.2ld:%.2ld.%.1ld", h, m, s, t);
+		j2d.print(value_right - j2d.getWidth("%ld:%.2ld:%.2ld.%.1ld", h, m, s, t), z, "%ld:%.2ld:%.2ld.%.1ld", h, m, s, t);
 	} else {
-		j2d.print(x, z, "IGT   %ld:%.2ld.%.1ld", m, s, t);
+		j2d.print(value_right - j2d.getWidth("%ld:%.2ld.%.1ld", m, s, t), z, "%ld:%.2ld.%.1ld", m, s, t);
 	}
 	z += dz;
-	j2d.print(x, z, "resets           %ld", reset_count);
+	j2d.print(x, z, "resets");
+	j2d.print(value_right - j2d.getWidth("%ld", reset_count), z, "%ld", reset_count);
 	z += dz;
-	j2d.print(x, z, "pikmin lost      %ld", final_pikmin_lost);
+	j2d.print(x, z, "pikmin lost");
+	j2d.print(value_right - j2d.getWidth("%ld", final_pikmin_lost), z, "%ld", final_pikmin_lost);
 	z += dz;
-	j2d.print(x, z, "enemies defeated %ld", enemies_defeated);
+	j2d.print(x, z, "enemies defeated");
+	j2d.print(value_right - j2d.getWidth("%ld", enemies_defeated), z, "%ld", enemies_defeated);
 	z += dz;
-	j2d.print(x, z, "pikmin thrown    %ld", pikmin_thrown);
+	j2d.print(x, z, "pikmin thrown");
+	j2d.print(value_right - j2d.getWidth("%ld", pikmin_thrown), z, "%ld", pikmin_thrown);
 }
