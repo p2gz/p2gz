@@ -1873,7 +1873,7 @@ void Pellet::start_carrymotion()
 {
 	// @P2GZ - Segment timer
 	// splits when a treasure starts to carry
-	if (p2gz->timer->split_on_carry && ((getKind() == PelletType::Treasure) || (getKind() == PelletType::Upgrade))) {
+	if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_carry && ((getKind() == PelletType::Treasure) || (getKind() == PelletType::Upgrade))) {
 		p2gz->timer->add_split_times();
 	}
 

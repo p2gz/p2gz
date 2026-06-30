@@ -1117,7 +1117,7 @@ void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& k
 	// if you want it to run on the frame each segment starts going down.
 	// EXCEPTION: the > 20 condition is here so the segment timer does not split at the beginning of above grounds,
 	// when the gates/bags specified in the preset are automatically destroyed/crushed
-	if (p2gz->timer->split_on_gate_seg && (gameSystem->mIsInCave || (p2gz->timer->get_elapsed_time() > 20))) {
+	if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_gate_seg && (gameSystem->mIsInCave || (p2gz->timer->get_elapsed_time() > 20))) {
 		p2gz->timer->add_split_times();
 	}
 
@@ -1129,7 +1129,7 @@ void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& k
 
 		// @P2GZ - Segment timer
 		// For splitting when the gate is fully destroyed
-		if (p2gz->timer->split_on_gate_down && (gameSystem->mIsInCave || (p2gz->timer->get_elapsed_time() > 20))) {
+		if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_gate_down && (gameSystem->mIsInCave || (p2gz->timer->get_elapsed_time() > 20))) {
 			p2gz->timer->add_split_times();
 		}
 

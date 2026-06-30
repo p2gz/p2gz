@@ -27,15 +27,16 @@ Timer::Timer()
     , navi_swap_timer_set(false)
     , FS_map_flag(false)
     , in_freecam_mode(false)
-    , segment_timer_enabled(true) // controls whether or not the segment timer is turned on
+    , segment_timer_enabled(false) // controls whether or not the segment timer is turned on
     , draw_best_times_enabled(false)
-    , split_on_captain_swap(true)
+    , split_on_captain_swap(false)
     , split_on_gate_seg(false)
-    , split_on_gate_down(true)
+    , split_on_gate_down(false)
     , split_on_bag_crush(false)
     , split_on_poison_demo(false)
     , split_on_carry(false)
     , split_on_enemy_death(false)
+    , split_on_cave_enter(true)
     , mark_run_for_discard(false)
     , main_timer(0)
     , sub_timer(0)
@@ -108,6 +109,8 @@ void Timer::draw()
 		// smaller font sizes for the segment times
 		j2d.mGlyphWidth  = 14.0f;
 		j2d.mGlyphHeight = 14.0f;
+		const f32 decimal_x   = 12.0f + j2d.getWidth("1:59.99");
+		
 		for (int i = 0; i < curr_index; i++) {
 			if (split_times[i] > 0) {
 				Timer::TimeComponents seg_c;
@@ -120,9 +123,11 @@ void Timer::draw()
 				}
 
 				if (seg_c.minutes > 0) {
-					j2d.print(x, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					j2d.print(decimal_x - j2d.getWidth("%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16),
+					          "%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 				} else {
-					j2d.print(x, starting_seg_offset + (i * 16), "%ld.%ld", seg_c.seconds, seg_c.tenths);
+					j2d.print(decimal_x - j2d.getWidth("%ld.%ld", seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16), "%ld.%ld",
+					          seg_c.seconds, seg_c.tenths);
 				}
 
 				if (draw_best_times_enabled && (best_segments[i] > 0)) {
@@ -130,10 +135,11 @@ void Timer::draw()
 					f32 sub_offset = 60.0f;
 					seg_c          = calc_time(0, best_segments[i]);
 					if (seg_c.minutes > 0) {
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld:%ld.%ld", seg_c.minutes, seg_c.seconds,
-						          seg_c.tenths);
+						j2d.print(decimal_x + sub_offset - j2d.getWidth("%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths),
+						          starting_seg_offset + (i * 16), "%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 					} else {
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), "%ld.%ld", seg_c.seconds, seg_c.tenths);
+						j2d.print(decimal_x + sub_offset - j2d.getWidth("%ld.%ld", seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16),
+						          "%ld.%ld", seg_c.seconds, seg_c.tenths);
 					}
 				}
 
@@ -153,11 +159,14 @@ void Timer::draw()
 						COLOR(green_color);
 					}
 					if (seg_c.minutes > 0) {
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld:%ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes,
-						          seg_c.seconds, seg_c.tenths);
+						j2d.print(
+						    decimal_x + sub_offset
+						        - j2d.getWidth(isGreen ? "-%ld:%2ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths),
+						    starting_seg_offset + (i * 16), isGreen ? "-%ld:%2ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes, seg_c.seconds,
+						    seg_c.tenths);
 					} else {
-						j2d.print(x + sub_offset, starting_seg_offset + (i * 16), isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds,
-						          seg_c.tenths);
+						j2d.print(decimal_x + sub_offset - j2d.getWidth(isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds, seg_c.tenths),
+						          starting_seg_offset + (i * 16), isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds, seg_c.tenths);
 					}
 					COLOR(color);
 				}
