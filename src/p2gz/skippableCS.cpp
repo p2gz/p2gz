@@ -79,8 +79,8 @@ void SkippableCutscenes::update_breadbug_lockout()
 		return;
 	}
 
-	// unlock skipping once the breadbug has taken damage in the cutscene
-	if (breadbug->mHealth < breadbug_start_health) {
+	// unlock skipping once the breadbug has taken damage in the cutscene (or has died)
+	if (!breadbug->isEvent(0, EB_Alive) || breadbug->isDead() || breadbug->mHealth < breadbug_start_health) {
 		if (moviePlayer->mCurrentConfig) {
 			moviePlayer->mCurrentConfig->enableSkippableWithStart();
 		}
@@ -123,11 +123,11 @@ void SkippableCutscenes::prime_skip(Creature* cutscene_target, MovieConfig* conf
 			p2gz->timer->reset_skip_timer();
 
 			// prevent a cutscene from being skippable if it has a breadbug in it, until the breadbug has been damaged properly
-			EnemyBase* breadbug = find_attached_breadbug(cutscene_target);
-			if (breadbug) {
+			EnemyBase* attached = find_attached_breadbug(cutscene_target);
+			if (attached) {
 				config->disableSkippable();
-				breadbug              = breadbug;
-				breadbug_start_health = breadbug->mHealth;
+				breadbug              = attached;
+				breadbug_start_health = attached->mHealth;
 			} else {
 				config->enableSkippableWithStart();
 			}
