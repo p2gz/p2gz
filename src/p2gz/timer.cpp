@@ -123,8 +123,8 @@ void Timer::draw()
 				}
 
 				if (seg_c.minutes > 0) {
-					j2d.print(decimal_x - j2d.getWidth("%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16),
-					          "%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+					j2d.print(decimal_x - j2d.getWidth("%ld:%.2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16),
+					          "%ld:%.2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 				} else {
 					j2d.print(decimal_x - j2d.getWidth("%ld.%ld", seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16), "%ld.%ld",
 					          seg_c.seconds, seg_c.tenths);
@@ -132,11 +132,11 @@ void Timer::draw()
 
 				if (draw_best_times_enabled && (best_segments[i] > 0)) {
 					// fixed offset so it produces aligned columns
-					f32 sub_offset = 60.0f;
+					f32 sub_offset = 50.0f;
 					seg_c          = calc_time(0, best_segments[i]);
 					if (seg_c.minutes > 0) {
-						j2d.print(decimal_x + sub_offset - j2d.getWidth("%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths),
-						          starting_seg_offset + (i * 16), "%ld:%2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
+						j2d.print(decimal_x + sub_offset - j2d.getWidth("%ld:%.2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths),
+						          starting_seg_offset + (i * 16), "%ld:%.2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths);
 					} else {
 						j2d.print(decimal_x + sub_offset - j2d.getWidth("%ld.%ld", seg_c.seconds, seg_c.tenths), starting_seg_offset + (i * 16),
 						          "%ld.%ld", seg_c.seconds, seg_c.tenths);
@@ -161,8 +161,8 @@ void Timer::draw()
 					if (seg_c.minutes > 0) {
 						j2d.print(
 						    decimal_x + sub_offset
-						        - j2d.getWidth(isGreen ? "-%ld:%2ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths),
-						    starting_seg_offset + (i * 16), isGreen ? "-%ld:%2ld.%ld" : "+%ld:%ld.%ld", seg_c.minutes, seg_c.seconds,
+						        - j2d.getWidth(isGreen ? "-%ld:%.2ld.%ld" : "+%ld:%.2ld.%ld", seg_c.minutes, seg_c.seconds, seg_c.tenths),
+						    starting_seg_offset + (i * 16), isGreen ? "-%ld:%.2ld.%ld" : "+%ld:%.2ld.%ld", seg_c.minutes, seg_c.seconds,
 						    seg_c.tenths);
 					} else {
 						j2d.print(decimal_x + sub_offset - j2d.getWidth(isGreen ? "-%ld.%ld" : "+%ld.%ld", seg_c.seconds, seg_c.tenths),
