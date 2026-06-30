@@ -1,5 +1,6 @@
 #include <p2gz/CaveDebugInfo.h>
 #include <p2gz/DrawHelpers.h>
+#include <p2gz/Utility.h>
 #include <Game/Cave/RandMapMgr.h>
 
 using namespace gz;
@@ -11,9 +12,16 @@ CaveDebugInfo::CaveDebugInfo()
 
 void CaveDebugInfo::draw()
 {
-	if (draw_spawn_points) {
-		do_draw_spawn_points();
+	if (!draw_spawn_points) {
+		return;
 	}
+
+	// spawn points only exist inside caves - trying to draw them above-ground crashes
+	if (!in_cave_play() || !Game::Cave::randMapMgr || !Game::Cave::randMapMgr->mGenerator) {
+		return;
+	}
+
+	do_draw_spawn_points();
 }
 
 void CaveDebugInfo::do_draw_spawn_points()
