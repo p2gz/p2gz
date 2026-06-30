@@ -182,6 +182,7 @@ void EarlyBluesTrainer::start()
 	b_handled             = false;
 	cam_azimuth           = 0.0f;
 	cam_elevation         = CAM_DEFAULT_ELEVATION;
+	inset_camera_visible  = true;
 
 	pending_setup         = true;
 	WarpDestination saved = p2gz->warp->get_dest();
@@ -287,6 +288,10 @@ void EarlyBluesTrainer::update()
 			saved_position = pos;
 		}
 
+		if (captured_button_down & Controller::PRESS_A) {
+			inset_camera_visible = !inset_camera_visible;
+		}
+
 		if (captured_button & Controller::PRESS_B) {
 			b_hold_frames++;
 			if (b_hold_frames >= B_HOLD_FRAMES && !b_handled) {
@@ -335,13 +340,13 @@ void EarlyBluesTrainer::update()
 	}
 }
 
-// Disable whistling and switching captains.
+// Disable whistling, switching captains, and throwing.
 void EarlyBluesTrainer::capture_input(Controller* pad)
 {
 	captured_button      = pad->getButton();
 	captured_button_down = pad->getButtonDown();
 
-	u32 mask = Controller::PRESS_B | Controller::PRESS_Y;
+	u32 mask = Controller::PRESS_A | Controller::PRESS_B | Controller::PRESS_Y;
 	pad->mButton.mButton &= ~mask;
 	pad->mButton.mButtonDown &= ~mask;
 	pad->mButton.mButtonUp &= ~mask;
@@ -421,7 +426,7 @@ void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
 // Slightly less incomprehensible magic to actually draw the inset camera.
 void EarlyBluesTrainer::draw_inset(Game::BaseGameSection* section, Graphics& gfx)
 {
-	if (!enabled || pending_setup || !inset_viewport || !gz::in_above_ground_play()) {
+	if (!enabled || pending_setup || !inset_viewport || !inset_camera_visible || !gz::in_above_ground_play()) {
 		return;
 	}
 
@@ -516,6 +521,7 @@ void EarlyBluesTrainer::draw_status()
 
 		const f32 line_h   = p2gz->images->height() + 4.0f;
 		const f32 bottom_z = 430.0f;
+		draw_control_line(tips, "a_btn", inset_camera_visible ? "hide inset camera" : "show inset camera", bottom_z - 3.0f * line_h);
 		draw_control_line(tips, "b_btn", "reset (hold for default)", bottom_z - 2.0f * line_h);
 		draw_control_line(tips, "y_btn", "move reset position", bottom_z - line_h);
 		draw_control_line(tips, "c_stick", "pan inset camera", bottom_z);
@@ -533,7 +539,7 @@ void EarlyBluesTrainer::draw_status()
 	u8 alpha = result_frames >= RESULT_FADE_FRAMES ? 255 : (u8)(255 * result_frames / RESULT_FADE_FRAMES);
 
 	const f32 result_glyph    = 24.0f;
-	const f32 ctrl_icon_top   = (430.0f - 2.0f * (p2gz->images->height() + 4.0f)) - p2gz->images->height() + (p2gz->menu->line_height / 2.0f);
+	const f32 ctrl_icon_top   = (430.0f - 3.0f * (p2gz->images->height() + 4.0f)) - p2gz->images->height() + (p2gz->menu->line_height / 2.0f);
 	const f32 result_bottom_z = ctrl_icon_top - 8.0f - result_glyph;
 	const f32 warp_text_z     = result_success ? result_bottom_z - result_glyph : result_bottom_z;
 
