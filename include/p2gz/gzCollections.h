@@ -91,6 +91,47 @@ struct Vec {
 			delete[] mBuf;
 	}
 
+	// need to deep-copy since we own mBuf
+	Vec(const Vec& other)
+	{
+		mCapacity = other.mCapacity;
+		mLen      = other.mLen;
+		if (mCapacity > 0) {
+			JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
+			mBuf              = new T[mCapacity];
+			prevHeap->becomeCurrentHeap();
+			for (size_t i = 0; i < mLen; i++) {
+				mBuf[i] = other.mBuf[i];
+			}
+		} else {
+			mBuf = nullptr;
+		}
+	}
+
+	// need to deep-copy since we own mBuf
+	Vec& operator=(const Vec& other)
+	{
+		if (this == &other) {
+			return *this;
+		}
+		if (mBuf) {
+			delete[] mBuf;
+		}
+		mCapacity = other.mCapacity;
+		mLen      = other.mLen;
+		if (mCapacity > 0) {
+			JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
+			mBuf              = new T[mCapacity];
+			prevHeap->becomeCurrentHeap();
+			for (size_t i = 0; i < mLen; i++) {
+				mBuf[i] = other.mBuf[i];
+			}
+		} else {
+			mBuf = nullptr;
+		}
+		return *this;
+	}
+
 	inline size_t len() const { return mLen; }
 
 	inline size_t capacity() const { return mCapacity; }
@@ -121,8 +162,9 @@ struct Vec {
 		GZASSERTLINE(mBuf);
 		GZASSERTLINE(idx < mLen);
 		T val = mBuf[idx];
-		if (idx < mLen - 1) {
-			memmove(&mBuf[idx], &mBuf[idx + 1], sizeof(T) * (mLen - idx - 1));
+		// element-wise shift (so resource-owning element types deep-copy instead of aliasing)
+		for (size_t i = idx; i < mLen - 1; i++) {
+			mBuf[i] = mBuf[i + 1];
 		}
 		mLen--;
 		return val;
@@ -173,7 +215,10 @@ private:
 		JKRHeap* prevHeap = sys->mSysHeap->becomeCurrentHeap();
 		T* newBuf         = new T[newCapacity];
 		if (mBuf) {
-			memmove(newBuf, mBuf, sizeof(T) * mLen);
+			// element-wise (so resource-owning element types deep-copy instead of aliasing)
+			for (size_t i = 0; i < mLen; i++) {
+				newBuf[i] = mBuf[i];
+			}
 			delete[] mBuf;
 		}
 		mBuf      = newBuf;
