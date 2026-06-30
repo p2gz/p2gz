@@ -49,26 +49,28 @@ struct EarlyBluesTrainer {
 public:
 	EarlyBluesTrainer()
 	{
-		enabled               = false;
-		pending_setup         = false;
-		went_to_hell          = false;
-		would_have_softlocked = false;
-		went_into_void        = false;
-		pending_reset_frames  = 0;
-		result_frames         = 0;
-		result_success        = false;
-		result_softlock       = false;
-		result_wrong_waypoint = false;
-		saved_position        = Vector3f(0.0f);
-		captured_button       = 0;
-		captured_button_down  = 0;
-		b_hold_frames         = 0;
-		b_handled             = false;
-		inset_viewport        = nullptr;
-		inset_camera          = nullptr;
-		cam_azimuth           = 0.0f;
-		cam_elevation         = 0.0f;
-		inset_camera_visible  = true;
+		enabled                      = false;
+		pending_setup                = false;
+		went_to_hell                 = false;
+		would_have_softlocked        = false;
+		went_into_void               = false;
+		pending_reset_frames         = 0;
+		result_frames                = 0;
+		result_success               = false;
+		result_softlock              = false;
+		result_wrong_waypoint        = false;
+		saved_position               = Vector3f(0.0f);
+		captured_button              = 0;
+		captured_button_down         = 0;
+		b_hold_frames                = 0;
+		b_handled                    = false;
+		inset_viewport               = nullptr;
+		inset_camera                 = nullptr;
+		cam_azimuth                  = 0.0f;
+		cam_elevation                = 0.0f;
+		inset_camera_visible         = true;
+		is_inset_horizontal_inverted = true;
+		is_inset_vertical_inverted   = false;
 	}
 	~EarlyBluesTrainer() { }
 
@@ -88,6 +90,9 @@ public:
 
 	void on_softlock() { would_have_softlocked = true; }
 	void capture_input(Controller* pad);
+
+	void toggle_inset_horizontal_inversion(bool enabled_) { is_inset_horizontal_inverted = enabled_; }
+	void toggle_inset_vertical_inversion(bool enabled_) { is_inset_vertical_inverted = enabled_; }
 
 private:
 	Game::Navi* get_olimar();
@@ -119,6 +124,8 @@ private:
 	f32 cam_azimuth;
 	f32 cam_elevation;
 	bool inset_camera_visible;
+	bool is_inset_horizontal_inverted;
+	bool is_inset_vertical_inverted;
 };
 } // namespace gz
 

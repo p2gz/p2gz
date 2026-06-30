@@ -32,7 +32,7 @@ using namespace gz;
 const Vector3f START_POSITION(920.0f, -18.0f, 1115.0f);
 const Vector3f SUCCESS_POSITION(61.19f, 10.00f, 229.37f);
 
-const f32 SUCCESS_RADIUS        = 10.0f;
+const f32 SUCCESS_RADIUS        = 100.0f;
 const f32 CAMERA_DISTANCE       = 150.0f;
 const f32 CAMERA_FOV            = 40.0f;
 const f32 CAM_ROTATE_SPEED      = 0.05f;
@@ -139,10 +139,10 @@ static void draw_inset_collision(Graphics& gfx, Viewport* vp, Game::Navi* navi)
 
 	for (; triLists; triLists = static_cast<Sys::TriIndexList*>(triLists->mNext)) {
 		for (int i = 0; i < triLists->getNum(); i++) {
-			Sys::Triangle* tri  = triTable->getTriangle(triLists->mObjects[i]);
-			Vector3f& normal    = tri->mTrianglePlane.mNormal;
-			f32 lit             = normal.x * light_dir.x + normal.y * light_dir.y + normal.z * light_dir.z;
-			u8 shade            = (u8)(160.0f + 95.0f * lit);
+			Sys::Triangle* tri = triTable->getTriangle(triLists->mObjects[i]);
+			Vector3f& normal   = tri->mTrianglePlane.mNormal;
+			f32 lit            = normal.x * light_dir.x + normal.y * light_dir.y + normal.z * light_dir.z;
+			u8 shade           = (u8)(160.0f + 95.0f * lit);
 
 			GXBegin(GX_TRIANGLES, GX_VTXFMT0, 3);
 			for (int j = 0; j < 3; j++) {
@@ -210,7 +210,8 @@ void EarlyBluesTrainer::init()
 	inset_camera->setFixNearFar(true, 1.0f, 12800.0f);
 
 	Vector2f screen = getScreenSize();
-	Rectf rect(screen.x - INSET_WIDTH - INSET_MARGIN, screen.y - INSET_HEIGHT - INSET_MARGIN, screen.x - INSET_MARGIN, screen.y - INSET_MARGIN);
+	Rectf rect(screen.x - INSET_WIDTH - INSET_MARGIN, screen.y - INSET_HEIGHT - INSET_MARGIN, screen.x - INSET_MARGIN,
+	           screen.y - INSET_MARGIN);
 	inset_viewport->mVpId = PLAYER2_VIEWPORT;
 	inset_viewport->setRect(rect);
 	inset_viewport->setCamera(inset_camera);
@@ -252,7 +253,8 @@ void EarlyBluesTrainer::update()
 
 	if (pending_setup) {
 		Game::SingleGameSection* sgs = gz::get_SGS();
-		if (gz::in_above_ground_gameplay() && !p2gz->warp->warping && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW) {
+		if (gz::in_above_ground_gameplay() && !p2gz->warp->warping && sgs && sgs->mCurrentCourseInfo
+		    && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW) {
 			setup_after_load();
 		}
 		return;
@@ -263,7 +265,8 @@ void EarlyBluesTrainer::update()
 	}
 
 	Game::SingleGameSection* sgs = gz::get_SGS();
-	bool in_awakening_wood = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
+	bool in_awakening_wood
+	    = gz::in_above_ground_play() && sgs && sgs->mCurrentCourseInfo && sgs->mCurrentCourseInfo->mCourseIndex == COURSE_AW;
 	if (!in_awakening_wood) {
 		stop();
 		return;
@@ -395,9 +398,26 @@ void EarlyBluesTrainer::reset_to_start(Game::Navi* navi)
 void EarlyBluesTrainer::update_inset_camera(Game::Navi* navi)
 {
 	if (navi->mController1 && !p2gz->menu->is_open()) {
-		cam_azimuth -= navi->mController1->getSubStickX() * CAM_ROTATE_SPEED;
+
+		if (is_inset_horizontal_inverted) {
+			cam_azimuth -= navi->mController1->getSubStickX() * CAM_ROTATE_SPEED;
+		} else {
+			cam_azimuth += navi->mController1->getSubStickX() * CAM_ROTATE_SPEED;
+		}
+
+		if ((captured_button_down & Controller::PRESS_L)) {
+			Game::PlayCamera* camera = Game::cameraMgr->mCameraObjList[navi->getNaviID()];
+			cam_azimuth              = camera->mCameraAngleTarget;
+			// perhaps cam_azimuth = - navi->getFaceDir(); would be better?
+		}
+
 		f32 prev_elevation = cam_elevation;
-		cam_elevation += navi->mController1->getSubStickY() * CAM_ROTATE_SPEED;
+		if (is_inset_vertical_inverted) {
+			cam_elevation -= navi->mController1->getSubStickY() * CAM_ROTATE_SPEED;
+		} else {
+			cam_elevation += navi->mController1->getSubStickY() * CAM_ROTATE_SPEED;
+		}
+
 		if (cam_elevation > CAM_MAX_ELEVATION) {
 			cam_elevation = CAM_MAX_ELEVATION;
 		}
@@ -538,8 +558,8 @@ void EarlyBluesTrainer::draw_status()
 
 	u8 alpha = result_frames >= RESULT_FADE_FRAMES ? 255 : (u8)(255 * result_frames / RESULT_FADE_FRAMES);
 
-	const f32 result_glyph    = 24.0f;
-	const f32 ctrl_icon_top   = (430.0f - 3.0f * (p2gz->images->height() + 4.0f)) - p2gz->images->height() + (p2gz->menu->line_height / 2.0f);
+	const f32 result_glyph  = 24.0f;
+	const f32 ctrl_icon_top = (430.0f - 3.0f * (p2gz->images->height() + 4.0f)) - p2gz->images->height() + (p2gz->menu->line_height / 2.0f);
 	const f32 result_bottom_z = ctrl_icon_top - 8.0f - result_glyph;
 	const f32 warp_text_z     = result_success ? result_bottom_z - result_glyph : result_bottom_z;
 
