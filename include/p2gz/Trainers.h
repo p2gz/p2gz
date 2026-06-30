@@ -68,6 +68,7 @@ public:
 		inset_camera          = nullptr;
 		cam_azimuth           = 0.0f;
 		cam_elevation         = 0.0f;
+		inset_camera_visible  = true;
 	}
 	~EarlyBluesTrainer() { }
 
@@ -117,6 +118,7 @@ private:
 	LookAtCamera* inset_camera;
 	f32 cam_azimuth;
 	f32 cam_elevation;
+	bool inset_camera_visible;
 };
 } // namespace gz
 
