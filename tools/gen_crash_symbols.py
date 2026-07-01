@@ -1,32 +1,27 @@
 #!/usr/bin/env python3
-"""Generate a compact binary symbol table for the in-game crash handler.
+"""Generate a compact binary symbol table for the crash log, to resolve addresses faster.
 
-The exception handler (JUTException) used to resolve every stack-frame / register
-address by re-opening the 4.2 MB ``pikmin2UP.map`` and linearly scanning it from
-disc *for each address* - dozens of full-file scans per crash. This tool turns the
-map into ``pikmin2UP.sym``: a sorted, binary, big-endian table that the runtime can
-binary-search with a handful of tiny disc reads (see src/p2gz/crashSymbols.cpp).
+(See p2gz/crashSymbols.cpp)
 
-Format:
+Table format:
 
   header block, padded to HEADER_BLOCK (512 bytes), 32-byte-aligned start of file:
-    0x00 u32 magic            = 'P2GZ'
-    0x04 u32 version          = 1
-    0x08 u32 count            = number of symbol entries
-    0x0C u32 index_offset     = file offset of the entry array (== HEADER_BLOCK)
-    0x10 u32 strings_offset   = file offset of the string blob
-    0x14 u32 section_count
-    0x18 u32 reserved (0)
-    0x1C u32 reserved (0)
-    0x20 ...   section-name table: section_count null-terminated names
+    _00 u32 magic            = 'P2GZ'
+    _04 u32 version          = 1
+    _08 u32 count            = number of symbol entries
+    _0C u32 index_offset     = file offset of the entry array (== HEADER_BLOCK)
+    _10 u32 strings_offset   = file offset of the string blob
+    _14 u32 section_count
+    _18 u32 reserved (0)
+    _1C u32 reserved (0)
+    _20 ...   section-name table: section_count null-terminated names
   index array (at index_offset, 32-aligned): `count` entries, 16 bytes each,
-    sorted ascending by vaddr (16 divides 512 and 32 -> every entry sits inside a
-    single aligned disc block, so the runtime can read one block per probe):
-      0x00 u32 vaddr
-      0x04 u32 size
-      0x08 u32 name_off     (offset from strings_offset)
-      0x0C u32 section_id   (index into the section-name table)
-  string blob (at strings_offset): deduplicated null-terminated symbol names.
+    sorted ascending by vaddr:
+      _00 u32 vaddr
+      _04 u32 size
+      _08 u32 name_off     (offset from strings_offset)
+      _0C u32 section_id   (index into the section-name table)
+  string blob (at strings_offset): deduplicated null-terminated symbol names
 """
 
 import argparse
@@ -37,10 +32,10 @@ import sys
 
 MAGIC = 0x5032475A  # 'P2GZ'
 VERSION = 1
-HEADER_BLOCK = 512  # header + section table live in this first (aligned) block
+HEADER_BLOCK = 512
 ENTRY_SIZE = 16
 
-# Matches a real symbol line, e.g.
+# Regex to pull out a real symbol line from the map, e.g.
 #   "  00000030 000024 80003130  4 TRK_memcpy \tmem_TRK.o"
 # groups: file-offset, size, vaddr, alignment, rest(symbol [+ \tobject])
 _SYM_RE = re.compile(r"^\s+([0-9a-fA-F]{8})\s+([0-9a-fA-F]{6})\s+([0-9a-fA-F]{8})\s+\d+\s+(.*)$")
@@ -50,8 +45,8 @@ _SECTION_RE = re.compile(r"^(\S[\w.$]*) section layout")
 def parse_map(map_path):
     """Return (entries, section_names).
 
-    entries: list of (vaddr, size, name, section_id), unsorted.
-    section_names: list of section names indexed by section_id.
+    entries: list of (vaddr, size, name, section_id), unsorted
+    section_names: list of section names indexed by section_id
     """
     section_names = []
     section_id_of = {}
@@ -62,8 +57,7 @@ def parse_map(map_path):
         for line in f:
             line = line.rstrip("\n")
 
-            # The post-layout summary ("Memory map:", "Linker generated symbols:")
-            # is not symbol data - stop before we start mis-parsing it.
+            # "Memory map:" + "Linker generated symbols:" are junk, ignore
             if line.startswith("Memory map") or line.startswith("Linker generated"):
                 break
 
@@ -82,14 +76,13 @@ def parse_map(map_path):
             size_hex, vaddr_hex, rest = m.group(2), m.group(3), m.group(4)
             size = int(size_hex, 16)
             if size == 0:
-                continue  # entry-of-section labels and other zero-size markers
+                # entry-of-section labels and other zero-size markers
+                continue
 
-            # The symbol token is everything up to the tab/object-file or first space.
             name = rest.split("\t")[0].strip().split(" ")[0]
             if not name:
                 continue
-            # Section-contribution lines repeat the section name as the "symbol";
-            # skip them so they don't shadow the real per-symbol entries.
+            # section-contribution lines repeat the section name as the symbol, ignore
             if name == current_section:
                 continue
 
@@ -107,7 +100,7 @@ def parse_map(map_path):
 
 
 def dedup_by_vaddr(entries):
-    """Keep one entry per vaddr (the smallest size = most specific symbol)."""
+    """Keep one entry per vaddr"""
     best = {}
     for vaddr, size, name, sid in entries:
         prev = best.get(vaddr)
@@ -119,7 +112,7 @@ def dedup_by_vaddr(entries):
 
 
 def build_blob(entries):
-    """Build the deduplicated string blob; return (blob_bytes, name_off_of)."""
+    """Build deduplicated string blob - return (blob_bytes, name_off_of)"""
     blob = bytearray()
     name_off_of = {}
     for _, _, name, _ in entries:
@@ -130,7 +123,7 @@ def build_blob(entries):
 
 
 def build_section_table(section_names):
-    """Pack section names as null-terminated strings + assert they fit the header."""
+    """Safely pack section names as null-terminated strings"""
     table = bytearray()
     for s in section_names:
         table += s.encode("latin-1") + b"\x00"
@@ -148,7 +141,7 @@ def write_sym(out_path, entries, section_names):
     count = len(entries)
     index_offset = HEADER_BLOCK
     strings_offset = index_offset + count * ENTRY_SIZE
-    # 32-align the string blob so the runtime's aligned name reads stay simple.
+    # functions expect 32-bit-aligned names
     strings_offset = (strings_offset + 31) & ~31
 
     with open(out_path, "wb") as f:

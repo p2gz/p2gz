@@ -4,21 +4,21 @@
 #include <Dolphin/os.h>
 #include <JSystem/JUtility/JUTConsole.h>
 
-// Fast crash-handler symbol lookup. See tools/gen_crash_symbols.py.
+// Fast crash log symbol lookup (see tools/gen_crash_symbols.py)
 
 namespace gz {
 
 namespace {
 
-// ---- .sym layout (must match tools/gen_crash_symbols.py) ----
+// .sym layout (to match what tools/gen_crash_symbols.py generates)
 const u32 SYM_MAGIC    = 'P2GZ';
 const u32 SYM_VERSION  = 1;
-const s32 HEADER_BLOCK = 512; // header + section-name table live in this first block
-const u32 ENTRY_SIZE   = 16;  // {u32 vaddr, size, nameOff, sectionId}
-const s32 INDEX_BLOCK  = 512; // index read/cache granularity (multiple of ENTRY_SIZE)
+const s32 HEADER_BLOCK = 512;
+const u32 ENTRY_SIZE   = 16;
+const s32 INDEX_BLOCK  = 512;
 const int MAX_SECTIONS = 16;
-const int MAX_NAME     = 80;  // display cap; long C++ names wrap on the console anyway
-const s32 NAME_BUF     = 192; // scratch for one aligned name read
+const int MAX_NAME     = 80;
+const s32 NAME_BUF     = 192;
 
 enum State { STATE_UNINIT, STATE_READY, STATE_FAILED };
 
@@ -31,25 +31,25 @@ u32 sFileLength;
 int sSectionCount;
 char* sSectionName[MAX_SECTIONS];
 
-// 32-byte-aligned scratch (over-allocate then align, like JUTDirectFile::mSectorStart)
 u8 sHeaderRaw[HEADER_BLOCK + 32];
 u8 sBlockRaw[INDEX_BLOCK + 32];
 u8 sNameRaw[NAME_BUF + 32];
 u8* sHeaderBuf;
 u8* sBlockBuf;
 u8* sNameBuf;
-u32 sCachedBlockOff; // file offset of the index block in sBlockBuf, or 0xFFFFFFFF
+u32 sCachedBlockOff;
 
 inline u8* align32(u8* p)
 {
 	return (u8*)ALIGN_NEXT((u32)p, 32);
 }
-inline u32 rd32(const u8* p)
+
+inline u32 read32(const u8* p)
 {
 	return *(const u32*)p;
 }
 
-// Synchronous aligned DVD read. offset, length and dst must be 32-aligned.
+// synchronous aligned DVD read (NB: offset, length and dst need to be 32-aligned)
 bool readAligned(u32 offset, void* dst, s32 length)
 {
 	BOOL enabled = OSEnableInterrupts();
@@ -74,14 +74,14 @@ bool readEntry(u32 i, u32* vaddr, u32* size, u32* nameOff, u32* sectionId)
 		sCachedBlockOff = blockOff;
 	}
 	const u8* e = sBlockBuf + (byteOff - blockOff);
-	*vaddr      = rd32(e + 0);
-	*size       = rd32(e + 4);
-	*nameOff    = rd32(e + 8);
-	*sectionId  = rd32(e + 12);
+	*vaddr      = read32(e + 0);
+	*size       = read32(e + 4);
+	*nameOff    = read32(e + 8);
+	*sectionId  = read32(e + 12);
 	return true;
 }
 
-// Read one symbol name from the string blob into `out`.
+// read one symbol name into `out`
 void readName(u32 nameOff, char* out, int outCap)
 {
 	out[0]      = '\0';
@@ -96,7 +96,7 @@ void readName(u32 nameOff, char* out, int outCap)
 	if (readLen > NAME_BUF) {
 		readLen = NAME_BUF;
 	}
-	// keep the read within the file's sector-rounded extent
+
 	u32 fileEnd = ALIGN_NEXT(sFileLength, 32);
 	if (alignOff + (u32)readLen > fileEnd) {
 		readLen = (s32)(fileEnd - alignOff);
@@ -138,13 +138,13 @@ bool init()
 	if (!readAligned(0, sHeaderBuf, HEADER_BLOCK)) {
 		return false;
 	}
-	if (rd32(sHeaderBuf + 0) != SYM_MAGIC || rd32(sHeaderBuf + 4) != SYM_VERSION) {
+	if (read32(sHeaderBuf + 0) != SYM_MAGIC || read32(sHeaderBuf + 4) != SYM_VERSION) {
 		return false;
 	}
-	sCount         = rd32(sHeaderBuf + 8);
-	sIndexOffset   = rd32(sHeaderBuf + 12);
-	sStringsOffset = rd32(sHeaderBuf + 16);
-	sSectionCount  = (int)rd32(sHeaderBuf + 20);
+	sCount         = read32(sHeaderBuf + 8);
+	sIndexOffset   = read32(sHeaderBuf + 12);
+	sStringsOffset = read32(sHeaderBuf + 16);
+	sSectionCount  = (int)read32(sHeaderBuf + 20);
 	if (sCount == 0 || sSectionCount <= 0 || sSectionCount > MAX_SECTIONS) {
 		return false;
 	}
@@ -187,7 +187,7 @@ int crashSymbolsTryPrint(JUTConsole* console, u32 address, bool beginWithNewline
 	while (lo <= hi) {
 		s32 mid = (lo + hi) >> 1;
 		if (!readEntry((u32)mid, &vaddr, &size, &nameOff, &sectionId)) {
-			return -1; // disc error -> let the caller fall back
+			return -1;
 		}
 		if (vaddr <= address) {
 			res = mid;
@@ -203,7 +203,7 @@ int crashSymbolsTryPrint(JUTConsole* console, u32 address, bool beginWithNewline
 		return -1;
 	}
 	if (address >= vaddr + size) {
-		return 0; // falls in a gap between symbols
+		return 0;
 	}
 
 	char name[MAX_NAME + 1];
