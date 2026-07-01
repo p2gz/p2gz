@@ -1275,7 +1275,7 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 {
 	// @P2GZ - Segment timer
 	// splits when an enemy dies
-	if (p2gz->timer->split_on_enemy_death) {
+	if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_enemy_death) {
 		p2gz->timer->add_split_times();
 	}
 

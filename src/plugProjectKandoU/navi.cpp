@@ -1926,20 +1926,26 @@ void Navi::update()
 
 	ItemHole::Item* hole = checkHole();
 
-	// @P2GZ: freecam
-	// don't open hole menus when enabling freecam
+	// @P2GZ: freecam and segment timer
+	// don't open hole menus when enabling freecam + split when pressing A near hole 
 	// if (hole && mController1 && mController1->getButtonDown() & Controller::PRESS_A) {
 	if (hole && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !p2gz->freecam->is_enabled()) {
 		gameSystem->mSection->openCaveMoreMenu(hole, mController1);
+		if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_cave_enter) {
+			p2gz->timer->add_split_times(); 
+		}
 		return;
 	}
 
 	ItemCave::Item* cave = checkCave();
 
 	// @P2GZ: freecam
-	// don't open cave menus when enabling freecam
+	// don't open cave menus when enabling freecam + split when pressing A near cave
 	// if (cave && mController1 && mController1->getButtonDown() & Controller::PRESS_A) {
 	if (cave && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !p2gz->freecam->is_enabled()) {
+		if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_cave_enter) {
+			p2gz->timer->add_split_times(); 
+		}
 		gameSystem->mSection->openCaveInMenu(cave, mNaviIndex);
 		return;
 	}
@@ -1947,10 +1953,13 @@ void Navi::update()
 	ItemBigFountain::Item* geyser = checkBigFountain();
 
 	// @P2GZ: freecam
-	// don't open geyser menus when enabling freecam
+	// don't open geyser menus when enabling freecam + split when pressing A near geyser
 	// if (geyser && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !geyser->isAlive()) {
 	if (geyser && mController1 && mController1->getButtonDown() & Controller::PRESS_A && !geyser->isAlive()
 	    && !p2gz->freecam->is_enabled()) {
+		if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_cave_enter) {
+			p2gz->timer->add_split_times(); 
+		}
 		gameSystem->mSection->openKanketuMenu(geyser, mController1);
 		return;
 	}

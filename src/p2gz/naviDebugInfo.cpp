@@ -40,7 +40,7 @@ NaviDebugInfo::NaviDebugInfo()
 void NaviDebugInfo::swap_start(int startNaviID)
 {
 	// Segment timer code
-	if (p2gz->timer->split_on_captain_swap) {
+	if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_captain_swap) {
 		p2gz->timer->add_split_times(); // add the split time before the if condition so it isn't dependent on captain debug info enabled
 	}
 

@@ -790,7 +790,7 @@ void DownState::onKeyEvent(Item* item, SysShape::KeyEvent const&)
 
 		// @P@GZ: this is the function that runs when a bag is crushed. We hook into it for the
 		// segment timer. Maybe extend to seesaws for enter gk?
-		if (p2gz->timer->split_on_bag_crush && (p2gz->timer->get_elapsed_time() > 20)) {
+		if (p2gz->timer->get_segment_timer_enabled() && p2gz->timer->split_on_bag_crush && (p2gz->timer->get_elapsed_time() > 20)) {
 			p2gz->timer->add_split_times();
 		}
 

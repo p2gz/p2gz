@@ -88,10 +88,12 @@ public:
 	void set_split_on_poison_demo_enabled(bool enabled_) { split_on_poison_demo = enabled_; }
 	void set_split_on_carry_enabled(bool enabled_) { split_on_carry = enabled_; }
 	void set_split_on_enemy_death_enabled(bool enabled_) { split_on_enemy_death = enabled_; }
+	void set_split_on_cave_enter_enabled(bool enabled_) { split_on_cave_enter = enabled_; }
 	void set_draw_best_times_enabled(bool enabled_) { draw_best_times_enabled = enabled_; }
 	void set_draw_comparisons_enabled(bool enabled_) { draw_comparisons_enabled = enabled_; }
 	void reset_best_segments();
 	void enable_mark_run_to_discard() { mark_run_for_discard = true; }
+	bool get_segment_timer_enabled() { return segment_timer_enabled; }
 
 	bool split_on_captain_swap;
 	bool split_on_gate_seg;
@@ -100,6 +102,7 @@ public:
 	bool split_on_poison_demo;
 	bool split_on_carry;
 	bool split_on_enemy_death;
+	bool split_on_cave_enter; 
 
 private:
 	struct TimeComponents {
