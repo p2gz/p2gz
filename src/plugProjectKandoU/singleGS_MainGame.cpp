@@ -436,6 +436,8 @@ void GameState::exec(SingleGameSection* game)
 	// @P2GZ: skippable treasure cutscenes
 	// force collect treasure during cutscene if conditions are met
 	p2gz->skippable_cutscenes->force_collect(game->mDraw2DCreature);
+	// open a breadbug treasure cutscene to skipping once the breadbug has been damaged
+	p2gz->skippable_cutscenes->update_breadbug_lockout();
 
 	// when you enter a cave from above ground, this state is still technically active until after the game saves
 	if (mInSaveScreen) {
