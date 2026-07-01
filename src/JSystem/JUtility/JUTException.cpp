@@ -14,6 +14,7 @@
 #include "JSystem/JUtility/JUTGamePad.h"
 #include "stl/stdlib.h"
 #include "types.h"
+#include <p2gz/crashSymbols.h> // @P2GZ: fast crash log
 
 static JUTException::ExCallbackObject exCallbackObject;
 
@@ -330,7 +331,10 @@ void JUTException::showStack(OSContext* context)
 		sConsole->print_f("%08X:  %08X    %08X\n", stack, stack[0], stack[1]);
 		showMapInfo_subroutine(stack[1], false);
 		JUTConsoleManager* manager = JUTConsoleManager::sManager;
-		manager->drawDirect(true);
+		// @P2GZ: fast crash log
+		// draw without waiting a full VI retrace per line for Speed
+		// manager->drawDirect(true);
+		manager->drawDirect(false);
 		waitTime(mPrintWaitTime1);
 		stack = (u32*)stack[0];
 	}
@@ -447,6 +451,15 @@ bool JUTException::showMapInfo_subroutine(u32 address, bool begin_with_newline)
 		begin_with_newline = false;
 	}
 
+	// @P2GZ: fast crash log
+	// resolve addresses using the custom lookup table, instead of scanning the 4.2MB map for every bloody line lol
+	if (result == false) {
+		int symResult = gz::crashSymbolsTryPrint(sConsole, address, begin_with_newline);
+		if (symResult >= 0) {
+			return symResult == 1;
+		}
+	}
+
 	if (sMapFileList.getFirst() != sMapFileList.getEnd()) {
 		u32 out_addr;
 		u32 out_size;
@@ -493,7 +506,10 @@ void JUTException::showGPRMap(OSContext* context)
 			if (!res) { // inlined
 				sConsole->print("  no information\n");
 			}
-			JUTConsoleManager::getManager()->drawDirect(true);
+			// @P2GZ: fast crash log
+			// skip the per-line retrace wait
+			// JUTConsoleManager::getManager()->drawDirect(true);
+			JUTConsoleManager::getManager()->drawDirect(false);
 			waitTime(mPrintWaitTime1);
 		}
 	}

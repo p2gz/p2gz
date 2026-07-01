@@ -168,6 +168,9 @@ if args.map:
     with open("root/files/pikmin2UP.map", "w") as f:
         f.writelines(lines)
 
+    # build the custom compact crash-handler symbol table from the map
+    subprocess.run("python3 tools/gen_crash_symbols.py", shell=True)
+
 
 print(f"Done! Build took {round(time.time() - start_time, 2)}s")
 

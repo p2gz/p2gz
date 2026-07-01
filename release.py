@@ -33,6 +33,7 @@ files_to_copy = [
     "root/sys/main.dol",
     "root/sys/boot.bin",
     "root/files/pikmin2UP.map",
+    "root/files/pikmin2UP.sym",
     "root/files/opening.bnr",
     "root/files/banner",
     "root/files/memoryCard/memoryCardHeader.szs",
