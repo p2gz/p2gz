@@ -130,6 +130,7 @@ void P2GZ::update()
 	segment_history->update();
 	dismiss_positions->update();
 	navi_tools->update();
+	treasure_editor->update();
 	empress_trainer->update();
 	early_blues_trainer->update();
 	navi_debug_info->update();

@@ -516,6 +516,16 @@ void ListMenu::clear()
 
 void ListMenu::update()
 {
+	// clamp in case list size has changed (from sync etc)
+	if (options.len() > 0) {
+		if (scroll >= options.len()) {
+			scroll = 0;
+		}
+		if (selected >= options.len()) {
+			selected = options.len() - 1;
+		}
+	}
+
 	// Make sure the selection starts in bounds in case it was changed from somewhere else
 	if (selected < scroll) {
 		selected = scroll;
