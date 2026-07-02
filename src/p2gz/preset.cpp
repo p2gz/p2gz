@@ -415,21 +415,21 @@ void Preset::TreasureState::restore(u8 dest_sublevel)
 		}
 		Game::playData->mCavePokoCount = cpoko;
 
-		// also restore treasures from before we entered the cave/current segment
-		if (mode == TM_Checkpoint) {
-			// NB: we only deal with treasure entries, not enemy entries
-			Game::PelletFirstMemory* zukan = Game::playData->mZukanStat;
-			if (zukan) {
-				zukan->mOtakara.clear();
-				for (u32 i = 0; i < zukan_otakara.len(); i++) {
-					zukan->mOtakara(zukan_otakara[i]) = Game::KindCounter::KCF_Earned;
-				}
-				zukan->mItem.clear();
-				for (u32 i = 0; i < zukan_item.len(); i++) {
-					zukan->mItem(zukan_item[i]) = Game::KindCounter::KCF_Earned;
-				}
+		// restore piklopedia on retry
+		Game::PelletFirstMemory* zukan = Game::playData->mZukanStat;
+		if (zukan) {
+			zukan->mOtakara.clear();
+			for (u32 i = 0; i < zukan_otakara.len(); i++) {
+				zukan->mOtakara(zukan_otakara[i]) = Game::KindCounter::KCF_Earned;
 			}
+			zukan->mItem.clear();
+			for (u32 i = 0; i < zukan_item.len(); i++) {
+				zukan->mItem(zukan_item[i]) = Game::KindCounter::KCF_Earned;
+			}
+		}
 
+		// also restore counts/pokos from before we entered the cave/current segment
+		if (mode == TM_Checkpoint) {
 			Game::PelletCropMemory* main = Game::playData->mMainCropMemory;
 			if (main) {
 				main->mOtakara.clear();

@@ -204,14 +204,13 @@ void PresetMgr::fill_current_treasure_state(Preset* preset, WarpDestination dest
 	capture_crop(Game::playData->mCaveCropMemory, ts.cave_held);
 	ts.cave_poko_count = Game::playData->mCavePokoCount;
 
+	// save piklopedia state
+	capture_zukan(Game::playData->mZukanStat, ts.zukan_otakara, ts.zukan_item);
+
 	if (ts.mode == TM_Checkpoint) {
-		capture_zukan(Game::playData->mZukanStat, ts.zukan_otakara, ts.zukan_item);
 		ts.treasure_count = Game::playData->mTreasureCount;
 		ts.poko_count     = Game::playData->mPokoCount;
 		// per-course ground counts are reconstructed from the captured AG field overrides (above)
-	} else {
-		ts.zukan_otakara.clear();
-		ts.zukan_item.clear();
 	}
 
 	prev_heap->becomeCurrentHeap();
