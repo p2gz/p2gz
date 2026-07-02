@@ -469,13 +469,19 @@ void GameState::exec(SingleGameSection* game)
 		game->enableTimer(180.0f, DEMOTIMER_YouAppearLost);
 	}
 
-	if (moviePlayer->mDemoState == DEMOSTATE_Inactive && needRepayDemo()) {
-		startRepayDemo();
-	} else if (moviePlayer->mDemoState == DEMOSTATE_Inactive && p2gz->poko_editor->repay_demo_enabled) {
-		// @ P2GZ: alternate way to force % cutscenes to play. I'm not disturbing usual game logic if we want
-		// the hack to be playable more normally.
-		startRepayDemo();
-		p2gz->poko_editor->repay_demo_enabled = false;
+	// @P2GZ: suppress the % of debt ("poko") cutscene entirely while the early blues trainer is active.
+	// Both trigger paths must be gated together: gating only the needRepayDemo() branch just reroutes the
+	// trigger into the repay_demo_enabled else-if below. This gate is at the trigger (during the game
+	// update, where the trainer is still enabled), so it is race-free.
+	if (!p2gz->early_blues_trainer->is_enabled()) {
+		if (moviePlayer->mDemoState == DEMOSTATE_Inactive && needRepayDemo()) {
+			startRepayDemo();
+		} else if (moviePlayer->mDemoState == DEMOSTATE_Inactive && p2gz->poko_editor->repay_demo_enabled) {
+			// @ P2GZ: alternate way to force % cutscenes to play. I'm not disturbing usual game logic if we want
+			// the hack to be playable more normally.
+			startRepayDemo();
+			p2gz->poko_editor->repay_demo_enabled = false;
+		}
 	}
 
 	// Check if anything needs to be done following a % of debt cutscene
