@@ -44,7 +44,7 @@ const f32 INSET_WIDTH  = 192.0f;
 const f32 INSET_HEIGHT = 144.0f;
 const f32 INSET_MARGIN = 24.0f;
 
-const f32 INSET_COLLISION_RADIUS = 1024.0f;
+const f32 INSET_COLLISION_RADIUS = 512.0f;
 
 const int B_HOLD_FRAMES = 20;
 
@@ -133,10 +133,19 @@ static void draw_inset_collision(Graphics& gfx, Viewport* vp, Game::Navi* navi)
 		return;
 	}
 
+	int total = 0;
+	for (Sys::TriIndexList* list = triLists; list; list = static_cast<Sys::TriIndexList*>(list->mNext)) {
+		total += list->getNum();
+	}
+	if (total == 0) {
+		return;
+	}
+
 	gfx.initPrimDraw(vp->getMatrix(true));
 
 	const Vector3f light_dir(0.408f, 0.816f, 0.408f);
 
+	GXBegin(GX_TRIANGLES, GX_VTXFMT0, (u16)(total * 3));
 	for (; triLists; triLists = static_cast<Sys::TriIndexList*>(triLists->mNext)) {
 		for (int i = 0; i < triLists->getNum(); i++) {
 			Sys::Triangle* tri = triTable->getTriangle(triLists->mObjects[i]);
@@ -144,15 +153,14 @@ static void draw_inset_collision(Graphics& gfx, Viewport* vp, Game::Navi* navi)
 			f32 lit            = normal.x * light_dir.x + normal.y * light_dir.y + normal.z * light_dir.z;
 			u8 shade           = (u8)(160.0f + 95.0f * lit);
 
-			GXBegin(GX_TRIANGLES, GX_VTXFMT0, 3);
 			for (int j = 0; j < 3; j++) {
 				Vector3f* vertex = vertTable->getVertex(tri->mVertices[j]);
 				GXPosition3f32(vertex->x, vertex->y, vertex->z);
 				GXColor4u8(shade, shade, shade, 255);
 			}
-			GXEnd();
 		}
 	}
+	GXEnd();
 }
 
 void EarlyBluesTrainer::stop()
@@ -348,6 +356,10 @@ void EarlyBluesTrainer::capture_input(Controller* pad)
 {
 	captured_button      = pad->getButton();
 	captured_button_down = pad->getButtonDown();
+
+	if (pending_setup) {
+		return;
+	}
 
 	u32 mask = Controller::PRESS_A | Controller::PRESS_B | Controller::PRESS_Y;
 	pad->mButton.mButton &= ~mask;
