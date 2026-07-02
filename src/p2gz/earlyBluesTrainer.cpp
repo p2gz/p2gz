@@ -354,9 +354,6 @@ void EarlyBluesTrainer::capture_input(Controller* pad)
 	captured_button      = pad->getButton();
 	captured_button_down = pad->getButtonDown();
 
-	// Don't intercept inputs until the warp has finished and we're set up at the start position, so the
-	// player keeps full control during the warp/landing (e.g. to skip the landing cutscene with A). The
-	// A-toggle and reset handlers in update() are likewise gated behind pending_setup.
 	if (pending_setup) {
 		return;
 	}

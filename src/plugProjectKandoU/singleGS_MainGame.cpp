@@ -469,10 +469,7 @@ void GameState::exec(SingleGameSection* game)
 		game->enableTimer(180.0f, DEMOTIMER_YouAppearLost);
 	}
 
-	// @P2GZ: suppress the % of debt ("poko") cutscene entirely while the early blues trainer is active.
-	// Both trigger paths must be gated together: gating only the needRepayDemo() branch just reroutes the
-	// trigger into the repay_demo_enabled else-if below. This gate is at the trigger (during the game
-	// update, where the trainer is still enabled), so it is race-free.
+	// @P2GZ: don't play percent cutscene after early blues trainer warp
 	if (!p2gz->early_blues_trainer->is_enabled()) {
 		if (moviePlayer->mDemoState == DEMOSTATE_Inactive && needRepayDemo()) {
 			startRepayDemo();
