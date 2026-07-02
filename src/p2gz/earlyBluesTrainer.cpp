@@ -46,7 +46,7 @@ const f32 INSET_MARGIN = 24.0f;
 
 const f32 INSET_COLLISION_RADIUS = 512.0f;
 
-const int B_HOLD_FRAMES = 30;
+const int B_HOLD_FRAMES = 20;
 
 const f32 DEATH_PLANE_Y = -300.0f;
 
@@ -348,7 +348,7 @@ void EarlyBluesTrainer::update()
 	}
 }
 
-// Disable whistling, switching captains, and throwing (A toggles the inset camera instead).
+// Disable whistling, switching captains, and throwing.
 void EarlyBluesTrainer::capture_input(Controller* pad)
 {
 	captured_button      = pad->getButton();
