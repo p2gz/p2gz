@@ -22,6 +22,7 @@
 #include <IDelegate.h>
 #include <Graphics.h>
 #include <Game/MoviePlayer.h>
+#include <Game/SingleGame.h>
 
 using namespace gz;
 
@@ -332,9 +333,11 @@ void GZMenu::open()
 	// - end of day (causes gameplay desync)
 	// - cave results but only in the very beginning before the blo loads (crashes when warping out)
 	// - day results but only in the very beginning before the blo loads (crashes when warping out)
+	// - during or just before a % cutscene
 	if ((!in_end_of_day_result() && Game::moviePlayer->isFlag(Game::MVP_IsActive))
 	    || (in_end_of_day_result() && !in_end_of_day_result_safe_to_warp()) || in_day_end_sunset() || in_load()
-	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || p2gz->warp->is_warp_lockout()) {
+	    || (in_cave_results() && !in_cave_results_safe_to_warp()) || p2gz->warp->is_warp_lockout() 
+		|| ((in_repay_demo() || p2gz->poko_editor->repay_demo_enabled) && in_above_ground_play())) {
 		return;
 	}
 
