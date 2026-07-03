@@ -15,6 +15,20 @@
 
 using namespace gz;
 
+// min size of the largest (contiguous) free block we require before spawning a treasure
+static const u32 MIN_FREE_HEAP_FOR_SPAWN = 0x4000; // i.e. 16KB
+
+// true if the current heap has room for a treasure model
+static bool heap_has_room_for_spawn()
+{
+	JKRHeap* heap = JKRHeap::getCurrentHeap();
+	if (!heap) {
+		// default to spawning, just in case
+		return true;
+	}
+	return heap->getFreeSize() >= MIN_FREE_HEAP_FOR_SPAWN;
+}
+
 void TreasureEditor::init()
 {
 	treasures = static_cast<ListMenu*>(p2gz->menu->get_option("level/treasures")->get_sub_menu());
@@ -236,6 +250,10 @@ void TreasureEditor::start_move(const char* treasure_name)
 
 	if (!active_treasure) {
 		OSReport("couldn't find treasure %s to move\n", treasure_name);
+		// most likely the treasure couldn't be spawned because the heap is too low
+		if (!heap_has_room_for_spawn()) {
+			p2gz->show_callout("No Memory To Spawn Treasure");
+		}
 		return;
 	}
 
@@ -485,20 +503,6 @@ void TreasureEditor::sync_treasure_option(const char* treasure_name, ToggleMenuO
 	treasure_collected_opt->set_selection(!treasure || !treasure->isAlive());
 }
 
-// min size of the largest (contiguous) free block we require before spawning a treasure
-static const u32 MIN_FREE_HEAP_FOR_SPAWN = 0x4000; // i.e. 16KB
-
-// true if the current heap has room for a treasure model
-static bool heap_has_room_for_spawn()
-{
-	JKRHeap* heap = JKRHeap::getCurrentHeap();
-	if (!heap) {
-		// default to spawning, just in case
-		return true;
-	}
-	return heap->getFreeSize() >= MIN_FREE_HEAP_FOR_SPAWN;
-}
-
 Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int kind)
 {
 	if (!heap_has_room_for_spawn()) {
@@ -515,6 +519,13 @@ Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int
 	arg.mPelletIndex        = cfg->mParams.mIndex;
 	arg.mPelView            = nullptr;
 	return Game::pelletMgr->birth(&arg);
+}
+
+// place pellet so it doesn't clip into the ground
+static void place_pellet_on_floor(Game::Pellet* pellet, Vector3f pos)
+{
+	pos.y = Game::mapMgr->getMinY(pos) + pellet->getCylinderHeight() * 0.5f;
+	pellet->setPosition(pos, false);
 }
 
 Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
@@ -549,7 +560,7 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 					if (!pellet) {
 						return nullptr;
 					}
-					pellet->setPosition(gen->mPosition, false);
+					place_pellet_on_floor(pellet, gen->mPosition + gen->mOffset);
 					gen->mCreature     = pellet;
 					pellet->mGenerator = gen;
 					return pellet;
@@ -565,7 +576,7 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 					if (!pellet) {
 						return nullptr;
 					}
-					pellet->setPosition(gen->mPosition, false);
+					place_pellet_on_floor(pellet, gen->mPosition + gen->mOffset);
 					return pellet;
 				}
 			}
@@ -635,6 +646,8 @@ void TreasureEditor::set_collected(const char* treasure_name, ToggleMenuOption* 
 		}
 		if (!heap_has_room_for_spawn()) {
 			OSReport("couldn't un-collect treasure %s: heap too low to spawn\n", treasure_name);
+			// let the user know why nothing appeared
+			p2gz->show_callout("No Memory To Spawn Treasure");
 			if (collected_opt) {
 				// keep toggle in sync with the actual treasure state
 				collected_opt->set_selection(true);
