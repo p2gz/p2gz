@@ -521,7 +521,7 @@ Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int
 
 	Game::Pellet* spawned_treasure = p2gz->treasure_editor->search_loaded_treasure_index(cfg->mParams.mIndex);
 
-	// Creating a model takes up memory, so only do it if we absolutely have to. 
+	// Creating a model takes up memory, so only do it if we absolutely have to.
 	if (spawned_treasure) {
 		arg.mDoSkipCreateModel = 1;
 		spawned_treasure->mMgr->setComeAlive(spawned_treasure);
@@ -545,7 +545,7 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 	// Find the treasure config so we can look up its index
 	Game::PelletConfig* cfg      = nullptr;
 	Game::PelletList::cKind kind = Game::PelletList::PLK_Otakara;
-	for (int i = (int)Game::PelletList::PLK_Otakara; i < (int)Game::PelletList::PLK_Item; i++) {
+	for (int i = (int)Game::PelletList::PLK_Otakara; i <= (int)Game::PelletList::PLK_Item; i++) {
 		Game::PelletConfigList* config_list = Game::PelletList::Mgr::mInstance->getConfigList(static_cast<Game::PelletList::cKind>(i));
 		cfg                                 = config_list->getPelletConfig(const_cast<char*>(config_name));
 		if (cfg) {
