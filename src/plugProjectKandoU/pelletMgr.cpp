@@ -836,6 +836,7 @@ void Pellet::onInit(CreatureInitArg* initArg)
 	// @P2GZ: treasure editor
 	if (getKind() == PelletType::Treasure || getKind() == PelletType::Upgrade) {
 		p2gz->treasure_editor->add(this);
+		p2gz->treasure_editor->add_loaded_treasure(this);
 	}
 }
 

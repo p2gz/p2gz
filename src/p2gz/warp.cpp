@@ -424,6 +424,9 @@ void Warp::do_warp()
 	if (p2gz->collision_viewer->is_enabled()) {
 		p2gz->collision_viewer->handle_warp();
 	}
+
+	// Treasure editor: clear the array of loaded treasures
+	p2gz->treasure_editor->clear_loaded_treasure_array();
 }
 
 void Warp::reset_cave_treasure_collections(Game::SingleGameSection* game)

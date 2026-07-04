@@ -5,6 +5,8 @@
 #include <p2gz/gzCollections.h>
 #include <Game/Entities/PelletItem.h>
 
+const int MAX_LOADED_TREASURES = 16;
+
 namespace gz {
 
 struct TreasureEditor {
@@ -14,6 +16,9 @@ public:
 	    , active_treasure(nullptr)
 	    , enabled(false)
 	{
+		for (int i = 0; i < MAX_LOADED_TREASURES; i++) {
+			loaded_treasures[i] = 0;
+		}
 	}
 	~TreasureEditor() { }
 
@@ -38,6 +43,10 @@ public:
 
 	void set_collected(const char* treasure_name, ToggleMenuOption* collected_opt, bool collected);
 	void snap_to_nearest_waypoint();
+	void add_loaded_treasure(Game::Pellet* treasure);
+	Game::Pellet* search_loaded_treasure_index(int index_to_search);
+	void clear_loaded_treasure_array();
+	void printout_array(); // debug function 
 
 private:
 	// position of treasure in a cave (for respawning it)
@@ -63,6 +72,8 @@ private:
 	Vector3f initial_position;          // used when moving a treasure
 	Vec<TreasureSpawn> spawn_positions; // spawn spots for treasures on the current (cave) floor
 	bool enabled;
+
+	Game::Pellet* loaded_treasures[16];
 };
 
 } // namespace gz

@@ -518,7 +518,20 @@ Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int
 	arg.mPelletType         = kind;
 	arg.mPelletIndex        = cfg->mParams.mIndex;
 	arg.mPelView            = nullptr;
-	return Game::pelletMgr->birth(&arg);
+
+	Game::Pellet* spawned_treasure = p2gz->treasure_editor->search_loaded_treasure_index(cfg->mParams.mIndex);
+
+	// Creating a model takes up memory, so only do it if we absolutely have to. 
+	if (spawned_treasure) {
+		arg.mDoSkipCreateModel = 1;
+		spawned_treasure->mMgr->setComeAlive(spawned_treasure);
+		spawned_treasure->init(&arg);
+	} else {
+		arg.mDoSkipCreateModel = 0;
+		spawned_treasure       = Game::pelletMgr->birth(&arg);
+	}
+	p2gz->treasure_editor->printout_array();
+	return spawned_treasure;
 }
 
 // place pellet so it doesn't clip into the ground
@@ -667,4 +680,48 @@ void TreasureEditor::clear_treasures()
 	}
 	// drop remembered spawn spots from the level we're leaving
 	spawn_positions.clear();
+}
+
+void TreasureEditor::add_loaded_treasure(Game::Pellet* treasure)
+{
+	for (int i = 0; i < MAX_LOADED_TREASURES; i++) {
+		if (loaded_treasures[i] == treasure) {
+			return;
+		}
+
+		if (loaded_treasures[i] == nullptr) {
+			loaded_treasures[i] = treasure;
+			return;
+		}
+	}
+}
+
+Game::Pellet* TreasureEditor::search_loaded_treasure_index(int index_to_search)
+{
+	for (int i = 0; i < MAX_LOADED_TREASURES; i++) {
+		if (loaded_treasures[i] && (loaded_treasures[i]->getConfigIndex() == index_to_search)) {
+			return loaded_treasures[i];
+		}
+	}
+	return nullptr;
+}
+
+void TreasureEditor::clear_loaded_treasure_array()
+{
+	for (int i = 0; i < MAX_LOADED_TREASURES; i++) {
+		loaded_treasures[i] = nullptr;
+	}
+}
+
+// Debug function. Displays the loaded treasure array.
+void TreasureEditor::printout_array()
+{
+	for (int i = 0; i < MAX_LOADED_TREASURES; i++) {
+		if (loaded_treasures[i]) {
+			OSReport("Entry number %d has index %d and name %s \n", i, loaded_treasures[i]->getConfigIndex(),
+			         loaded_treasures[i]->getConfigName());
+		} else {
+			OSReport("Entry number %d is empty \n", i);
+		}
+	}
 }
