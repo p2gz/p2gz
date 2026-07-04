@@ -841,6 +841,10 @@ bool SingleGameSection::updateCaveMenus()
 			gameSystem->setMoviePause(false, "cave-yes");
 			mOpenMenuFlags &= ~1;
 			goCave(mCurrentCave);
+
+			// @P2GZ: clear the array of loaded treasures when the player enters a hole  
+			p2gz->treasure_editor->clear_loaded_treasure_array();
+
 			return true;
 		case Screen::Game2DMgr::CHECK2D_CaveInMenu_Cancel:
 			gameSystem->setPause(false, "cave-no", 3);
@@ -862,6 +866,10 @@ bool SingleGameSection::updateCaveMenus()
 			gameSystem->setMoviePause(false, "more-yes");
 			mOpenMenuFlags &= ~2;
 			goNextFloor(mHole);
+
+			// @P2GZ: clear the array of loaded treasures when the player goes to the next sublevel  
+			p2gz->treasure_editor->clear_loaded_treasure_array();
+
 			return true;
 		case Screen::Game2DMgr::CHECK2D_CaveMoreMenu_Cancel:
 			gameSystem->setPause(false, "more-no", 3);
@@ -879,6 +887,10 @@ bool SingleGameSection::updateCaveMenus()
 			gameSystem->setMoviePause(false, "kank-yes");
 			mOpenMenuFlags &= ~4;
 			goMainMap(mFountain);
+
+			// @P2GZ: clear the array of loaded treasures when the player exits a cave via a geyser  
+			p2gz->treasure_editor->clear_loaded_treasure_array();
+
 			return true;
 		case Screen::Game2DMgr::CHECK2D_KanketuMenu_MenuOpen:
 		case Screen::Game2DMgr::CHECK2D_KanketuMenu_Unused:

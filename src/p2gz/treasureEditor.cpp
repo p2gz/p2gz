@@ -530,6 +530,7 @@ Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int
 		arg.mDoSkipCreateModel = 0;
 		spawned_treasure       = Game::pelletMgr->birth(&arg);
 	}
+	p2gz->treasure_editor->printout_array(); 
 	return spawned_treasure;
 }
 
