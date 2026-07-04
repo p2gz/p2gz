@@ -344,6 +344,21 @@ inline bool in_cave_results()
 	return true;
 }
 
+inline bool in_repay_demo()
+{
+	// must be in single player mode
+	Game::SingleGameSection* sgs = get_SGS();
+	if (!sgs) {
+		return false;
+	}
+	Game::SingleGame::GameState* state = static_cast<Game::SingleGame::GameState*>(sgs->getCurrState());
+	if (!state) {
+		return false;
+	}
+	// check we're in the correct state - this is repay demo 
+	return (state->mCheckRepay || state->needRepayDemo()); 
+}
+
 // Similar to above, but used for warping - must not be loading any BLO stuff, or else we get lockout crash
 inline bool in_cave_results_safe_to_warp()
 {
