@@ -112,6 +112,8 @@ public:
 	bool get_selection() { return on; }
 	void set_selection(bool selected) { on = selected; }
 
+	void set_on_selected(IDelegate1<bool>* delegate) { on_selected = delegate; }
+
 	// like set_selection, but also fires the bound delegate so the live state follows the display
 	void set_value(bool value)
 	{
@@ -308,13 +310,14 @@ public:
 
 	virtual MenuOption* cur_option()
 	{
-		{
-			if (options.len() > 0)
-				return options[selected];
-			else {
-				return nullptr;
-			}
+		if (options.len() == 0) {
+			return nullptr;
 		}
+		// clamp so we never index out of bounds
+		if (selected >= options.len()) {
+			selected = options.len() - 1;
+		}
+		return options[selected];
 	}
 
 	ListMenu* push(MenuOption* option);
