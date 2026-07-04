@@ -49,8 +49,6 @@ public:
 	void draw_2d();
 	void draw();
 
-	void show_callout(const char* message);
-
 	static void draw_version();
 
 	// our own persistent controller so we don't crash the game on new file starting (don't ask)
@@ -97,15 +95,7 @@ public:
 	bool in_save_file;
 
 private:
-	void draw_callout();
-
 	bool inited;
-
-	// global callout messages for when things are Bad and the user should know
-	static const int CALLOUT_MAX_LENGTH = 64;
-
-	char callout_message[CALLOUT_MAX_LENGTH];
-	int callout_frames_remaining;
 };
 
 // global instance

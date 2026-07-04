@@ -5,6 +5,10 @@
 #include <p2gz/gzCollections.h>
 #include <Game/Entities/PelletItem.h>
 
+namespace Game {
+struct PelletConfig;
+}
+
 namespace gz {
 
 struct TreasureEditor {
@@ -51,7 +55,21 @@ private:
 		Vector3f position;
 	};
 
+	// pointer to treasure that's already spawned in the current area, so we can reuse the model
+	struct SpawnedPellet {
+		SpawnedPellet()
+		    : name(nullptr)
+		    , pellet(nullptr)
+		{
+		}
+
+		const char* name; // pellet config
+		Game::Pellet* pellet;
+	};
+
 	Game::Pellet* spawn_treasure(const char* config_name);
+	Game::Pellet* birth_or_revive(Game::PelletConfig* cfg, const char* config_name, int kind);
+	void remember_spawned(const char* config_name, Game::Pellet* pellet);
 	void sync_treasure_option(const char* treasure_name, ToggleMenuOption* treasure_collected_opt);
 	void focus_treasure(const char* treasure_name);
 
@@ -62,6 +80,7 @@ private:
 	Game::Pellet* active_treasure;
 	Vector3f initial_position;          // used when moving a treasure
 	Vec<TreasureSpawn> spawn_positions; // spawn spots for treasures on the current (cave) floor
+	Vec<SpawnedPellet> spawned_pellets; // pellets spawned this area load, to re-use their for model
 	bool enabled;
 };
 

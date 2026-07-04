@@ -24,18 +24,13 @@
 
 using namespace gz;
 
-// duration for temp red callout text to appear
-static const int CALLOUT_DURATION_FRAMES = 30;
-
 P2GZ* p2gz;
 
 P2GZ::P2GZ()
 {
-	inited                   = false;
-	in_save_file             = true;
-	callout_frames_remaining = 0;
-	callout_message[0]       = '\0';
-	JKRHeap* prev_heap       = sys->mSysHeap->becomeCurrentHeap();
+	inited             = false;
+	in_save_file       = true;
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
 
 	// Setup all our P2GZ menus/features here
 	collision_viewer     = new CollisionViewer();
@@ -143,10 +138,6 @@ void P2GZ::update()
 	warp->update_lockout_frames();
 	race_mode->update();
 
-	if (callout_frames_remaining > 0) {
-		callout_frames_remaining--;
-	}
-
 	// Menu must update last so button presses for menu interactions don't
 	// inadvertantly do things in other systems on the same frame they're pressed.
 	// NEW - we use the menu lock to prevent this issue for update calls outside of this function (such as graphical updates)
@@ -171,9 +162,6 @@ void P2GZ::draw_2d()
 	early_blues_trainer->draw_status();
 	navi_debug_info->draw();
 	race_mode->draw_2d();
-
-	// draw last so it sits on top of everything else (i.e. the menu it's triggered from lol)
-	draw_callout();
 }
 
 // Anything that needs to be drawn in 3D space should be drawn here.
@@ -211,32 +199,3 @@ void P2GZ::draw_version()
 	j2d.print((System::getRenderModeWidth() / 2) - (width / 2), 424.0f, "v.%s", P2GZ_VERSION);
 }
 
-// temp red callout text for errors the player should Know About
-void P2GZ::show_callout(const char* message)
-{
-	strncpy(callout_message, message, CALLOUT_MAX_LENGTH - 1);
-	callout_message[CALLOUT_MAX_LENGTH - 1] = '\0';
-	callout_frames_remaining                = CALLOUT_DURATION_FRAMES;
-}
-
-void P2GZ::draw_callout()
-{
-	if (callout_frames_remaining <= 0 || callout_message[0] == '\0') {
-		return;
-	}
-
-	J2DPrint j2d(gP2JMEMgr->mFont, 0.0f);
-	j2d.initiate();
-
-	j2d.mGlyphWidth  = 20.0f;
-	j2d.mGlyphHeight = 20.0f;
-
-	JUtility::TColor color = JUtility::TColor(230, 40, 40, 255);
-	j2d.mCharColor.set(color);
-	j2d.mGradientColor.set(color);
-
-	// centre horizontally and vertically
-	f32 width = j2d.getWidth("%s", callout_message);
-	j2d.print((System::getRenderModeWidth() / 2) - (width / 2), (System::getRenderModeHeight() / 2) - (j2d.mGlyphHeight / 2), "%s",
-	          callout_message);
-}

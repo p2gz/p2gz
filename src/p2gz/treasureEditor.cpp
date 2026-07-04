@@ -249,11 +249,8 @@ void TreasureEditor::start_move(const char* treasure_name)
 	}
 
 	if (!active_treasure) {
+		// heap is likely exhausted
 		OSReport("couldn't find treasure %s to move\n", treasure_name);
-		// most likely the treasure couldn't be spawned because the heap is too low
-		if (!heap_has_room_for_spawn()) {
-			p2gz->show_callout("No Memory To Spawn Treasure");
-		}
 		return;
 	}
 
@@ -521,6 +518,58 @@ Game::Pellet* birth_pellet(Game::PelletConfig* cfg, const char* config_name, int
 	return Game::pelletMgr->birth(&arg);
 }
 
+// remember a pellet we just spawned so we can revive it (and reuse its model) later
+void TreasureEditor::remember_spawned(const char* config_name, Game::Pellet* pellet)
+{
+	for (size_t i = 0; i < spawned_pellets.len(); i++) {
+		if (strcmp(spawned_pellets[i].name, config_name) == 0) {
+			spawned_pellets[i].pellet = pellet;
+			return;
+		}
+	}
+
+	SpawnedPellet entry;
+	entry.name   = config_name;
+	entry.pellet = pellet;
+	spawned_pellets.push(entry);
+}
+
+// birth a fresh pellet, or revive one we spawned earlier this area load.
+Game::Pellet* TreasureEditor::birth_or_revive(Game::PelletConfig* cfg, const char* config_name, int kind)
+{
+	// try to revive a pellet we spawned earlier for this treasure
+	for (size_t i = 0; i < spawned_pellets.len(); i++) {
+		if (strcmp(spawned_pellets[i].name, config_name) != 0) {
+			continue;
+		}
+
+		Game::Pellet* prev = spawned_pellets[i].pellet;
+		// only safe to reuse if the pellet is dead, still has its model, and still holds this
+		// treasure's config
+		if (prev && !prev->isAlive() && prev->mModel && strcmp(prev->getConfigName(), config_name) == 0) {
+			prev->mMgr->setComeAlive(prev);
+
+			Game::PelletInitArg arg;
+			arg.mDontCheckCollected = true;
+			arg.mTextIdentifier     = const_cast<char*>(config_name);
+			arg.mPelletType         = kind;
+			arg.mPelletIndex        = cfg->mParams.mIndex;
+			arg.mPelView            = nullptr;
+			arg.mDoSkipCreateModel  = 1;
+			prev->init(&arg);
+			return prev;
+		}
+		break;
+	}
+
+	// no reusable pellet, birth a new one
+	Game::Pellet* pellet = birth_pellet(cfg, config_name, kind);
+	if (pellet) {
+		remember_spawned(config_name, pellet);
+	}
+	return pellet;
+}
+
 // place pellet so it doesn't clip into the ground
 static void place_pellet_on_floor(Game::Pellet* pellet, Vector3f pos)
 {
@@ -556,7 +605,7 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 				const char* treasure_name
 				    = Game::PelletList::Mgr::mInstance->getConfig(kind)->getPelletConfig(treasure_id)->mParams.mName.mData;
 				if ((!gen->mCreature || !gen->mCreature->isAlive()) && strcmp(treasure_name, config_name) == 0) {
-					Game::Pellet* pellet = birth_pellet(cfg, config_name, kind);
+					Game::Pellet* pellet = birth_or_revive(cfg, config_name, kind);
 					if (!pellet) {
 						return nullptr;
 					}
@@ -572,7 +621,7 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 					// Respawning the enemy is difficult because many of them are handled differently after
 					// dying or when not spawned. This is left as an improvement for the future.
 					// Instead we just spawn the treasure where the enemy would be.
-					Game::Pellet* pellet = birth_pellet(cfg, config_name, kind);
+					Game::Pellet* pellet = birth_or_revive(cfg, config_name, kind);
 					if (!pellet) {
 						return nullptr;
 					}
@@ -583,7 +632,7 @@ Game::Pellet* TreasureEditor::spawn_treasure(const char* config_name)
 		}
 		GZEXPECT(false, "no suitable pellet or teki generator found for treasure %s", config_name);
 	} else if (in_cave_play()) {
-		Game::Pellet* pellet = birth_pellet(cfg, config_name, kind);
+		Game::Pellet* pellet = birth_or_revive(cfg, config_name, kind);
 		if (!pellet) {
 			return nullptr;
 		}
@@ -639,22 +688,20 @@ void TreasureEditor::set_collected(const char* treasure_name, ToggleMenuOption* 
 		arg.mDoRevive = false;
 		creature->kill(&arg);
 	} else {
-		// spawn a new pellet
-		// this leaks due to the model, so just perma show "collected" when the heap is too low so we don't crash
+		// (re)spawn the pellet
+		// a new spawn can still fail if the heap is actually exhausted
+		// in that case, leave toggle saying "collected"
 		if (creature && creature->isAlive()) {
 			return;
 		}
-		if (!heap_has_room_for_spawn()) {
+		if (!spawn_treasure(treasure_name)) {
 			OSReport("couldn't un-collect treasure %s: heap too low to spawn\n", treasure_name);
-			// let the user know why nothing appeared
-			p2gz->show_callout("No Memory To Spawn Treasure");
 			if (collected_opt) {
 				// keep toggle in sync with the actual treasure state
 				collected_opt->set_selection(true);
 			}
 			return;
 		}
-		spawn_treasure(treasure_name);
 		focus_treasure(treasure_name);
 	}
 }
@@ -667,4 +714,6 @@ void TreasureEditor::clear_treasures()
 	}
 	// drop remembered spawn spots from the level we're leaving
 	spawn_positions.clear();
+	// drop remembered spawn pellets from the level we're leaving
+	spawned_pellets.clear();
 }
