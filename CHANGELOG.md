@@ -1,3 +1,25 @@
+# beta1
+
+This is the first public (beta) release of P2GZ. Please see the main README for all the features of the hack. This release fixes a few bugs from the last pre-release found during testing, but is largely stable. Please report any further bugs or crashes via the Issues system.
+
+Features:
+- Added Early CR presets
+- Added the ability to toggle the EB trainer inset camera on/off, and invert it horizontally/vertically
+
+Bug fixes:
+- Fixed the race mode timer to split appropriately and account for loads correctly
+- Fixed the race mode final results screen to display correctly
+- Fixed a bug where the camera would go weird during the Blue Onion discovery cutscene
+- Fixed some display issues with the segment timer
+- Fixed a crash when trying to draw cave spawn points above ground
+- Fixed treasure cutscene skipping where breadbugs are involved - now, the cutscene cannot be skipped until the breadbug has been damaged safely
+- Fixed a bug where treasures would not respawn correctly when retrying certain cave floors
+- Fixed a bug where EB trainer would lag on console
+- Fixed a bug where the gz menu could be opened before the percent cutscene played, causing gameplay sync issues
+- Fixed several bugs and crashes with the treasure editor
+
+---
+
 # beta1-pre2
 
 This is the final staging release for the first public release of P2GZ. This adds some new features, fixes the workings of treasure and enemy saving, and some other bug fixes.
