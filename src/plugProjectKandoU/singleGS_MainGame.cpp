@@ -539,6 +539,9 @@ void GameState::exec(SingleGameSection* game)
 		gameSystem->setPause(false, "sm-canc", 3);
 		break;
 	case Screen::Game2DMgr::CHECK2D_SMenu_GoToSunset:
+		// @P2GZ: clear the array of loaded treasures when the player goes to sunset 
+		p2gz->treasure_editor->clear_loaded_treasure_array();
+
 		gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 		gameSystem->setMoviePause(false, "sm-ugot");
 		gameSystem->setPause(false, "sm-ugot", 3);

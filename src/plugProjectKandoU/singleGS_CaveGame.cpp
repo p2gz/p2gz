@@ -255,6 +255,9 @@ void CaveState::check_SMenu(SingleGameSection* game)
 		gameSystem->setMoviePause(false, "sm-canc");
 		return;
 	case Screen::Game2DMgr::CHECK2D_SMenu_EscapeCave:
+		// @P2GZ: clear the array of loaded treasures when the player exits a cave the start menu  
+		p2gz->treasure_editor->clear_loaded_treasure_array();
+		
 		gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 		gameSystem->setMoviePause(false, "sm-giveup");
 		if (moviePlayer->mDemoState != DEMOSTATE_Inactive)
