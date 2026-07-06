@@ -37,8 +37,8 @@ if [ -f "$1" ]; then
 	echo "iso extracted..."
 	chmod -R o+rw "$drop/root"
 
-	cp -r -f $home/Patch/root/sys $drop/root/sys/
-	cp -r -f $home/Patch/root/files $drop/root/files/
+	cp -r -f $home/Patch/root/sys $drop/root
+	cp -r -f $home/Patch/root/files $drop/root
 
 	echo "Now building new iso..."
 	cd $home
