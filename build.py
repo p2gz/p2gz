@@ -94,6 +94,7 @@ if not os.path.exists(os.path.join(os.getcwd(), "root")):
     if shutil.which("nodtool") is not None:
         nodtool = "nodtool"
     else:
+        print("nodtool is not installed on your system. Using the one in release_assets.")
         if platform.system() == "Windows":
             nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.win64.exe")
         if platform.system() == "Linux":
@@ -110,6 +111,14 @@ if not os.path.exists(os.path.join(os.getcwd(), "root")):
     for file in glob.glob(os.path.join(NEW_ISO_ASSETS, "files", "thp", "*.thp")):
         os.remove(file)
 
+# Check that cubetool is installed
+if shutil.which("cube") is None:
+    print("ERROR: cube is not installed. Install it with")
+    print("`cargo install cubetool`")
+    print("See https://github.com/mayabyte/cube")
+    print("")
+    exit()
+
 # patch compressed assets (anything with a .szs file type)
 for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
     # Creates a directory for the szs file - anything in the directory are the szs file's uncompressed contents
@@ -119,20 +128,20 @@ for compressed_dir in P2GZ_CUSTOM_ASSETS_COMPRESSED:
 
     # patching existing asset
     if os.path.exists(iso_archive):
-        subprocess.run(f"cube extract {iso_archive} -o {iso_dir}", shell=True)
-        subprocess.run(f"rm {iso_archive}", shell=True)
+        subprocess.run(f"cube extract {iso_archive} -o {iso_dir}", shell=True, check=True)
+        subprocess.run(f"rm {iso_archive}", shell=True, check=True)
 
         print(f"Copying {asset_archive} to {iso_archive}")
         shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
 
-        subprocess.run(f"cube pack -d --arc-extension szs {iso_dir}", shell=True)
+        subprocess.run(f"cube pack -d --arc-extension szs {iso_dir}", shell=True, check=True)
 
     # adding custom asset
     else:
         print(f"Copying {asset_archive} to {iso_archive}")
         shutil.copytree(compressed_dir, iso_dir, dirs_exist_ok=True)
 
-        subprocess.run(f"cube pack -d --arc-extension szs {iso_dir}", shell=True)
+        subprocess.run(f"cube pack -d --arc-extension szs {iso_dir}", shell=True, check=True)
 
 # patch non-compressed assets
 for path in P2GZ_CUSTOM_ASSETS_UNCOMPRESSED:
@@ -164,9 +173,9 @@ if args.map:
 if args.test:
     config_cmd += " --test"
 
-subprocess.run(config_cmd, shell=True)
+subprocess.run(config_cmd, shell=True, check=True)
 
-subprocess.run("ninja", shell=True)
+subprocess.run("ninja", shell=True, check=True)
 shutil.copy2("build/GPVE01/main.dol", "root/sys/main.dol")
 
 if args.map:
