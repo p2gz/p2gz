@@ -58,6 +58,7 @@ parser.add_argument(
     "--map", "-m", action="store_true", help="Compile a map file for easier debugging"
 )
 parser.add_argument("--test", "-t", action="store_true", help="Compile testing code")
+parser.add_argument("--iso", "-i", action="store_true", help="Create a patched p2gz.iso")
 args = parser.parse_args()
 
 if args.restart_dolphin:
@@ -87,21 +88,19 @@ except IndexError:
     print("ERROR: No .iso file found in the current directory")
     exit()
 
+# Find nodtool, or use the vendored one when not installed
+nodtool = "nodtool"
+if shutil.which("nodtool") is None:
+    print("nodtool is not installed on your system. Using the one in release_assets.")
+    if platform.system() == "Windows":
+        nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.win64.exe")
+    if platform.system() == "Linux":
+        nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.linux")
+    if platform.system() == "Darwin":
+        nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.macos")
+
 if not os.path.exists(os.path.join(os.getcwd(), "root")):
     print(f"Extracting {iso}")
-    
-    # Find nodtool, or use the vendored one
-    if shutil.which("nodtool") is not None:
-        nodtool = "nodtool"
-    else:
-        print("nodtool is not installed on your system. Using the one in release_assets.")
-        if platform.system() == "Windows":
-            nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.win64.exe")
-        if platform.system() == "Linux":
-            nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.linux")
-        if platform.system() == "Darwin":
-            nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.macos")
-
     subprocess.run(f'{nodtool} extract "{iso}" root', shell=True, check=True)
 
     # add extracted dol to correct directory so dtk can find it
@@ -192,6 +191,9 @@ if args.map:
     # build the custom compact crash-handler symbol table from the map
     subprocess.run("python3 tools/gen_crash_symbols.py", shell=True)
 
+if args.iso:
+    print("Creating patched .iso")
+    subprocess.run(f'{nodtool} makegcn root p2gz.iso', shell=True, check=True)
 
 print(f"Done! Build took {round(time.time() - start_time, 2)}s")
 
