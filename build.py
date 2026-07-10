@@ -67,7 +67,7 @@ if args.restart_dolphin:
         subprocess.run("pkill -f dolphin-emu", shell=True)
 
 if args.clean:
-    shutil.rmtree(os.path.join(os.getcwd(), "root"))
+    shutil.rmtree(NEW_ISO_ASSETS, ignore_errors=True)
     subprocess.run("ninja -t clean", shell=True)
 
 start_time = time.time()
@@ -89,7 +89,19 @@ except IndexError:
 
 if not os.path.exists(os.path.join(os.getcwd(), "root")):
     print(f"Extracting {iso}")
-    subprocess.run(f'nodtool extract "{iso}" root', shell=True)
+    
+    # Find nodtool, or use the vendored one
+    if shutil.which("nodtool") is not None:
+        nodtool = "nodtool"
+    else:
+        if platform.system() == "Windows":
+            nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.win64.exe")
+        if platform.system() == "Linux":
+            nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.linux")
+        if platform.system() == "Darwin":
+            nodtool = os.path.join(os.getcwd(),"release_assets/nodtool.macos")
+
+    subprocess.run(f'{nodtool} extract "{iso}" root', shell=True, check=True)
 
     # add extracted dol to correct directory so dtk can find it
     shutil.copy2("root/sys/main.dol", "orig/GPVE01/sys/main.dol")
