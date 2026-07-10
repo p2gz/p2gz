@@ -60,6 +60,9 @@ sudo xattr -rd com.apple.quarantine '/Applications/Wine Crossover.app'
 - For non-x86(_64) platforms: Install wine from your package manager.
   - For x86(_64), [wibo](https://github.com/decompals/wibo), a minimal 32-bit Windows binary wrapper, will be automatically downloaded and used.
 
+Note that the Flatpack version of Dolphin can't open `main.dol` files because of Flatpack's sandboxing.
+You'll need to create an .iso file.
+
 Building
 --------
 
@@ -102,3 +105,8 @@ To add or replace uncompressed asset files:
 - Add `assets/path/to/asset` to the `P2GZ_CUSTOM_ASSETS_UNCOMPRESSED` array in `build.py`.
 
 Once built, the new DOL will exist at `root/sys/main.dol`, along with a Dolphin-readable directory of all game files.
+
+To create an .iso file, run:
+```sh
+python3 build.py --iso
+``` 
