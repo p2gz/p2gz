@@ -517,6 +517,21 @@ void Warp::warp_to_cave(Game::SingleGameSection* game)
 	// Look up destination cave ID from index
 	Game::CourseInfo* dst_course_info = Game::stageList->getCourseInfo(dest.area);
 	ID32 caveID(dst_course_info->getCaveID_FromIndex(dest.cave - 1));
+
+	int caveIdx = dst_course_info->getCaveIndex_FromID(caveID);
+	if (caveIdx != -1) {
+		Game::PlayData::CaveOtakara* otakara    = &Game::playData->mCaveOtakara[dst_course_info->mCourseIndex];
+		Game::PlayData::CaveOtakara* otakaraOld = &Game::playData->mCaveOtakaraOld[dst_course_info->mCourseIndex];
+		if (caveIdx < otakara->mCaveCount) {
+			otakara->mOtakaraCountsOld[caveIdx] = 0;
+			otakara->mVisitStatus[caveIdx]      = 0;
+		}
+		if (caveIdx < otakaraOld->mCaveCount) {
+			otakaraOld->mOtakaraCountsOld[caveIdx] = 0;
+			otakaraOld->mVisitStatus[caveIdx]      = 0;
+		}
+	}
+
 	Game::playData->setSaveFlag(Game::STORYSAVE_Cave, nullptr);
 	Game::playData->setCurrentCourse(dst_course_info->mCourseIndex);
 	Game::playData->setCurrentCave(caveID, 0);
