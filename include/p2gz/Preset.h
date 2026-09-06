@@ -14,6 +14,7 @@
 namespace gz {
 
 struct Warp;
+struct SegmentSnapshot;
 struct WarpDestination;
 
 enum PresetCategory { PoD, AT, General };
@@ -211,6 +212,7 @@ public:
 
 	void apply();
 	void apply_post_load();
+	void restore_segment_cache();
 
 	KilledEnemy get_killed_enemy(int course, Game::Generator* gen);
 	CarriedTreasure get_treasure_override(int course, int treasure_id, u8 pellet_type = 0);
@@ -218,6 +220,7 @@ public:
 	PresetPreview* preview;
 	PresetCategory category;
 	PresetOrigin origin;
+	SegmentSnapshot* segment_snapshot;
 	const char* name;
 	Game::PikiContainer squad;
 	Game::PikiContainer onion_pikis;
@@ -259,8 +262,6 @@ public:
 
 	Preset* create();
 	static void fill_current_pikis(Preset* preset);
-	static void fill_current_treasures(Preset* preset);
-	static void fill_current_treasure_state(Preset* preset, WarpDestination dest);
 
 	PresetPreview* suggested_preset(WarpDestination dest, PresetCategory category);
 	void relevant_presets(PresetCategory category, WarpDestination dest, Vec<PresetPreview*>& out);

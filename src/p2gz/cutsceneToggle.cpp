@@ -552,7 +552,7 @@ BitFlag<u16> CutsceneMgr::get_cur_cave_cutscenes()
 	for (size_t i = 0; i < cave_cutscene_list.len(); i++) {
 		CaveCutsceneToggle* toggle = cave_cutscene_list[i];
 		ID32 caveID                = get_id_from_cave(toggle->get_cutscene_id());
-		if (Game::playData->isCaveFirstTime(get_area_from_cave(toggle->get_cutscene_id()), caveID)) {
+		if (!Game::playData->isCaveFirstTime(get_area_from_cave(toggle->get_cutscene_id()), caveID)) {
 			u16 mask = 1 << toggle->get_cutscene_id();
 			bitfield.set(mask);
 		}

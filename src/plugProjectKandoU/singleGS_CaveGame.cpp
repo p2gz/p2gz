@@ -255,9 +255,9 @@ void CaveState::check_SMenu(SingleGameSection* game)
 		gameSystem->setMoviePause(false, "sm-canc");
 		return;
 	case Screen::Game2DMgr::CHECK2D_SMenu_EscapeCave:
-		// @P2GZ: clear the array of loaded treasures when the player exits a cave the start menu  
+		// @P2GZ: clear the array of loaded treasures when the player exits a cave the start menu
 		p2gz->treasure_editor->clear_loaded_treasure_array();
-		
+
 		gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 		gameSystem->setMoviePause(false, "sm-giveup");
 		if (moviePlayer->mDemoState != DEMOSTATE_Inactive)
@@ -639,8 +639,8 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		// @P2GZ - post-load actions on warp
 		p2gz->warp->do_post_warp();
 
-		// @P2GZ - save current squad to history when starting a sublevel
-		p2gz->segment_history->record_squad();
+		// @P2GZ - capture segment starting state
+		p2gz->segment_history->capture_segment();
 
 		if (isFinal) {
 			Screen::gGame2DMgr->open_GameCave(disp, 2);
@@ -666,8 +666,8 @@ void CaveState::onMovieDone(Game::SingleGameSection* game, Game::MovieConfig* co
 		// @P2GZ - post-load actions on warp
 		p2gz->warp->do_post_warp();
 
-		// @P2GZ - save current squad to history when starting a sublevel
-		p2gz->segment_history->record_squad();
+		// @P2GZ - capture segment starting state
+		p2gz->segment_history->capture_segment();
 
 		if (!playData->isDemoFlag(DEMO_First_Cave_Enter)) {
 			playData->setDemoFlag(DEMO_First_Cave_Enter);

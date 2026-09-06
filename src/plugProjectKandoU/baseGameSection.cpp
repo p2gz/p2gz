@@ -3339,9 +3339,7 @@ void BaseGameSection::reconstruct_generator_cache()
 		return;
 	}
 	gz::Preset* preset                               = p2gz->warp->get_preset_during_warp();
-	const bool resetInPlace                          = p2gz->warp->only_rebuild_current_area; // retry/replay segment
 	p2gz->warp->needs_generator_cache_reconstruction = false;
-	p2gz->warp->only_rebuild_current_area            = false;
 	if (!preset) {
 		// can't set jack shit without a preset
 		return;
@@ -3350,41 +3348,23 @@ void BaseGameSection::reconstruct_generator_cache()
 	// we're only ever in single game mode when warping, this is fine
 	SingleGameSection* singleGame = static_cast<SingleGameSection*>(this);
 	const bool currentIsCave      = singleGame->mInCave;
-	const int currentCourse       = singleGame->mCurrentCourseInfo ? (int)singleGame->mCurrentCourseInfo->mCourseIndex : -1;
 	const int today               = gameSystem->mTimeMgr->mDayCount;
 
 	const int areaCount = stageList->mCourseCount < 4 ? stageList->mCourseCount : 4;
 
-	if (resetInPlace) {
-		// if doing a quick replay, keep every area we're NOT re-entering as-is
-		if (!currentIsCave && currentCourse >= 0) {
-			// above-ground, discard just this area's cache so it rebuilds below
-			CourseCache* destCache = generatorCache->findCache(generatorCache->mRootCache, currentCourse);
-			if (destCache) {
-				generatorCache->mCurrentCache = destCache;
-				generatorCache->slideCache();
-			}
-			playData->mLimitGen[currentCourse].init();
-			playData->mBitfieldPerCourse[currentCourse] &= ~PlayData::PDCF_Visited;
-		}
-		// cave replays touch no above-ground cache, so nothing to discard/rebuild
-	} else {
-		// full warp = rebuild every area specified from clean slate
-		generatorCache->clearCache();
-		playData->initLimitGens();
-		for (int course = 0; course < areaCount; course++) {
-			playData->mBitfieldPerCourse[course] &= ~PlayData::PDCF_Visited;
-		}
+	if (preset->segment_snapshot) {
+		preset->restore_segment_cache();
+		return;
+	}
+	generatorCache->clearCache();
+	playData->initLimitGens();
+	for (int course = 0; course < areaCount; course++) {
+		playData->mBitfieldPerCourse[course] &= ~PlayData::PDCF_Visited;
 	}
 
 	// skip if nothing needs rebuilding
 	bool anyToReconstruct = false;
 	for (int course = 0; course < areaCount; course++) {
-		const bool isDestArea = (!currentIsCave && course == currentCourse);
-		// quick replay only ever rebuilds the area we're re-entering
-		if (resetInPlace && !isDestArea) {
-			continue;
-		}
 		if (preset->is_area_visited(course)) {
 			anyToReconstruct = true;
 			break;
@@ -3447,13 +3427,6 @@ void BaseGameSection::reconstruct_generator_cache()
 	char filename[PATH_MAX];
 
 	for (int course = 0; course < areaCount; course++) {
-		const bool isDestArea = (!currentIsCave && course == currentCourse);
-
-		// in-place replay only rebuilds the area we're re-entering
-		if (resetInPlace && !isDestArea) {
-			continue;
-		}
-
 		// rebuild any area preset has overrides for (collected/moved treasures, killed enemies, or destroyed structs)
 		// (areas with no overrides run initgen fresh on entry, so they stay cleared)
 		if (!preset->is_area_visited(course)) {

@@ -214,9 +214,8 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	// @P2GZ - post-load actions on warp
 	p2gz->warp->do_post_warp();
 
-	// @P2GZ - segment history
-	// Record squad into preset if it's a generated preset.
-	p2gz->segment_history->record_squad();
+	// @P2GZ: capture segment starting state
+	p2gz->segment_history->capture_segment();
 }
 
 /**

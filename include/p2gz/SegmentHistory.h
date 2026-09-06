@@ -12,6 +12,7 @@ public:
 	Segment()
 	{
 		preset       = nullptr;
+		seed         = 0;
 		dest         = WarpDestination();
 		use_set_seed = false;
 	}
@@ -34,9 +35,11 @@ struct SegmentHistory {
 public:
 	SegmentHistory()
 	{
-		started_creating_map  = false;
-		entering_next_segment = false;
-		cave_floor0_preset    = nullptr;
+		started_creating_map    = false;
+		entering_next_segment   = false;
+		capturing_segment_cache = false;
+		cave_floor0_preset      = nullptr;
+		current_segment         = nullptr;
 	}
 
 	void draw_2d();
@@ -44,7 +47,7 @@ public:
 
 	Segment* start_segment();
 	Segment* cur_segment();
-	void record_squad();
+	void capture_segment();
 
 	void retry_segment();
 	void retry_same_seed();
@@ -52,13 +55,14 @@ public:
 
 	bool started_creating_map;
 	bool entering_next_segment;
+	bool capturing_segment_cache;
 
 private:
 	void draw_cur_seed();
 	void draw_reset_controls();
 
-	RingBuffer<16, Segment*> segments;
-	Preset* cave_floor0_preset;       // The current cave's floor-0 preset, ref'd so it survives ring buffer clearing
+	Segment* current_segment;
+	Preset* cave_floor0_preset;       // pinned until we leave the cave
 	WarpDestination cave_floor0_dest; // area+cave the pinned preset belongs to
 };
 
