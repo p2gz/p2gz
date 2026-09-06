@@ -4,6 +4,7 @@
 #include "Game/GameSystem.h"    // @P2GZ
 #include "Game/TimeMgr.h"       // @P2GZ
 #include "Game/Entities/Item.h" // @P2GZ
+#include "p2gz/p2gz.h"          // @P2GZ: snapshot capture flag
 
 namespace Game {
 
@@ -450,7 +451,9 @@ void GeneratorCache::savePikiheads()
 			mCurrentCache->mSize += otherSize;
 			mCurrentCache->mPikiheadSize += otherSize;
 		} else {
-			if (obj->isAlive()) {
+			// @P2GZ: keep unsaved sprouts during snapshot capture
+			// if (obj->isAlive()) {
+			if (obj->isAlive() && !p2gz->segment_history->capturing_segment_cache) {
 				obj->kill(nullptr);
 			}
 		}

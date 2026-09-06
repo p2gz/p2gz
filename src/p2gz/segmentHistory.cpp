@@ -10,6 +10,7 @@
 #include <Screen/Game2DMgr.h>
 #include <Game/gamePlayData.h>
 #include <Game/PikiMgr.h>
+#include <p2gz/SegmentSnapshot.h>
 
 using namespace gz;
 
@@ -41,22 +42,18 @@ void SegmentHistory::draw_2d()
 
 Segment* SegmentHistory::cur_segment()
 {
-	if (segments.len() > 0) {
-		return segments.peek();
-	}
-	return nullptr;
+	return current_segment;
 }
 
 void SegmentHistory::retry_segment()
 {
 	const Segment* current_segment = cur_segment();
-	if (!current_segment) {
+	if (!current_segment || !current_segment->preset || !current_segment->preset->segment_snapshot) {
 		return;
 	}
 
 	p2gz->warp->set_dest(current_segment->dest);
 	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
-	p2gz->warp->only_rebuild_current_area = true;
 	p2gz->warp->do_warp();
 
 	entering_next_segment = false;
@@ -65,14 +62,13 @@ void SegmentHistory::retry_segment()
 void SegmentHistory::retry_same_seed()
 {
 	const Segment* current_segment = cur_segment();
-	if (!current_segment) {
+	if (!current_segment || !current_segment->preset || !current_segment->preset->segment_snapshot) {
 		return;
 	}
 
 	p2gz->warp->set_dest(current_segment->dest);
 	p2gz->warp->set_seed(current_segment->seed);
 	p2gz->warp->set_preset(current_segment->preset, PS_Generated);
-	p2gz->warp->only_rebuild_current_area = true;
 	p2gz->warp->do_warp();
 
 	entering_next_segment = false;
@@ -80,73 +76,19 @@ void SegmentHistory::retry_same_seed()
 
 void SegmentHistory::retry_cave()
 {
-	const Segment* current_segment = cur_segment();
-	if (!current_segment) {
+	const Segment* segment = cur_segment();
+	if (!segment || !segment->preset || !segment->preset->segment_snapshot || !segment->dest.cave) {
 		return;
 	}
-	WarpDestination current_dest = current_segment->dest;
-
-	if (segments.len() == 0) {
-		return;
-	}
-
-	// Prefer the pinned floor-0 preset for this cave, if it exists
-	if (cave_floor0_preset && cave_floor0_dest.area == current_dest.area && cave_floor0_dest.cave == current_dest.cave) {
-		WarpDestination floor0_dest = current_dest;
-		floor0_dest.sublevel        = 0;
-		p2gz->warp->set_dest(floor0_dest);
-		p2gz->warp->set_preset(cave_floor0_preset, PS_Suggested);
-		p2gz->warp->only_rebuild_current_area = true;
-		p2gz->warp->do_warp();
-		entering_next_segment = false;
-		return;
-	}
-
-	// Otherwise, find the floor-0 segment for the current cave by walking back from the newest segment
-	const Segment* floor0_segment = nullptr;
-	for (size_t i = 0; i < segments.len(); i++) {
-		const Segment* this_segment = segments.peekN(i);
-		if (!this_segment) {
-			break;
-		}
-
-		// Stop once we walk back past the current cave. Need to compare area AND cave or we run into errors, e.g. HoB vs EC
-		if (this_segment->dest.area != current_dest.area || this_segment->dest.cave != current_dest.cave) {
-			break;
-		}
-
-		if (this_segment->dest.sublevel == 0) {
-			floor0_segment = this_segment;
-			break;
-		}
-	}
-
-	if (!floor0_segment) {
-		floor0_segment = current_segment;
-	}
-
-	WarpDestination floor0_dest = floor0_segment->dest;
-	if (floor0_dest.sublevel != 0) {
-		floor0_dest.sublevel = 0;
-		// No floor-0 history for this cave; fall back to the recommended preset.
-		// TODO: currently assumes the PoD preset. Adjust to reflect AT in the future
-		PresetCategory cat = PoD;
-		if (floor0_segment->preset) {
-			cat = floor0_segment->preset->category;
-		}
-		PresetPreview* suggested = p2gz->preset_mgr->suggested_preset(floor0_dest, cat);
-		if (!suggested) {
-			// No floor-0 preset for this cave - restart the cave anyway and bring the current squad along
-			OSReport("[P2GZ]: restart cave: no floor-0 preset for this cave, restarting with current squad\n");
-		}
-		p2gz->warp->set_dest(floor0_dest);
-		p2gz->warp->set_preset(suggested, PS_Suggested);
+	WarpDestination dest    = segment->dest;
+	PresetCategory category = segment->preset->category;
+	dest.sublevel           = 0;
+	p2gz->warp->set_dest(dest);
+	if (cave_floor0_preset && cave_floor0_dest.area == dest.area && cave_floor0_dest.cave == dest.cave) {
+		p2gz->warp->set_preset(cave_floor0_preset, PS_Generated);
 	} else {
-		p2gz->warp->set_dest(floor0_dest);
-		p2gz->warp->set_preset(floor0_segment->preset, PS_Suggested);
+		p2gz->warp->set_preset(p2gz->preset_mgr->suggested_preset(dest, category), PS_Suggested);
 	}
-
-	p2gz->warp->only_rebuild_current_area = true;
 	p2gz->warp->do_warp();
 	entering_next_segment = false;
 }
@@ -240,42 +182,50 @@ void SegmentHistory::draw_reset_controls()
 
 Segment* SegmentHistory::start_segment()
 {
-	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
-
-	if (segments.atCapacity()) {
-		Segment* oldestSegment = segments.getLast();
-		delete oldestSegment;
+	JKRHeap* prev_heap            = sys->mSysHeap->becomeCurrentHeap();
+	Game::SingleGameSection* game = get_SGS();
+	Preset* warp_preset           = p2gz->warp->warping ? p2gz->warp->get_preset_during_warp() : nullptr;
+	bool new_warp                 = p2gz->warp->warping && (!warp_preset || !warp_preset->segment_snapshot);
+	if (cave_floor0_preset && (!game->mInCave || new_warp)) {
+		cave_floor0_preset->del();
+		cave_floor0_preset = nullptr;
 	}
-
-	Segment* segment = new Segment();
-	segment->preset  = nullptr;
-	segments.push(segment);
-
+	delete current_segment;
+	current_segment = new Segment();
 	prev_heap->becomeCurrentHeap();
-
-	return segment;
+	return current_segment;
 }
 
-void SegmentHistory::record_squad()
+void SegmentHistory::capture_segment()
 {
 	Segment* segment = cur_segment();
-	if (!segment || !segment->preset || segment->preset->origin != PO_Generated) {
+	if (!segment || !segment->preset) {
 		return;
 	}
+	Preset* preset = segment->preset;
+	if (preset->segment_snapshot) {
+		return;
+	}
+	JKRHeap* prev_heap = sys->mSysHeap->becomeCurrentHeap();
+	if (segment->dest.cave == 0 && cave_floor0_preset) {
+		cave_floor0_preset->del();
+		cave_floor0_preset = nullptr;
+	}
+	preset->squad.clear();
+	preset->onion_pikis.clear();
+	preset->day  = Game::gameSystem->mTimeMgr->mDayCount + 1;
+	preset->time = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
+	PresetMgr::fill_current_pikis(preset);
+	preset->segment_snapshot = new SegmentSnapshot();
+	preset->segment_snapshot->capture(segment->dest.cave == 0);
 
-	segment->preset->squad.clear();
-	segment->preset->onion_pikis.clear();
-	PresetMgr::fill_current_pikis(segment->preset);
-	PresetMgr::fill_current_treasure_state(segment->preset, segment->dest);
-
-	// Pin this cave's floor-0 preset (ref'd) so "restart cave" can still restore the floor-0 squad
-	// even after it's fallen out of the ring buffer
-	if (segment->dest.cave != 0 && segment->dest.sublevel == 0 && cave_floor0_preset != segment->preset) {
+	if (segment->dest.cave != 0 && segment->dest.sublevel == 0) {
 		if (cave_floor0_preset) {
 			cave_floor0_preset->del();
 		}
-		cave_floor0_preset = segment->preset;
+		cave_floor0_preset = preset;
 		cave_floor0_preset->ref();
 		cave_floor0_dest = segment->dest;
 	}
+	prev_heap->becomeCurrentHeap();
 }

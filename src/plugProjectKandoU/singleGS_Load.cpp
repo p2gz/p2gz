@@ -104,16 +104,18 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 
 	// @P2GZ - segment history
 	// Start new segment on any loading screen
-	gz::Segment* segment = p2gz->segment_history->start_segment();
-	gz::Preset* preset   = nullptr;
+	gz::Segment* previous       = p2gz->segment_history->cur_segment();
+	gz::PresetCategory category = previous && previous->preset ? previous->preset->category : gz::PoD;
+	gz::Segment* segment        = p2gz->segment_history->start_segment();
+	gz::Preset* preset          = nullptr;
 	gz::WarpDestination dest;
 	dest.area = game->mCurrentCourseInfo->mCourseIndex;
 
 	if (p2gz->warp->warping) {
 		preset = p2gz->warp->get_preset_during_warp();
-		if (preset) {
+		if (preset && preset->segment_snapshot) {
 			segment->preset = preset;
-			dest.day        = preset->day;
+			dest.day        = preset->day - 1;
 			preset->ref();
 		}
 		if (p2gz->warp->using_set_seed()) {
@@ -122,12 +124,12 @@ void LoadState::init(SingleGameSection* game, StateArg* arg)
 		}
 	}
 
-	if (!preset) {
-		segment->preset = p2gz->preset_mgr->create();
-		// race mode gets weird if you reset day 1, this fixes that
-		segment->preset->day  = Game::gameSystem->mTimeMgr->mDayCount + 1;
-		segment->preset->time = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
-		dest.day              = Game::gameSystem->mTimeMgr->mDayCount;
+	if (!segment->preset) {
+		segment->preset           = p2gz->preset_mgr->create();
+		segment->preset->category = preset ? preset->category : category;
+		segment->preset->day      = Game::gameSystem->mTimeMgr->mDayCount + 1;
+		segment->preset->time     = Game::gameSystem->mTimeMgr->mCurrentTimeOfDay;
+		dest.day                  = Game::gameSystem->mTimeMgr->mDayCount;
 	}
 
 	if (!(mIsCaveLoad || mIsCaveDeeper)) {

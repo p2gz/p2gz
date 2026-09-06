@@ -95,7 +95,6 @@ public:
 	bool applying_generators;
 	bool needs_generator_cache_reconstruction; // set when a preset is applied, consumed when cache is rewritten
 	bool do_egate_parse_only_load;             // skip archive/model loading in ItemDengekiGate::Mgr ctor during cache reconstruction
-	bool only_rebuild_current_area;            // segment/sublevel replay; rebuild only the current area
 	u8 active_captain;
 
 private:

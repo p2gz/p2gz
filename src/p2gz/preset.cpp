@@ -12,8 +12,35 @@
 #include <Game/Entities/PelletOtakara.h>
 #include <Dolphin/rand.h>
 #include <p2gz/StructureEditor.h>
+#include <p2gz/SegmentSnapshot.h>
+#include <p2gz/treasureLocations.h>
 
 using namespace gz;
+
+static void restore_banked_treasure_counts()
+{
+	Game::PlayData* pd     = Game::playData;
+	int counts[CAVE_COUNT] = { };
+	for (u32 i = 0; i < ARRAY_SIZE(otakara_caves); i++) {
+		if (pd->mZukanStat->mOtakara(i) && otakara_caves[i]) {
+			counts[otakara_caves[i]]++;
+		}
+	}
+	for (u32 i = 0; i < ARRAY_SIZE(item_caves); i++) {
+		if (pd->mZukanStat->mItem(i) && item_caves[i]) {
+			counts[item_caves[i]]++;
+		}
+	}
+	for (int i = 1; i < CAVE_COUNT; i++) {
+		CaveIndex cave = static_cast<CaveIndex>(i);
+		int area       = get_area_from_cave(cave);
+		ID32 id        = get_id_from_cave(cave);
+		int index      = Game::stageList->getCourseInfo(area)->getCaveIndex_FromID(id);
+		GZASSERTLINE(index >= 0);
+		pd->mCaveOtakara[area].mOtakaraCountsOld[index]    = counts[i];
+		pd->mCaveOtakaraOld[area].mOtakaraCountsOld[index] = counts[i];
+	}
+}
 
 static const TreasureAreaMap AG_treasure_IDs[] = {
 	{ 47, COURSE_VoR },  // fossilized ursidae
@@ -67,6 +94,14 @@ Preset::Preset()
 	ref_count            = 1;
 	name                 = nullptr;
 	preview              = nullptr;
+	segment_snapshot     = nullptr;
+	origin               = PO_Generated;
+	day                  = 1;
+	enter_kind           = PEK_FromCave;
+	bitters_unlocked     = false;
+	spicies_unlocked     = false;
+	num_bitters          = 0;
+	num_spicies          = 0;
 	bridge_glitch_active = true;
 	category             = PoD;   // default to pod so we don't get errors for null presets
 	time                 = 7.0f;  // default to start of day
@@ -77,7 +112,8 @@ Preset::Preset()
 
 Preset::~Preset()
 {
-	delete name;
+	delete[] name;
+	delete segment_snapshot;
 	preview = nullptr;
 	name    = nullptr;
 }
@@ -236,14 +272,14 @@ void Preset::apply()
 	p2gz->spray_editor->toggle_bitters(bitters_unlocked);
 	p2gz->spray_editor->toggle_spicies(spicies_unlocked);
 
-	// Clear open area flags before applying upgrades, so we don't have persistent open areas.
-	// Skip for in-place replay: we're keeping the other areas' generator caches, so their PDCF_Visited
-	// flags must stay set to match. Otherwise the area loads BOTH initgen (because it looks unvisited)
-	// and the cache, doubling the generators and overrunning the pellet pool (genPellet "GENERATOR ERR").
-	if (!p2gz->warp->only_rebuild_current_area) {
-		for (int i = 1; i < 4; i++) {
-			Game::playData->mBitfieldPerCourse[i] = Game::PlayData::PDCF_Unset;
-		}
+	if (segment_snapshot) {
+		segment_snapshot->restore_progress();
+		p2gz->warp->set_enter_area_type(enter_kind);
+		return;
+	}
+
+	for (int i = 1; i < 4; i++) {
+		Game::playData->mBitfieldPerCourse[i] = Game::PlayData::PDCF_Unset;
 	}
 
 	// Apply upgrades
@@ -323,16 +359,11 @@ void Preset::apply()
 	p2gz->warp->set_enter_area_type(enter_kind);
 
 	// set whether %cutscene should be forced to play or not
-	if (play_repay_demo) {
-		p2gz->poko_editor->repay_demo_enabled = true;
-	}
+	p2gz->poko_editor->repay_demo_enabled = play_repay_demo;
 
-	// only wipe all areas if we warp, not if we replay/retry a segment
-	if (!p2gz->warp->only_rebuild_current_area) {
-		Game::generatorCache->clearCache();
-		Game::playData->clearVisitAllCourses();
-		Game::playData->mLimitGen->mNonLoops.all_zero();
-	}
+	Game::generatorCache->clearCache();
+	Game::playData->clearVisitAllCourses();
+	Game::playData->initLimitGens();
 
 	// Convert position-based StructureOverride data into per-area name-based state
 	// for use by reconstruct_generator_cache() during the upcoming load.
@@ -385,8 +416,7 @@ void Preset::TreasureState::restore(u8 dest_sublevel)
 		Game::PelletCropMemory* cave = Game::playData->mCaveCropMemory;
 		int cpoko                    = cave_poko_count;
 		if (cave) {
-			cave->mOtakara.clear();
-			cave->mItem.clear();
+			cave->clear();
 			// base state (start of preset range)
 			for (u32 i = 0; i < cave_held.len(); i++) {
 				const HeldPellet& h = cave_held[i];
@@ -432,13 +462,15 @@ void Preset::TreasureState::restore(u8 dest_sublevel)
 		if (mode == TM_Checkpoint) {
 			Game::PelletCropMemory* main = Game::playData->mMainCropMemory;
 			if (main) {
-				main->mOtakara.clear();
-				main->mItem.clear();
+				main->clear();
 				// no treasures are held above-ground, so leave the main crop memory cleared
 			}
 
 			Game::playData->mTreasureCount = treasure_count;
 			Game::playData->mPokoCount     = poko_count;
+			restore_banked_treasure_counts();
+			Game::playData->mDebtProgressFlags.clear();
+			Game::playData->mBackupDebtProgressFlags.clear();
 
 			// mark the debt-repayment levels these pokos reach as already-seen
 			// (we'll toggle the correct one on manually)
@@ -460,6 +492,17 @@ void Preset::TreasureState::restore(u8 dest_sublevel)
 
 void Preset::apply_post_load()
 {
+	// Carve out for Day 2 presets. Makes the onion emit a single seed instead of playing the extinction cutscene immediately.
+	if (in_above_ground_play() && squad.getTotalSum() == 0 && onion_pikis.getTotalSum() == 0 && day > 1) {
+		Game::SingleGame::GameState* game_state = static_cast<Game::SingleGame::GameState*>(get_SGS()->mCurrentState);
+		game_state->mIsPostExtinct              = true;
+	}
+
+	if (segment_snapshot) {
+		segment_snapshot->restore_post_load();
+		return;
+	}
+
 	// Gates, bridges (stage count), bags, plugs are pre-baked into the generator cache
 	// by reconstruct_generator_cache() before initGenerators() runs.
 
@@ -494,10 +537,10 @@ void Preset::apply_post_load()
 			}
 		}
 	}
+}
 
-	// Carve out for Day 2 presets. Makes the onion emit a single seed instead of playing the extinction cutscene immediately.
-	if (in_above_ground_play() && squad.getTotalSum() == 0 && onion_pikis.getTotalSum() == 0 && day > 1) {
-		Game::SingleGame::GameState* game_state = static_cast<Game::SingleGame::GameState*>(get_SGS()->mCurrentState);
-		game_state->mIsPostExtinct              = true;
-	}
+void Preset::restore_segment_cache()
+{
+	GZASSERTLINE(segment_snapshot);
+	segment_snapshot->restore_cache();
 }

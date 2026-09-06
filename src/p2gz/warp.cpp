@@ -62,13 +62,18 @@ Warp::Warp()
 	applying_generators                  = false;
 	needs_generator_cache_reconstruction = false;
 	do_egate_parse_only_load             = false;
-	only_rebuild_current_area            = false;
 	warping                              = false;
 	already_saved_generators             = false;
 	preset_status                        = PS_Stale;
 	lockout_frames                       = 0;
 	active_captain                       = NAVIID_Olimar;
 	use_set_seed                         = false;
+	next_preset                          = nullptr;
+	next_preset_p                        = nullptr;
+	area_opt                             = nullptr;
+	day_opt                              = nullptr;
+	enter_area_type_opt                  = nullptr;
+	preset_opt                           = nullptr;
 	preset_during_warp                   = nullptr;
 	cycle_idx                            = 0;
 	warp_category_idx                    = 1; // default to PoD
@@ -121,6 +126,9 @@ void Warp::sync()
 
 void Warp::set_preset(PresetPreview* preset, int preset_status_)
 {
+	if (next_preset) {
+		next_preset->del();
+	}
 	next_preset_p = preset;
 	next_preset   = nullptr;
 	preset_status = static_cast<PresetStatus>(preset_status_);
@@ -149,8 +157,11 @@ int Warp::next_preset_category()
 
 void Warp::set_preset(Preset* preset, int preset_status_)
 {
-	next_preset = preset;
 	preset->ref();
+	if (next_preset) {
+		next_preset->del();
+	}
+	next_preset   = preset;
 	next_preset_p = nullptr;
 	preset_status = static_cast<PresetStatus>(preset_status_);
 
@@ -316,6 +327,9 @@ void Warp::set_warp_category(size_t category_idx)
 // Drop any active preset and warp with the current squad ("no preset" category)
 void Warp::clear_preset()
 {
+	if (next_preset) {
+		next_preset->del();
+	}
 	next_preset_p = nullptr;
 	next_preset   = nullptr;
 	preset_status = PS_Stale;
@@ -386,7 +400,8 @@ void Warp::do_warp()
 
 	// if warp has a treasure state attached, it'll get handled by the preset
 	// if it doesn't (TM_Off), handle it the old fashioned way
-	const bool preset_owns_treasures = has_next_preset() && preset_during_warp && preset_during_warp->treasure_state.mode != TM_Off;
+	const bool preset_owns_treasures
+	    = preset_during_warp && (preset_during_warp->segment_snapshot || preset_during_warp->treasure_state.mode != TM_Off);
 	if (!preset_owns_treasures) {
 		reset_cave_treasure_collections(game);
 		p2gz->poko_editor->apply_cave_pokos();
@@ -623,7 +638,7 @@ void Warp::warp_to_area(Game::SingleGameSection* game)
 	Game::pikiMgr->forceEnterPikmins(false);
 	Game::gameSystem->mTimeMgr->setStartTime(); // Restore time of day setting
 
-	if (dest.day % 30 == 0) {
+	if (dest.day % 30 == 0 && !(preset_during_warp && preset_during_warp->segment_snapshot)) {
 		for (int i = 0; i < 4; i++) {
 			Game::playData->mLimitGen[i].mLoops.all_zero();
 		}
